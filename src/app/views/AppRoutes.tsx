@@ -1,0 +1,40 @@
+import React, { Suspense } from "react";
+import { Route, Routes, BrowserRouter } from "react-router";
+import { Helmet, HelmetProvider } from "react-helmet-async";
+
+
+import PageLayout from "@/app/layouts/PageLayout";
+import AuthLayout from "@/app/layouts/AuthLayout";
+import LoginForm from "@/features/auth/views/LoginForm";
+import SignupForm from "@/features/auth/views/SignupForm";
+import CabinetView from "@/features/cabinets/views/CabinetView";
+
+const helmetContext = {}
+
+export default function AppRoutes() {
+    return (
+        <BrowserRouter>
+            <HelmetProvider context={helmetContext}>
+                <Helmet>
+                    <meta charSet="utf-8" />
+                    <title>Updaid</title>
+                </Helmet>
+                <Suspense fallback="loading...">
+                    <Routes>
+
+                        <Route element={<AuthLayout />}>
+                            <Route path="/login" element={<LoginForm />} />
+                            <Route path="/signup" element={<SignupForm />} />
+                        </Route>
+
+                        <Route element={<PageLayout />}>
+                            <Route path="/" element={<h1>Home Page</h1>} />
+                            <Route path="/cabinetview" element={<CabinetView />} />
+                        </Route>
+
+                    </Routes>
+                </Suspense>
+            </HelmetProvider>
+        </BrowserRouter>
+    )
+}
