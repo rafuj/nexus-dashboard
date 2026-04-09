@@ -23,7 +23,7 @@ export function formatActivityDate(isoOrLocal: string) {
   return dayjs(isoOrLocal).format("MMM D, YYYY · h:mm A")
 }
 
-
+/** Get icon for recent activity or system logs based on the type */
 export const getIcon = (type: RecentActivityDefinition["type"] | SystemLogsDefinition["type"]) => {
   switch (type) {
     case "aed":
