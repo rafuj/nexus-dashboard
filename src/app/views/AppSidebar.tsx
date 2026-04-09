@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import {
+    Boxes,
     ScanHeart
 } from "lucide-react"
 
@@ -13,8 +14,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
-  SidebarTrigger
 } from "@/shared/components/ui/sidebar"
 import { NavMain } from "./NavMain"
 import { NavUser } from "./NavUser"
@@ -27,6 +26,13 @@ const data = {
         avatar: "d"
     },
     navMain: [
+
+        {
+            title: "Dashboard",
+            url: "/",
+            icon: Boxes,
+            isActive: true,
+        },
         {
             title: "Cabinets",
             url: "#",

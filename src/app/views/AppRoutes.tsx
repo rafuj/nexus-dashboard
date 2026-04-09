@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import { Route, Routes, BrowserRouter } from "react-router";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 
@@ -8,6 +8,7 @@ import AuthLayout from "@/app/layouts/AuthLayout";
 import LoginForm from "@/features/auth/views/LoginForm";
 import SignupForm from "@/features/auth/views/SignupForm";
 import CabinetView from "@/features/cabinets/views/CabinetView";
+import DashboardView from "@/features/dashboard/views/DashboardView";
 
 const helmetContext = {}
 
@@ -28,7 +29,7 @@ export default function AppRoutes() {
                         </Route>
 
                         <Route element={<PageLayout />}>
-                            <Route path="/" element={<h1>Home Page</h1>} />
+                            <Route path="/" element={<DashboardView />} />
                             <Route path="/cabinetview" element={<CabinetView />} />
                         </Route>
 
