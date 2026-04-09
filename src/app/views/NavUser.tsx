@@ -1,7 +1,9 @@
 "use client"
 
 import { ChevronsUpDown, LogOut, Settings } from "lucide-react"
+import { useNavigate } from "react-router"
 
+import { useAuth } from "@/app/hooks/useAuth"
 import {
   Avatar,
   AvatarFallback,
@@ -29,10 +31,17 @@ export function NavUser({
   user: {
     name: string
     email: string
-    avatar: string
+    avatar?: string
   }
 }) {
+  const { logout } = useAuth()
+  const navigate = useNavigate()
   const { isMobile } = useSidebar()
+
+  const handleLogout = () => {
+    logout()
+    navigate("/login", { replace: true })
+  }
 
   return (
     <SidebarMenu>
@@ -80,7 +89,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onSelect={handleLogout}>
               <LogOut className="size-3" />
               <span>Log out</span>
             </DropdownMenuItem>

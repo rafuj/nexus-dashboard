@@ -19,6 +19,8 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/shared/components/ui/sidebar"
+import { can } from "@/lib/permissions"
+import { useAuth } from "../hooks/useAuth"
 
 export function NavMain({
   items,
@@ -28,17 +30,28 @@ export function NavMain({
     url: string
     icon: LucideIcon
     isActive?: boolean
+    permissions?: string[]
     items?: {
       title: string
       url: string
+      permissions?: string[]
     }[]
   }[]
 }) {
+  const { user } = useAuth()
+  const role = user?.role ?? "viewer" // Default to viewer role if no user is authenticated
+  console.log(role);
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => (
+        {items
+          .filter(
+            (item) =>
+              !item.permissions?.length || // If the item has no permissions, it is accessible to all users
+              item.permissions.some((p) => can(role, p)), // Check if the user has the permission to access the item
+          )
+          .map((item) => (
           <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
@@ -57,7 +70,13 @@ export function NavMain({
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <SidebarMenuSub>
-                      {item.items?.map((subItem) => (
+                      {item.items
+                        ?.filter(
+                          (sub) =>
+                            !sub.permissions?.length ||
+                            sub.permissions.some((p) => can(role, p)),
+                        )
+                        .map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>
                           <SidebarMenuSubButton asChild>
                             <a href={subItem.url}>
