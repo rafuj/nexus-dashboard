@@ -1,4 +1,4 @@
-import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Badge } from "@/shared/components/ui/badge";
 import { mockCabinet } from "../mock/mockCabinet";
 import {Lock, LockOpen, MapPin} from "lucide-react"
