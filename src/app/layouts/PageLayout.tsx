@@ -9,11 +9,10 @@ import {
 import { useAuth } from "../hooks/useAuth";
 
 
-
 export default function PageLayout() {
-  const { user } = useAuth(); // Get the user from the context
-  if (!user) { // If the user is not authenticated, redirect to the login page
-    return <Navigate to="/login" /> // Redirect to the login page
+  const { user } = useAuth(); 
+  if (!user) { 
+    return <Navigate to="/login" /> 
   }
 
   return (

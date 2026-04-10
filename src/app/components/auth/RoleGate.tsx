@@ -7,12 +7,10 @@ type Props = {
   children: ReactNode
 }
 
+// Check if the user has the role to access the component
 export const RoleGate = ({ allow, children }: Props) => {
   const { role } = useAuth()
-  // If the user is not authenticated, return null
   if (!role) return null
-  // If the user does not have the role, return null
   if (!allow.includes(role)) return null
-  // If the user has the role, return the children
   return <>{children}</>
 }

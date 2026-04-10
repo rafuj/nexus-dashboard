@@ -7,12 +7,10 @@ type Props = {
   children: ReactNode
 }
 
+// Check if the user has the permission to perform the action
 export const Can = ({ permissions, children }: Props) => {
   const { role } = useAuth()
-  // If the user is not authenticated, return null
   if (!role) return null
-  // If the user does not have the permission, return null
   if (!can(role, permissions)) return null
-  // If the user has the permission, return the children
   return <>{children}</>
 }

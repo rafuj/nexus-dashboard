@@ -48,8 +48,8 @@ export function NavMain({
         {items
           .filter(
             (item) =>
-              !item.permissions?.length || // If the item has no permissions, it is accessible to all users
-              item.permissions.some((p) => can(role, p)), // Check if the user has the permission to access the item
+              !item.permissions?.length || 
+              item.permissions.some((p) => can(role, p)), 
           )
           .map((item) => (
           <Collapsible key={item.title} asChild defaultOpen={item.isActive}>

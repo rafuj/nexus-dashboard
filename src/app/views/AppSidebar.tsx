@@ -29,12 +29,12 @@ const navMain = [
     url: "/cabinetview",
     icon: ScanHeart,
     isActive: false,
-    permissions: ["manage_cabinets"], // Permissions for the item
+    permissions: ["manage_cabinets"], 
     items: [
       {
         title: "Cabinets",
         url: "/cabinets",
-        permissions: ["manage_cabinets"], // Permissions for the sub item
+        permissions: ["manage_cabinets"], 
       },
     ],
   },
@@ -43,16 +43,15 @@ const navMain = [
     url: "/assets",
     icon: Box,
     isActive: false,
-    permissions: ["manage_assets"], // Permissions for the item
+    permissions: ["manage_assets"], 
   },
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuth();
-  // Get the user from the context
   const sidebarUser = user
-    ? { name: user.name, email: user.email } // Get the name and email of the user
-    : { name: "", email: "" }; // Default to empty name and email if no user is authenticated
+    ? { name: user.name, email: user.email } 
+    : { name: "", email: "" }; 
 
   return (
     <Sidebar variant="inset" {...props}>
