@@ -23,29 +23,29 @@ export default function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const { login } = useAuth(); // Get the login function from the context
+  const { login } = useAuth(); 
   const navigate = useNavigate();
   const [formData, setFormData] = useState<{ email: string; password: string }>(
-    { email: "", password: "" }, // Default form data
+    { email: "", password: "" }, 
   );
-  const [error, setError] = useState<string | null>(null); // Default error message
-  const [isLoading, setIsLoading] = useState(false); // Default loading state
+  const [error, setError] = useState<string | null>(null); 
+  const [isLoading, setIsLoading] = useState(false); 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    void login(formData.email, formData.password) // Login the user
+    void login(formData.email, formData.password) 
       .then((user: User | null) => {
-        if (user) { // If the user is authenticated, redirect to the dashboard
-          navigate("/", { replace: true }); // Redirect to the dashboard
-        } else { // If the user is not authenticated, set the error message
-          setError("Invalid email or password"); // Set the error message
+        if (user) {
+          navigate("/", { replace: true });
+        } else { 
+          setError("Invalid email or password"); 
         }
       })
-      .catch((error: Error) => { // If the user is not authenticated, set the error message
-        setError(error.message); // Set the error message
+      .catch((error: Error) => { 
+        setError(error.message); 
       })
       .finally(() => {
-        setIsLoading(false); // Set the loading state to false
+        setIsLoading(false);
       });
   };
   return (

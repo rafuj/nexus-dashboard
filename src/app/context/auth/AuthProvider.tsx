@@ -36,7 +36,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return foundUser
   }
 
-  // Clear the user from local storage, so the context is cleared on logout
   const logout = () => {
     clearStoredUser()
     setUser(null)
