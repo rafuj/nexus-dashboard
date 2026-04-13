@@ -1,4 +1,4 @@
-import { Outlet } from "react-router";
+import { Navigate, Outlet } from "react-router";
 import { AppSidebar } from "../views/AppSidebar"
 
 import {
@@ -6,10 +6,14 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/shared/components/ui/sidebar"
-
+import { useAuth } from "../hooks/useAuth";
 
 
 export default function PageLayout() {
+  const { user } = useAuth(); 
+  if (!user) { 
+    return <Navigate to="/login" /> 
+  }
 
   return (
     <SidebarProvider>
