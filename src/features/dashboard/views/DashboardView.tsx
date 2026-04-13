@@ -16,10 +16,6 @@ import {
   CardTitle,
 } from "@/shared/components/ui/card";
 
-/**
- * Main operational overview: high-level cabinet and asset counts.
- * Data is mocked for now, and it's available in `mockDashboardStats` later to be replaced with API-driven state.
- */
 export default function DashboardView() {
   const stats = mockDashboardStats;
 

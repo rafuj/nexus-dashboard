@@ -1,7 +1,5 @@
 export type Role = "owner" | "admin" | "viewer" | "super"
 
-/** Permissions for each role */
-// TODO: This will be replaced with a database of permissions
 export const rolePermissions: Record<Role, string[]> = {
     owner: ["manage_users", "manage_cabinets", "manage_assets", "view_all","view_logs"],
     admin: ["manage_cabinets", "manage_assets", "view_all", "view_logs"],
