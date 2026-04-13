@@ -18,8 +18,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-/** Shared timestamp for dashboard activity tables */
+/** Shared timestamp for dashboard activity tables | TO be removed in the future updates */
 export function formatActivityDate(isoOrLocal: string) {
+  return dayjs(isoOrLocal).format("MMM D, YYYY · h:mm A")
+}
+
+/** Formatting Date from ISO to a readable format */
+export function formatISODate(isoOrLocal: string) {
   return dayjs(isoOrLocal).format("MMM D, YYYY · h:mm A")
 }
 

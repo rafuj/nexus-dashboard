@@ -35,15 +35,9 @@ const data = {
         },
         {
             title: "Cabinets",
-            url: "#",
+            url: "/cabinets",
             icon: ScanHeart,
             isActive: false,
-            items: [
-                {
-                    title: "Overview",
-                    url: "#"
-                }
-            ]
         }
     ]
 }
