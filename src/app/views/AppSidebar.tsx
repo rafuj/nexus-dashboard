@@ -17,34 +17,20 @@ import {
 import { NavMain } from "./NavMain";
 import { NavUser } from "./NavUser";
 
-const navMain = [
+const navMain =[
+
   {
-    title: "Dashboard",
-    url: "/",
-    icon: Boxes,
-    isActive: true,
+      title: "Dashboard",
+      url: "/",
+      icon: Boxes,
+      isActive: true,
   },
   {
-    title: "Cabinets",
-    url: "/cabinetview",
-    icon: ScanHeart,
-    isActive: false,
-    permissions: ["manage_cabinets"], 
-    items: [
-      {
-        title: "Cabinets",
-        url: "/cabinets",
-        permissions: ["manage_cabinets"], 
-      },
-    ],
-  },
-  {
-    title: "Assets",
-    url: "/assets",
-    icon: Box,
-    isActive: false,
-    permissions: ["manage_assets"], 
-  },
+      title: "Cabinets",
+      url: "/cabinets",
+      icon: ScanHeart,
+      isActive: false,
+  }
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {

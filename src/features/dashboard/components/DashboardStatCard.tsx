@@ -12,9 +12,6 @@ type DashboardStatCardProps = {
   stat: DashboardStatDefinition
 }
 
-/**
- * Single KPI card: title, big number, optional hint, and a small icon for quick scanning.
- */
 export function DashboardStatCard({ stat }: DashboardStatCardProps) {
   const Icon = stat.icon
 

@@ -2,9 +2,6 @@ import { Boxes, CircleCheck, Package, Wrench } from "lucide-react"
 
 import type { DashboardStatDefinition, RecentActivityDefinition, SystemLogsDefinition } from "../types/dashboardStats"
 
-/**
- * Placeholder numbers until the backend (or a real hook) supplies live stats.
- */
 export const mockDashboardStats: DashboardStatDefinition[] = [
   {
     id: "total-cabinets",

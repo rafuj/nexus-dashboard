@@ -8,6 +8,7 @@ import AuthLayout from "@/app/layouts/AuthLayout";
 import LoginForm from "@/features/auth/views/LoginForm";
 import SignupForm from "@/features/auth/views/SignupForm";
 import CabinetView from "@/features/cabinets/views/CabinetView";
+import CabinetsListView from "@/features/cabinets/views/CabinetsListView";
 import DashboardView from "@/features/dashboard/views/DashboardView";
 
 const helmetContext = {}
@@ -30,6 +31,7 @@ export default function AppRoutes() {
 
                         <Route element={<PageLayout />}>
                             <Route path="/" element={<DashboardView />} />
+                            <Route path="/cabinets" element={<CabinetsListView />} />
                             <Route path="/cabinetview" element={<CabinetView />} />
                         </Route>
 
