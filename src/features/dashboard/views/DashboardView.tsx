@@ -25,15 +25,14 @@ export default function DashboardView() {
         <title>Dashboard | Updaid</title>
       </Helmet>
 
-      {/* <div className="mx-auto max-w-[1600px] space-y-10 px-4 pb-12"> */}
-      <div className="space-y-10">
-        <header className="space-y-1">
-          <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground text-sm">
-            Snapshot of your cabinet fleet and installed assets.
-          </p>
-        </header>
+      <header className="mb-4">
+        <h1 className="text-xl font-semibold tracking-tight">Dashboard</h1>
+        <p className="text-muted-foreground text-sm">
+          Snapshot of your cabinet fleet and installed assets.
+        </p>
+      </header>
 
+      <div className="space-y-7">
         <section
           className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
           aria-label="Key metrics"
@@ -42,7 +41,6 @@ export default function DashboardView() {
             <DashboardStatCard key={stat.id} stat={stat} />
           ))}
         </section>
-
         <section className="space-y-5" aria-labelledby="activity-heading">
           <div className="space-y-1">
             <h2

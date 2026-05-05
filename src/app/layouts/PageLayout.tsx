@@ -7,7 +7,6 @@ import {
   SidebarTrigger,
 } from "@/shared/components/ui/sidebar";
 import { useAuth } from "../hooks/useAuth";
-import MenuSearch from "../components/menu-search";
 import Notifications from "../components/notifications";
 import { Button } from "@/shared/components/ui/button";
 import { ShoppingCart } from "lucide-react";
@@ -32,7 +31,6 @@ export default function PageLayout() {
               <Button variant="default">
                 <ShoppingCart /> Buy License
               </Button>
-              <MenuSearch />
               <Notifications />
             </div>
           </div>
