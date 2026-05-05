@@ -25,7 +25,8 @@ export default function DashboardView() {
         <title>Dashboard | Updaid</title>
       </Helmet>
 
-      <div className="mx-auto max-w-[1600px] space-y-10 px-4 pb-12">
+      {/* <div className="mx-auto max-w-[1600px] space-y-10 px-4 pb-12"> */}
+      <div className="space-y-10">
         <header className="space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground text-sm">

@@ -17,27 +17,26 @@ import {
 import { NavMain } from "./NavMain";
 import { NavUser } from "./NavUser";
 
-const navMain =[
-
+const navMain = [
   {
-      title: "Dashboard",
-      url: "/",
-      icon: Boxes,
-      isActive: true,
+    title: "Dashboard",
+    url: "/",
+    icon: Boxes,
+    isActive: true,
   },
   {
-      title: "Cabinets",
-      url: "/cabinets",
-      icon: ScanHeart,
-      isActive: false,
-  }
+    title: "Cabinets",
+    url: "/cabinets",
+    icon: ScanHeart,
+    isActive: false,
+  },
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuth();
   const sidebarUser = user
-    ? { name: user.name, email: user.email } 
-    : { name: "", email: "" }; 
+    ? { name: user.name, email: user.email }
+    : { name: "", email: "" };
 
   return (
     <Sidebar variant="inset" {...props}>

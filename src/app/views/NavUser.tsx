@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import { ChevronsUpDown, LogOut, Settings } from "lucide-react"
-import { useNavigate } from "react-router"
+import { ChevronsUpDown, LogOut, Settings } from "lucide-react";
+import { useNavigate } from "react-router";
 
-import { useAuth } from "@/app/hooks/useAuth"
+import { useAuth } from "@/app/hooks/useAuth";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/shared/components/ui/avatar"
+} from "@/shared/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,31 +17,31 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/shared/components/ui/dropdown-menu"
+} from "@/shared/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/shared/components/ui/sidebar"
+} from "@/shared/components/ui/sidebar";
 
 export function NavUser({
   user,
 }: {
   user: {
-    name: string
-    email: string
-    avatar?: string
-  }
+    name: string;
+    email: string;
+    avatar?: string;
+  };
 }) {
-  const { logout } = useAuth()
-  const navigate = useNavigate()
-  const { isMobile } = useSidebar()
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const { isMobile } = useSidebar();
 
   const handleLogout = () => {
-    logout()
-    navigate("/login", { replace: true })
-  }
+    logout();
+    navigate("/login", { replace: true });
+  };
 
   return (
     <SidebarMenu>
@@ -50,11 +50,17 @@ export function NavUser({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">MM</AvatarFallback>
+              <Avatar className="h-8 w-8 rounded-full">
+                <AvatarImage
+                  className="bg-background rounded-full"
+                  src={user.avatar}
+                  alt={user.name}
+                />
+                <AvatarFallback className="rounded-full bg-background">
+                  MM
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
@@ -73,7 +79,7 @@ export function NavUser({
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-full">MM</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name}</span>
@@ -97,5 +103,5 @@ export function NavUser({
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }
