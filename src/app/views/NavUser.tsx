@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronsUpDown, LogOut, Settings } from "lucide-react";
+import { ChevronDown, ChevronsUpDown, LogOut, Settings } from "lucide-react";
 import { useNavigate } from "react-router";
 
 import { useAuth } from "@/app/hooks/useAuth";
@@ -50,9 +50,9 @@ export function NavUser({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer"
+              className="data-[state=open]:text-sidebar-accent-foreground cursor-pointer rounded-none !bg-transparent !ring-0"
             >
-              <Avatar className="h-8 w-8 rounded-full">
+              <Avatar className="h-10 w-10 rounded-full">
                 <AvatarImage
                   className="bg-background rounded-full"
                   src={user.avatar}
@@ -63,10 +63,10 @@ export function NavUser({
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate font-semibold text-base">{user.name}</span>
+                <span className="truncate text-foreground text-xs">{user.email}</span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+              <ChevronDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
