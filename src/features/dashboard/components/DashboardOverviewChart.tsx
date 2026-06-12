@@ -46,7 +46,7 @@ export default function DashboardOverviewChart() {
                         <Pie
                             data={data}
                             dataKey="value"
-                            innerRadius="70%"
+                            innerRadius="68%"
                             outerRadius="100%"
                             paddingAngle={1}
                             stroke="#fff"
