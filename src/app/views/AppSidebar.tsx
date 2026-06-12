@@ -90,8 +90,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
         <SidebarMenu>
-          <div className="flex items-center gap-3">
-            <Link to="/" className="w-0 grow block">
+          <div className="flex items-center justify-between gap-3">
+            <Link to="/" className="w-0 grow block max-md:max-w-[180px]">
               <img src={updaidLogo} className="w-full" alt="updaid" />
             </Link>
             <SidebarTrigger />
