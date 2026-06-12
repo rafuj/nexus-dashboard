@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet-async";
-import { ScrollText, Activity } from "lucide-react";
+import { ScrollText, Activity, ChevronRight } from "lucide-react";
 import { DashboardStatCard } from "../components/DashboardStatCard";
 import { DashboardSmartCabinetActivityTable } from "../components/DashboardSmartCabinetActivityTable";
 import { DashboardSystemActivityTable } from "../components/DashboardSystemActivityTable";
@@ -18,6 +18,8 @@ import {
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Icons } from "@/app/icons/icons";
+import { Link } from "react-router";
+import DashboardOverviewChart from "../components/DashboardOverviewChart";
 
 export default function DashboardView() {
   const stats = mockDashboardStats;
@@ -52,6 +54,7 @@ export default function DashboardView() {
 
         <div className="p-5">
           <div className="space-y-5">
+            {/* Top Statistics Cards */}
             <section
               className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(152px,1fr))] xl:grid-cols-[repeat(auto-fit,minmax(140px,1fr))]"
               aria-label="Key metrics"
@@ -72,20 +75,10 @@ export default function DashboardView() {
                 <DashboardStatCard key={stat.id} stat={stat} />
               ))}
             </section>
-            <section className="space-y-5" aria-labelledby="activity-heading">
-              <div className="space-y-1">
-                <h2
-                  id="activity-heading"
-                  className="text-lg font-semibold tracking-tight"
-                >
-                  Activity
-                </h2>
-                <p className="text-muted-foreground max-w-2xl text-sm">
-                  Cabinet-side events and tenant-level changes
-                </p>
-              </div>
 
-              <div className="grid gap-6 lg:grid-cols-2">
+            {/* Activity and Monitor Maintenance Overview */}
+            <section className="space-y-5" aria-labelledby="activity-heading">
+              <div className="grid gap-6 xl:grid-cols-2">
                 <Card className="shadow-none ring-1 ring-border/60">
                   <CardHeader className="border-border/60 flex flex-row items-start gap-2 space-y-0 border-b pb-2">
                     <div
@@ -129,6 +122,19 @@ export default function DashboardView() {
                     <DashboardSystemActivityTable items={mockSystemLogs} />
                   </CardContent>
                 </Card>
+
+                <div className="p-5 relative border rounded-[20px] bg-white">
+                  <h2 className="text-sm font-semibold">Maintenance Overview</h2>
+                  <div className="mb-2">
+                    <DashboardOverviewChart />
+                  </div>
+                  <Link to="#" className="text-xs pr-5 relative inline-flex items-center gap-2 text-accent-foreground ">
+                    View maintenance details
+                    <span>
+                      <ChevronRight size={16} />
+                    </span>
+                  </Link>
+                </div>
               </div>
             </section>
           </div>
