@@ -97,8 +97,8 @@ export default function RespondersCard() {
                 )
                 : (
                     <>
-                        <img src={respondersBg} className="rounded-[15px] w-full h-full object-cover absolute top-0 left-0" alt="" />
-                        <div className="relative p-5 grow flex flex-col justify-center">
+                        <img src={respondersBg} className="pointer-events-none rounded-[15px] w-full h-full object-cover absolute top-0 left-0" alt="" />
+                        <div className="relative grow flex flex-col justify-center">
                             <div className="py-6 px-9 shadow-card bg-white rounded-[10px] text-center relative max-w-[400px] mx-auto">
                                 <div className="max-w-[343px] mx-auto">
                                     <h4 className="mb-2 text-sm font-semibold">
@@ -108,7 +108,7 @@ export default function RespondersCard() {
                                         Upgrade your cabinets to manage responders, roles,
                                         notifications and access from one connected dashboard.
                                     </p>
-                                    <button type="button" className="text-primary rounded-full bg-white shadow-card px-6 text-xs h-9">
+                                    <button type="button" className="text-primary-light rounded-full bg-white shadow-card px-6 text-xs h-9">
                                         Explore upgrade
                                     </button>
                                 </div>
