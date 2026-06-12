@@ -44,6 +44,9 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  /* EDF1F8 Chip BG */
+  --color-chip: oklch(0.960 0.010 258);
+
   --font-sans: "Inter Variable", sans-serif;
 
   /* Card Variants */
@@ -159,23 +162,23 @@
   }
 
   .card-info {
-    @apply bg-card-info border-card-info-stroke rounded-[20px];
+    @apply bg-card-info border-card-info-stroke;
   }
 
   .card-success {
-    @apply bg-card-success border-card-success-stroke rounded-[20px];
+    @apply bg-card-success border-card-success-stroke;
   }
 
   .card-warning {
-    @apply bg-card-warning border-card-warning-stroke rounded-[20px];
+    @apply bg-card-warning border-card-warning-stroke;
   }
 
   .card-error {
-    @apply bg-card-error border-card-error-stroke rounded-[20px];
+    @apply bg-card-error border-card-error-stroke;
   }
 
   .card-neutral {
-    @apply bg-card-neutral border-card-neutral-stroke rounded-[20px];
+    @apply bg-card-neutral border-card-neutral-stroke;
   }
 
   body {
@@ -264,5 +267,9 @@
 
   .marker-cluster div {
     @apply font-[inherit];
+  }
+
+  button:not(:disabled) {
+    @apply cursor-pointer
   }
 }

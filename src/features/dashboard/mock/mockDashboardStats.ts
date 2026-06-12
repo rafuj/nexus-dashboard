@@ -1,46 +1,52 @@
-import { Boxes, CircleCheck, Package, Wrench } from "lucide-react"
-
 import type { DashboardStatDefinition, RecentActivityDefinition, SystemLogsDefinition } from "../types/dashboardStats"
+import { Icons } from "@/app/icons/icons";
 
 export const mockDashboardStats: DashboardStatDefinition[] = [
   {
     id: "total-cabinets",
     title: "Total Cabinets",
     value: "128",
-    hint: "Registered in the fleet",
-    icon: Boxes,
+    icon: Icons.cabinets,
+    className: "card-info"
   },
   {
     id: "active-cabinets",
-    title: "Active Cabinets",
+    title: "Ok",
     value: "112",
-    hint: "Online and reporting",
-    icon: CircleCheck,
+    icon: Icons.activeCabinets,
+    className: "card-success"
   },
   {
-    id: "maintenance-cabinets",
-    title: "Cabinets in Maintenance",
+    id: "maintenance-warning",
+    title: "Warning",
     value: "9",
-    hint: "Service or repair window",
-    icon: Wrench,
+    icon: Icons.warning,
+    className: "card-warning"
   },
   {
-    id: "assets-installed",
-    title: "Assets Installed",
+    id: "assets-urgent",
+    title: "Urgent",
     value: "340",
-    hint: "AEDs and modules tracked",
-    icon: Package,
+    icon: Icons.urgent,
+    className: "card-error"
+  },
+  {
+    id: "assets-paused",
+    title: "Paused",
+    value: "3",
+    icon: Icons.paused,
+    className: "card-neutral"
   },
 ];
 
 export const mockRecentActivity: RecentActivityDefinition[] = [
-  { id: "1", date: "2026-04-08 10:15",cabinetId: "C0000001", activity: "AED replaced in Cabinet", type: "aed" },
-  { id: "2", date: "2026-04-08 09:40",cabinetId: "C0000002", activity: "Door opened", type: "door" },
-  { id: "3", date: "2026-04-07 18:20",cabinetId: "C0000003", activity: "Maintenance mode enabled", type: "maintenance" },
-  { id: "4", date: "2026-04-07 15:05",cabinetId: "C0000004", activity: "Temperature alert triggered", type: "temperature" },
+  { id: "1", date: "2026-04-08 10:15", cabinetId: "C0000001", activity: "AED replaced in Cabinet", type: "aed" },
+  { id: "2", date: "2026-04-08 09:40", cabinetId: "C0000002", activity: "Door opened", type: "door" },
+  { id: "3", date: "2026-04-07 18:20", cabinetId: "C0000003", activity: "Maintenance mode enabled", type: "maintenance" },
+  { id: "4", date: "2026-04-07 15:05", cabinetId: "C0000004", activity: "Temperature alert triggered", type: "temperature" },
 ]
 
-export const mockSystemLogs: SystemLogsDefinition[] = [ 
+export const mockSystemLogs: SystemLogsDefinition[] = [
   { id: "1", date: "2026-04-08 10:00", activity: "User John invited to tenant", type: "user" },
   { id: "2", date: "2026-04-08 09:20", activity: "New cabinet created (#D552)", type: "system" },
   { id: "3", date: "2026-04-07 17:10", activity: "Group 'Amsterdam Offices' created", type: "system" },
