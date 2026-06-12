@@ -70,6 +70,8 @@
   --color-neutral: #8E8B8B;
   --color-card-neutral-stroke: #E9E9E9;
 
+  --shadow-card: 0px 0px 10px rgba(0, 0, 0, 0.1);
+
 }
 
 :root {

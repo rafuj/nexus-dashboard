@@ -20,6 +20,7 @@ import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Icons } from "@/app/icons/icons";
 import { Link } from "react-router";
 import DashboardOverviewChart from "../components/DashboardOverviewChart";
+import RespondersCard from "../components/RespondersCard";
 
 export default function DashboardView() {
   const stats = mockDashboardStats;
@@ -142,18 +143,13 @@ export default function DashboardView() {
                   </CardContent>
                 </Card>
 
-                <div className="p-5 relative border rounded-[15px] bg-white">
-                  <h2 className="text-sm font-semibold">Maintenance Overview</h2>
-                  <div className="mb-2">
-                    <DashboardOverviewChart />
-                  </div>
-                  <Link to="#" className="text-xs pr-5 relative inline-flex items-center gap-2 text-accent-foreground ">
-                    View maintenance details
-                    <span>
-                      <ChevronRight size={16} />
-                    </span>
-                  </Link>
-                </div>
+                {/* Overview Chart */}
+                <DashboardOverviewChart />
+
+                {/* Responders Card */}
+                <RespondersCard />
+
+                {/* Certificates Card */}
                 <div className="p-5 relative border rounded-[15px] bg-white">
                   <h2 className="text-sm font-semibold mb-12">Certificates</h2>
                   <Icons.certificatesIcon className="absolute top-5 right-5 xl:right-8" />
@@ -192,6 +188,7 @@ export default function DashboardView() {
                     </span>
                   </Link>
                 </div>
+
               </div>
             </section>
           </div>

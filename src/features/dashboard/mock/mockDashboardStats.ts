@@ -52,3 +52,43 @@ export const mockSystemLogs: SystemLogsDefinition[] = [
   { id: "3", date: "2026-04-07 17:10", activity: "Group 'Amsterdam Offices' created", type: "system" },
   { id: "4", date: "2026-04-07 14:30", activity: "User role updated (Admin → Viewer)", type: "system" },
 ]
+export const HAS_CONNECTED_CABINETS = false
+
+// Sample Data mimicking the image
+export const responders = [
+  {
+    name: "Emma de Vries",
+    role: "Viewer",
+    roleType: "viewer",
+    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+    notifications: { email: true, chat: false }
+  },
+  {
+    name: "Lucas Jansen",
+    role: "Editor",
+    roleType: "editor",
+    avatar: null, // Shows fallback icon
+    notifications: { email: true, chat: true }
+  },
+  {
+    name: "Sophie Bakker",
+    role: "Admin",
+    roleType: "admin",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&auto=format&fit=crop&q=80",
+    notifications: { email: true, chat: true }
+  },
+  {
+    name: "Noah Visser",
+    role: "Viewer",
+    roleType: "viewer",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
+    notifications: { email: false, chat: true }
+  },
+  {
+    name: "John Smith",
+    role: "Editor",
+    roleType: "editor",
+    avatar: null,
+    notifications: { email: false, chat: true }
+  }
+];
