@@ -9,7 +9,7 @@ export type DashboardStatDefinition = {
   title: string
   value: string
   hint?: string
-  icon: ComponentType<IconProps>;
+  icon: ComponentType<IconProps>
   className?: string
 }
 
@@ -28,3 +28,20 @@ export type SystemLogsDefinition = {
   type: "user" | "system"
 }
 
+export type SystemHelthDefination = {
+  id: string | number | undefined | null
+  activity: string
+  yes: string
+  no: string
+  icon?: ComponentType<IconProps>
+  className?: string
+}
+
+export type ActivityDefination = {
+  id: string | number | undefined | null
+  action: string
+  location: string
+  time: string
+  icon?: ComponentType<IconProps>
+  className?: string
+}

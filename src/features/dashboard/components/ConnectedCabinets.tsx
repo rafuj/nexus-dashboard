@@ -1,7 +1,9 @@
 import { User } from 'lucide-react';
 import { Icons } from '@/app/icons/icons';
 import connectedCabinetsBg from "@/assets/connected-cabinets-bg.png"
-import { HAS_CONNECTED_CABINETS, responders } from "../mock/mockDashboardStats";
+import { HAS_CONNECTED_CABINETS, recentActivityData, responders, systemHealthData } from "../mock/mockDashboardStats";
+import { Link } from 'react-router';
+import type { ActivityDefination, SystemHelthDefination } from '../types/dashboardStats';
 
 export default function ConnectedCabinets() {
     const renderRoleIcon = (type: string) => {
@@ -24,72 +26,70 @@ export default function ConnectedCabinets() {
             </div>
             {HAS_CONNECTED_CABINETS ?
                 (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            {/* Table Header */}
-                            <thead>
-                                <tr className="bg-muted">
-                                    <th className="py-2.75 px-5 text-secondary-foreground font-semibold text-[12px] tracking-wide w-1/2 rounded-l-xl">
-                                        Responder Overview
-                                    </th>
-                                    <th className="py-2.75 px-5 text-secondary-foreground font-semibold text-[12px] tracking-wide w-1/4">
-                                        Role
-                                    </th>
-                                    <th className="py-2.75 px-5 text-secondary-foreground font-semibold text-[12px] tracking-wide w-1/4 text-right pr-12 rounded-r-xl">
-                                        Notification
-                                    </th>
-                                </tr>
-                            </thead>
-
-                            {/* Table Body */}
-                            <tbody className="divide-y divide-border">
-                                {responders.map((responder, index) => (
-                                    <tr key={index}>
-                                        {/* User Identity */}
-                                        <td className="py-3 px-5 flex items-center gap-3">
-                                            {responder.avatar ? (
-                                                <img
-                                                    className="w-7 h-7 rounded-full object-cover"
-                                                    src={responder.avatar}
-                                                    alt={responder.name}
-                                                />
-                                            ) : (
-                                                <div className="w-8 h-8 rounded-full bg-chip flex items-center justify-center text-muted-foreground">
-                                                    <User className="w-4 h-4" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <div className="py-5 px-2.5 xl:pr-3.75 rounded-[10px] bg-background">
+                            <div className="flex justify-between mb-3">
+                                <h6 className="text-sm font-semibold leading-[1] m-0">System Health</h6>
+                                <Link to="" className='text-foreground hover:text-primary text-xs'>View details</Link>
+                            </div>
+                            <table className="w-full text-left border-collapse">
+                                <tbody>
+                                    {systemHealthData.map((activity: SystemHelthDefination) => {
+                                        const Icon = activity.icon;
+                                        return (
+                                        <tr key={activity.id} className="group text-xs">
+                                            <td className="py-2.5 group-last:pb-0">
+                                                <div className="flex items-center gap-1.25">
+                                                    {Icon ? <Icon /> : null}
+                                                    <span>{activity.activity}</span>
                                                 </div>
-                                            )}
-                                            <span className="text-secondary-foreground font-medium text-[12px]">
-                                                {responder.name}
-                                            </span>
-                                        </td>
-
-                                        {/* Role */}
-                                        <td className="py-3 px-5">
-                                            <div className="flex items-center gap-2 text-secondary-foreground text-[12px]">
-                                                {renderRoleIcon(responder.roleType)}
-                                                <span>{responder.role}</span>
-                                            </div>
-                                        </td>
-
-                                        {/* Notifications */}
-                                        <td className="py-3 px-5">
-                                            <div className="flex items-center justify-end gap-4 pr-6 text-secondary-foreground">
-                                                {responder.notifications.email && (
-                                                    <button className="p-1 hover:bg-muted rounded transition-colors" aria-label="Email notification enabled">
-                                                        <Icons.mail />
-                                                    </button>
-                                                )}
-                                                {responder.notifications.chat && (
-                                                    <button className="p-1 hover:bg-muted rounded transition-colors" aria-label="Chat notification enabled">
-                                                        <Icons.messageSquare />
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                            </td>
+                                            <td className="py-2.5 group-last:pb-0 px-2 xl:px-3">
+                                                <div className="flex gap-1">
+                                                    <span>Yes:</span> <span className="font-semibold text-success">{activity.yes}</span>
+                                                </div>
+                                            </td>
+                                            <td className="py-2.5 group-last:pb-0">
+                                                <div className="flex justify-end gap-1">
+                                                    <span>No:</span> <span className="font-semibold text-error">{activity.no}</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="py-5 px-2.5 xl:pr-3.75 rounded-[10px] bg-background">
+                            <div className="flex justify-between mb-3">
+                                <h6 className="text-sm font-semibold leading-[1] m-0">Recent Activity</h6>
+                                <Link to="" className='text-foreground hover:text-primary text-xs'>View details</Link>
+                            </div>
+                            <table className="w-full text-left border-collapse">
+                                <tbody>
+                                    {recentActivityData.map((activity: ActivityDefination) => {
+                                        const Icon = activity.icon;
+                                        return (
+                                        <tr key={activity.id} className="group text-xs">
+                                            <td className="pb-4 group-last:pb-0">
+                                                <div className="flex items-center gap-2 text-accent-foreground">
+                                                    <span className='h-1 w-1 rounded-full bg-primary'></span>
+                                                    <span>{activity.time}</span>
+                                                </div>
+                                            </td>
+                                            <td className="pb-4 group-last:pb-0 px-2 xl:px-3">
+                                                {Icon ? <Icon /> : null}
+                                            </td>
+                                            <td className="pb-4 group-last:pb-0">
+                                                <h6 className="font-normal m-0 leading-[1.3]">{activity.action}</h6>
+                                                <span className="block leading-[1.3]">{activity.location}</span>
+                                            </td>
+                                        </tr>
+                                    )
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 )
                 : (
@@ -146,6 +146,6 @@ export default function ConnectedCabinets() {
                 )
             }
 
-        </div>
+        </div>  
     );
 }

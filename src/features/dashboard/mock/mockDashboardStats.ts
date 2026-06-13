@@ -1,4 +1,4 @@
-import type { DashboardStatDefinition, RecentActivityDefinition, SystemLogsDefinition } from "../types/dashboardStats"
+import type { ActivityDefination, DashboardStatDefinition, RecentActivityDefinition, SystemHelthDefination, SystemLogsDefinition } from "../types/dashboardStats"
 import { Icons } from "@/app/icons/icons";
 
 export const mockDashboardStats: DashboardStatDefinition[] = [
@@ -52,7 +52,8 @@ export const mockSystemLogs: SystemLogsDefinition[] = [
   { id: "3", date: "2026-04-07 17:10", activity: "Group 'Amsterdam Offices' created", type: "system" },
   { id: "4", date: "2026-04-07 14:30", activity: "User role updated (Admin → Viewer)", type: "system" },
 ]
-export const HAS_CONNECTED_CABINETS = false
+
+export const HAS_CONNECTED_CABINETS = true
 
 // Sample Data mimicking the image
 export const responders = [
@@ -91,4 +92,20 @@ export const responders = [
     avatar: null,
     notifications: { email: false, chat: true }
   }
+];
+
+// System Helth Data
+export const systemHealthData: SystemHelthDefination[]  = [
+  { id:"1", activity: "Connectivity", yes: "230", no: "10", icon: Icons.connectivity },
+  { id:"2", activity: "Asset Present", yes: "200", no: "40", icon: Icons.asset },
+  { id:"3", activity: "Door Closed", yes: "238", no: "2", icon: Icons.doorClosed },
+  { id:"4", activity: "Temp. OK", yes: "231", no: "9", icon: Icons.temp},
+  { id:"5", activity: "Maintenance up to date", yes: "218", no: "22", icon: Icons.maintenance }
+];
+// Recent Activity Data
+export const recentActivityData: ActivityDefination[]  = [
+  { id:"1", time: "13:42", action: "Cabinet opened", location: "Delft Station", icon: Icons.openCabinet },
+  { id:"2", time: "13:39", action: "Alert resolved", location: "Amsterdam Zuid", icon: Icons.alertResolved },
+  { id:"3", time: "13:21", action: "AED removed", location: "Rotterdam Office Park", icon: Icons.aedRemoved },
+  { id:"4", time: "12:08", action: "Connectivity restored", location: "Utrecht Office (Lobby)", icon: Icons.connectivityRestored }
 ];
