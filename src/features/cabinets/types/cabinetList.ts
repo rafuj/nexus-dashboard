@@ -12,6 +12,12 @@ export type CabinetListRow = {
   asset: "aed" | "none"
   temperatureC: number | null
   lastActivityAt: string
+  city: string
+  zip: string
+  street: string
+  hNo: string
+  cabinetCode: string
+  updaidCode: string
 }
 
 export type CabinetsListToolbarProps = {
@@ -19,6 +25,10 @@ export type CabinetsListToolbarProps = {
   onSearchChange: (value: string) => void
   statusFilter: string
   onStatusFilterChange: (value: string) => void
-  typeFilter: string
-  onTypeFilterChange: (value: string) => void
+  // typeFilter: string
+  // onTypeFilterChange: (value: string) => void
+  cities: string
+  onCitiesChange: (value: string) => void
+  streets: string
+  onStreetsChange: (value: string) => void
 }

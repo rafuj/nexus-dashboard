@@ -59,15 +59,15 @@ export function DataTablePagination<TData>({
         className
       )}
     >
-      <p className="text-muted-foreground text-sm tabular-nums">
+      <p className="font-semibold text-accent-foreground text-xs tabular-nums">
         {totalRows === 0 ? (
           "No results"
         ) : (
           <>
             Showing{" "}
-            <span className="text-foreground font-medium">{rangeStart}</span>–
-            <span className="text-foreground font-medium">{rangeEnd}</span> of{" "}
-            <span className="text-foreground font-medium">{totalRows}</span>
+            <span>{rangeStart}</span>–
+            <span>{rangeEnd}</span> of{" "}
+            <span>{totalRows}</span>
           </>
         )}
       </p>
@@ -81,13 +81,12 @@ export function DataTablePagination<TData>({
             type="button"
             variant="outline"
             size="sm"
-            className="h-8 gap-1 pr-2.5 pl-2"
+            className="size-8 xl:size-10"
             disabled={currentPage <= 1}
             onClick={() => table.setPageIndex(Math.max(0, pageIndex - 1))}
             aria-label="Previous page"
           >
             <ChevronLeft className="size-4" />
-            Previous
           </Button>
 
           <ul className="flex items-center gap-1">
@@ -107,8 +106,8 @@ export function DataTablePagination<TData>({
                     variant={item === currentPage ? "secondary" : "ghost"}
                     size="icon-sm"
                     className={cn(
-                      "size-8",
-                      item === currentPage && "ring-1 ring-border"
+                      "size-8 xl:size-10 bg-border",
+                      item === currentPage && "bg-primary/10 border-primary border"
                     )}
                     aria-label={`Page ${item}`}
                     aria-current={item === currentPage ? "page" : undefined}
@@ -125,14 +124,13 @@ export function DataTablePagination<TData>({
             type="button"
             variant="outline"
             size="sm"
-            className="h-8 gap-1 pr-2 pl-2.5"
+            className="size-8 xl:size-10"
             disabled={currentPage >= totalPages}
             onClick={() =>
               table.setPageIndex(Math.min(totalPages - 1, pageIndex + 1))
             }
             aria-label="Next page"
           >
-            Next
             <ChevronRight className="size-4" />
           </Button>
         </nav>

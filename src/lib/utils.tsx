@@ -24,7 +24,7 @@ export function formatActivityDate(isoOrLocal: string) {
 
 /** Formatting Date from ISO to a readable format */
 export function formatISODate(isoOrLocal: string) {
-  return dayjs(isoOrLocal).format("MMM D, YYYY · h:mm A")
+  return dayjs(isoOrLocal).format("MMM D, YYYY / h:mm A")
 }
 
 /** Get icon for recent activity or system logs based on the type */

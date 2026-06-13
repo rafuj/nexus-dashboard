@@ -26,14 +26,13 @@ export function DataTable<TData>({
 
   return (
     <Table className={tableClassName}>
-      <TableHeader className="bg-muted/40 border-b">
+      <TableHeader>
         {table.getHeaderGroups().map((headerGroup) => (
-          <TableRow key={headerGroup.id} className="border-b-0 hover:bg-transparent">
+          <TableRow className="border-b-0" key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
               <TableHead
                 key={header.id}
                 className={cn(
-                  "text-muted-foreground text-xs font-medium uppercase tracking-wide",
                   header.column.columnDef.meta?.headerClassName
                 )}
               >

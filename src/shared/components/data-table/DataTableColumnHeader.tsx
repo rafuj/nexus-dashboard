@@ -17,7 +17,7 @@ export function DataTableColumnHeader<TData, TValue>({
 }: DataTableColumnHeaderProps<TData, TValue>) {
   if (!column.getCanSort()) {
     return (
-      <span className={cn("text-muted-foreground font-medium uppercase tracking-wide", className)}>
+      <span className={cn("tracking-wide", className)}>
         {title}
       </span>
     )
@@ -29,7 +29,7 @@ export function DataTableColumnHeader<TData, TValue>({
       variant="ghost"
       size="sm"
       className={cn(
-        "text-muted-foreground hover:text-foreground -ml-2.5 h-8 px-2 text-xs font-medium uppercase tracking-wide",
+        "-ml-2.5 h-8 px-2 text-xs font-semibold !bg-transparent",
         className
       )}
       onClick={column.getToggleSortingHandler()}
@@ -41,7 +41,7 @@ export function DataTableColumnHeader<TData, TValue>({
         ) : column.getIsSorted() === "asc" ? (
           <ArrowUp className="size-3.5" aria-hidden />
         ) : (
-          <ChevronsUpDown className="text-muted-foreground/70 size-3.5" aria-hidden />
+          <ChevronsUpDown className="size-4" aria-hidden />
         )}
       </span>
     </Button>
