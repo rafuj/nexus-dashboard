@@ -8,7 +8,7 @@ import {
   type PaginationState,
   type SortingState,
 } from "@tanstack/react-table";
-import { PlusCircle, ShoppingCart } from "lucide-react";
+import { ChevronRight, PlusCircle, ShoppingCart } from "lucide-react";
 
 import { CabinetsListToolbar } from "../components/CabinetsListToolbar";
 import { cabinetListColumns } from "../components/cabinetsTableColumns";
@@ -103,9 +103,11 @@ export default function CabinetsListView() {
             <div className="grow w-0 flex items-center justify-between max-md:flex-wrap gap-4 md:gap-7">
               <div className="md:w-0 grow">
                 <h1 className="text-xl font-medium lg:text-4xl lg:leading-[1] tracking-tight mb-1 md:mb-3">Cabinets</h1>
-                <p className="text-xs lg:text-sm">
-                  Here's what's happening with your Updaid fleet.
-                </p>
+                <ul className="text-xs lg:text-sm flex flex-wrap items-center">
+                  <li>Cabinets</li>
+                  <li className="mx-2"><ChevronRight size={20} /></li>
+                  <li className="text-accent-foreground">List</li>
+                </ul>
               </div>
               <div className="flex items-center max-sm:flex-wrap gap-2.5">
                 <div className="max-sm:hidden">
