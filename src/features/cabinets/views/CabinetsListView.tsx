@@ -17,6 +17,7 @@ import { DataTable, DataTablePagination } from "@/shared/components/data-table";
 import { cn } from "@/lib/utils";
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
+import { Link } from "react-router";
 
 
 const STATUS_FILTER_ALL = "all";
@@ -113,9 +114,9 @@ export default function CabinetsListView() {
                 <div className="max-sm:hidden">
                   <DateAndTimeChip />
                 </div>
-                <button type="button" className="flex items-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">
+                <Link to="/cabinets/add" className="flex items-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">
                   <PlusCircle/> <span>Add Cabinet</span>
-                </button>
+                </Link>
               </div>
             </div>
           </div>

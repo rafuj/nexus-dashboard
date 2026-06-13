@@ -9,6 +9,7 @@ import SignupForm from "@/features/auth/views/SignupForm";
 import CabinetView from "@/features/cabinets/views/CabinetView";
 import CabinetsListView from "@/features/cabinets/views/CabinetsListView";
 import DashboardView from "@/features/dashboard/views/DashboardView";
+import AddCabinets from "@/features/cabinets/views/AddCabinets";
 
 const helmetContext = {};
 
@@ -30,6 +31,7 @@ export default function AppRoutes() {
             <Route element={<PageLayout />}>
               <Route path="/" element={<DashboardView />} />
               <Route path="/cabinets" element={<CabinetsListView />} />
+              <Route path="/cabinets/add" element={<AddCabinets />} />
               <Route path="/cabinetview" element={<CabinetView />} />
             </Route>
           </Routes>
