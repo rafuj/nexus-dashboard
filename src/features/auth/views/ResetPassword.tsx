@@ -113,7 +113,7 @@ export default function ResetPassword({
                           key={index} 
                           className={cn(
                             "h-[2px] rounded-full transition-colors duration-300", 
-                            isLit ? "bg-success" : "bg-foreground/30"
+                            isLit ? "bg-[#1ACD6F]" : "bg-foreground/30"
                           )} 
                         />
                       );
