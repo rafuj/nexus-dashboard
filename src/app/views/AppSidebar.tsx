@@ -31,7 +31,7 @@ const navMain = [
     items: [
       {
         title: "List",
-        url: "/cabinets",
+        url: "/cabinets/list",
         icon: <SidebarIcons.list />,
       },
       {
