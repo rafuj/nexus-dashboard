@@ -97,7 +97,7 @@ export default function LoginForm({
                   <Button
                     type="submit"
                     disabled={!formData.email || !formData.password || isLoading}
-                    className="h-10 lg:h-14 rounded-full"
+                    className="h-10 lg:h-14 rounded-full lg:text-base"
                   >
                     Sign In
                   </Button>
