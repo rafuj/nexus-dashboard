@@ -9,8 +9,6 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import { ChevronRight, PlusCircle } from "lucide-react";
-import { cabinetListColumns } from "../components/cabinetsTableColumns";
-import { queryCabinetsListPage } from "../server/queryCabinetsListPage";
 import { DataTable, DataTablePagination } from "@/shared/components/data-table";
 import { cn } from "@/lib/utils";
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
@@ -18,7 +16,8 @@ import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Link } from "react-router";
 import { CabinetsActivityListToolbar } from "../components/CabinetsActivityListToolbar";
 import type { DateRange } from "react-day-picker";
-import { DateRangePicker } from "@/shared/components/ui/date-range-picker";
+import { cabinetsActivityTableColumns } from "../components/cabinetsActivityTableColumns";
+import { queryCabinetsActivityPage } from "../server/queryCabinetsActivityPage";
 
 
 const STATUS_FILTER_ALL = "all";
@@ -29,8 +28,6 @@ const PAGE_SIZE = 8;
 
 export default function CabinetsActivity() {
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>(STATUS_FILTER_ALL);
-  const [typeFilter, setTypeFilter] = useState<string>(TYPE_FILTER_ALL);
   const [cabinetGroup, setCabinetGroup] = useState<string>(CITIES_FILTER_ALL);
   const [activityType, setActivityType] = useState<string>(STREETS_FILTER_ALL);
   const [sorting, setSorting] = useState<SortingState>([
@@ -49,18 +46,14 @@ export default function CabinetsActivity() {
 
   const pageResult = useMemo(
     () =>
-      queryCabinetsListPage({
+      queryCabinetsActivityPage({
         search,
-        statusFilter,
-        typeFilter,
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
         sorting,
       }),
     [
       search,
-      statusFilter,
-      typeFilter,
       pagination.pageIndex,
       pagination.pageSize,
       sorting,
@@ -69,7 +62,7 @@ export default function CabinetsActivity() {
     ],
   );
 
-  const columns = useMemo(() => cabinetListColumns, []);
+  const columns = useMemo(() => cabinetsActivityTableColumns, []);
 
   const resetPage = () =>
     setPagination((p) => ({

@@ -1,11 +1,10 @@
 "use client";
 import { Helmet } from "react-helmet-async";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, PlusCircle } from "lucide-react";
 
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
-import { Icons } from "@/app/icons/icons";
-import {  useNavigate } from "react-router";
+import {  Link, useNavigate } from "react-router";
 import { useState } from "react";
 import { Label } from "@/shared/components/ui/label";
 import { Textarea } from "@/shared/components/ui/textarea";
@@ -59,16 +58,16 @@ export default function AddCabinetsActivity() {
                 <ul className="text-xs lg:text-sm flex flex-wrap items-center">
                   <li>Cabinets</li>
                   <li className="mx-2"><ChevronRight size={20} /></li>
-                  <li className="text-accent-foreground">List</li>
+                  <li className="text-accent-foreground">Activity</li>
                 </ul>
               </div>
               <div className="flex items-center max-sm:flex-wrap gap-2.5">
                 <div className="max-sm:hidden">
                   <DateAndTimeChip />
                 </div>
-                <button type="button" className="flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">
-                  <Icons.export /> <span>Export</span>
-                </button>
+                <Link to="/cabinets/add" className="flex items-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">
+                  <PlusCircle/> <span>Add Cabinet</span>
+                </Link>
               </div>
             </div>
           </div>
