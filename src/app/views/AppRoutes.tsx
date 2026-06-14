@@ -15,6 +15,7 @@ import CabinetsActivity from "@/features/cabinets/views/CabinetsActivity";
 import CabinetsMonitor from "@/features/cabinets/views/CabinetsMonitor";
 import CabinetsMapView from "@/features/cabinets/views/CabinetsMapView";
 import ForgotPassword from "@/features/auth/views/ForgotPassword";
+import ResetPassword from "@/features/auth/views/ResetPassword";
 
 const helmetContext = {};
 
@@ -31,6 +32,7 @@ export default function AppRoutes() {
             <Route element={<AuthLayout />}>
               <Route path="/login" element={<LoginForm />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/signup" element={<SignupForm />} />
             </Route>
 

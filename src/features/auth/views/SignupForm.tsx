@@ -65,13 +65,13 @@ export default function SignupForm({className, ...props } : React.ComponentProps
                         <Field>
                             <div>
                                 <FieldLabel className="font-medium text-accent-foreground mb-2.5">First Name <span className="text-error">*</span> </FieldLabel>
-                                <Input id="firstname" type="text" placeholder="eg. John" className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5" required />
+                                <Input type="text" placeholder="eg. John" className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5" required />
                             </div>
                         </Field>
                         <Field>
                             <div>
                                 <FieldLabel className="font-medium text-accent-foreground mb-2.5">Last Name <span className="text-error">*</span> </FieldLabel>
-                                <Input id="lastname" type="text" placeholder="eg. Smith" className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5" required />
+                                <Input type="text" placeholder="eg. Smith" className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5" required />
                             </div>
                         </Field>
                     </div>

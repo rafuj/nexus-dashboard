@@ -60,7 +60,6 @@ export default function LoginForm({
                   <div>
                     <FieldLabel className="font-medium text-accent-foreground mb-2.5">Email</FieldLabel>
                     <Input
-                      id="email"
                       type="email"
                       placeholder="eg. johnfrans@gmail.com"
                       required
@@ -76,7 +75,6 @@ export default function LoginForm({
                   <div>
                     <FieldLabel className="font-medium text-accent-foreground mb-2.5">Password</FieldLabel>
                       <PasswordInput 
-                        id="password"
                         required
                         value={formData.password}
                         onChange={(e) =>
