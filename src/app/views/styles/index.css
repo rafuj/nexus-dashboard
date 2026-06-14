@@ -72,6 +72,7 @@
   --color-card-neutral-stroke: #E9E9E9;
 
   --shadow-card: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  --shadow-auth: 0px 10px 30px 20px rgba(224, 89, 89, 0.05);
 
 }
 
