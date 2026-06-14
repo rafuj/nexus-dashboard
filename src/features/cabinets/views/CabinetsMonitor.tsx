@@ -101,7 +101,7 @@ export default function CabinetsMonitor() {
                 <ul className="text-xs lg:text-sm flex flex-wrap items-center">
                   <li>Cabinets</li>
                   <li className="mx-2"><ChevronRight size={20} /></li>
-                  <li className="text-accent-foreground">Activity</li>
+                  <li className="text-accent-foreground">Monitor</li>
                 </ul>
               </div>
               <div className="flex items-center max-sm:flex-wrap gap-2.5">
