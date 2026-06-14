@@ -86,9 +86,9 @@ export default function LoginForm({
                       <div className="flex items-center mt-3">
                         <Link
                           to="/forgot-password"
-                          className="ml-auto inline-block text-sm underline-offset-4 hover:underline text-accent-foreground font-medium"
+                          className="ml-auto inline-block text-sm underline-offset-4 hover:underline text-accent-foreground font-medium lg:text-base"
                         >
-                          Forgot your password?
+                          Forgot Password?
                         </Link>
                       </div>
                     </div>
@@ -101,7 +101,7 @@ export default function LoginForm({
                   >
                     Sign In
                   </Button>
-                  <FieldDescription className="text-center text-accent-foreground">
+                  <FieldDescription className="text-center text-accent-foreground lg:text-base">
                     Don&apos;t have an account? <Link className="font-semibold !no-underline" to="/signup">Sign up</Link>
                   </FieldDescription>
                 </Field>

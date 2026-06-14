@@ -117,7 +117,7 @@ export default function SignupForm({className, ...props } : React.ComponentProps
                     <FieldGroup>
                     <Field>
                         <Button className="h-10 lg:h-14 rounded-full" type="submit">Sign Up</Button>
-                        <FieldDescription className="px-6 text-center text-accent-foreground">
+                        <FieldDescription className="px-6 text-center text-accent-foreground lg:text-base">
                             Already have an account? <Link to="/login" className="!no-underline font-semibold">Sign in</Link>
                         </FieldDescription>
                     </Field>
