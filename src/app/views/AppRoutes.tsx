@@ -13,6 +13,7 @@ import AddCabinets from "@/features/cabinets/views/AddCabinets";
 import AddCabinetsActivity from "@/features/cabinets/views/AddCabinetsActivity";
 import CabinetsActivity from "@/features/cabinets/views/CabinetsActivity";
 import CabinetsMonitor from "@/features/cabinets/views/CabinetsMonitor";
+import CabinetsMapView from "@/features/cabinets/views/CabinetsMapView";
 
 const helmetContext = {};
 
@@ -39,6 +40,7 @@ export default function AppRoutes() {
               <Route path="/cabinets/activity" element={<CabinetsActivity />} />
               <Route path="/cabinets/activity/add" element={<AddCabinetsActivity />} />
               <Route path="/cabinets/monitor" element={<CabinetsMonitor />} />
+              <Route path="/cabinets/map" element={<CabinetsMapView />} />
               <Route path="/cabinetview" element={<CabinetView />} />
             </Route>
           </Routes>
