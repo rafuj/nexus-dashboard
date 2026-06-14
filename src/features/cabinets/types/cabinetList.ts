@@ -35,24 +35,31 @@ export type CabinetsListToolbarProps = {
 
 export const cabinetConfig = {
   active: {
-    bg: "bg-[#E6F4EA] border-[#C2E7CB]",
-    text: "text-[#137333]",
-    badge: "bg-[#137333] text-white",
-    pin: "text-[#137333]",
+    bg: "card-success",
+    text: "text-success",
+    badge: "bg-success text-white",
+    pin: "text-success",
     label: "Asset OK",
   },
   maintenance: {
-    bg: "bg-[#FCEFE3] border-[#FAD7B7]",
-    text: "text-[#E06021]",
-    badge: "bg-[#F17336] text-white",
-    pin: "text-[#F17336]",
+    bg: "card-warning",
+    text: "text-warning",
+    badge: "bg-warning text-white",
+    pin: "text-warning",
     label: "Need Attention",
   },
   offline: {
-    bg: "bg-[#FCE8E6] border-[#FAD2CF]",
-    text: "text-[#C5221F]",
-    badge: "bg-[#C5221F] text-white",
-    pin: "text-[#C5221F]",
+    bg: "card-error",
+    text: "text-error",
+    badge: "bg-error text-white",
+    pin: "text-error",
+    label: "Need Urgent Attention",
+  },
+  paused: {
+    bg: "card-info",
+    text: "text-info",
+    badge: "bg-info text-white",
+    pin: "text-info",
     label: "Need Urgent Attention",
   },
 }

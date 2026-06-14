@@ -30,7 +30,7 @@ export default function CabinetsMapView() {
         <title>Cabinets | Updaid</title>
       </Helmet>
 
-      <main>
+      <main className="flex lg:h-screen flex-col">
         <header className="shrink-0 items-center gap-2 bg-card sticky top-0 z-20 border-b p-5">
           <div className="flex items-center gap-3 md:gap-5">
             <CollapsedSidebarTrigger />
@@ -55,36 +55,33 @@ export default function CabinetsMapView() {
           </div>
         </header>
 
-        <div className="p-5">
+        <div className="p-5 lg:h-0 grow flex flex-col">
           <div className="flex flex-wrap md:flex-nowrap gap-5 items-center justify-between mb-5">
             <h2 className="text-xl md:text-2xl font-semibold">
               All cabinet locations in your fleet
             </h2>
           </div>
-          <section aria-label="Cabinets">
-            <div className="mb-2.5">
-              <CabinetsListToolbar
-                search={search}
-                onSearchChange={(v) => {
-                  setSearch(v);
-                }}
-                statusFilter={statusFilter}
-                onStatusFilterChange={(v) => {
-                  setStatusFilter(v);
-                }}
-                streets={streets}
-                onStreetsChange={(v) => {
-                  setStreets(v)
-                }}
-                cities={cities}
-                onCitiesChange={(v) => {
-                  setCities(v)
-                }}
-              />
-            </div>
-            <div className={cn("flex flex-wrap gap-2.5", {
-              "xl:grid xl:grid-cols-[830fr_310fr]": search
-            })}>
+          <div className="mb-2.5">
+            <CabinetsListToolbar
+              search={search}
+              onSearchChange={(v) => {
+                setSearch(v);
+              }}
+              statusFilter={statusFilter}
+              onStatusFilterChange={(v) => {
+                setStatusFilter(v);
+              }}
+              streets={streets}
+              onStreetsChange={(v) => {
+                setStreets(v)
+              }}
+              cities={cities}
+              onCitiesChange={(v) => {
+                setCities(v)
+              }}
+            />
+          </div>
+          <section className={cn("lg:h-0 grow flex flex-wrap gap-2.5",{"xl:grid xl:grid-cols-[830fr_310fr]": search})} aria-label="Cabinets">
               <div
                 className={cn(
                   "border rounded-[10px] border-border py-5 px-4 w-full grow md:w-0 xl:w-full",
@@ -96,7 +93,7 @@ export default function CabinetsMapView() {
               </div>
               <div
                 className={cn(
-                  "w-full md:w-[240px] lg:w-[310px] xl:w-full",
+                  "w-full md:w-[240px] lg:w-[310px] xl:w-full overflow-y-auto rounded-[10px]",
                   {
                     "hidden": !search
                   }
@@ -163,7 +160,6 @@ export default function CabinetsMapView() {
                   })}
                 </div>
               </div>
-            </div>
           </section>
         </div>
       </main>
