@@ -13,7 +13,7 @@ function PasswordInput ({ className, type, ...props }: React.ComponentProps<"inp
                 {...props}
             />
             <button type="button" className="absolute right-3 md:right-5 top-1/2 -translate-y-1/2" onClick={()=> setPasswordType(passwordType==='password'?'text':'password')}>
-                {passwordType ==='password'?<Eye />:<EyeOff />}
+                {passwordType ==='password'?<Eye size={20} />:<EyeOff size={20} />}
             </button>
         </div>
     )

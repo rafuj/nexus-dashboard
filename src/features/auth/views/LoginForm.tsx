@@ -58,7 +58,7 @@ export default function LoginForm({
               <FieldGroup>
                 <Field>
                   <div>
-                    <FieldLabel className="font-medium text-accent-foreground mb-3" htmlFor="email">Email</FieldLabel>
+                    <FieldLabel className="font-medium text-accent-foreground mb-2.5">Email</FieldLabel>
                     <Input
                       id="email"
                       type="email"
@@ -74,7 +74,7 @@ export default function LoginForm({
                 </Field>
                 <Field>
                   <div>
-                    <FieldLabel className="font-medium text-accent-foreground mb-3" htmlFor="password">Password</FieldLabel>
+                    <FieldLabel className="font-medium text-accent-foreground mb-2.5">Password</FieldLabel>
                       <PasswordInput 
                         id="password"
                         required

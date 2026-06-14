@@ -68,7 +68,7 @@ export default function ForgotPassword({
               <FieldGroup>
                 <Field>
                   <div>
-                    <FieldLabel className="font-medium text-accent-foreground mb-3" htmlFor="email">Email</FieldLabel>
+                    <FieldLabel className="font-medium text-accent-foreground mb-2.5" htmlFor="email">Email</FieldLabel>
                     <Input
                       id="email"
                       type="email"
