@@ -39,7 +39,7 @@ function SingleImageUploader({
   return (
     <div
       className={cn(
-        "bg-background relative aspect-[270/120] rounded-[10px] overflow-hidden cursor-pointer",
+        "bg-background relative w-full h-30 rounded-[10px] overflow-hidden cursor-pointer",
         className
       )}
     >

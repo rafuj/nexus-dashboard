@@ -10,6 +10,8 @@ import CabinetView from "@/features/cabinets/views/CabinetView";
 import CabinetsListView from "@/features/cabinets/views/CabinetsListView";
 import DashboardView from "@/features/dashboard/views/DashboardView";
 import AddCabinets from "@/features/cabinets/views/AddCabinets";
+import CabinetsActivity from "@/features/cabinets/views/CabinetsActivity";
+import AddCabinetsActivity from "@/features/cabinets/views/AddCabinetsActivity";
 
 const helmetContext = {};
 
@@ -32,6 +34,8 @@ export default function AppRoutes() {
               <Route path="/" element={<DashboardView />} />
               <Route path="/cabinets" element={<CabinetsListView />} />
               <Route path="/cabinets/add" element={<AddCabinets />} />
+              <Route path="/cabinets/activity" element={<CabinetsActivity />} />
+              <Route path="/cabinets/activity/add" element={<AddCabinetsActivity />} />
               <Route path="/cabinetview" element={<CabinetView />} />
             </Route>
           </Routes>

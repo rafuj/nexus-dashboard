@@ -49,7 +49,7 @@ export function CabinetsListToolbar({
       <div className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row sm:items-end sm:flex-wrap">
           {/* City */}
           <Select value={cities} onValueChange={onCitiesChange}>
-            <SelectTrigger className="w-full min-w-42 sm:w-44">
+            <SelectTrigger className="w-full min-w-42 sm:w-44 text-sm">
               <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                 <span className="font-normal text-foreground">City:</span>
                 <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="All Cities" /></span>
@@ -68,7 +68,7 @@ export function CabinetsListToolbar({
           </Select>
           {/* Street */}
           <Select value={streets} onValueChange={onStreetsChange}>
-            <SelectTrigger className="w-full min-w-42 sm:w-44">
+            <SelectTrigger className="w-full min-w-42 sm:w-44 text-sm">
               <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                 <span className="font-normal text-foreground">Street:</span>
                 <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="All Streets" /></span>
@@ -87,7 +87,7 @@ export function CabinetsListToolbar({
           </Select>
           {/* Status Filter */}
           <Select value={statusFilter} onValueChange={onStatusFilterChange}>
-            <SelectTrigger className="w-full min-w-42 sm:w-44">
+            <SelectTrigger className="w-full min-w-42 sm:w-44 text-sm">
               <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                 <span className="font-normal text-foreground">Status:</span>
                 <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="All Status" /></span>

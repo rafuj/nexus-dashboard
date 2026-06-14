@@ -1,5 +1,5 @@
 import type { RadioOption } from "@/shared/components/CustomRadioGroup";
-import type { AssetType, AvailabilityType, BrightnessType, ColorType, DayConfig, PadsType, StepConfig, VolumeType } from "../types/cabinetList";
+import type { AssetType, AvailabilityType, BrightnessType, ColorType, DayConfig, PadsType, StepConfig, VolumeType } from "../types/addCabinet";
 
 // Stepper
 export const STEPS: StepConfig[] = [
