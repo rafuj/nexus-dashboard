@@ -39,7 +39,7 @@ export function CabinetsActivityListToolbar({
             placeholder="Search activities"
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-9 h-10 border border-border bg-white"
+            className="pl-9 h-10 border border-border bg-white md:!h-12.5"
             autoComplete="off"
           />
         </div>
@@ -48,7 +48,7 @@ export function CabinetsActivityListToolbar({
       <div className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row sm:items-end sm:flex-wrap">
           {/* City */}
           <Select value={cabinetGroup} onValueChange={setCabinetGroup}>
-            <SelectTrigger className="w-full min-w-42 sm:w-44 text-sm">
+            <SelectTrigger className="w-full min-w-42 sm:w-44 text-sm md:!h-12.5">
               <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                 <span className="font-normal text-foreground">Cabinet/Group:</span>
                 <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="All" /></span>
@@ -62,7 +62,7 @@ export function CabinetsActivityListToolbar({
           </Select>
           {/* Street */}
           <Select value={activityType} onValueChange={setActivityType}>
-            <SelectTrigger className="w-full min-w-42 sm:w-44 text-sm">
+            <SelectTrigger className="w-full min-w-42 sm:w-44 text-sm md:!h-12.5">
               <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                 <span className="font-normal text-foreground">Type:</span>
                 <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="All" /></span>
@@ -77,16 +77,16 @@ export function CabinetsActivityListToolbar({
           </Select>
           {/* Status Filter */}
           <div>
-            <DateRangePicker className="h-10 bg-white text-sm" prefix={"Date"} value={dateRange} onChange={(value)=>{
+            <DateRangePicker className="h-10 bg-white text-sm md:!h-12.5" prefix={"Date"} value={dateRange} onChange={(value)=>{
               if(value) {
                 setDateRange(value)
               }
             }} />
           </div>
-          <button type="button" className="h-10 flex items-center justify-center bg-white text-accent-foreground py-2 px-3 sm:py-3 rounded-[10px] text-sm gap-1.25 border border-border">
+          <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-white text-accent-foreground py-2 px-3 sm:py-3 rounded-[10px] text-sm gap-1.25 border border-border">
             <RotateCcw size={16} /> <span>Reset Filter</span>
           </button>
-          <button type="button" className="h-10 flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">
+          <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">
             <Icons.export /> <span>Export</span>
           </button>
       </div>

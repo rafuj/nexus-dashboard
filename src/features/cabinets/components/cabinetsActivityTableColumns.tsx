@@ -33,7 +33,7 @@ export const cabinetsActivityTableColumns = [
     ),
     meta: {
       headerClassName: "",
-      cellClassName: "align-middle whitespace-nowrap text-slate-600",
+      cellClassName: "align-middle whitespace-nowrap",
     },
     cell: ({ row }) => row.original.timestamp,
   }),
@@ -46,7 +46,7 @@ export const cabinetsActivityTableColumns = [
     ),
     meta: {
       headerClassName: "",
-      cellClassName: "align-middle font-medium text-slate-800",
+      cellClassName: "align-middle",
     },
     cell: ({ row }) => {
       const activity = row.original.activity
@@ -67,7 +67,7 @@ export const cabinetsActivityTableColumns = [
     ),
     meta: {
       headerClassName: "",
-      cellClassName: "align-middle tabular-nums text-slate-600",
+      cellClassName: "align-middle tabular-nums",
     },
     cell: ({ row }) => row.original.cabinetCode,
   }),
@@ -93,7 +93,7 @@ export const cabinetsActivityTableColumns = [
     ),
     meta: {
       headerClassName: "",
-      cellClassName: "align-middle text-slate-600",
+      cellClassName: "align-middle",
     },
     cell: ({ row }) => {
       const entry = row.original.addedBy
@@ -111,11 +111,11 @@ export const cabinetsActivityTableColumns = [
               className="size-6 rounded-full object-cover"
             />
           ) : (
-            <div className="flex size-6 items-center justify-center rounded-full bg-slate-200 text-xs font-semibold text-slate-600">
+            <div className="flex size-6 items-center justify-center rounded-full bg-slate-200 text-xs font-semibold">
               {entry.name.charAt(0)}
             </div>
           )}
-          <span className="font-medium text-slate-800">{entry.name}</span>
+          <span className="font-medium">{entry.name}</span>
         </div>
       )
     },
@@ -154,7 +154,7 @@ export const cabinetsActivityTableColumns = [
     ),
     meta: {
       headerClassName: "",
-      cellClassName: "align-middle text-slate-600",
+      cellClassName: "align-middle",
     },
     cell: ({ row }) => {
       const notes = row.original.notes
