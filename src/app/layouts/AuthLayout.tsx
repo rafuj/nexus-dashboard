@@ -14,7 +14,7 @@ export default function AuthLayout() {
     <main className="flex flex-col min-h-svh w-full bg-muted gap-6 p-5 md:p-7.5" style={{
       background: `url(${authBg}) no-repeat center center / cover fixed`
     }}>
-      <header className="w-full flex items-center justify-between">
+      <header className="w-full flex items-center justify-between xl:sticky xl:top-7.5">
         <Link to="/" className="w-0 grow block max-w-[120px] md:max-w-[140px]">
           <img src={updaidLogo} className="w-full" alt="updaid" />
         </Link>
@@ -23,7 +23,7 @@ export default function AuthLayout() {
         </Link>
       </header>
       <div className="grow flex items-center flex-wrap">
-        <div className="w-full max-w-[540px] bg-white/40 rounded-[30px] px-6 py-8 md:p-10 shadow-auth mx-auto" style={{
+        <div className="w-full max-w-[440px] bg-white/40 rounded-[30px] px-6 py-8 md:p-10 shadow-auth mx-auto" style={{
           backdropFilter:"blur(15px)"
         }}>
           <Outlet />

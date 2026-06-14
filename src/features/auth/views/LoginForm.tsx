@@ -11,6 +11,7 @@ import {
 import { Input } from "@/shared/components/ui/input";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
+import { PasswordInput } from "../components/PasswordInput";
 
 export default function LoginForm({
   className,
@@ -21,6 +22,7 @@ export default function LoginForm({
   const [formData, setFormData] = useState<{ email: string; password: string }>(
     { email: "", password: "" }, 
   );
+
   const [error, setError] = useState<string | null>(null); 
   const [isLoading, setIsLoading] = useState(false); 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -43,75 +45,70 @@ export default function LoginForm({
   };
   return (
     <div className={cn("", className)} {...props}>
-      <div>
         <div>
-          <h1 className="font-medium text-2xl md:text-[28px] mb-2">Welcome Back</h1>
-          <p className="mb-7 text-sm md:text-base">
-            Sign in to continue to your dashboard
-          </p>
-          {error && <p className="text-destructive">{error}</p>}
-        </div>
-        <div>
-          <form onSubmit={handleSubmit}>
-            <FieldGroup>
-              <Field>
-                <div>
-                  <FieldLabel className="font-medium text-accent-foreground mb-3" htmlFor="email">Email</FieldLabel>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="eg. johnfrans@gmail.com"
-                    required
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                    className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14"
-                  />
-                </div>
-              </Field>
-              <Field>
-                <div>
-                  <FieldLabel className="font-medium text-accent-foreground mb-3" htmlFor="password">Password</FieldLabel>
-                    <div className="relative">
-                      <Input
+          <div>
+            <h1 className="font-medium text-2xl md:text-[28px] mb-2">Welcome Back</h1>
+            <p className="mb-7 text-sm md:text-base">
+              Sign in to continue to your dashboard
+            </p>
+            {error && <p className="text-destructive">{error}</p>}
+          </div>
+          <div>
+            <form onSubmit={handleSubmit}>
+              <FieldGroup>
+                <Field>
+                  <div>
+                    <FieldLabel className="font-medium text-accent-foreground mb-3" htmlFor="email">Email</FieldLabel>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="eg. johnfrans@gmail.com"
+                      required
+                      value={formData.email}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
+                      className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
+                    />
+                  </div>
+                </Field>
+                <Field>
+                  <div>
+                    <FieldLabel className="font-medium text-accent-foreground mb-3" htmlFor="password">Password</FieldLabel>
+                      <PasswordInput 
                         id="password"
-                        type="password"
                         required
                         value={formData.password}
                         onChange={(e) =>
-                          setFormData({ ...formData, password: e.target.value })
+                            setFormData({ ...formData, password: e.target.value })
                         }
-                        placeholder="Enter your password"
-                        className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14"
                       />
+                      <div className="flex items-center mt-3">
+                        <Link
+                          to="/forgot-password"
+                          className="ml-auto inline-block text-sm underline-offset-4 hover:underline text-accent-foreground font-medium"
+                        >
+                          Forgot your password?
+                        </Link>
+                      </div>
                     </div>
-                    <div className="flex items-center mt-3">
-                      <a
-                        href="#"
-                        className="ml-auto inline-block text-sm underline-offset-4 hover:underline text-accent-foreground font-medium"
-                      >
-                        Forgot your password?
-                      </a>
-                    </div>
-                  </div>
-              </Field>
-              <Field>
-                <Button
-                  type="submit"
-                  disabled={!formData.email || !formData.password || isLoading}
-                  className="h-10 lg:h-14 rounded-full"
-                >
-                  Sign In
-                </Button>
-                <FieldDescription className="text-center text-accent-foreground">
-                  Don&apos;t have an account? <Link className="font-semibold" to="/signup">Sign up</Link>
-                </FieldDescription>
-              </Field>
-            </FieldGroup>
-          </form>
+                </Field>
+                <Field>
+                  <Button
+                    type="submit"
+                    disabled={!formData.email || !formData.password || isLoading}
+                    className="h-10 lg:h-14 rounded-full"
+                  >
+                    Sign In
+                  </Button>
+                  <FieldDescription className="text-center text-accent-foreground">
+                    Don&apos;t have an account? <Link className="font-semibold !no-underline" to="/signup">Sign up</Link>
+                  </FieldDescription>
+                </Field>
+              </FieldGroup>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
   );
 }

@@ -14,6 +14,7 @@ import AddCabinetsActivity from "@/features/cabinets/views/AddCabinetsActivity";
 import CabinetsActivity from "@/features/cabinets/views/CabinetsActivity";
 import CabinetsMonitor from "@/features/cabinets/views/CabinetsMonitor";
 import CabinetsMapView from "@/features/cabinets/views/CabinetsMapView";
+import ForgotPassword from "@/features/auth/views/ForgotPassword";
 
 const helmetContext = {};
 
@@ -29,6 +30,7 @@ export default function AppRoutes() {
           <Routes>
             <Route element={<AuthLayout />}>
               <Route path="/login" element={<LoginForm />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/signup" element={<SignupForm />} />
             </Route>
 
