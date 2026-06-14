@@ -84,30 +84,30 @@ export default function CabinetsMapView() {
               }}
             />
           </div>
-          <section className={cn("lg:h-0 grow flex flex-wrap gap-2.5",{"xl:grid xl:grid-cols-[830fr_310fr]": search})} aria-label="Cabinets">
+          <section className={cn("lg:h-0 grow gap-2.5 grid grid-cols-1",{"lg:grid-cols-[830fr_310fr]": search})} aria-label="Cabinets">
               <CabinetMapCard cabinets={mockCabinetsList} openCabinetId={openCabinetId} setOpenCabinetId={setOpenCabinetId}  />
               <div
                 className={cn(
-                  "w-full md:w-[240px] lg:w-[310px] xl:w-full overflow-y-auto rounded-[10px]",
+                  "overflow-y-auto rounded-[10px] overflow-x-hidden",
                   {
                     "hidden": !search
                   }
                 )}
               >
-                <div className="grid grid-cols-1 gap-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2.5">
                   {mockCabinetsList.map((cabinet) => {
                     const config = cabinetConfig[cabinet.status] || cabinetConfig.active
                     return (
                       <div
                         key={cabinet.id}
                         className={cn(
-                          "flex flex-col p-4.5 rounded-2xl border text-accent-foreground border-border text-xs cursor-pointer",
+                          "flex flex-col p-4.5 rounded-2xl border text-accent-foreground border-border text-xs cursor-pointer overflow-hidden",
                           config.bg
                         )}
                         onClick={()=> setOpenCabinetId(cabinet.id)}
                       >
                         {/* Header section (Icon, Title, Status Badge) */}
-                        <div className="flex items-start justify-between mb-5 gap-2">
+                        <div className="flex items-start flex-wrap justify-between mb-5 gap-2">
                           <div className="flex items-center gap-1.75">
                             <div className="h-6 w-6 shrink-0 flex items-center justify-center">
                               <MapPin className={cn("text-primary", config.pin)} size={20} />
