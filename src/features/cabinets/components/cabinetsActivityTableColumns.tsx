@@ -136,7 +136,7 @@ export const cabinetsActivityTableColumns = [
       return (
         <span
           className={cn(
-            "px-2.5 py-0.5 rounded text-xs font-medium w-[84px] text-center block",
+            "px-2.5 py-1 rounded text-xs font-medium w-[84px] text-center block",
             getStatusBadgeClass(status)
           )}
         >

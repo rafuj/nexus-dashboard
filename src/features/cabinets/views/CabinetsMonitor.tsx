@@ -14,10 +14,9 @@ import { cn } from "@/lib/utils";
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Link } from "react-router";
-import type { DateRange } from "react-day-picker";
-import { cabinetsActivityTableColumns } from "../components/cabinetsActivityTableColumns";
-import { queryCabinetsActivityPage } from "../server/queryCabinetsActivityPage";
 import { CabinetsMonitorToolbar } from "../components/CabinetsMonitorToolbar";
+import { cabinetsMonitorTableColumns } from "../components/cabinetsMonitorTableColumns";
+import { queryCabinetsMonitorPage} from "../server/queryCabinetsMonitorPage";
 
 
 const CITIES_FILTER_ALL = "all";
@@ -40,7 +39,7 @@ export default function CabinetsMonitor() {
 
   const pageResult = useMemo(
     () =>
-      queryCabinetsActivityPage({
+      queryCabinetsMonitorPage({
         search,
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
@@ -57,7 +56,7 @@ export default function CabinetsMonitor() {
     ],
   );
 
-  const columns = useMemo(() => cabinetsActivityTableColumns, []);
+  const columns = useMemo(() => cabinetsMonitorTableColumns, []);
 
   const resetPage = () =>
     setPagination((p) => ({
