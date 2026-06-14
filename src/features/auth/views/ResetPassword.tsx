@@ -6,18 +6,59 @@ import {
 } from "@/shared/components/ui/field";
 import { useNavigate } from "react-router";
 import { PasswordInput } from "../components/PasswordInput";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/shared/components/ui/button";
-
+import { Check } from "lucide-react";
 export default function ResetPassword({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const [value, setValue] = useState<{password:string, confirmPassword:string}>({
-    password:'',
-    confirmPassword:''
-  })
+  const [value, setValue] = useState({
+    password: '',
+    confirmPassword: ''
+  });
+
   const navigate = useNavigate();
+
+  // 1. Define validation checkpoints based on image_29a7df.png
+  const validations = useMemo(() => {
+    const pwd = value.password;
+    return {
+      minLength: pwd.length >= 8,
+      hasUpper: /[A-Z]/.test(pwd),
+      hasLower: /[a-z]/.test(pwd),
+      hasNumber: /[0-9]/.test(pwd),
+      hasSpecial: /[^A-Za-z0-9]/.test(pwd),
+    };
+  }, [value.password]);
+
+  // 2. Calculate the password strength bar indicator progress
+  const strengthScore = useMemo(() => {
+    return Object.values(validations).filter(Boolean).length;
+  }, [validations]);
+
+  const handleInputChange = (field: 'password' | 'confirmPassword', val: string) => {
+    setValue(prev => ({ ...prev, [field]: val }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Final structural form verification
+    const allValid = Object.values(validations).every(Boolean);
+    if (!allValid) {
+      alert("Please meet all password requirements.");
+      return;
+    }
+
+    if (value.password !== value.confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+
+    console.log("Submitting password update...", value.password);
+    // Proceed with your API call here
+  };
 
   return (
       <div className={cn("", className)} {...props}>
@@ -36,20 +77,58 @@ export default function ResetPassword({
             </p>
           </div>
           <div>
-            <form>
+            <form onSubmit={handleSubmit}>
               <FieldGroup>
+                {/* New Password Input */}
                 <Field>
-                  <div>
-                    <FieldLabel className="font-medium text-accent-foreground mb-2.5">Password <span className="text-error">*</span></FieldLabel>
-                    <PasswordInput  />
+                  <div className="flex flex-col">
+                    <FieldLabel className="font-medium text-accent-foreground text-base mb-2">New Password</FieldLabel>
+                    <PasswordInput 
+                      value={value.password} 
+                      onChange={(e) => handleInputChange('password', e.target.value)} 
+                      placeholder="******************"
+                    />
                   </div>
                 </Field>
-                <Field>
-                  <div>
-                    <FieldLabel className="font-medium text-accent-foreground mb-2.5">Confirm Password <span className="text-error">*</span></FieldLabel>
-                    <PasswordInput  />
+
+                {/* Confirm Password Input */}
+                <div>
+                  <Field>
+                    <div className="flex flex-col">
+                      <FieldLabel className="font-medium text-accent-foreground text-base mb-2">Confirm Password</FieldLabel>
+                      <PasswordInput 
+                        value={value.confirmPassword} 
+                        onChange={(e) => handleInputChange('password' in e.target ? 'password' : 'confirmPassword', e.target.value)} 
+                        placeholder="******************"
+                      />
+                    </div>
+                  </Field>
+                  <div className="grid grid-cols-4 gap-1 mt-2">
+                    {[1, 2, 3, 4].map((index) => {
+                      // If it hits full completion (5/5 rules), all bars light up green.
+                      // Otherwise, segments turn green proportional to current verified rules.
+                      const isLit = strengthScore >= (index * 1.25); 
+                      return (
+                        <div 
+                          key={index} 
+                          className={cn(
+                            "h-[2px] rounded-full transition-colors duration-300", 
+                            isLit ? "bg-success" : "bg-foreground/30"
+                          )} 
+                        />
+                      );
+                    })}
                   </div>
-                </Field>
+
+                  <div className="mt-5 space-y-1.5 lg:space-y-2.5 text-accent-foreground">
+                    <p className="text-sm lg:text-base">Password must contain:</p>
+                    <CheckItem label="8 or more characters" isValid={validations.minLength} />
+                    <CheckItem label="At least 1 uppercase letter" isValid={validations.hasUpper} />
+                    <CheckItem label="At least 1 lowercase letter" isValid={validations.hasLower} />
+                    <CheckItem label="At least 1 number" isValid={validations.hasNumber} />
+                    <CheckItem label="At least 1 special character" isValid={validations.hasSpecial} />
+                  </div>
+                </div>
                 <Field>
                   <Button
                     type="submit"
@@ -64,4 +143,31 @@ export default function ResetPassword({
         </div>
       </div>
     );
+}
+function CheckItem({ label, isValid }: { label: string; isValid: boolean }) {
+  return (
+    <div className="flex items-center gap-2 text-sm md:text-base">
+      {isValid ? (
+        <svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g clipPath="url(#clip0_349_2010)">
+          <circle cx="8.5" cy="8.5" r="8.5" fill="white"/>
+          <path fillRule="evenodd" clipRule="evenodd" d="M1 8.5C1 6.51088 1.79018 4.60322 3.1967 3.1967C4.60322 1.79018 6.51088 1 8.5 1C10.4891 1 12.3968 1.79018 13.8033 3.1967C15.2098 4.60322 16 6.51088 16 8.5C16 10.4891 15.2098 12.3968 13.8033 13.8033C12.3968 15.2098 10.4891 16 8.5 16C6.51088 16 4.60322 15.2098 3.1967 13.8033C1.79018 12.3968 1 10.4891 1 8.5ZM8.072 11.71L12.39 6.312L11.61 5.688L7.928 10.289L5.32 8.116L4.68 8.884L8.072 11.71Z" fill="#1ACD6F"/>
+          </g>
+          <defs>
+          <clipPath id="clip0_349_2010">
+          <rect width="17" height="17" fill="white"/>
+          </clipPath>
+          </defs>
+        </svg>
+      ) : (
+        // Gray inactive state checkmark outline
+        <svg width="17" height="17" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="10" cy="10" r="9" stroke="#BDC3C7" strokeWidth="2" fill="none"/>
+        </svg>
+      )}
+      <span className={cn("transition-colors", isValid ? "text-accent-foreground" : "text-foreground/50")}>
+        {label}
+      </span>
+    </div>
+  );
 }
