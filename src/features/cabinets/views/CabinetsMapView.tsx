@@ -10,6 +10,7 @@ import { Link } from "react-router";
 import { useState } from "react";
 import { mockCabinetsList } from "../mock/mockCabinetsList";
 import { cabinetConfig } from "../types/cabinetList";
+import CabinetMapCard from "../components/CabinetMapCard";
 
 
 const STATUS_FILTER_ALL = "all";
@@ -22,6 +23,8 @@ export default function CabinetsMapView() {
   const [statusFilter, setStatusFilter] = useState<string>(STATUS_FILTER_ALL);
   const [cities, setCities] = useState<string>(CITIES_FILTER_ALL);
   const [streets, setStreets] = useState<string>(STREETS_FILTER_ALL);
+
+  const [openCabinetId, setOpenCabinetId] = useState<string | null>(null);
   
 
   return (
@@ -82,15 +85,7 @@ export default function CabinetsMapView() {
             />
           </div>
           <section className={cn("lg:h-0 grow flex flex-wrap gap-2.5",{"xl:grid xl:grid-cols-[830fr_310fr]": search})} aria-label="Cabinets">
-              <div
-                className={cn(
-                  "border rounded-[10px] border-border py-5 px-4 w-full grow md:w-0 xl:w-full",
-                  {
-                    "": search
-                  }
-                )}
-              >
-              </div>
+              <CabinetMapCard cabinets={mockCabinetsList} openCabinetId={openCabinetId} setOpenCabinetId={setOpenCabinetId}  />
               <div
                 className={cn(
                   "w-full md:w-[240px] lg:w-[310px] xl:w-full overflow-y-auto rounded-[10px]",
@@ -101,16 +96,15 @@ export default function CabinetsMapView() {
               >
                 <div className="grid grid-cols-1 gap-2.5">
                   {mockCabinetsList.map((cabinet) => {
-                    // Fallback to active theme if state isn't recognized
                     const config = cabinetConfig[cabinet.status] || cabinetConfig.active
-
                     return (
                       <div
                         key={cabinet.id}
                         className={cn(
-                          "flex flex-col p-4.5 rounded-2xl border text-accent-foreground border-border text-xs",
+                          "flex flex-col p-4.5 rounded-2xl border text-accent-foreground border-border text-xs cursor-pointer",
                           config.bg
                         )}
+                        onClick={()=> setOpenCabinetId(cabinet.id)}
                       >
                         {/* Header section (Icon, Title, Status Badge) */}
                         <div className="flex items-start justify-between mb-5 gap-2">

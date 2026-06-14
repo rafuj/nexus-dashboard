@@ -9,6 +9,7 @@ export type CabinetListRow = {
   status: CabinetStatus
   type: CabinetConnectionType
   location: string
+  locationCoordinates: { lat: number; lng: number }
   asset: "aed" | "none"
   temperatureC: number | null
   lastActivityAt: string
