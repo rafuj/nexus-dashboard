@@ -50,8 +50,7 @@ function compareRows(a: CabinetListRow, b: CabinetListRow, columnId: string): nu
   switch (columnId) {
     case "cabinet":
       return (
-        a.name.localeCompare(b.name, undefined, { sensitivity: "base" }) ||
-        a.serial.localeCompare(b.serial, undefined, { sensitivity: "base" })
+        a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
       )
     case "status":
       return a.status.localeCompare(b.status)

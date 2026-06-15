@@ -3,13 +3,6 @@ import { cn } from "@/lib/utils";
 import type { User } from "@/features/auth/types/auth";
 import { Button } from "@/shared/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/shared/components/ui/card";
-import {
   Field,
   FieldDescription,
   FieldGroup,
@@ -17,7 +10,8 @@ import {
 } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { PasswordInput } from "../components/PasswordInput";
 
 export default function LoginForm({
   className,
@@ -28,6 +22,7 @@ export default function LoginForm({
   const [formData, setFormData] = useState<{ email: string; password: string }>(
     { email: "", password: "" }, 
   );
+
   const [error, setError] = useState<string | null>(null); 
   const [isLoading, setIsLoading] = useState(false); 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -49,66 +44,69 @@ export default function LoginForm({
       });
   };
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
-        <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
-          <CardDescription>
-            Enter your email below to login to your account
-          </CardDescription>
-          {error && <p className="text-destructive">{error}</p>}
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit}>
-            <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="email">Email</FieldLabel>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                />
-              </Field>
-              <Field>
-                <div className="flex items-center">
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <a
-                    href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+    <div className={cn("", className)} {...props}>
+        <div>
+          <div>
+            <h1 className="font-medium text-2xl md:text-[28px] mb-2">Welcome Back</h1>
+            <p className="mb-7 text-sm md:text-base">
+              Sign in to continue to your dashboard
+            </p>
+            {error && <p className="text-destructive">{error}</p>}
+          </div>
+          <div>
+            <form onSubmit={handleSubmit}>
+              <FieldGroup>
+                <Field>
+                  <div>
+                    <FieldLabel className="font-medium text-accent-foreground mb-2.5">Email</FieldLabel>
+                    <Input
+                      type="email"
+                      placeholder="eg. johnfrans@gmail.com"
+                      required
+                      value={formData.email}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
+                      className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
+                    />
+                  </div>
+                </Field>
+                <Field>
+                  <div>
+                    <FieldLabel className="font-medium text-accent-foreground mb-2.5">Password</FieldLabel>
+                      <PasswordInput 
+                        required
+                        value={formData.password}
+                        onChange={(e) =>
+                            setFormData({ ...formData, password: e.target.value })
+                        }
+                      />
+                      <div className="flex items-center mt-3">
+                        <Link
+                          to="/forgot-password"
+                          className="ml-auto inline-block text-sm underline-offset-4 hover:underline text-accent-foreground font-medium lg:text-base"
+                        >
+                          Forgot Password?
+                        </Link>
+                      </div>
+                    </div>
+                </Field>
+                <Field>
+                  <Button
+                    type="submit"
+                    disabled={!formData.email || !formData.password || isLoading}
+                    className="h-10 lg:h-14 rounded-full lg:text-base"
                   >
-                    Forgot your password?
-                  </a>
-                </div>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                />
-              </Field>
-              <Field>
-                <Button
-                  type="submit"
-                  disabled={!formData.email || !formData.password || isLoading}
-                >
-                  Login
-                </Button>
-                <FieldDescription className="text-center">
-                  Don&apos;t have an account? <a href="/signup">Sign up</a>
-                </FieldDescription>
-              </Field>
-            </FieldGroup>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+                    Sign In
+                  </Button>
+                  <FieldDescription className="text-center text-accent-foreground lg:text-base">
+                    Don&apos;t have an account? <Link className="font-semibold !no-underline" to="/signup">Sign up</Link>
+                  </FieldDescription>
+                </Field>
+              </FieldGroup>
+            </form>
+          </div>
+        </div>
+      </div>
   );
 }

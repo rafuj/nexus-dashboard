@@ -14,11 +14,21 @@ export function cabinetStatusLabel(status: CabinetStatus) {
 export function cabinetStatusBadgeClass(status: CabinetStatus) {
   switch (status) {
     case "active":
-      return "border-emerald-500/40 bg-emerald-500/10 text-emerald-800 dark:text-emerald-200"
+      return "bg-success"
     case "maintenance":
-      return "border-amber-500/40 bg-amber-500/10 text-amber-900 dark:text-amber-100"
+      return "bg-warning"
     case "offline":
-      return "border-border bg-muted text-muted-foreground"
+      return "bg-error"
+  }
+}
+export function statusBadgeColor(status: CabinetStatus) {
+  switch (status) {
+    case "active":
+      return "text-success"
+    case "maintenance":
+      return "text-warning"
+    case "offline":
+      return "text-error"
   }
 }
 

@@ -8,23 +8,30 @@ import {
   type PaginationState,
   type SortingState,
 } from "@tanstack/react-table";
-import { Plus } from "lucide-react";
+import { ChevronRight, PlusCircle, ShoppingCart } from "lucide-react";
 
 import { CabinetsListToolbar } from "../components/CabinetsListToolbar";
 import { cabinetListColumns } from "../components/cabinetsTableColumns";
 import { queryCabinetsListPage } from "../server/queryCabinetsListPage";
 import { DataTable, DataTablePagination } from "@/shared/components/data-table";
-import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/lib/utils";
+import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
+import DateAndTimeChip from "@/app/components/time-date-chip";
+import { Link } from "react-router";
+
 
 const STATUS_FILTER_ALL = "all";
 const TYPE_FILTER_ALL = "all";
-const PAGE_SIZE = 5;
+const CITIES_FILTER_ALL = "all";
+const STREETS_FILTER_ALL = "all";
+const PAGE_SIZE = 8;
 
 export default function CabinetsListView() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>(STATUS_FILTER_ALL);
   const [typeFilter, setTypeFilter] = useState<string>(TYPE_FILTER_ALL);
+  const [cities, setCities] = useState<string>(CITIES_FILTER_ALL);
+  const [streets, setStreets] = useState<string>(STREETS_FILTER_ALL);
   const [sorting, setSorting] = useState<SortingState>([
     { id: "cabinet", desc: false },
   ]);
@@ -50,6 +57,8 @@ export default function CabinetsListView() {
       pagination.pageIndex,
       pagination.pageSize,
       sorting,
+      cities,
+      streets
     ],
   );
 
@@ -88,31 +97,49 @@ export default function CabinetsListView() {
         <title>Cabinets | Updaid</title>
       </Helmet>
 
-      {/* <div className="mx-auto max-w-[1600px] space-y-8 px-4 pb-12"> */}
-      <div className="space-y-8">
-        <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1">
-            <h1 className="text-2xl font-semibold tracking-tight">Cabinets</h1>
-            <p className="text-muted-foreground text-sm">
-              Search and filter your SmartCabinet fleet.
-            </p>
+      <main>
+        <header className="shrink-0 items-center gap-2 bg-card sticky top-0 z-20 border-b p-5">
+          <div className="flex items-center gap-3 md:gap-5">
+            <CollapsedSidebarTrigger />
+            <div className="grow w-0 flex items-center justify-between max-md:flex-wrap gap-4 md:gap-7">
+              <div className="md:w-0 grow">
+                <h1 className="text-xl font-medium lg:text-4xl lg:leading-[1] tracking-tight mb-1 md:mb-3">Cabinets</h1>
+                <ul className="text-xs lg:text-sm flex flex-wrap items-center">
+                  <li>Cabinets</li>
+                  <li className="mx-2"><ChevronRight size={20} /></li>
+                  <li className="text-accent-foreground">List</li>
+                </ul>
+              </div>
+              <div className="flex items-center max-sm:flex-wrap gap-2.5">
+                <div className="max-sm:hidden">
+                  <DateAndTimeChip />
+                </div>
+                <Link to="/cabinets/add" className="flex items-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">
+                  <PlusCircle/> <span>Add Cabinet</span>
+                </Link>
+              </div>
+            </div>
           </div>
-          <Button
-            type="button"
-            className="shrink-0 gap-1.5 self-start sm:self-auto"
-          >
-            <Plus className="size-4" data-icon="inline-start" />
-            Add cabinet
-          </Button>
         </header>
 
-        <section aria-label="Cabinets">
-          <div
-            className={cn(
-              "bg-card ring-border/60 overflow-hidden rounded-xl shadow-none ring-1",
-            )}
-          >
-            <div className="border-border/60 bg-muted/30 border-b p-4">
+        <div className="p-5">
+          <div className="flex flex-wrap md:flex-nowrap gap-5 items-center justify-between mb-5">
+            <h2 className="text-xl md:text-2xl font-semibold">
+              Overview of all cabinets in your network
+            </h2>
+            <div className="flex flex-wrap gap-2.5">
+                <button type="button" className="flex items-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">
+                  <span>Your Credits:</span>
+                  <span className="font-semibold">48</span>
+                </button>
+                <button type="button" className="flex items-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">
+                  <ShoppingCart size={18} />
+                  <span>Buy Credits</span>
+                </button>
+            </div>
+          </div>
+          <section aria-label="Cabinets">
+            <div className="mb-2.5">
               <CabinetsListToolbar
                 search={search}
                 onSearchChange={(v) => {
@@ -124,27 +151,42 @@ export default function CabinetsListView() {
                   setStatusFilter(v);
                   resetPage();
                 }}
-                typeFilter={typeFilter}
-                onTypeFilterChange={(v) => {
-                  setTypeFilter(v);
-                  resetPage();
+                streets={streets}
+                onStreetsChange={(v) => {
+                  setStreets(v)
                 }}
+                cities={cities}
+                onCitiesChange={(v) => {
+                  setCities(v)
+                }}
+                // typeFilter={typeFilter}
+                // onTypeFilterChange={(v) => {
+                //   setTypeFilter(v);
+                //   resetPage();
+                // }}
               />
             </div>
-            <DataTable
-              table={table}
-              emptyMessage="No cabinets match your filters."
-              tableClassName="min-w-[920px] table-fixed"
-            />
-            <div className="border-border/60 bg-muted/20 border-t px-4 py-3">
-              <DataTablePagination
+            <div
+              className={cn(
+                "bg-white border rounded-[10px] border-border py-5 px-4",
+              )}
+            >
+              <h4 className="text-sm font-semibold mb-4">248 Cabinets</h4>
+              <DataTable
                 table={table}
-                navLabel="Cabinets table pagination"
+                emptyMessage="No cabinets match your filters."
+                tableClassName="min-w-[920px] table-fixed"
               />
+              <div className="border-border border-t px-4 py-3">
+                <DataTablePagination
+                  table={table}
+                  navLabel="Cabinets table pagination"
+                />
+              </div>
             </div>
-          </div>
-        </section>
-      </div>
+          </section>
+        </div>
+      </main>
     </>
   );
 }

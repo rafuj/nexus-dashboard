@@ -1,11 +1,16 @@
-import type { LucideIcon } from "lucide-react"
+import type { ComponentType } from "react"
+
+type IconProps = {
+  className?: string;
+};
 
 export type DashboardStatDefinition = {
   id: string
   title: string
   value: string
   hint?: string
-  icon: LucideIcon
+  icon: ComponentType<IconProps>
+  className?: string
 }
 
 export type RecentActivityDefinition = {
@@ -23,3 +28,20 @@ export type SystemLogsDefinition = {
   type: "user" | "system"
 }
 
+export type SystemHelthDefination = {
+  id: string | number | undefined | null
+  activity: string
+  yes: string
+  no: string
+  icon?: ComponentType<IconProps>
+  className?: string
+}
+
+export type ActivityDefination = {
+  id: string | number | undefined | null
+  action: string
+  location: string
+  time: string
+  icon?: ComponentType<IconProps>
+  className?: string
+}

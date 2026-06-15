@@ -1,0 +1,117 @@
+import { useAuth } from "@/app/hooks/useAuth";
+import { cn } from "@/lib/utils";
+import type { User } from "@/features/auth/types/auth";
+import { Button } from "@/shared/components/ui/button";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+} from "@/shared/components/ui/field";
+import { Input } from "@/shared/components/ui/input";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router";
+
+export default function ForgotPassword({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
+  const { login } = useAuth(); 
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState<{ email: string }>(
+    { email: ""}, 
+  );
+  const [error, setError] = useState<string | null>(null); 
+  const [isLoading, setIsLoading] = useState<boolean>(false); 
+  const [havingProblem, setHavingProblem] = useState<boolean>(false);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
+    void login(formData.email, "") 
+      .then((user: User | null) => {
+        if (user) {
+          navigate("/", { replace: true });
+        } else { 
+          setError("Invalid email or password"); 
+        }
+      })
+      .catch((error: Error) => { 
+        setError(error.message); 
+
+        // this state
+        setHavingProblem(true)
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  };
+  return (
+      <div className={cn("", className)} {...props}>
+        <div>
+          <div>
+            <div className="mb-4">
+              <button type="button" className="md:-translate-x-3" onClick={()=> navigate(-1)}>
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M22.5817 12.5801L12.5817 22.5801C12.3997 22.7703 12.2569 22.9946 12.1617 23.2401C11.9617 23.727 11.9617 24.2732 12.1617 24.7601C12.2569 25.0056 12.3997 25.2299 12.5817 25.4201L22.5817 35.4201C22.7682 35.6066 22.9896 35.7545 23.2332 35.8554C23.4769 35.9564 23.738 36.0083 24.0017 36.0083C24.5343 36.0083 25.0451 35.7967 25.4217 35.4201C25.7984 35.0435 26.0099 34.5327 26.0099 34.0001C26.0099 33.4675 25.7984 32.9567 25.4217 32.5801L18.8217 26.0001H34.0017C34.5322 26.0001 35.0409 25.7894 35.416 25.4143C35.791 25.0393 36.0017 24.5306 36.0017 24.0001C36.0017 23.4697 35.791 22.961 35.416 22.5859C35.0409 22.2108 34.5322 22.0001 34.0017 22.0001H18.8217L25.4217 15.4201C25.6092 15.2342 25.758 15.013 25.8595 14.7693C25.9611 14.5256 26.0133 14.2641 26.0133 14.0001C26.0133 13.7361 25.9611 13.4747 25.8595 13.231C25.758 12.9872 25.6092 12.766 25.4217 12.5801C25.2358 12.3927 25.0146 12.2439 24.7709 12.1423C24.5272 12.0408 24.2658 11.9885 24.0017 11.9885C23.7377 11.9885 23.4763 12.0408 23.2326 12.1423C22.9889 12.2439 22.7677 12.3927 22.5817 12.5801Z" fill="#151C48"/>
+                </svg>
+              </button>
+            </div>
+            <h1 className="font-medium text-2xl md:text-[28px] mb-2">Forgot your password?</h1>
+            <p className="mb-7 text-sm md:text-base">
+              Enter your email so that we can send reset link
+            </p>
+            {error && <p className="text-destructive">{error}</p>}
+          </div>
+          <div>
+            <form onSubmit={handleSubmit}>
+              <FieldGroup>
+                <Field>
+                  <div>
+                    <FieldLabel className="font-medium text-accent-foreground mb-2.5">Email</FieldLabel>
+                    <Input
+                      type="email"
+                      placeholder="eg. johnfrans@gmail.com"
+                      required
+                      value={formData.email}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
+                      className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
+                    />
+                  </div>
+                </Field>
+                <Field>
+                  <Button
+                    type="submit"
+                    disabled={!formData.email || isLoading}
+                    className="h-10 lg:h-14 rounded-full lg:text-base"
+                  >
+                    Send Email
+                  </Button>
+                  <FieldDescription className="text-center text-accent-foreground lg:text-base pt-2">
+                    Didn't? receive email? <button type="button" className="font-semibold">Resend Now</button>
+                  </FieldDescription>
+                </Field>
+              </FieldGroup>
+              {havingProblem && (
+                <>
+                  <div className="flex items-center gap-2.5 max-w-[240px] mx-auto my-3">
+                    <div className="h-px grow w-0 bg-accent-foreground"></div>
+                    <div className="size-1.25 rounded-full bg-accent-foreground"></div>
+                    <div className="h-px grow w-0 bg-accent-foreground"></div>
+                  </div>
+                  <div className="text-center text-accent-foreground lg:text-base">
+                    <div>Having an issue?</div>
+                    <div>
+                      Contact us at <Link to="mailto:" className="font-semibold">help@updaid.com</Link>
+                    </div>
+                  </div>
+                </>
+              )}
+            </form>
+          </div>
+        </div>
+      </div>
+    );
+}
