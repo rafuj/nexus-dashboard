@@ -16,6 +16,7 @@ import CabinetsMonitor from "@/features/cabinets/views/CabinetsMonitor";
 import CabinetsMapView from "@/features/cabinets/views/CabinetsMapView";
 import ForgotPassword from "@/features/auth/views/ForgotPassword";
 import ResetPassword from "@/features/auth/views/ResetPassword";
+import Settings from "@/features/settings/views/Settings";
 
 const helmetContext = {};
 
@@ -46,6 +47,7 @@ export default function AppRoutes() {
               <Route path="/cabinets/monitor" element={<CabinetsMonitor />} />
               <Route path="/cabinets/map" element={<CabinetsMapView />} />
               <Route path="/cabinetview" element={<CabinetView />} />
+              <Route path="/settings" element={<Settings />} />
             </Route>
           </Routes>
         </Suspense>
