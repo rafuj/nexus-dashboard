@@ -1,3 +1,5 @@
+import type { Role } from "@/lib/permissions"
+
 export type SettingsToolbarProps = {
   search: string
   onSearchChange: (value: string) => void
@@ -27,19 +29,26 @@ export type SettingsGroupRow = {
 }
 
 
-export type SettingsMembersRow = {
-  id: string
-  name: string
-  serial: string
-  location: string
-  locationCoordinates: { lat: number; lng: number }
-  asset: "aed" | "none"
-  temperatureC: number | null
-  lastActivityAt: string
-  city: string
-  zip: string
-  street: string
-  hNo: string
-  cabinetCode: string
-  updaidCode: string
+
+export type UserGroup = 'Amsterdam Offices' | 'Rotterdam Retail' | 'Utrecht Logistics';
+export type PriorityLevel = 'High Priority' | 'Public Access';
+export type UserStatus = 'Active' | 'Suspended';
+
+export interface UserNotificationSettings {
+  email: boolean;
+  chat: boolean;
+}
+
+export interface UserDashboardItem {
+  id: string;
+  name: string;
+  title: string;
+  avatarUrl: string;
+  role: Role;
+  email: string;
+  phone: string;
+  group: UserGroup;
+  priority: PriorityLevel;
+  notifications: UserNotificationSettings;
+  status: UserStatus;
 }

@@ -13,7 +13,7 @@ const STATUS_FILTER_ALL = "all"
 const TYPE_FILTER_ALL = "all"
 const SORT_BY_FILTER_ALL = "all"
 
-export function SettingsToolbar({
+export function SettingsMemberToolbar({
   search,
   onSearchChange,
   statusFilter,
@@ -64,16 +64,15 @@ export function SettingsToolbar({
           <Select value={sortBy} onValueChange={onSortByChange}>
             <SelectTrigger className="w-full min-w-42 sm:w-44 text-s md:!h-12.5">
               <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-                <span className="font-normal text-foreground">Sort By:</span>
-                <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Last updated" /></span>
+                <span className="font-normal text-foreground">Group:</span>
+                <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="All" /></span>
               </div>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={SORT_BY_FILTER_ALL}>Last Updated</SelectItem>
-              <SelectItem value="name_asc">Name (A–Z)</SelectItem>
-              <SelectItem value="name_desc">Name (Z–A)</SelectItem>
-              <SelectItem value="created_desc">Newest First</SelectItem>
-              <SelectItem value="created_asc">Oldest First</SelectItem>
+              <SelectItem value={SORT_BY_FILTER_ALL}>All</SelectItem>
+              <SelectItem value="admin">Admin</SelectItem>
+              <SelectItem value="editor">Editor</SelectItem>
+              <SelectItem value="viewer">Viewer</SelectItem>
             </SelectContent>
           </Select>
           <Select value={statusFilter} onValueChange={onStatusFilterChange}>
@@ -86,8 +85,7 @@ export function SettingsToolbar({
             <SelectContent>
               <SelectItem value={STATUS_FILTER_ALL}>All Status</SelectItem>
               <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="maintenance">Maintenance</SelectItem>
-              <SelectItem value="offline">Offline</SelectItem>
+              <SelectItem value="suspended">Suspended</SelectItem>
             </SelectContent>
           </Select>
           <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-white text-accent-foreground py-2 px-3 sm:py-3 rounded-[10px] text-sm gap-1.25 border border-border">
