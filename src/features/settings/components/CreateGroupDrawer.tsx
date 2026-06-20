@@ -96,8 +96,14 @@ export const CreateGroupDrawer: React.FC<CreateDrawerProps>  = ({ open, setOpen,
                           type="text"
                           placeholder="Search cabinet name..."
                           required
-                          className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-12.5 px-5 pl-10"
+                          className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-12.5 pl-10 pr-12 peer"
                         />
+                        <Button
+                          type="button"
+                          className="h-7.5 w-7.5 rounded-full text-xs bg-chip text-accent-foreground absolute top-1/2 -translate-y-1/2 right-2 peer-placeholder-shown:hidden"
+                        >
+                          <XCircle size={14} />
+                        </Button>
                       </div>
                       <div className="border rounded-[10px] mt-3.75">
                         {cabinets.map((i)=> {
