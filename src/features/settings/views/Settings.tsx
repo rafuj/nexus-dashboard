@@ -7,11 +7,12 @@ import { PlusCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
-import { Link } from "react-router";
 import { useQueryState } from "nuqs";
 import { Icons } from "@/app/icons/icons";
 import MemberSetting from "../components/MemberSetting";
 import GroupSettings from "../components/GroupSettings";
+import { CreateGroupDrawer } from "../components/CreateGroupDrawer";
+import { useState } from "react";
 
 
 
@@ -19,6 +20,8 @@ export default function Settings() {
 
   const tablist = ["group", "members"]
 const [tabValue, setTabValue] = useQueryState("tabs", { defaultValue: "group" })
+const [createGroupOpen, setCreateGroupOpen] = useState<boolean>(true)
+const [addMemberOpen, setAddMemberOpen] = useState<boolean>(false)
 
 const switchContent = (value: string) =>{
   switch (value) {
@@ -51,11 +54,9 @@ const switchContent = (value: string) =>{
                   <DateAndTimeChip />
                 </div>
                 <button type="button" className="flex sm:hidden items-center bg-primary text-white py-2 px-3 md:py-3 md:px-5 rounded-full text-sm gap-1.25" 
-                  onClick={()=>{
-
-                  }}
+                  onClick={()=> tabValue === 'group' ? setCreateGroupOpen(true) : setAddMemberOpen(true)}
                   >
-                  <PlusCircle/> <span>{tabValue === 'group' ? 'Create Group':'Add Member'}</span>
+                  <PlusCircle/> <span>{tabValue === 'group' ? 'Create Group' : 'Add Member'}</span>
                 </button>
               </div>
             </div>
@@ -83,9 +84,7 @@ const switchContent = (value: string) =>{
                   </button>
                 <div className="max-sm:hidden">
                   <button type="button" className="flex items-center bg-primary text-white py-2 px-3 md:py-3 md:px-5 rounded-full text-sm gap-1.25" 
-                    onClick={()=>{
-
-                    }}
+                    onClick={()=> tabValue === 'group' ? setCreateGroupOpen(true) : setAddMemberOpen(true)}
                     >
                     <PlusCircle/> <span>{tabValue === 'group' ? 'Create Group':'Add Member'}</span>
                   </button>
@@ -97,6 +96,7 @@ const switchContent = (value: string) =>{
           </section>
         </div>
       </main>
+      <CreateGroupDrawer open={createGroupOpen} setOpen={setCreateGroupOpen} />
     </>
   );
 }

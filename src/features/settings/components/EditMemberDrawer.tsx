@@ -19,13 +19,13 @@ import { cn } from "@/lib/utils"
 import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group"
 import { Combobox, ComboboxChip, ComboboxChips, ComboboxChipsInput, ComboboxContent, ComboboxEmpty, ComboboxItem, ComboboxList, ComboboxValue } from "@/shared/components/ui/combobox"
 
-interface ModalProps {
+interface EditDrawerProps {
   open: boolean,
   setOpen: Dispatch<SetStateAction<boolean>>,
   children?: React.ReactNode,
 }
 
-export const EditMemberDrawer: React.FC<ModalProps>  = ({ open, setOpen, children}) => {
+export const EditMemberDrawer: React.FC<EditDrawerProps>  = ({ open, setOpen, children}) => {
 
   const [status, setStatus] = useState<string>('active')
   const [role, setRole] = useState<string>('viewer')
