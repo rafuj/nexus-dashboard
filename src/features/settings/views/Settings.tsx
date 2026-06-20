@@ -20,7 +20,7 @@ export default function Settings() {
 
   const tablist = ["group", "members"]
 const [tabValue, setTabValue] = useQueryState("tabs", { defaultValue: "group" })
-const [createGroupOpen, setCreateGroupOpen] = useState<boolean>(true)
+const [createGroupOpen, setCreateGroupOpen] = useState<boolean>(false)
 const [addMemberOpen, setAddMemberOpen] = useState<boolean>(false)
 
 const switchContent = (value: string) =>{
