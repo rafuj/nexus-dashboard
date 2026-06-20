@@ -1,6 +1,6 @@
 "use client";
 import { Helmet } from "react-helmet-async";
-import { ChevronLeft, ChevronRight, Info, InfoIcon, ShoppingCart } from "lucide-react";
+import { Check, CheckCircle, ChevronLeft, ChevronRight, CircleCheck, Info, InfoIcon, ShoppingCart, X, XCircle } from "lucide-react";
 
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
@@ -164,6 +164,47 @@ export default function AddCabinets() {
                     </div>
                   </div>
                 </div>                
+              </div>
+              {/* Updaid Connection */}
+              <div>
+                <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75 mt-5">
+                  <span className="w-0 grow">Updaid Connection</span>
+                  <InfoIcon size={20} />
+                </div>
+                <div className="grid grid-cols-1 my-3.75 gap-4">
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Module Code<span className="text-error">*</span></Label>
+                    <div className="relative">
+                      <Input
+                        placeholder="Enter module code"
+                        autoComplete="off"
+                        className="h-12.5 px-5 placeholder:text-accent-foreground/20 pr-10"
+                      />
+                      {/* if code recognised */}
+                      <CircleCheck size={20} className="absolute top-1/2 right-3 -translate-y-1/2 text-[#11BE48]" />
+                      {/* else this close icon is hidden for now */}
+                      {/* <XCircle size={20} className="absolute top-1/2 right-3 -translate-y-1/2 text-error" /> */}
+                    </div>
+                    <div className="text-xs font-semibold flex items-center gap-2 text-[#11BE48] mt-2">
+                      <CircleCheck size={18} />
+                      <span>Module code recognised</span>
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium flex justify-between items-center mb-3">
+                      <span>Module Count<span className="text-error">*</span></span>
+                      <span>Available credits: <span className="text-[#11BE48]">5</span></span>
+                    </Label>
+                    <Input
+                      placeholder="Enter module count"
+                      autoComplete="off"
+                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      type="number"
+                      min="0"
+                    />
+                    <div className="text-xs mt-2">1 credit = 1 year of connectivity</div>
+                  </div>
+                </div>
               </div>
               {/* Sound Settings */}
               <div>
