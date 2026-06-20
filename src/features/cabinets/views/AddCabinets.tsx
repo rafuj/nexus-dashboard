@@ -1,6 +1,6 @@
 "use client";
 import { Helmet } from "react-helmet-async";
-import { ChevronLeft, ChevronRight, InfoIcon, ShoppingCart } from "lucide-react";
+import { Check, CheckCircle, ChevronLeft, ChevronRight, CircleCheck, Info, InfoIcon, ShoppingCart, X, XCircle } from "lucide-react";
 
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
@@ -20,6 +20,7 @@ import SchedulePicker from "../components/SchedulePicker";
 import type { AccessTypeI, AssetType, AvailabilityType, BrightnessType, ColorType, DayConfig, PadsType, StepType, VolumeType } from "../types/addCabinet";
 import { assetTypeList, availabilityTypeList, brightnessList, colorList, dayList, padsTypeList, STEPS, volumeList } from "../mock/addCabinetData";
 import { ConfirmationModal } from "../components/ConfirmationModal";
+import { Checkbox } from "@/shared/components/ui/checkbox";
 
 export default function AddCabinets() {
   const navigate = useNavigate();
@@ -84,6 +85,20 @@ export default function AddCabinets() {
                   <InfoIcon size={20} />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 my-3.75 gap-4">
+                  <div className="sm:col-span-2">
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Serial number (optional)</Label>
+                    <Input
+                      placeholder="e.g. SN1234567890"
+                      autoComplete="off"
+                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                    />
+                    <div className="text-xs mt-2">If the serial number is recognised the brand, model and module code (if applicable) will be filled in automatically.</div>
+                    <div className="flex items-center text-sm text-accent-foreground my-5 lg:my-6.5 gap-3">
+                      <span className="h-px grow bg-accent-foreground"></span>
+                      <span>Or enter cabinet details manually</span>
+                      <span className="h-px grow bg-accent-foreground"></span>
+                    </div>
+                  </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand<span className="text-error">*</span></Label>
                     <Select>
@@ -116,15 +131,80 @@ export default function AddCabinets() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="sm:col-span-2">
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Serial number (optional)</Label>
+                  <div className="col-span-2">
+                    <label className="flex items-center space-x-3 cursor-pointer select-none mb-2">
+                      <Checkbox className="bg-transparent border-border" />
+                      <span className={cn("text-xs text-accent-foreground transition-colors")}>
+                        Brand or model not in list
+                      </span>
+                    </label>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand Name</Label>
                     <Input
-                      placeholder="e.g. 14454"
+                      placeholder="Enter brand name"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
                     />
                   </div>
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Model Name</Label>
+                    <Input
+                      placeholder="Enter model name"
+                      autoComplete="off"
+                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <div className="bg-card-info rounded-md px-2.5 py-3 text-accent-foreground text-xs flex gap-2.5">
+                      <Info size={18} />
+                      <div className="w-0 grow self-center">
+                        Not all cabinets have a serial code. You can always enter the cabinet details manually.
+                      </div>
+                    </div>
+                  </div>
                 </div>                
+              </div>
+              {/* Updaid Connection */}
+              <div>
+                <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75 mt-5">
+                  <span className="w-0 grow">Updaid Connection</span>
+                  <InfoIcon size={20} />
+                </div>
+                <div className="grid grid-cols-1 my-3.75 gap-4">
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Module Code<span className="text-error">*</span></Label>
+                    <div className="relative">
+                      <Input
+                        placeholder="Enter module code"
+                        autoComplete="off"
+                        className="h-12.5 px-5 placeholder:text-accent-foreground/20 pr-10"
+                      />
+                      {/* if code recognised */}
+                      <CircleCheck size={20} className="absolute top-1/2 right-3 -translate-y-1/2 text-[#11BE48]" />
+                      {/* else this close icon is hidden for now */}
+                      {/* <XCircle size={20} className="absolute top-1/2 right-3 -translate-y-1/2 text-error" /> */}
+                    </div>
+                    <div className="text-xs font-semibold flex items-center gap-2 text-[#11BE48] mt-2">
+                      <CircleCheck size={18} />
+                      <span>Module code recognised</span>
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium flex justify-between items-center mb-3">
+                      <span>Module Count<span className="text-error">*</span></span>
+                      <span>Available credits: <span className="text-[#11BE48]">5</span></span>
+                    </Label>
+                    <Input
+                      placeholder="Enter module count"
+                      autoComplete="off"
+                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      type="number"
+                      min="0"
+                    />
+                    <div className="text-xs mt-2">1 credit = 1 year of connectivity</div>
+                  </div>
+                </div>
               </div>
               {/* Sound Settings */}
               <div>
