@@ -1,6 +1,6 @@
 import { useState, type Dispatch, type SetStateAction } from "react"
 "use client"
-import { InfoIcon, LucideSearch, PlusCircle, XCircle } from "lucide-react"
+import { InfoIcon, LucideSearch, PlusCircle, Trash2, XCircle } from "lucide-react"
 import {
   Drawer,
   DrawerContent,
@@ -134,7 +134,7 @@ export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen
                                         onClick={() => handleAdd(i)}
                                         className="h-7.5 w-7.5 rounded-full text-xs bg-card-error text-error"
                                       >
-                                        <PlusCircle size={14} />
+                                        <Trash2 size={14} />
                                       </Button>
                                     </div>
                                   </td>
