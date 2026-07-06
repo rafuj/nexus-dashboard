@@ -53,7 +53,9 @@ export const mockSystemLogs: SystemLogsDefinition[] = [
   { id: "4", date: "2026-04-07 14:30", activity: "User role updated (Admin → Viewer)", type: "system" },
 ]
 
-export const HAS_CONNECTED_CABINETS = true
+export const HAS_CONNECTED_CABINETS = false
+
+export const AVAILABLE_CREDITS = 0
 
 // Sample Data mimicking the image
 export const responders = [

@@ -21,6 +21,7 @@ import type { AccessTypeI, AssetType, AvailabilityType, BrightnessType, ColorTyp
 import { assetTypeList, availabilityTypeList, brightnessList, colorList, dayList, padsTypeList, STEPS, volumeList } from "../mock/addCabinetData";
 import { ConfirmationModal } from "../components/ConfirmationModal";
 import { Checkbox } from "@/shared/components/ui/checkbox";
+import { AVAILABLE_CREDITS } from "@/features/dashboard/mock/mockDashboardStats";
 
 export default function AddCabinets() {
   const navigate = useNavigate();
@@ -192,8 +193,10 @@ export default function AddCabinets() {
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium flex justify-between items-center mb-3">
-                      <span>Module Count<span className="text-error">*</span></span>
-                      <span>Available credits: <span className="text-[#11BE48]">5</span></span>
+                      <span>Assign credits<span className="text-error">*</span></span>
+                      <span>Available credits: <span className={cn("text-[#11BE48]", {
+                        "text-error":AVAILABLE_CREDITS === 0
+                      })}>{AVAILABLE_CREDITS}</span></span>
                     </Label>
                     <Input
                       placeholder="Enter module count"
@@ -202,6 +205,14 @@ export default function AddCabinets() {
                       type="number"
                       min="0"
                     />
+                    {AVAILABLE_CREDITS == 0 && (
+                      <div className="bg-card-error rounded-md px-2.5 py-3 text-accent-foreground text-xs flex gap-2.5 mt-2">
+                        <Info size={18} />
+                        <div className="w-0 grow self-center">
+                          <div>No sufficient amount of credits. You can buy more.</div>
+                        </div>
+                      </div>
+                    )}
                     <div className="text-xs mt-2">1 credit = 1 year of connectivity</div>
                   </div>
                 </div>
@@ -214,7 +225,10 @@ export default function AddCabinets() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 my-3.75 gap-4">
                   <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Primary Language<span className="text-error">*</span></Label>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">
+                      Primary Language or Buzzer
+                      <span className="text-error">*</span>
+                    </Label>
                     <Select>
                       <SelectTrigger className="w-full !h-12.5">
                         <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
@@ -444,7 +458,7 @@ export default function AddCabinets() {
               {/* Cabinet Details */}
               <div>
                 <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75">
-                  <span className="w-0 grow">Cabinet Details</span>
+                  <span className="w-0 grow">Name & Description</span>
                   <InfoIcon size={20} />
                 </div>
                 <div className="pb-2">
@@ -475,7 +489,7 @@ export default function AddCabinets() {
                 </div>
                 <div className="pb-3 grid sm:grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Cabinet Name <span className="text-error">*</span></Label>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Address Line 1 <span className="text-error">*</span></Label>
                     <Input
                       placeholder="Enter address 1"
                       autoComplete="off"
@@ -483,7 +497,7 @@ export default function AddCabinets() {
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Cabinet Name <span className="text-error">*</span></Label>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Address Line 2 <span className="text-error">*</span></Label>
                     <Input
                       placeholder="Enter zip code"
                       autoComplete="off"
