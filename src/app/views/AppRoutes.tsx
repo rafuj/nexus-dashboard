@@ -17,7 +17,7 @@ import CabinetsMapView from "@/features/cabinets/views/CabinetsMapView";
 import ForgotPassword from "@/features/auth/views/ForgotPassword";
 import ResetPassword from "@/features/auth/views/ResetPassword";
 import Settings from "@/features/settings/views/Settings";
-import ExploreUpgrades from "@/features/explore-upgrades/views/Settings";
+import ExploreUpgrades from "@/features/explore-upgrades/views/ExploreUpgrades";
 
 const helmetContext = {};
 
