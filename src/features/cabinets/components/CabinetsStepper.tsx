@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils';
 import React from 'react';
 import type { StepperProps } from '../types/addCabinet';
 
-export const CabinetsStepper: React.FC<StepperProps> = ({ step, setStep, stepList }) => {
+export const CabinetsStepper: React.FC<StepperProps> = ({ step, setStep, stepList, hideLine }) => {
   // Find the index of the active step to determine past/present/future states
   const activeIndex = stepList.findIndex((s) => s.id === step);
 
@@ -49,7 +49,9 @@ export const CabinetsStepper: React.FC<StepperProps> = ({ step, setStep, stepLis
             {/* Connecting Vertical Line */}
             {!isLast && (
               <div className="pl-3.5">
-                <div className={`w-[2px] h-6 transition-colors duration-200 ${lineClass}`} />
+                <div className={cn(`w-[2px] h-6 transition-colors duration-200 ${lineClass}`, {
+                  "opacity-0" : hideLine
+                })} />
               </div>
             )}
           </div>

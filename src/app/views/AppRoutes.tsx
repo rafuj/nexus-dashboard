@@ -46,7 +46,7 @@ export default function AppRoutes() {
               <Route path="/cabinets/activity/add" element={<AddCabinetsActivity />} />
               <Route path="/cabinets/monitor" element={<CabinetsMonitor />} />
               <Route path="/cabinets/map" element={<CabinetsMapView />} />
-              <Route path="/cabinetview" element={<CabinetView />} />
+              <Route path="/cabinets/list/:id" element={<CabinetView />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
           </Routes>

@@ -8,6 +8,7 @@ type SingleImageUploaderProps = {
   accept?: string;
   className?: string;
   onRemove?: () => void;
+  readOnly?: boolean
 };
 
 function SingleImageUploader({
@@ -16,7 +17,8 @@ function SingleImageUploader({
   onRemove,
   label = "Add Photo",
   accept = "image/*",
-  className
+  className,
+  readOnly
 }: SingleImageUploaderProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -35,6 +37,10 @@ function SingleImageUploader({
     // fallback: notify parent to clear the value
     onChange?.(null);
     };
+
+  if(readOnly && !value){ 
+    return <></>
+  }
 
   return (
     <div
@@ -66,7 +72,7 @@ function SingleImageUploader({
           className="absolute inset-0 h-full w-full object-cover"
         />
       )}
-      {value && (
+      {(value && !readOnly) && (
         <div className="absolute top-2 right-2 flex gap-2">
           {/* Edit */}
           <label className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-md bg-background shadow text-blue-500">

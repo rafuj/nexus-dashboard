@@ -39,10 +39,12 @@ export function DatePicker({
         <Button
           disabled={disabled}
           variant="outline"
-          className={cn(`h-12.5 w-full justify-between text-left font-semibold text-accent-foreground !bg-transparent ${className}`)}
+          className={cn(`h-12.5 w-full justify-between text-left font-semibold text-accent-foreground !bg-transparent ${className}`, {
+            "!bg-[#BDBDBD]/15 !border-border cursor-auto !opacity-100" : disabled
+          })}
         >
           {value ? format(value, "dd/MM/yyyy") : format(new Date(), "dd/MM/yyyy")}
-          <CalendarIcon />
+          {!disabled && (<CalendarIcon />)}
         </Button>
       </PopoverTrigger>
 

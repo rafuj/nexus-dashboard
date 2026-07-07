@@ -11,6 +11,7 @@ import {
   statusBadgeColor
 } from "../lib/cabinetListDisplay"
 import { CabinetRowActions } from "./CabinetRowActions"
+import { Link } from "react-router"
 
 const columnHelper = createColumnHelper<CabinetListRow>()
 
@@ -26,7 +27,7 @@ export const cabinetListColumns = [
     },
     cell: ({ row }) => (
       <div className="flex min-w-0 flex-col gap-0.5">
-        <span className="truncate font-medium">{row.original.name}</span>
+        <Link to={`/cabinets/list/${row.original.id}`} className="truncate font-medium">{row.original.name}</Link>
       </div>
     ),
   }),

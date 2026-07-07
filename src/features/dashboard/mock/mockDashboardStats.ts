@@ -57,6 +57,9 @@ export const HAS_CONNECTED_CABINETS = false
 
 export const AVAILABLE_CREDITS = 0
 
+// permissions
+export const MANAGE_CABINETS = "manage_cabinets"
+
 // Sample Data mimicking the image
 export const responders = [
   {
