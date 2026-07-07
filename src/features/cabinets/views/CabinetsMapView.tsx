@@ -10,7 +10,7 @@ import { Link } from "react-router";
 import { useState } from "react";
 import { mockCabinetsList } from "../mock/mockCabinetsList";
 import { cabinetConfig } from "../types/cabinetList";
-import CabinetMapCard from "../components/CabinetMapCard";
+import CabinetDashboardMap from "../components/CabinetMapCard";
 
 
 const STATUS_FILTER_ALL = "all";
@@ -85,7 +85,7 @@ export default function CabinetsMapView() {
             />
           </div>
           <section className={cn("lg:h-0 grow gap-2.5 grid grid-cols-1",{"lg:grid-cols-[830fr_310fr]": search})} aria-label="Cabinets">
-              <CabinetMapCard cabinets={mockCabinetsList} openCabinetId={openCabinetId} setOpenCabinetId={setOpenCabinetId}  />
+              <CabinetDashboardMap cabinets={mockCabinetsList} openCabinetId={openCabinetId} setOpenCabinetId={setOpenCabinetId}  />
               <div
                 className={cn(
                   "overflow-y-auto rounded-[10px] overflow-x-hidden",

@@ -1,7 +1,6 @@
 import React, { type Dispatch, type SetStateAction } from 'react';
 import { Map, APIProvider, AdvancedMarker, Pin, InfoWindow } from '@vis.gl/react-google-maps';
 import type { CabinetListRow } from '../types/cabinetList';
-import { MapIcon, MapPin } from 'lucide-react';
 import { Icons } from '@/app/icons/icons';
 
 
@@ -120,34 +119,41 @@ export default function CabinetDashboardMap({ cabinets, openCabinetId, setOpenCa
                             </h3>
                             
                             {/* Details Rows */}
-                            <div className="flex justify-between items-center py-1.5">
+                            <div className="flex justify-between py-1.5">
                                 <span>Cabinet Name</span>
                                 <span className="font-semibold">{cabinet.name}</span>
                             </div>
                             
-                            <div className="flex justify-between items-center py-1.5">
-                                <span>City</span>
-                                <span className="font-semibold">
-                                {cabinet.city}, {cabinet.zip}
-                                </span>
-                            </div>
-                            
-                            <div className="flex justify-between items-start py-1.5">
-                                <span className="text-slate-500 font-medium whitespace-nowrap mr-2">Updaid Code</span>
-                                <span className="font-semibold">
-                                {cabinet.updaidCode}
+                            <div className="flex justify-between py-1.5">
+                                <span>Asset type</span>
+                                <span className="font-semibold w-0 grow text-end">
+                                    {cabinet.type}
                                 </span>
                             </div>
 
-                            { cabinet.temperatureC !== null && (
-                                <div className="flex justify-between items-center py-1.5">
+                            <div className="flex justify-between py-1.5">
+                                <span>Full address</span>
+                                <span className="font-semibold w-0 grow text-end">
+                                {cabinet.location}
+                                </span>
+                            </div>
+                            
+                            <div className="flex justify-between py-1.5">
+                                <span>24/7 public</span>
+                                <span className="font-semibold">
+                                    yes
+                                </span>
+                            </div>
+
+                            {cabinet.temperatureC !== null && (
+                                <div className="flex justify-between py-1.5">
                                 <span>Temperature</span>
                                 <span className="font-semibold">{cabinet.temperatureC}°C</span>
                                 </div>
                             )}
                             
                             {/* Operational Status Line */}
-                            <div className="flex justify-between items-center pt-1.5">
+                            <div className="flex justify-between pt-1.5">
                                 <span>Status</span>
                                 <span className={`font-semibold capitalize ${textColorConfig[cabinet.status] || ""}`}>
                                 ● {cabinet.status}
