@@ -15,7 +15,7 @@ import { Link } from "react-router"
 
 const columnHelper = createColumnHelper<CabinetListRow>()
 
-export const cabinetListColumns = [
+export const cabinetListColumns = (canManageCabinets: boolean) => [
   columnHelper.accessor("name", {
     id: "cabinet",
     header: ({ column }) => (
@@ -122,14 +122,18 @@ export const cabinetListColumns = [
       </span>
     ),
   }),
-  columnHelper.display({
-    id: "actions",
-    header: "Actions",
-    enableSorting: false,
-    meta: {
-      headerClassName: "text-center",
-      cellClassName: "",
-    },
-    cell: ({ row }) => <CabinetRowActions row={row.original} />,
-  }),
+  ...(canManageCabinets
+    ? [
+      columnHelper.display({
+        id: "actions",
+        header: "Actions",
+        enableSorting: false,
+        meta: {
+          headerClassName: "text-center",
+          cellClassName: "",
+        },
+        cell: ({ row }) => <CabinetRowActions row={row.original} />,
+      }),
+      ]
+    : []),
 ]
