@@ -25,7 +25,7 @@ interface EditDrawerProps {
   children?: React.ReactNode,
 }
 
-export const EditMemberDrawer: React.FC<EditDrawerProps>  = ({ open, setOpen, children}) => {
+export const CreateMemberDrawer: React.FC<EditDrawerProps>  = ({ open, setOpen, children}) => {
 
   const [status, setStatus] = useState<string>('active')
   const [role, setRole] = useState<string>('viewer')
@@ -63,7 +63,7 @@ export const EditMemberDrawer: React.FC<EditDrawerProps>  = ({ open, setOpen, ch
             </DrawerTrigger>
             <DrawerContent className="sm:!max-w-[540px] h-screen flex flex-col">
                 <DrawerHeader className="pt-9 px-5">
-                    <DrawerTitle className="text-2xl font-semibold text-accent-primary">Edit Member</DrawerTitle>
+                    <DrawerTitle className="text-2xl font-semibold text-accent-primary">Add Member</DrawerTitle>
                 </DrawerHeader>
                 <DrawerDescription className="px-5 grow h-0 overflow-y-auto" asChild>
                   <div>
@@ -111,8 +111,6 @@ export const EditMemberDrawer: React.FC<EditDrawerProps>  = ({ open, setOpen, ch
                                   placeholder="eg. Emerson"
                                   required
                                   className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-12.5 md:px-5"
-                                  value="Cristofer"
-                                  readOnly
                                 />
                               </div>
                             </Field>
@@ -124,8 +122,6 @@ export const EditMemberDrawer: React.FC<EditDrawerProps>  = ({ open, setOpen, ch
                                   placeholder="eg. Siphron"
                                   required
                                   className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-12.5 md:px-5"
-                                  value="Bator"
-                                  readOnly
                                 />
                               </div>
                             </Field>
@@ -137,8 +133,6 @@ export const EditMemberDrawer: React.FC<EditDrawerProps>  = ({ open, setOpen, ch
                                   placeholder="eg. +31 938 482 1932"
                                   required
                                   className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-12.5 md:px-5"
-                                  value="+31 938 482 1932"
-                                  readOnly
                                 />
                               </div>
                             </Field>
@@ -150,8 +144,6 @@ export const EditMemberDrawer: React.FC<EditDrawerProps>  = ({ open, setOpen, ch
                                   placeholder="eg. johnfrans@gmail.com"
                                   required
                                   className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-12.5 md:px-5"
-                                  value="johnfrans@gmail.com"
-                                  readOnly
                                 />
                               </div>
                             </Field>
@@ -163,8 +155,6 @@ export const EditMemberDrawer: React.FC<EditDrawerProps>  = ({ open, setOpen, ch
                                   placeholder="eg. Field Operations Coordinator"
                                   required
                                   className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-12.5 md:px-5"
-                                  value="Field Operations Coordinator"
-                                  readOnly
                                 />
                               </div>
                             </Field>

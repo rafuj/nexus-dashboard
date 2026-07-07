@@ -13,6 +13,7 @@ import MemberSetting from "../components/MemberSetting";
 import GroupSettings from "../components/GroupSettings";
 import { CreateGroupDrawer } from "../components/CreateGroupDrawer";
 import { useState } from "react";
+import { CreateMemberDrawer } from "../components/CreateMemberDrawer";
 
 
 
@@ -97,6 +98,7 @@ const switchContent = (value: string) =>{
         </div>
       </main>
       <CreateGroupDrawer open={createGroupOpen} setOpen={setCreateGroupOpen} />
+      <CreateMemberDrawer open={addMemberOpen} setOpen={setAddMemberOpen} />
     </>
   );
 }
