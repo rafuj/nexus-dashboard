@@ -9,7 +9,7 @@ function PasswordInput ({ className, type, ...props }: React.ComponentProps<"inp
             <Input
                 type={passwordType}
                 placeholder="Enter your password"
-                className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
+                className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5 pr-12 md:pr-12"
                 {...props}
             />
             <button type="button" className="absolute right-3 md:right-5 top-1/2 -translate-y-1/2" onClick={()=> setPasswordType(passwordType==='password'?'text':'password')}>

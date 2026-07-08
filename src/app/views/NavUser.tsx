@@ -89,7 +89,7 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={()=> navigate("/my-account")}>
                 <Settings className="size-3" />
                 <span>Settings</span>
               </DropdownMenuItem>

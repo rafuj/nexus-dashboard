@@ -18,6 +18,7 @@ import ForgotPassword from "@/features/auth/views/ForgotPassword";
 import ResetPassword from "@/features/auth/views/ResetPassword";
 import Settings from "@/features/settings/views/Settings";
 import ExploreUpgrades from "@/features/explore-upgrades/views/ExploreUpgrades";
+import MyAccount from "@/features/my-account/views/MyAccount";
 
 const helmetContext = {};
 
@@ -49,6 +50,7 @@ export default function AppRoutes() {
               <Route path="/cabinets/map" element={<CabinetsMapView />} />
               <Route path="/cabinets/list/:id" element={<CabinetView />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/my-account" element={<MyAccount />} />
             </Route>
             <Route path="/explore-upgrade" element={<ExploreUpgrades />} />
           </Routes>

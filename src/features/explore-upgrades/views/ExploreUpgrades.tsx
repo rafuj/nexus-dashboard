@@ -114,7 +114,7 @@ export default function ExploreUpgrades() {
             </div>
           </div>
           <div className="border-t text-center text-accent-foreground text-xs py-5">
-            &copy; All Right Reserved
+            &copy; 2026, Updaid.com
           </div>
       </main>
     </>

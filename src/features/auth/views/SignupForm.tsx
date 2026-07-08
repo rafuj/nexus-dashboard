@@ -1,8 +1,7 @@
 import { cn } from "@/lib/utils"
 import { Button } from "@/shared/components/ui/button"
 import {
-  Card,
-  CardContent
+  Card
 } from "@/shared/components/ui/card"
 import {
   Field,
