@@ -98,9 +98,9 @@ export default function MyAccount() {
                 "bg-white border rounded-[10px] border-border py-10 px-6 md:px-10",
               )}
             >
-              <div className="flex flex-wrap items-start gap-8 md:gap-10">
+              <div className="flex flex-wrap gap-8 md:gap-10">
                 <div className="w-full md:w-50 2xl:w-100">
-                  <div className="max-sm:px-6">
+                  <div className="md:sticky md:top-35">
                     <div className="flex flex-col items-center gap-2.5">
                       <div className="relative w-20 md:w-25 xl:w-30">
                         <img src={previewSrc} className="size-full aspect-square object-cover rounded-full" alt="" />
