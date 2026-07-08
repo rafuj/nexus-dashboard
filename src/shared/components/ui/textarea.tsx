@@ -7,7 +7,7 @@ function Textarea({ className, readOnly, placeholder, ...props }: React.Componen
     <textarea
       data-slot="textarea"
       className={cn(
-        "flex field-sizing-content min-h-30 w-full rounded-md border border-border bg-transparent px-2.5 py-2 text-xs transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 text-accent-foreground",
+        "flex field-sizing-content min-h-30 w-full rounded-md border border-border bg-white px-2.5 py-2 text-xs transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 text-accent-foreground",
         className,
         {"bg-[#BDBDBD]/15 !border-border cursor-auto" : readOnly}
       )}
