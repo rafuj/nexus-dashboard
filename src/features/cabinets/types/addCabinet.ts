@@ -31,4 +31,5 @@ export interface StepperProps {
   step: StepType;
   setStep?: (step: StepType) => void;
   stepList: StepConfig[],
+  hideLine?: boolean,
 }

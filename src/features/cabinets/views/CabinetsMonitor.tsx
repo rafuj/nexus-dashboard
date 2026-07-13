@@ -151,7 +151,6 @@ export default function CabinetsMonitor() {
               <DataTable
                 table={table}
                 emptyMessage="No cabinets match your filters."
-                tableClassName="min-w-[920px] table-fixed"
               />
               <div className="border-border border-t px-4 py-3">
                 <DataTablePagination

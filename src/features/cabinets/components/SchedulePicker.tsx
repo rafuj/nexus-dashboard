@@ -15,16 +15,19 @@ interface ScheduleRowProps {
   dayConfig: DayConfig;
   onChange: (day: string, patch: Partial<DayConfig>) => void;
   timeOptions: string[];
+  readOnly?: boolean
 }
 interface SchedulePickerProps {
   schedule: DayConfig[];
   onScheduleChange: (newSchedule: DayConfig[]) => void;
+  readOnly?: boolean
 }
 
 export const ScheduleRow = React.memo(function ScheduleRow({
   dayConfig,
   onChange,
   timeOptions,
+  readOnly
 }: ScheduleRowProps) {
   const { day, checked, startTime, endTime } = dayConfig;
 
@@ -35,7 +38,7 @@ export const ScheduleRow = React.memo(function ScheduleRow({
     [onChange, day]
   );
 
-  const isDisabled = !checked;
+  const isDisabled = !checked || readOnly;
 
   return (
     <div className="flex items-center">
@@ -93,69 +96,76 @@ export const ScheduleRow = React.memo(function ScheduleRow({
         </Select>
       </div>
 
-      <button
-        type="button"
-        disabled={isDisabled}
-        onClick={() => handleUpdate({ checked: false })}
-        className="ml-1 p-2"
-      >
-        <X className="h-4 w-4" />
-      </button>
+      {!readOnly && (
+        <button
+          type="button"
+          disabled={isDisabled}
+          onClick={() => handleUpdate({ checked: false })}
+          className="ml-1 p-2"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      )}
     </div>
   );
 });
 
-export default function SchedulePicker({ schedule, onScheduleChange }: SchedulePickerProps) {    
-    const DEFAULT_TIME_OPTIONS = useMemo(
-        () => Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2, "0")}:00`),
-        []
-    );
+export default function SchedulePicker({
+  schedule,
+  onScheduleChange,
+  readOnly = false,
+}: SchedulePickerProps) {
+  const DEFAULT_TIME_OPTIONS = useMemo(
+    () => Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2, "0")}:00`),
+    []
+  );
 
   const handleRowChange = useCallback(
-  (day: string, patch: Partial<DayConfig>) => {
-    const next = schedule.map((item: DayConfig) => {
-      if (item.day !== day) return item;
+    (day: string, patch: Partial<DayConfig>) => {
+      if (readOnly) return;
 
-      const updated: DayConfig = { ...item, ...patch };
+      const next = schedule.map((item: DayConfig) => {
+        if (item.day !== day) return item;
 
-      const startNum = parseInt(updated.startTime.replace(":", ""), 10);
-      const endNum = parseInt(updated.endTime.replace(":", ""), 10);
+        const updated: DayConfig = { ...item, ...patch };
 
-      if (startNum >= endNum) {
-        const startIndex = DEFAULT_TIME_OPTIONS.indexOf(updated.startTime);
-        const endIndex = DEFAULT_TIME_OPTIONS.indexOf(updated.endTime);
+        const startNum = parseInt(updated.startTime.replace(":", ""), 10);
+        const endNum = parseInt(updated.endTime.replace(":", ""), 10);
 
-        if (patch.startTime) {
-          const nextTime =
-            DEFAULT_TIME_OPTIONS[Math.min(startIndex + 1, 23)];
-          updated.endTime = nextTime;
+        if (startNum >= endNum) {
+          const startIndex = DEFAULT_TIME_OPTIONS.indexOf(updated.startTime);
+          const endIndex = DEFAULT_TIME_OPTIONS.indexOf(updated.endTime);
+
+          if (patch.startTime) {
+            updated.endTime =
+              DEFAULT_TIME_OPTIONS[Math.min(startIndex + 1, 23)];
+          }
+
+          if (patch.endTime) {
+            updated.startTime =
+              DEFAULT_TIME_OPTIONS[Math.max(endIndex - 1, 0)];
+          }
         }
 
-        if (patch.endTime) {
-          const prevTime =
-            DEFAULT_TIME_OPTIONS[Math.max(endIndex - 1, 0)];
-          updated.startTime = prevTime;
-        }
-      }
+        return updated;
+      });
 
-      return updated;
-    });
-
-    onScheduleChange(next);
-  },
-  [schedule, onScheduleChange, DEFAULT_TIME_OPTIONS]
-);
+      onScheduleChange(next);
+    },
+    [schedule, onScheduleChange, DEFAULT_TIME_OPTIONS, readOnly]
+  );
 
   return (
     <div className="flex flex-col gap-2.5 text-xs">
       {schedule.map((dayConfig) => (
         <ScheduleRow
-            key={dayConfig.day}
-            dayConfig={dayConfig}
-            onChange={handleRowChange}
-            timeOptions={DEFAULT_TIME_OPTIONS}
+          key={dayConfig.day}
+          dayConfig={dayConfig}
+          onChange={handleRowChange}
+          timeOptions={DEFAULT_TIME_OPTIONS}
+          readOnly={readOnly}
         />
-        ))}
+      ))}
     </div>
   );
 }

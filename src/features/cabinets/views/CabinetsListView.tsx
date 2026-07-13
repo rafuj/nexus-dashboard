@@ -18,6 +18,9 @@ import { cn } from "@/lib/utils";
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Link } from "react-router";
+import { useAuth } from "@/app/hooks/useAuth";
+import { can, type Role } from "@/lib/permissions";
+import { MANAGE_CABINETS } from "@/features/dashboard/mock/mockDashboardStats";
 
 
 const STATUS_FILTER_ALL = "all";
@@ -62,7 +65,11 @@ export default function CabinetsListView() {
     ],
   );
 
-  const columns = useMemo(() => cabinetListColumns, []);
+  const { user } = useAuth();
+  const role: Role = user?.role ?? "viewer";
+  const canManageCabinets = can(role, MANAGE_CABINETS)
+
+  const columns = useMemo(() => cabinetListColumns(canManageCabinets), []);
 
   const resetPage = () =>
     setPagination((p) => ({
@@ -175,7 +182,6 @@ export default function CabinetsListView() {
               <DataTable
                 table={table}
                 emptyMessage="No cabinets match your filters."
-                tableClassName="min-w-[920px] table-fixed"
               />
               <div className="border-border border-t px-4 py-3">
                 <DataTablePagination

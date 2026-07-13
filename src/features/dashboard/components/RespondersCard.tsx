@@ -108,9 +108,11 @@ export default function RespondersCard() {
                                         Upgrade your cabinets to manage responders, roles,
                                         notifications and access from one connected dashboard.
                                     </p>
-                                    <button type="button" className="text-primary-light rounded-full bg-white shadow-card px-6 text-xs h-9">
-                                        Explore upgrade
-                                    </button>
+                                    <Link to="/explore-upgrade">
+                                        <button type="button" className="text-primary-light rounded-full bg-white shadow-card px-6 text-xs h-9">
+                                            Explore upgrade
+                                        </button>
+                                    </Link>
                                 </div>
                             </div>
                         </div>

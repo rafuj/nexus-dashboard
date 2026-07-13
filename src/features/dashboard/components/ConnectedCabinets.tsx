@@ -111,9 +111,11 @@ export default function ConnectedCabinets() {
                                             Upgrade to access real-time connectivity
                                             and cabinet monitoring.
                                         </p>
-                                        <button type="button" className="text-primary-light rounded-full bg-white shadow-card px-6 text-xs h-9">
-                                            Explore upgrade
-                                        </button>
+                                        <Link to="/explore-upgrade">
+                                            <button type="button" className="text-primary-light rounded-full bg-white shadow-card px-6 text-xs h-9">
+                                                Explore upgrade
+                                            </button>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
@@ -135,9 +137,11 @@ export default function ConnectedCabinets() {
                                             Upgrade your cabinets to view real-time
                                             events, alerts and status updates.
                                         </p>
-                                        <button type="button" className="text-primary-light rounded-full bg-white shadow-card px-6 text-xs h-9">
-                                            Explore upgrade
-                                        </button>
+                                        <Link to="/explore-upgrade">
+                                            <button type="button" className="text-primary-light rounded-full bg-white shadow-card px-6 text-xs h-9">
+                                                Explore upgrade
+                                            </button>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
