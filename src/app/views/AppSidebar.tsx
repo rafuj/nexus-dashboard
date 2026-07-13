@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import { Link } from "react-router";
-import updaidLogo from "@/assets/updaid-logo.png"
+// import updaidLogo from "@/assets/updaid-logo.png"
+import updaidLogo from "@/assets/updaid-logo.svg"
 import { useAuth } from "@/app/hooks/useAuth";
 import {
   Sidebar,
