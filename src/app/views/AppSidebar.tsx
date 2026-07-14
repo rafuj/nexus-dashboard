@@ -29,10 +29,12 @@ import MonitorIcon from "@/assets/icons/monitor.svg?react"
 import ActivityIcon from "@/assets/icons/activity.svg?react"
 import SettingsIcon from "@/assets/icons/settings-icon.svg?react"
 import { SupportModal } from "../components/support-modal";
+import { FeedbackModal } from "../components/feedback-modal";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const [supportModal, setSupportModal] = React.useState<boolean>(false)
+  const [feedbackModal, setFeedbackModal] = React.useState<boolean>(false)
   
   const navMain = [
     {
@@ -86,7 +88,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     {
       title: "Feedback",
-      type: "feedback",
+      onClick: ()=> setFeedbackModal(true),
       icon: <FeedbackIcon />,
       isActive: false,
     },
@@ -170,6 +172,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <div className="mt-auto pt-5"></div>
         <NavMain items={sidebarBottomMenu()} />
         <SupportModal open={supportModal} setOpen={setSupportModal} />
+        <FeedbackModal open={feedbackModal} setOpen={setFeedbackModal} />
       </SidebarContent>
       <div className="border-t mx-5"></div>
       <SidebarFooter>
