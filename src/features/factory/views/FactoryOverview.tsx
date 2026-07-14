@@ -110,7 +110,7 @@ export default function FactoryOverview() {
         <div className="p-5">
           <div className="space-y-5">
             <div className={cn(
-                  "bg-white border rounded-[10px] border-border py-5 px-4",
+                  "bg-white border rounded-[10px] border-border p-4",
                 )}>
                   <FactoryOverviewToolbar {
                     ...{
@@ -127,7 +127,7 @@ export default function FactoryOverview() {
             </div>
             <div
                 className={cn(
-                  "bg-white border rounded-[10px] border-border py-5 px-4",
+                  "bg-white border rounded-[10px] border-border p-4",
                 )}
               >
                 <DataTable
