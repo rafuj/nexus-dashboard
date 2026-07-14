@@ -102,7 +102,7 @@ const factoryNavMain = [
   },
   {
     title: "Generate Serial Number",
-    url: "/cabinets",
+    url: "/generate-serial-number",
     icon: <GenerateSerialNumberIcon />,
     isActive: false,
   },
