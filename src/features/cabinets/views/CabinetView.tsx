@@ -977,37 +977,39 @@ const CabinetView = () => {
               </div>
               <div className="w-full md:w-0 grow">
                 {switchContent()}
+                {canManageCabinets && (
+                  <div className="flex flex-wrap gap-3 sm:gap-5 justify-end py-3.75 bg-background sticky bottom-0 mt-10 w-full">
+                    {/* If want to remove sticky */}
+                    {/* <div className="flex flex-wrap gap-3 sm:gap-5 justify-end py-3.75 bg-background mt-10 w-full"> */}
+                    {isEditing ? (
+                      <>
+                        <button type="button" 
+                          className="flex items-center justify-center bg-chip text-accent-foreground py-2 sm:py-3 px-5 rounded-full text-sm gap-1.25 sm:w-full max-w-[140px]"
+                          onClick={()=> setIsEditing("")}
+                        >
+                          Cancel
+                        </button>
+                        <button type="button" 
+                          className="flex items-center justify-center bg-primary text-white py-2 sm:py-3 px-5 rounded-full text-sm gap-1.25 sm:w-full max-w-[140px]"
+                          onClick={handleSaveChanges}
+                        >
+                          Save Changes
+                        </button>
+                      </>
+                    ) : (
+                      <button type="button" 
+                        className="flex items-center justify-center bg-primary text-white py-2 sm:py-3 px-5 rounded-full text-sm gap-1.25 min-w-[83px] ml-auto"
+                        onClick={()=> setIsEditing("true")}
+                      >
+                        Edit
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>
 
-            {canManageCabinets && (
-              <div>
-                {isEditing ? (
-                  <div className="flex flex-wrap justify-end gap-3">
-                    <button type="button" 
-                      className="flex items-center justify-center bg-chip text-accent-foreground py-2 sm:py-3 px-5 rounded-full text-sm gap-1.25 sm:w-full max-w-[140px]"
-                      onClick={()=> setIsEditing("")}
-                    >
-                      Cancel
-                    </button>
-                    <button type="button" 
-                      className="flex items-center justify-center bg-primary text-white py-2 sm:py-3 px-5 rounded-full text-sm gap-1.25 sm:w-full max-w-[140px]"
-                      onClick={handleSaveChanges}
-                    >
-                      Save Changes
-                    </button>
-                  </div>
-                ) : (
-                  <button type="button" 
-                    className="flex items-center justify-center bg-primary text-white py-2 sm:py-3 px-5 rounded-full text-sm gap-1.25 min-w-[83px] ml-auto"
-                    onClick={()=> setIsEditing("true")}
-                  >
-                    Edit
-                  </button>
-                )}
-              </div>
-            )}
         </div>
         <ConfirmationModal open={confirmModalOpen} setOpen={setConfirmModalOpen} />
       </main>
