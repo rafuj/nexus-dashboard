@@ -4,27 +4,12 @@
  */
 import { createColumnHelper } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "@/shared/components/data-table"
-import { cn } from "@/lib/utils"
 import type { CabinetActivityRow } from "../types/activityList"
 import { ActivityIcons } from "@/app/icons/icons"
 
 const columnHelper = createColumnHelper<CabinetActivityRow>()
 
-// Helper for dynamic status colors according to image_6214cc.png
-const getStatusBadgeClass = (status: string) => {
-  switch (status) {
-    case "Resolved":
-      return "bg-[#EDF7F0] text-success"
-    case "Ongoing":
-      return "bg-[#FDECEC] text-error"
-    case "Done":
-      return "bg-[#EDF7F0] text-success"
-    default:
-      return "bg-gray-50 text-accent-foreground"
-  }
-}
-
-export const cabinetsActivityTableColumns = [
+export const cabinetsActivityTableColumns = (tabValue: string) => [
   // 1. Time Column
   columnHelper.accessor("timestamp", {
     id: "time",
@@ -52,7 +37,9 @@ export const cabinetsActivityTableColumns = [
       const activity = row.original.activity
       return (
         <div className="flex items-center gap-3">
-          <ActivityIcon activity={activity} />
+          <div className={tabValue === "Resolved" ? "text-success2" : "text-error"}>
+            <ActivityIcon activity={activity} />
+          </div>
           <span>{activity}</span>
         </div>
       )
@@ -72,19 +59,6 @@ export const cabinetsActivityTableColumns = [
     cell: ({ row }) => row.original.cabinetCode,
   }),
 
-  // 4. Location Column
-  columnHelper.accessor("location", {
-    id: "location",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Location" />
-    ),
-    meta: {
-      headerClassName: "",
-      cellClassName: "align-middle text-slate-700",
-    },
-    cell: ({ row }) => row.original.location,
-  }),
-
   // 5. Added by Column (Can render a string or an Avatar + User layout)
   columnHelper.accessor("addedBy", {
     id: "addedBy",
@@ -98,7 +72,7 @@ export const cabinetsActivityTableColumns = [
     cell: ({ row }) => {
       const entry = row.original.addedBy
 
-      if (typeof entry === "string") {
+      if (typeof entry == "string") {
         return <span className="text-slate-600">{entry}</span>
       }
 
@@ -108,7 +82,7 @@ export const cabinetsActivityTableColumns = [
             <img
               src={entry.avatarUrl}
               alt={entry.name}
-              className="size-6 rounded-full object-cover"
+              className="size-10 rounded-full object-cover"
             />
           ) : (
             <div className="flex size-6 items-center justify-center rounded-full bg-slate-200 text-xs font-semibold">
@@ -120,61 +94,64 @@ export const cabinetsActivityTableColumns = [
       )
     },
   }),
+  ...(tabValue === "Resolved"
+  ? [
+      columnHelper.accessor("notes", {
+        id: "notes",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Notes" />
+        ),
+        meta: {
+          headerClassName: "",
+          cellClassName: "align-middle",
+        },
+        cell: ({ row }) => {
+          const notes = row.original.notes
 
-  // 6. Status Column
-  columnHelper.accessor("status", {
-    id: "status",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
-    ),
-    meta: {
-      headerClassName: "",
-      cellClassName: "align-middle",
-    },
-    cell: ({ row }) => {
-      const status = row.original.status
-      return (
-        <span
-          className={cn(
-            "px-2.5 py-1 rounded text-xs font-medium w-[84px] text-center block",
-            getStatusBadgeClass(status)
-          )}
-        >
-          {status}
-        </span>
-      )
-    },
-  }),
+          if (!notes) {
+            return <span className="text-slate-300">—</span>
+          }
 
-  // 7. Notes Column
-  columnHelper.accessor("notes", {
-    id: "notes",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Notes" />
-    ),
-    meta: {
-      headerClassName: "",
-      cellClassName: "align-middle",
-    },
-    cell: ({ row }) => {
-      const notes = row.original.notes
-      
-      if (!notes) {
-        return <span className="text-slate-300">—</span>
-      }
+          if (notes === "View notes") {
+            return (
+              <button className="rounded bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-200">
+                View notes
+              </button>
+            )
+          }
 
-      // If status is "Done" and string specifies "View notes", render it styled or as an action link
-      if (notes === "View notes") {
+          return <span>{notes}</span>
+        },
+      }),
+    ]
+  : []),
+  ...(tabValue === "Ongoing"
+  ? [
+    columnHelper.accessor("addedBy", {
+      id: "actions",
+      header: "Actions",
+      meta: {
+        headerClassName: "",
+        cellClassName: "align-middle",
+      },
+      cell: ({ row }) => {
+        const entry = row.original.addedBy
+
+        if (typeof entry == "string") {
+          return <div className="flex items-center">
+            <div className="w-8.5 border-b-2 border-accent-foreground"></div>
+          </div>
+        }
+
         return (
-          <button className="rounded bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-200 transition-colors">
-            View notes
-          </button>
+          <div className="flex items-center gap-2">
+            <button type="button" className="card-error px-4 py-1.25 text-error border rounded-[4px] text-xs">End Activity</button>
+          </div>
         )
-      }
-
-      return <span>{notes}</span>
-    },
-  }),
+      },
+    })
+    ]
+  : []),
 ]
 interface ActivityIconProps {
   activity: string
