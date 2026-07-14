@@ -19,10 +19,24 @@ import ResetPassword from "@/features/auth/views/ResetPassword";
 import Settings from "@/features/settings/views/Settings";
 import ExploreUpgrades from "@/features/explore-upgrades/views/ExploreUpgrades";
 import MyAccount from "@/features/my-account/views/MyAccount";
+import { useAuth } from "../hooks/useAuth";
+import ImeiLinking from "@/features/factory/views/ImeiLinking";
 
 const helmetContext = {};
 
 export default function AppRoutes() {
+
+  const user = useAuth();
+
+  const dashboardViewContent = () => {
+    switch(user?.role) {
+      case "factory":
+        return <ImeiLinking />
+      default :
+        return <DashboardView />
+    }
+  }
+
   return (
     <BrowserRouter>
       <HelmetProvider context={helmetContext}>
@@ -40,7 +54,8 @@ export default function AppRoutes() {
             </Route>
 
             <Route element={<PageLayout />}>
-              <Route path="/" element={<DashboardView />} />
+              {/* <Route path="/" element={<DashboardView />} /> */}
+              <Route path="/" element={dashboardViewContent()} />
               <Route path="/cabinets" element={<Navigate to="/cabinets/list" replace />} />
               <Route path="/cabinets/list" element={<CabinetsListView />} />
               <Route path="/cabinets/add" element={<AddCabinets />} />
