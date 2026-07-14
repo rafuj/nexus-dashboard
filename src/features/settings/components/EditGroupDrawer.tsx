@@ -16,6 +16,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Textarea } from "@/shared/components/ui/textarea"
 import { Icons } from "@/app/icons/icons"
 import { cn } from "@/lib/utils"
+import { groupIcons } from "../mock/group-icons"
 
 interface EditGroupDrawerProps {
   open: boolean,
@@ -25,6 +26,8 @@ interface EditGroupDrawerProps {
 
 export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen, children}) => {
     const [selectedCabinets, setSelectedCabinets] = useState<typeof cabinets>([])
+
+    const [selectedIconId, setSelectedIconId] = useState<string>("group-icon-2")
 
     // Add cabinet
     const handleAdd = (cabinet: any) => {
@@ -70,7 +73,7 @@ export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen
                                   type="text"
                                   placeholder="e.g. North Region Sites"
                                   required
-                                  className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-12.5 md:px-5"
+                                  className="placeholder:text-foreground/40 bg-white border-border h-10 lg:h-12.5 md:px-5"
                                 />
                               </div>
                             </Field>
@@ -80,14 +83,29 @@ export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen
                                 <Textarea
                                   placeholder="e.g. North Region Sites"
                                   required
-                                  className="placeholder:text-foreground/40 bg-background/40 border-border min-h-[70px] md:px-5"
+                                  className="placeholder:text-foreground/40 bg-white border-border min-h-[70px] md:p-5 resize-none"
                                 />
                               </div>
                             </Field>
                         </div>
                         </FieldGroup>
                     </div>
-                    <div className="mt-5 border-t border-border"></div>
+                    <div className="mt-5">
+                      <div className="flex justify-between text-sm">
+                        <span className="font-medium text-accent-foreground">Icons</span>
+                        <span>16 icons</span>
+                      </div>
+                      <div className="mt-3 border card-neutral p-[15px] rounded-[10px] bg-chip flex flex-wrap gap-2.25">
+                        {groupIcons.map((icon) => (
+                          <button type="button" className={cn("size-12.5 rounded-[10px] bg-white text-foreground border border-border flex justify-center items-center",{
+                            "bg-[#615FFF] text-white border-[#615FFF]" : selectedIconId === icon.id
+                          })} key={icon.id} onClick={()=> setSelectedIconId(icon.id)}>
+                            {<icon.icon className="size-5.5" />}
+                          </button> 
+                        )
+                        )}
+                      </div>
+                    </div>
                     <div className="pt-4">
                       <h6 className="text-sm font-semibold">Cabinets in this group (48)</h6>
                       <p className="text-xs mb-3">Cabinet assigned to this group will inherit its notifications and settings.</p>
@@ -154,7 +172,7 @@ export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen
                           type="text"
                           placeholder="Search cabinet name..."
                           required
-                          className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-12.5 pl-10 pr-12 peer"
+                          className="placeholder:text-foreground/40 bg-white border-border h-10 lg:h-12.5 pl-10 pr-12 peer"
                         />
                         <Button
                           type="button"
@@ -281,7 +299,7 @@ export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen
                     type="submit"
                     className="h-10 lg:h-12.5 rounded-full text-sm px-5 lg:px-7 xl:min-w-[180px]"
                   >
-                    Create Group
+                    Save Changes
                   </Button>
                 </DrawerFooter>
             </DrawerContent>
