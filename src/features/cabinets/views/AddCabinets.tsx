@@ -386,11 +386,11 @@ export default function AddCabinets() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 my-3.75 gap-4">
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Asset Expiration Date<span className="text-error">*</span></Label>
-                    <DatePicker value={assetExpiration} onChange={setAssetExpiration} className="!px-5 text-xs" />
+                    <DatePicker value={assetExpiration} onChange={setAssetExpiration} className="!bg-white text-xs pl-5 pr-4" />
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Check-Up Date<span className="text-error">*</span></Label>
-                    <DatePicker value={checkupDate} onChange={setCheckupDate} className="!px-5 text-xs" />
+                    <DatePicker value={checkupDate} onChange={setCheckupDate} className="!bg-white text-xs pl-5 pr-4" />
                   </div>
                   <div className="sm:col-span-2 xl:col-span-3">
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Notes<span className="text-error">*</span></Label>
@@ -406,11 +406,11 @@ export default function AddCabinets() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 my-3.75 gap-4">
                     <div>
                       <Label className="text-xs text-accent-foreground font-medium block mb-3">Pads expiration date<span className="text-error">*</span></Label>
-                      <DatePicker value={padsExpiration} onChange={setPadsExpiration} className="!px-5 text-xs" />
+                      <DatePicker value={padsExpiration} onChange={setPadsExpiration} className="!bg-white text-xs pl-5 pr-4" />
                     </div>
                     <div>
                       <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery expiration date<span className="text-error">*</span></Label>
-                      <DatePicker value={batteryExpiration} onChange={setBatteryExpiration} className="!px-5 text-xs" />
+                      <DatePicker value={batteryExpiration} onChange={setBatteryExpiration} className="!bg-white text-xs pl-5 pr-4" />
                     </div>
                   </div>
                   <div>
@@ -446,7 +446,7 @@ export default function AddCabinets() {
                     </div>
                     <div>
                       <Label className="text-xs text-accent-foreground font-medium block mb-3">1st set pads expiration date<span className="text-error">*</span></Label>
-                      <DatePicker className="!px-5 text-xs" />
+                      <DatePicker className="!bg-white text-xs pl-5 pr-4" />
                     </div>
                     <div>
                       <Label className="text-xs text-accent-foreground font-medium block mb-3">1st set pads Iot number<span className="text-error">*</span></Label>
@@ -473,7 +473,7 @@ export default function AddCabinets() {
                     </div>
                     <div>
                       <Label className="text-xs text-accent-foreground font-medium block mb-3">2nd set pads expiration date<span className="text-error">*</span></Label>
-                      <DatePicker className="!px-5 text-xs" />
+                      <DatePicker className="!bg-white text-xs pl-5 pr-4" />
                     </div>
                     <div>
                       <Label className="text-xs text-accent-foreground font-medium block mb-3">2nd set pads Iot number<span className="text-error">*</span></Label>
@@ -502,7 +502,7 @@ export default function AddCabinets() {
                     </div>
                     <div>
                       <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery expiration date<span className="text-error">*</span></Label>
-                      <DatePicker className="!px-5 text-xs" />
+                      <DatePicker className="!bg-white text-xs pl-5 pr-4" />
                     </div>
                     <div>
                       <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery Iot number<span className="text-error">*</span></Label>
@@ -563,7 +563,7 @@ export default function AddCabinets() {
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Address Line 2 <span className="text-error">*</span></Label>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Address Line 2</Label>
                     <Input
                       placeholder="Enter zip code"
                       autoComplete="off"
