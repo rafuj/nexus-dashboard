@@ -227,7 +227,7 @@ export default function ImeiLinking() {
                     navLabel="Cabinets table pagination"
                   />
                 </div>
-              </div>
+            </div>
           </div>
         </div>
       </main>

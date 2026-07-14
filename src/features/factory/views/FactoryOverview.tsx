@@ -177,7 +177,7 @@ export default function FactoryOverview() {
                     navLabel="Cabinets table pagination"
                   />
                 </div>
-              </div>
+            </div>
           </div>
         </div>
       </main>
