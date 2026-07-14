@@ -2,16 +2,16 @@ import { Helmet } from "react-helmet-async";
 
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip"
-import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DataTable, DataTablePagination } from "@/shared/components/data-table";
-import { Input } from "@/shared/components/ui/input";
 import { useMemo, useState } from "react";
 import { getCoreRowModel, useReactTable, type PaginationState, type SortingState } from "@tanstack/react-table";
 import { factoryOverviewColumns } from "../components/factoryOverviewColumns";
 import { queryFactoryOverviewPage } from "../server/queryFactoryOverviewPage";
 import { FactoryOverviewToolbar } from "../components/FactoryOverviewToolbar";
 import type { DateRange } from "react-day-picker";
+import TagIcon from "@/assets/icons/tag.svg?react";
+import LinkIcon from "@/assets/icons/link.svg?react";
 
 const PAGE_SIZE = 12
 
@@ -20,8 +20,8 @@ export default function FactoryOverview() {
   const [prefix, setPrefix] = useState<string>("");
   const [linked, setLinked] = useState<string>("");
   const [sorting, setSorting] = useState<SortingState>([
-      { id: "serialNumber", desc: false },
-    ]);
+    { id: "serialNumber", desc: false },
+  ]);
   
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -124,6 +124,42 @@ export default function FactoryOverview() {
                       setDateRange
                     }
                   } />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              <div>
+                <div className="py-4 px-3 rounded-[15px] card-info border flex items-center gap-2.5">
+                  <div className="rounded-full bg-info text-white size-12.5 flex items-center justify-center">
+                    <TagIcon />
+                  </div>
+                  <div className="w-0 grow">
+                    <h5 className="font-semibold text-accent-primary">1,294</h5>
+                    <div className="text-sm">Total Generated</div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div className="py-4 px-3 rounded-[15px] card-success2 border flex items-center gap-2.5">
+                  <div className="rounded-full bg-success2 text-white size-12.5 flex items-center justify-center">
+                    <LinkIcon />
+                  </div>
+                  <div className="w-0 grow">
+                    <h5 className="font-semibold text-accent-primary">183</h5>
+                    <div className="text-sm">Unlinked</div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div className="py-4 px-3 rounded-[15px] card-warning border flex items-center gap-2.5">
+                  <div className="rounded-full bg-warning text-white size-12.5 flex items-center justify-center">
+                    <LinkIcon />
+                  </div>
+                  <div className="w-0 grow">
+                    <h5 className="font-semibold text-accent-primary">1,104</h5>
+                    <div className="text-sm">Linked</div>
+                  </div>
+                </div>
+              </div>
             </div>
             <div
                 className={cn(
