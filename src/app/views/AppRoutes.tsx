@@ -22,6 +22,7 @@ import MyAccount from "@/features/my-account/views/MyAccount";
 import { useAuth } from "../hooks/useAuth";
 import ImeiLinking from "@/features/factory/views/ImeiLinking";
 import GenerateSerialNumber from "@/features/factory/views/GenerateSerialNumber";
+import FactoryOverview from "@/features/factory/views/FactoryOverview";
 
 const helmetContext = {};
 
@@ -29,12 +30,13 @@ export default function AppRoutes() {
 
   const user = useAuth();
 
-  const dashboardViewContent = () => {
+  const routesByRole = () => {
     switch(user?.role) {
       case "factory":
         return <>
           <Route path="/" element={<ImeiLinking />} />
           <Route path="/generate-serial-number" element={<GenerateSerialNumber />} />
+          <Route path="/factory-overview" element={<FactoryOverview />} />
         </>
       default :
         return <>
@@ -74,7 +76,7 @@ export default function AppRoutes() {
               <Route path="/my-account" element={<MyAccount />} />
               
               {/* Routes by Role */}
-              {dashboardViewContent()}
+              {routesByRole()}
 
             </Route>
             <Route path="/explore-upgrade" element={<ExploreUpgrades />} />

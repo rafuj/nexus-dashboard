@@ -63,7 +63,7 @@ export function DateRangePicker({
       return format(value.from, "MMM d, yyyy")
     }
 
-    return "Date range"
+    return "Select"
   }, [value])
 
   return (

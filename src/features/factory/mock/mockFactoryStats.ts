@@ -16,7 +16,15 @@ export const mockFactoryList: FactoryRow[] = Array.from(
         8 + (num % 10),
         (num * 7) % 60
       ).toISOString(),
-      status: "linked",
+      generatedOn: new Date(
+        2026,
+        3, // April
+        (num % 30) + 1,
+        8 + (num % 10),
+        (num * 7) % 60
+      ).toISOString(),
+      status: index % 4 !== 1 ? "linked": "unlinked",
+      prefix: index % 4 !== 1 ? "NEX": "UPD",
     };
   }
 );

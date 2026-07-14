@@ -71,8 +71,6 @@ export default function GenerateSerialNumber() {
                         <SelectContent>
                           <SelectItem value="NEX">NEX</SelectItem>
                           <SelectItem value="UPD">UPD</SelectItem>
-                          <SelectItem value="UPDAID">UPDAID</SelectItem>
-                          <SelectItem value="NEXUS">NEXUS</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
