@@ -2,7 +2,10 @@
 
 export type StepType = 'basic-information' | 'cabinet-details' | 'asset-information';
 
-export type AssetType = 'aed' | 'other';
+export interface AssetType {
+  label: string;
+  value: string;
+}
 
 export type PadsType = 'adult' | 'children' | 'all';
 

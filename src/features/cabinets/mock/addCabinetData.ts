@@ -9,9 +9,12 @@ export const STEPS: StepConfig[] = [
 ];
 
 // Asset
-export const assetTypeList : RadioOption<AssetType>[] = [
-  { id: "aed", value: "aed", label: "AED" },
-  { id: "other", value: "other", label: "Other" }
+export const assetTypeList : AssetType[] = [
+  { label: "Defibrillator", value: "defibrillator" },
+  { label: "Fire Extinguisher", value: "fire-extinguisher" },
+  { label: "First-Aid Kit", value: "first-aid-kit" },
+  { label: "Life Bouy", value: "life-bouy" },
+  { label: "Other", value: "other" }
 ];
 
 // Pads
