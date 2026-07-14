@@ -28,107 +28,111 @@ import MapIcon from "@/assets/icons/map-icon.svg?react"
 import MonitorIcon from "@/assets/icons/monitor.svg?react"
 import ActivityIcon from "@/assets/icons/activity.svg?react"
 import SettingsIcon from "@/assets/icons/settings-icon.svg?react"
-
-const navMain = [
-  {
-    title: "Dashboard",
-    url: "/",
-    icon: <DashboardIcon />,
-    isActive: false,
-  },
-  {
-    title: "Cabinets",
-    url: "/cabinets",
-    icon: <CabinetsIcon />,
-    isActive: false,
-    items: [
-      {
-        title: "List",
-        url: "/cabinets/list",
-        icon: <ListIcon />,
-      },
-      {
-        title: "Map",
-        url: "/cabinets/map",
-        icon: <MapIcon />,
-      },
-      {
-        title: "Monitor",
-        url: "/cabinets/monitor",
-        icon: <MonitorIcon />,
-      },
-      {
-        title: "Activity",
-        url: "/cabinets/activity",
-        icon: <ActivityIcon />,
-      },
-    ]
-  },
-  {
-    title: "Settings",
-    url: "/settings",
-    icon: <SettingsIcon />,
-    isActive: false,
-  },
-];
-
-const navMenuBottom = [
-  {
-    title: "Support",
-    url: "/support",
-    icon: <SupportIcon />,
-    isActive: false,
-  },
-  {
-    title: "Feedback",
-    url: "/feedback",
-    icon: <FeedbackIcon />,
-    isActive: false,
-  },
-  {
-    title: "How To Use",
-    url: "/how-to-use",
-    icon: <HowToUseIcon />,
-    isActive: false,
-  },
-];
-
-const factoryNavMain = [
-  {
-    title: "IMEI Linking",
-    url: "/",
-    icon: <ImeiLinkingIcon />,
-    isActive: false,
-  },
-  {
-    title: "Generate Serial Number",
-    url: "/generate-serial-number",
-    icon: <GenerateSerialNumberIcon />,
-    isActive: false,
-  },
-  {
-    title: "Overview",
-    url: "/factory-overview",
-    icon: <FactoryOverview />,
-    isActive: false,
-  },
-];
-
-const factoryNavMenuBottom = [
-  {
-    title: "Support",
-    url: "/support",
-    icon: <SupportIcon />,
-    isActive: false,
-  },
-];
+import { SupportModal } from "../components/support-modal";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+
+  const [supportModal, setSupportModal] = React.useState<boolean>(false)
+  
+  const navMain = [
+    {
+      title: "Dashboard",
+      url: "/",
+      icon: <DashboardIcon />,
+      isActive: false,
+    },
+    {
+      title: "Cabinets",
+      url: "/cabinets",
+      icon: <CabinetsIcon />,
+      isActive: false,
+      items: [
+        {
+          title: "List",
+          url: "/cabinets/list",
+          icon: <ListIcon />,
+        },
+        {
+          title: "Map",
+          url: "/cabinets/map",
+          icon: <MapIcon />,
+        },
+        {
+          title: "Monitor",
+          url: "/cabinets/monitor",
+          icon: <MonitorIcon />,
+        },
+        {
+          title: "Activity",
+          url: "/cabinets/activity",
+          icon: <ActivityIcon />,
+        },
+      ]
+    },
+    {
+      title: "Settings",
+      url: "/settings",
+      icon: <SettingsIcon />,
+      isActive: false,
+    },
+  ];
+  
+  const navMenuBottom = [
+    {
+      title: "Support",
+      onClick: ()=> setSupportModal(true),
+      icon: <SupportIcon />,
+      isActive: false,
+    },
+    {
+      title: "Feedback",
+      type: "feedback",
+      icon: <FeedbackIcon />,
+      isActive: false,
+    },
+    {
+      title: "How To Use",
+      url: "/how-to-use",
+      icon: <HowToUseIcon />,
+      isActive: false,
+    },
+  ];
+  
+  const factoryNavMain = [
+    {
+      title: "IMEI Linking",
+      url: "/",
+      icon: <ImeiLinkingIcon />,
+      isActive: false,
+    },
+    {
+      title: "Generate Serial Number",
+      url: "/generate-serial-number",
+      icon: <GenerateSerialNumberIcon />,
+      isActive: false,
+    },
+    {
+      title: "Overview",
+      url: "/factory-overview",
+      icon: <FactoryOverview />,
+      isActive: false,
+    },
+  ];
+  
+  const factoryNavMenuBottom = [
+    {
+      title: "Support",
+      onClick: ()=> setSupportModal(true),
+      icon: <SupportIcon />,
+      isActive: false,
+    },
+  ];
+
   const { user } = useAuth();
   const sidebarUser = user
-    ? { name: user.name, email: user.email }
-    : { name: "", email: "" };
-
+  ? { name: user.name, email: user.email }
+  : { name: "", email: "" };
+  
 
     const sidebarMainMenu = () => {
       switch(user?.role) {
@@ -165,6 +169,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={sidebarMainMenu()} />
         <div className="mt-auto pt-5"></div>
         <NavMain items={sidebarBottomMenu()} />
+        <SupportModal open={supportModal} setOpen={setSupportModal} />
       </SidebarContent>
       <div className="border-t mx-5"></div>
       <SidebarFooter>
