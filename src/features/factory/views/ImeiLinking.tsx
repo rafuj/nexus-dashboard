@@ -2,13 +2,77 @@ import { Helmet } from "react-helmet-async";
 
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip"
-import { InfoIcon, RotateCcw } from "lucide-react";
+import { InfoIcon, RotateCcw, Search } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/components/ui/tooltip"
 import BoxIcons from "@/assets/icons/box-icons.svg?react"
 import CheckCircleIcon from "@/assets/icons/check-circle.svg?react"
 import CheckIcon from "@/assets/icons/check.svg?react"
+import { cn } from "@/lib/utils";
+import { DataTable, DataTablePagination } from "@/shared/components/data-table";
+import { Input } from "@/shared/components/ui/input";
+import { useMemo, useState } from "react";
+import { getCoreRowModel, useReactTable, type PaginationState, type SortingState } from "@tanstack/react-table";
+import { factoryColumns } from "../components/factoryColumns";
+import { queryImeiLinkingPage } from "../server/queryImeiLinkingPage";
+
+const PAGE_SIZE = 5;
 
 export default function ImeiLinking() {
+  const [search, setSearch] = useState<string>("");
+  const [sorting, setSorting] = useState<SortingState>([
+      { id: "serialNumber", desc: false },
+    ]);
+  
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: PAGE_SIZE,
+  });
+  
+  const columns = useMemo(() => factoryColumns(), []);
+
+
+  const resetPage = () =>
+    setPagination((p) => ({
+      ...p,
+      pageIndex: 0,
+    }));
+
+  const pageResult = useMemo(
+    () =>
+      queryImeiLinkingPage({
+        search,
+        pageIndex: pagination.pageIndex,
+        pageSize: pagination.pageSize,
+        sorting,
+      }),
+    [
+      search,
+      pagination.pageIndex,
+      pagination.pageSize,
+      sorting,
+    ],
+  );
+
+  const table = useReactTable({
+      data: pageResult.rows,
+      columns,
+      rowCount: pageResult.totalCount,
+      manualPagination: true,
+      manualSorting: true,
+      autoResetPageIndex: false,
+      getRowId: (row) => row.id,
+      getCoreRowModel: getCoreRowModel(),
+      onPaginationChange: setPagination,
+      onSortingChange: (updater) => {
+        setSorting(updater);
+        resetPage();
+      },
+      state: {
+        pagination,
+        sorting,
+      },
+    });
+
   return (
     <>
       <Helmet>
@@ -126,6 +190,44 @@ export default function ImeiLinking() {
                 </div>
               </div>
             </div>
+            <div
+                className={cn(
+                  "bg-white border rounded-[10px] border-border py-5 px-4",
+                )}
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-4 pb-4 border-b">
+                  <div>
+                    <h6 className="font-semibold text-base">Recently Linked</h6>
+                    <div className="text-sm">View recently linked IMEI numbers and cabinet serial numbers.</div>
+                  </div>
+                  <div>
+                    <div className="relative max-w-[434px] ml-auto">
+                      <Search
+                        className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2"
+                        aria-hidden
+                      />
+                      <Input
+                        placeholder="Search serial number or IMEI..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="pl-9 h-10 border border-border bg-white md:!h-12.5"
+                        autoComplete="off"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <DataTable
+                  table={table}
+                  emptyMessage="No cabinets match your filters."
+                  tableClassName="text-accent-foreground"
+                />
+                <div className="border-border border-t pt-4">
+                  <DataTablePagination
+                    table={table}
+                    navLabel="Cabinets table pagination"
+                  />
+                </div>
+              </div>
           </div>
         </div>
       </main>
