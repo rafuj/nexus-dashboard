@@ -1,6 +1,6 @@
 import { useState, type Dispatch, type SetStateAction } from "react"
 "use client"
-import { InfoIcon, LucideSearch, PlusCircle, Trash2, XCircle } from "lucide-react"
+import { InfoIcon, LucideSearch, PlusCircle, Trash, Trash2, XCircle } from "lucide-react"
 import {
   Drawer,
   DrawerContent,
@@ -18,6 +18,8 @@ import { Icons } from "@/app/icons/icons"
 import { cn } from "@/lib/utils"
 import { groupIcons } from "../mock/group-icons"
 
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select"
+import { members } from "../mock/settingsListData"
 interface EditGroupDrawerProps {
   open: boolean,
   setOpen: Dispatch<SetStateAction<boolean>>,
@@ -285,7 +287,71 @@ export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen
                         </div>
                       </div>
                     </div>
-                    <div className="border-t border-border"></div>
+                    <div className="pb-4">
+                      <h6 className="text-sm font-semibold">Members</h6>
+                      <p className="text-xs mb-3">Update role or remove member from this group</p>
+                      <div className="border rounded-[10px] mt-3.75 p-4">
+                        <table className="w-full">
+                          <colgroup>
+                            <col className="w-1/3" />
+                            <col className="w-1/4" />
+                            <col className="w-1/4" />
+                          </colgroup>
+                          <thead>
+                            <tr>
+                              <th className="pb-2 text-xs font-semibold text-accent-foreground text-left">Member</th>
+                              <th className="pb-2 text-xs font-semibold text-accent-foreground text-left">Role</th>
+                              <th className="pb-2 text-xs font-semibold text-accent-foreground">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {members.map((member) => (
+                              <tr key={member.id}>
+                                <td className="py-1.5">
+                                  <div className="flex items-center gap-2 text-xs font-medium text-accent-foreground">
+                                    <img
+                                      src={member.avatar}
+                                      className="size-9 rounded-full object-cover aspect-square"
+                                      alt={member.name}
+                                    />
+                                    <span>{member.name}</span>
+                                  </div>
+                                </td>
+
+                                <td className="py-1.5">
+                                  <Select defaultValue={member.role}>
+                                    <SelectTrigger className="w-full !h-8 text-sm">
+                                      <div className="flex w-full items-center gap-1 text-xs text-accent-foreground">
+                                        <span className="w-0 grow text-left line-clamp-1">
+                                          <SelectValue placeholder="Change" />
+                                        </span>
+                                      </div>
+                                    </SelectTrigger>
+
+                                    <SelectContent>
+                                      <SelectItem value="admin">Admin</SelectItem>
+                                      <SelectItem value="editor">Editor</SelectItem>
+                                      <SelectItem value="viewer">Viewer</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </td>
+
+                                <td>
+                                  <div className="flex justify-center">
+                                    <Button
+                                      type="button"
+                                      className="h-7.5 w-7.5 rounded-full bg-card-error text-error"
+                                    >
+                                      <Trash2 size={14} />
+                                    </Button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
                   </div>
                 </DrawerDescription>
                 <DrawerFooter className="py-5 flex-row justify-end">
