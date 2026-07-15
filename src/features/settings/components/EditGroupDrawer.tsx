@@ -27,7 +27,7 @@ interface EditGroupDrawerProps {
 export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen, children}) => {
     const [selectedCabinets, setSelectedCabinets] = useState<typeof cabinets>([])
 
-    const [selectedIconId, setSelectedIconId] = useState<string>("group-icon-2")
+    const [selectedIconId, setSelectedIconId] = useState<string>("icon-5")
 
     // Add cabinet
     const handleAdd = (cabinet: any) => {
@@ -93,14 +93,14 @@ export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen
                     <div className="mt-5">
                       <div className="flex justify-between text-sm">
                         <span className="font-medium text-accent-foreground">Icons</span>
-                        <span>16 icons</span>
+                        <span>{groupIcons.length} icons</span>
                       </div>
                       <div className="mt-3 border card-neutral p-[15px] rounded-[10px] bg-chip flex flex-wrap gap-2.25">
                         {groupIcons.map((icon) => (
                           <button type="button" className={cn("size-12.5 rounded-[10px] bg-white text-foreground border border-border flex justify-center items-center",{
                             "bg-[#615FFF] text-white border-[#615FFF]" : selectedIconId === icon.id
                           })} key={icon.id} onClick={()=> setSelectedIconId(icon.id)}>
-                            {<icon.icon className="size-5.5" />}
+                            {<icon.icon className="size-10" />}
                           </button> 
                         )
                         )}
