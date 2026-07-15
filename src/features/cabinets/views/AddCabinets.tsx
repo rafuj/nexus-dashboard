@@ -1,6 +1,6 @@
 "use client";
 import { Helmet } from "react-helmet-async";
-import { Check, CheckCircle, ChevronLeft, ChevronRight, CircleCheck, Info, InfoIcon, ShoppingCart, X, XCircle } from "lucide-react";
+import {  ChevronDown, ChevronLeft, ChevronRight, CircleCheck, Info, InfoIcon, Settings, ShoppingCart } from "lucide-react";
 
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
@@ -17,17 +17,19 @@ import { DatePicker } from "@/shared/components/ui/date-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { cn } from "@/lib/utils";
 import SchedulePicker from "../components/SchedulePicker";
-import type { AccessTypeI, AssetType, AvailabilityType, BrightnessType, ColorType, DayConfig, PadsType, StepType, VolumeType } from "../types/addCabinet";
+import type { AccessTypeI, AvailabilityType, BrightnessType, ColorType, DayConfig, PadsType, StepType, VolumeType } from "../types/addCabinet";
 import { assetTypeList, availabilityTypeList, brightnessList, colorList, dayList, padsTypeList, STEPS, volumeList } from "../mock/addCabinetData";
 import { ConfirmationModal } from "../components/ConfirmationModal";
 import { Checkbox } from "@/shared/components/ui/checkbox";
 import { AVAILABLE_CREDITS } from "@/features/dashboard/mock/mockDashboardStats";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
+import { SidebarMenuButton } from "@/shared/components/ui/sidebar";
 
 export default function AddCabinets() {
   const navigate = useNavigate();
 
   const [step, setStep] = useState<StepType>('basic-information')
-  const [assetType, setAssetType] = useState<AssetType>('aed')
+  const [assetType, setAssetType] = useState<string>(assetTypeList[0].value)
   const [padsType, setPadsType] = useState<PadsType>('adult')
   const [volume, setVolume] = useState<VolumeType>('0%')
   const [brightness, setBrightness] = useState<BrightnessType>('0%')
@@ -38,6 +40,9 @@ export default function AddCabinets() {
 
   const [padsExpiration, setPadsExpiration] = useState<Date | undefined>(new Date())
   const [batteryExpiration, setBatteryExpiration] = useState<Date | undefined>(new Date())
+
+  const [assetExpiration, setAssetExpiration] = useState<Date | undefined>(new Date())
+  const [checkupDate, setCheckupDate] = useState<Date | undefined>(new Date())
 
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false)
 
@@ -341,115 +346,176 @@ export default function AddCabinets() {
               </div>
               <div>
                 <Label className="text-xs text-accent-foreground font-medium block mb-3">Type of assets<span className="text-error">*</span></Label>
-                <CustomRadioGroup value={assetType} setValue={setAssetType} list={assetTypeList} />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <SidebarMenuButton
+                      size="lg"
+                      className="data-[state=open]:text-sidebar-accent-foreground cursor-pointer rounded-none !bg-transparent !ring-0 border border-border h-12.5 rounded-[10px] font-semibold !text-accent-foreground !px-5 text-xs"
+                    >
+                      {assetTypeList.find(i => i.value === assetType)?.label}
+                      <ChevronDown className="ml-auto size-4" />
+                    </SidebarMenuButton>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="rounded-lg w-auto min-w-[245px] p-3"
+                    side={"bottom"}
+                    align="end"
+                    sideOffset={4}
+                  >
+                    <DropdownMenuGroup>
+                      {assetTypeList.map((option) => (
+                        <DropdownMenuItem className="text-accent-foreground font-semibold text-xs h-10 py-2 px-2.5 hover:!bg-chip" onClick={()=> setAssetType(option.value)}>
+                          {option.label}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 my-3.75 gap-4">
-                <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Pads expiration date<span className="text-error">*</span></Label>
-                  <DatePicker value={padsExpiration} onChange={setPadsExpiration} />
+              {assetType === "fire-extinguisher" ? <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 my-3.75 gap-4">
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand</Label>
+                      <Input placeholder="e.g. Acme" className="h-12.5 px-5 placeholder:text-accent-foreground/20" />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Model</Label>
+                      <Input placeholder="e.g. Pro 2000" className="h-12.5 px-5 placeholder:text-accent-foreground/20" />
+                    </div>
                 </div>
-                <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery expiration date<span className="text-error">*</span></Label>
-                  <DatePicker value={batteryExpiration} onChange={setBatteryExpiration} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 my-3.75 gap-4">
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Asset Expiration Date<span className="text-error">*</span></Label>
+                    <DatePicker value={assetExpiration} onChange={setAssetExpiration} className="!bg-white text-xs pl-5 pr-4" />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Check-Up Date<span className="text-error">*</span></Label>
+                    <DatePicker value={checkupDate} onChange={setCheckupDate} className="!bg-white text-xs pl-5 pr-4" />
+                  </div>
+                  <div className="sm:col-span-2 xl:col-span-3">
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Notes<span className="text-error">*</span></Label>
+                    <Textarea
+                      placeholder="Add any additional notes..."
+                      autoComplete="off"
+                      className="p-5 placeholder:text-accent-foreground/20"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div>
-                <Label className="text-xs text-accent-foreground font-medium block mb-3">Pads type<span className="text-error">*</span></Label>
-                <CustomRadioGroup value={padsType} setValue={setPadsType} list={padsTypeList} />
-              </div>
+              </> :
+                <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 my-3.75 gap-4">
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Pads expiration date<span className="text-error">*</span></Label>
+                      <DatePicker value={padsExpiration} onChange={setPadsExpiration} className="!bg-white text-xs pl-5 pr-4" />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery expiration date<span className="text-error">*</span></Label>
+                      <DatePicker value={batteryExpiration} onChange={setBatteryExpiration} className="!bg-white text-xs pl-5 pr-4" />
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Pads type<span className="text-error">*</span></Label>
+                    <CustomRadioGroup value={padsType} setValue={setPadsType} list={padsTypeList} />
+                  </div>
+                </>
+              }
             </div>
-            {/* Battery Information */}
-            <div className="mt-5">
-              <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75">
-                <span className="w-0 grow">Pads Information</span>
-                <InfoIcon size={20} />
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 my-3.75 gap-4">
-                <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">1st set pads for<span className="text-error">*</span></Label>
-                  <Select>
-                    <SelectTrigger className="w-full !h-12.5">
-                      <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-                        <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Adult + Child" /></span>
-                      </div>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="adult+children">Adult + Child</SelectItem>
-                      <SelectItem value="adult">Adult Only</SelectItem>
-                      <SelectItem value="children">Children</SelectItem>
-                    </SelectContent>
-                  </Select>
+            {assetType !== "fire-extinguisher" &&
+              <>
+                {/* Battery Information */}
+                <div className="mt-5">
+                  <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75">
+                    <span className="w-0 grow">Pads Information</span>
+                    <InfoIcon size={20} />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 my-3.75 gap-4">
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">1st set pads for<span className="text-error">*</span></Label>
+                      <Select>
+                        <SelectTrigger className="w-full !h-12.5">
+                          <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
+                            <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Adult + Child" /></span>
+                          </div>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="adult+children">Adult + Child</SelectItem>
+                          <SelectItem value="adult">Adult Only</SelectItem>
+                          <SelectItem value="children">Children</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">1st set pads expiration date<span className="text-error">*</span></Label>
+                      <DatePicker className="!bg-white text-xs pl-5 pr-4" />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">1st set pads Iot number<span className="text-error">*</span></Label>
+                      <Input
+                        placeholder="e.g. 14454"
+                        autoComplete="off"
+                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">2nd set pads for<span className="text-error">*</span></Label>
+                      <Select>
+                        <SelectTrigger className="w-full !h-12.5">
+                          <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
+                            <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Adult + Child" /></span>
+                          </div>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="adult+children">Adult + Child</SelectItem>
+                          <SelectItem value="adult">Adult Only</SelectItem>
+                          <SelectItem value="children">Children</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">2nd set pads expiration date<span className="text-error">*</span></Label>
+                      <DatePicker className="!bg-white text-xs pl-5 pr-4" />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">2nd set pads Iot number<span className="text-error">*</span></Label>
+                      <Input
+                        placeholder="e.g. 14454"
+                        autoComplete="off"
+                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">1st set pads expiration date<span className="text-error">*</span></Label>
-                  <DatePicker />
+                {/* Pads Information */}
+                <div className="mt-5">
+                  <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75">
+                    <span className="w-0 grow">Battery Information</span>
+                    <InfoIcon size={20} />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 my-3.75 gap-4">
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery serial number<span className="text-error">*</span></Label>
+                      <Input
+                        placeholder="e.g. SN928492819"
+                        autoComplete="off"
+                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery expiration date<span className="text-error">*</span></Label>
+                      <DatePicker className="!bg-white text-xs pl-5 pr-4" />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery Iot number<span className="text-error">*</span></Label>
+                      <Input
+                        placeholder="e.g. B-98765"
+                        autoComplete="off"
+                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">1st set pads Iot number<span className="text-error">*</span></Label>
-                  <Input
-                    placeholder="e.g. 14454"
-                    autoComplete="off"
-                    className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">2nd set pads for<span className="text-error">*</span></Label>
-                  <Select>
-                    <SelectTrigger className="w-full !h-12.5">
-                      <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-                        <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Adult + Child" /></span>
-                      </div>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="adult+children">Adult + Child</SelectItem>
-                      <SelectItem value="adult">Adult Only</SelectItem>
-                      <SelectItem value="children">Children</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">2nd set pads expiration date<span className="text-error">*</span></Label>
-                  <DatePicker />
-                </div>
-                <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">2nd set pads Iot number<span className="text-error">*</span></Label>
-                  <Input
-                    placeholder="e.g. 14454"
-                    autoComplete="off"
-                    className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                  />
-                </div>
-              </div>
-            </div>
-            {/* Pads Information */}
-            <div className="mt-5">
-              <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75">
-                <span className="w-0 grow">Battery Information</span>
-                <InfoIcon size={20} />
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 my-3.75 gap-4">
-                <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery serial number<span className="text-error">*</span></Label>
-                  <Input
-                    placeholder="e.g. SN928492819"
-                    autoComplete="off"
-                    className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                  />
-                </div>
-                <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery expiration date<span className="text-error">*</span></Label>
-                  <DatePicker />
-                </div>
-                <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery Iot number<span className="text-error">*</span></Label>
-                  <Input
-                    placeholder="e.g. B-98765"
-                    autoComplete="off"
-                    className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                  />
-                </div>
-              </div>
-            </div>
+              </>
+            }
           </div>
         )
       default: 
@@ -475,7 +541,7 @@ export default function AddCabinets() {
                     <Textarea
                       placeholder="Describe the location or any important details..."
                       autoComplete="off"
-                      className="px-5 placeholder:text-accent-foreground/20"
+                      className="p-5 placeholder:text-accent-foreground/20"
                     />
                   </div>
                 </div>
@@ -497,7 +563,7 @@ export default function AddCabinets() {
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Address Line 2 <span className="text-error">*</span></Label>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Address Line 2</Label>
                     <Input
                       placeholder="Enter zip code"
                       autoComplete="off"

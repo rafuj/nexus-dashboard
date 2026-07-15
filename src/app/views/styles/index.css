@@ -59,6 +59,10 @@
   --color-success: #308446;
   --color-card-success-stroke: #C6F1C8;
 
+  --color-card-success2: #E6F7EF;
+  --color-success2: #25A96C;
+  --color-card-success2-stroke: #C8E9DA;
+
   --color-card-warning: #FFF1E8;
   --color-warning: #E15501;
   --color-card-warning-stroke: #F9DFD4;
@@ -171,6 +175,9 @@
 
   .card-success {
     @apply bg-card-success border-card-success-stroke;
+  }
+  .card-success2 {
+    @apply bg-card-success2 border-card-success2-stroke;
   }
 
   .card-warning {

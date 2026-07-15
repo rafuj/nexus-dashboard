@@ -1,4 +1,5 @@
 import type { SettingsGroupRow, UserDashboardItem } from "../types/settingsList";
+import avatar from '@/assets/avatar.png'
 
 export const mockGroupData: SettingsGroupRow[] = [
   {
@@ -213,4 +214,27 @@ export const membersData: UserDashboardItem[] = [
     notifications: { email: false, chat: true },
     status: "Suspended"
   }
+];
+
+
+
+export const members = [
+  {
+    id: 1,
+    name: "Sarah Jenkins",
+    role: "admin",
+    avatar,
+  },
+  {
+    id: 2,
+    name: "John Carter",
+    role: "editor",
+    avatar,
+  },
+  {
+    id: 3,
+    name: "Emily Watson",
+    role: "viewer",
+    avatar,
+  },
 ];

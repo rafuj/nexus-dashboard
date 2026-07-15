@@ -1,13 +1,16 @@
 import type { SortingState } from "@tanstack/react-table"
 
 import { mockCabinetActivities } from "../mock/mockCabinetsActivity"
-import type { CabinetActivityRow } from "../types/activityList"
+import type { ActivityStatus, CabinetActivityRow } from "../types/activityList"
 
 export type CabinetActivitiesQuery = {
   search: string
   pageIndex: number
   pageSize: number
   sorting: SortingState
+  status: ActivityStatus
+  activityType: string
+  cabinetGroup: string
 }
 
 export type CabinetActivitiesPageResult = {
@@ -18,26 +21,44 @@ export type CabinetActivitiesPageResult = {
 function filterActivities(
   rows: readonly CabinetActivityRow[],
   search: string,
+  status: ActivityStatus,
 ): CabinetActivityRow[] {
-  const q = search.trim().toLowerCase()
-  
-  return rows.filter((row) => {
-    if (q) {
-      const inCabinet = row.cabinetCode.toLowerCase().includes(q)
-      const inLocation = row.location.toLowerCase().includes(q)
-      const inActivity = row.activity.toLowerCase().includes(q)
-      
-      const addedByName = typeof row.addedBy === "object" ? row.addedBy.name.toLowerCase() : row.addedBy.toLowerCase()
-      const inAddedBy = addedByName.includes(q)
-      
-      const inNotes = row.notes ? row.notes.toLowerCase().includes(q) : false
+  const q = search.trim().toLowerCase();
 
-      if (!inCabinet && !inLocation && !inActivity && !inAddedBy && !inNotes) {
-        return false
+  return rows.filter((row) => {
+    // Filter by tab status
+    if (row.status !== status) {
+      return false;
+    }
+
+    if (q) {
+      const inCabinet = row.cabinetCode.toLowerCase().includes(q);
+      const inLocation = row.location.toLowerCase().includes(q);
+      const inActivity = row.activity.toLowerCase().includes(q);
+
+      const addedByName =
+        typeof row.addedBy === "object"
+          ? row.addedBy.name.toLowerCase()
+          : row.addedBy.toLowerCase();
+
+      const inAddedBy = addedByName.includes(q);
+      const inNotes = row.notes
+        ? row.notes.toLowerCase().includes(q)
+        : false;
+
+      if (
+        !inCabinet &&
+        !inLocation &&
+        !inActivity &&
+        !inAddedBy &&
+        !inNotes
+      ) {
+        return false;
       }
     }
-    return true
-  })
+
+    return true;
+  });
 }
 
 function compareRows(a: CabinetActivityRow, b: CabinetActivityRow, columnId: string): number {
@@ -75,6 +96,7 @@ export function queryCabinetsActivityPage(query: CabinetActivitiesQuery): Cabine
   const filtered = filterActivities(
     mockCabinetActivities,
     query.search,
+    query.status
   )
 
   const sorted = [...filtered]

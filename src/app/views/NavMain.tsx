@@ -31,7 +31,8 @@ type NavSubItem = {
 
 type NavItem = {
   title: string;
-  url: string;
+  url?: string;
+  onClick?: () => void;
   icon: React.ReactNode;
   isActive?: boolean;
   permissions?: string[];
@@ -74,8 +75,8 @@ function NavMainItem({
 
   const hasSubItems = visibleSubItems.length > 0;
   const isItemActive =
-    isPathActive(pathname, item.url) ||
-    visibleSubItems.some((subItem) => isPathActive(pathname, subItem.url));
+    item.url ? (isPathActive(pathname, item.url) ||
+    visibleSubItems.some((subItem) => isPathActive(pathname, subItem.url))) : false;
   const shouldOpen = hasSubItems && isItemActive;
   const [open, setOpen] = React.useState(shouldOpen);
 
@@ -85,7 +86,7 @@ function NavMainItem({
 
   const menuButton = (
     <SidebarMenuButton asChild isActive={isItemActive} className={visibleSubItems?.length ? '!bg-transparent [&>svg]:text-primary' : ''}>
-      <Link to={item.url}>
+      <Link to={item.url??"#"} onClick={()=> item?.onClick?.()}>
         {item.icon}
         <span>{item.title}</span>
       </Link>

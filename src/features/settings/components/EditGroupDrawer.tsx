@@ -1,6 +1,6 @@
 import { useState, type Dispatch, type SetStateAction } from "react"
 "use client"
-import { InfoIcon, LucideSearch, PlusCircle, Trash2, XCircle } from "lucide-react"
+import { InfoIcon, LucideSearch, PlusCircle, Trash, Trash2, XCircle } from "lucide-react"
 import {
   Drawer,
   DrawerContent,
@@ -16,7 +16,10 @@ import { Button } from "@/shared/components/ui/button";
 import { Textarea } from "@/shared/components/ui/textarea"
 import { Icons } from "@/app/icons/icons"
 import { cn } from "@/lib/utils"
+import { groupIcons } from "../mock/group-icons"
 
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select"
+import { members } from "../mock/settingsListData"
 interface EditGroupDrawerProps {
   open: boolean,
   setOpen: Dispatch<SetStateAction<boolean>>,
@@ -25,6 +28,8 @@ interface EditGroupDrawerProps {
 
 export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen, children}) => {
     const [selectedCabinets, setSelectedCabinets] = useState<typeof cabinets>([])
+
+    const [selectedIconId, setSelectedIconId] = useState<string>("icon-5")
 
     // Add cabinet
     const handleAdd = (cabinet: any) => {
@@ -70,7 +75,7 @@ export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen
                                   type="text"
                                   placeholder="e.g. North Region Sites"
                                   required
-                                  className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-12.5 md:px-5"
+                                  className="placeholder:text-foreground/40 bg-white border-border h-10 lg:h-12.5 md:px-5"
                                 />
                               </div>
                             </Field>
@@ -80,14 +85,29 @@ export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen
                                 <Textarea
                                   placeholder="e.g. North Region Sites"
                                   required
-                                  className="placeholder:text-foreground/40 bg-background/40 border-border min-h-[70px] md:px-5"
+                                  className="placeholder:text-foreground/40 bg-white border-border min-h-[70px] md:p-5 resize-none"
                                 />
                               </div>
                             </Field>
                         </div>
                         </FieldGroup>
                     </div>
-                    <div className="mt-5 border-t border-border"></div>
+                    <div className="mt-5">
+                      <div className="flex justify-between text-sm">
+                        <span className="font-medium text-accent-foreground">Icons</span>
+                        <span>{groupIcons.length} icons</span>
+                      </div>
+                      <div className="mt-3 border card-neutral p-[15px] rounded-[10px] bg-chip flex flex-wrap gap-2.25">
+                        {groupIcons.map((icon) => (
+                          <button type="button" className={cn("size-12.5 rounded-[10px] bg-white text-foreground border border-border flex justify-center items-center",{
+                            "bg-[#615FFF] text-white border-[#615FFF]" : selectedIconId === icon.id
+                          })} key={icon.id} onClick={()=> setSelectedIconId(icon.id)}>
+                            {<icon.icon className="size-10" />}
+                          </button> 
+                        )
+                        )}
+                      </div>
+                    </div>
                     <div className="pt-4">
                       <h6 className="text-sm font-semibold">Cabinets in this group (48)</h6>
                       <p className="text-xs mb-3">Cabinet assigned to this group will inherit its notifications and settings.</p>
@@ -154,7 +174,7 @@ export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen
                           type="text"
                           placeholder="Search cabinet name..."
                           required
-                          className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-12.5 pl-10 pr-12 peer"
+                          className="placeholder:text-foreground/40 bg-white border-border h-10 lg:h-12.5 pl-10 pr-12 peer"
                         />
                         <Button
                           type="button"
@@ -267,7 +287,71 @@ export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen
                         </div>
                       </div>
                     </div>
-                    <div className="border-t border-border"></div>
+                    <div className="pb-4">
+                      <h6 className="text-sm font-semibold">Members</h6>
+                      <p className="text-xs mb-3">Update role or remove member from this group</p>
+                      <div className="border rounded-[10px] mt-3.75 p-4">
+                        <table className="w-full">
+                          <colgroup>
+                            <col className="w-1/3" />
+                            <col className="w-1/4" />
+                            <col className="w-1/4" />
+                          </colgroup>
+                          <thead>
+                            <tr>
+                              <th className="pb-2 text-xs font-semibold text-accent-foreground text-left">Member</th>
+                              <th className="pb-2 text-xs font-semibold text-accent-foreground text-left">Role</th>
+                              <th className="pb-2 text-xs font-semibold text-accent-foreground">Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {members.map((member) => (
+                              <tr key={member.id}>
+                                <td className="py-1.5">
+                                  <div className="flex items-center gap-2 text-xs font-medium text-accent-foreground">
+                                    <img
+                                      src={member.avatar}
+                                      className="size-9 rounded-full object-cover aspect-square"
+                                      alt={member.name}
+                                    />
+                                    <span>{member.name}</span>
+                                  </div>
+                                </td>
+
+                                <td className="py-1.5">
+                                  <Select defaultValue={member.role}>
+                                    <SelectTrigger className="w-full !h-8 text-sm">
+                                      <div className="flex w-full items-center gap-1 text-xs text-accent-foreground">
+                                        <span className="w-0 grow text-left line-clamp-1">
+                                          <SelectValue placeholder="Change" />
+                                        </span>
+                                      </div>
+                                    </SelectTrigger>
+
+                                    <SelectContent>
+                                      <SelectItem value="admin">Admin</SelectItem>
+                                      <SelectItem value="editor">Editor</SelectItem>
+                                      <SelectItem value="viewer">Viewer</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </td>
+
+                                <td>
+                                  <div className="flex justify-center">
+                                    <Button
+                                      type="button"
+                                      className="h-7.5 w-7.5 rounded-full bg-card-error text-error"
+                                    >
+                                      <Trash2 size={14} />
+                                    </Button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
                   </div>
                 </DrawerDescription>
                 <DrawerFooter className="py-5 flex-row justify-end">
@@ -281,7 +365,7 @@ export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen
                     type="submit"
                     className="h-10 lg:h-12.5 rounded-full text-sm px-5 lg:px-7 xl:min-w-[180px]"
                   >
-                    Create Group
+                    Save Changes
                   </Button>
                 </DrawerFooter>
             </DrawerContent>

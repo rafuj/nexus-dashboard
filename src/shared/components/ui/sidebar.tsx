@@ -625,7 +625,7 @@ function SidebarMenuSub({ className, ...props }: React.ComponentProps<"ul">) {
       data-slot="sidebar-menu-sub"
       data-sidebar="menu-sub"
       className={cn(
-        "ml-3.5 flex min-w-0 translate-x-px flex-col px-3.25 py-0.5 group-data-[collapsible=icon]:hidden relative before:w-[2px] before:absolute before:bg-border before:content-[''] before:h-[calc(100%-30px)] before:left-0",
+        "ml-3.5 flex min-w-0 translate-x-px flex-col px-3.25 py-0.5 group-data-[collapsible=icon]:hidden relative before:w-[2px] before:absolute before:bg-border before:content-[''] before:h-[calc(100%-30px)] before:left-0 overflow-hidden",
         className,
       )}
       {...props}
@@ -667,7 +667,7 @@ function SidebarMenuSubButton({
       data-size={size}
       data-active={isActive}
       className={cn(
-        "text-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:!bg-primary active:!text-white data-active:[&>svg]:!text-white data-active:!bg-primary data-active:!text-white flex h-9.5 min-w-0 -translate-x-px items-center gap-2.5 rounded-lg px-2.5 outline-hidden group-data-[collapsible=icon]:hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[size=md]:text-sm data-[size=sm]:text-xs [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 before:absolute before:w-3 before:h-2 before:content-[''] before:absolute active:before:border-primary data-active:before:border-primary before:right-full before:bottom-1/2 before:border-l-2 before:border-b-2 before:rounded-bl-full before:border-border relative active:before:h-5 data-active:before:h-5",
+        "text-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:!bg-primary active:!text-white data-active:[&>svg]:!text-white data-active:!bg-primary data-active:!text-white flex h-9.5 min-w-0 -translate-x-px items-center gap-2.5 rounded-lg px-2.5 outline-hidden group-data-[collapsible=icon]:hidden focus-visible:ring-2 disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[size=md]:text-sm data-[size=sm]:text-xs [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 before:absolute before:w-3 before:h-2 before:content-[''] before:absolute active:before:border-primary data-active:before:border-primary before:right-full before:bottom-1/2 before:border-l-2 before:border-b-2 before:rounded-bl-full before:border-border relative active:before:h-500 data-active:before:h-500",
         className,
       )}
       {...props}

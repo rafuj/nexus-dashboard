@@ -18,26 +18,58 @@ import { CabinetsActivityListToolbar } from "../components/CabinetsActivityListT
 import type { DateRange } from "react-day-picker";
 import { cabinetsActivityTableColumns } from "../components/cabinetsActivityTableColumns";
 import { queryCabinetsActivityPage } from "../server/queryCabinetsActivityPage";
-
-
-const STATUS_FILTER_ALL = "all";
-const TYPE_FILTER_ALL = "all";
-const CITIES_FILTER_ALL = "all";
-const STREETS_FILTER_ALL = "all";
+import { useQueryState } from "nuqs";
+import LastUpdateIcon from "@/assets/icons/last-update.svg?react"
+import { mockCabinetActivities } from "../mock/mockCabinetsActivity";
+const CABINET_FILTER_ALL = "all";
+const ACTIVITY_FILTER_ALL = "all";
 const PAGE_SIZE = 8;
+export type TabValue = "Ongoing" | "Resolved";
+
+interface TabItem {
+  label: string;
+  value: TabValue;
+  count: number;
+}
+
 
 export default function CabinetsActivity() {
   const [search, setSearch] = useState("");
-  const [cabinetGroup, setCabinetGroup] = useState<string>(CITIES_FILTER_ALL);
-  const [activityType, setActivityType] = useState<string>(STREETS_FILTER_ALL);
+  const [cabinetGroup, setCabinetGroup] = useState<string>(CABINET_FILTER_ALL);
+  const [activityType, setActivityType] = useState<string>(ACTIVITY_FILTER_ALL);
   const [sorting, setSorting] = useState<SortingState>([
     { id: "cabinet", desc: false },
   ]);
   const today = new Date();
   const [dateRange, setDateRange] = useState<DateRange>({
-    from:today,
+    from: today,
     to: today
   })
+
+  const tabCounts = useMemo(() => {
+    return {
+      Ongoing: mockCabinetActivities.filter(
+        (item) => item.status === "Ongoing"
+      ).length,
+      Resolved: mockCabinetActivities.filter(
+        (item) => item.status === "Resolved"
+      ).length,
+    };
+  }, []);
+
+  const tablist : TabItem[] = [
+    {
+      label:"Ongoing Activities", 
+      value:"Ongoing",
+      count: tabCounts.Ongoing
+    }, 
+    {
+      label:"Resolved Activities", 
+      value:"Resolved",
+      count: tabCounts.Resolved
+    }
+  ]
+  const [tabValue, setTabValue] = useQueryState("tabs", { defaultValue: "Ongoing" })
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -51,6 +83,9 @@ export default function CabinetsActivity() {
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
         sorting,
+        activityType,
+        cabinetGroup,
+        status: tabValue
       }),
     [
       search,
@@ -58,17 +93,22 @@ export default function CabinetsActivity() {
       pagination.pageSize,
       sorting,
       cabinetGroup,
-      activityType
+      activityType,
+      tabValue
     ],
   );
 
-  const columns = useMemo(() => cabinetsActivityTableColumns, []);
+  const columns = useMemo(() => cabinetsActivityTableColumns(tabValue), [tabValue]);
 
-  const resetPage = () =>
+  const resetPage = () => {
     setPagination((p) => ({
       ...p,
       pageIndex: 0,
     }));
+    setSearch("")
+    setCabinetGroup(CABINET_FILTER_ALL)
+    setActivityType(ACTIVITY_FILTER_ALL)
+  }
 
   // eslint-disable-next-line react-hooks/incompatible-library -- useReactTable
   const table = useReactTable({
@@ -133,40 +173,72 @@ export default function CabinetsActivity() {
               </Link>
           </div>
           <section aria-label="Cabinets">
-            <div className="mb-2.5">
-              <CabinetsActivityListToolbar
-                onSearchChange={(v) => {
-                  setSearch(v);
-                  resetPage();
-                }}
-                {
-                  ...{
-                    search,
-                    activityType,
-                    setActivityType,
-                    cabinetGroup,
-                    setCabinetGroup,
-                    dateRange,
-                    setDateRange
-                  }
-                }
-              />
-            </div>
             <div
               className={cn(
-                "bg-white border rounded-[10px] border-border py-5 px-4",
+                "bg-white border rounded-[10px] border-border",
               )}
             >
-              <h4 className="text-sm font-semibold mb-4">248 Cabinets</h4>
-              <DataTable
-                table={table}
-                emptyMessage="No cabinets match your filters."
-              />
-              <div className="border-border border-t px-4 py-3">
-                <DataTablePagination
+              <div className="px-5">
+                <ul className="flex text-base select-none mb-5 border-b border-border">
+                  {tablist.map((item) => (
+                    <li
+                      key={item.value}
+                      className={cn(
+                        "cursor-pointer border-b-2 border-transparent px-5 py-5 text-accent-foreground",
+                        {
+                          "border-primary font-semibold text-primary":
+                            tabValue === item.value,
+                        }
+                      )}
+                      onClick={() => {
+                          setTabValue(item.value)
+                          resetPage()
+                        }
+                      }
+                    >
+                      {item.label}
+                      <span className={cn("ml-2 text-accent-foreground bg-chip py-1.75 px-3 rounded-full xl:min-w-15 inline-flex justify-center", {
+                        "bg-primary text-white":
+                            tabValue === item.value,
+                      })}>{item.count}</span>
+                    </li>
+                  ))}
+                  <li className="text-sm ml-auto self-center text-accent-foreground flex items-center gap-1.5">
+                     <LastUpdateIcon /> Last update: 13:58
+                  </li>
+                </ul>
+              </div>
+              <div className="px-5">
+                <div className="pb-5">
+                  <CabinetsActivityListToolbar
+                    onSearchChange={(v) => {
+                      setSearch(v);
+                    }}
+                    {
+                      ...{
+                        search,
+                        activityType,
+                        setActivityType,
+                        cabinetGroup,
+                        setCabinetGroup,
+                        dateRange,
+                        setDateRange
+                      }
+                    }
+                  />
+                </div>
+                <DataTable
+                  key={tabValue}
                   table={table}
-                  navLabel="Cabinets table pagination"
-                />
+                  emptyMessage="No cabinets match your filters."
+                  />
+                <div className="border-border border-t px-4 py-3">
+                  <DataTablePagination
+                    key={tabValue}
+                    table={table}
+                    navLabel="Cabinets table pagination"
+                  />
+                </div>
               </div>
             </div>
           </section>
