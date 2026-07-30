@@ -15,6 +15,8 @@ import { PasswordInput } from "@/features/auth/components/PasswordInput";
 import avatar from '@/assets/avatar-placeholder.png'
 import { useRef, useState } from "react"
 import { BriefcaseBusiness, Pen, User2, UserLock } from "lucide-react";
+import { CustomRadioGroup, type RadioOption } from "@/shared/components/CustomRadioGroup";
+import { accountTypeList, type AccountType } from "@/features/auth/views/SignupForm";
 
 interface FormState {
     firstName: string;
@@ -27,7 +29,11 @@ interface FormState {
     vatNumber: string;
     privateAddress: string;
     workAddress: string;
+    accountType: AccountType
 }
+
+
+
 export default function MyAccount() {
 
   const [formState, setFormState] = useState<FormState>({
@@ -40,7 +46,8 @@ export default function MyAccount() {
       chamberOfCommerceNumber: "029472826",
       vatNumber: "CBHSKJSLYYUK73298KD7",
       privateAddress: "1207 Tipu Sultan",
-      workAddress: "Elephant Road Bata Signal Mor"
+      workAddress: "Elephant Road Bata Signal Mor",
+      accountType: "personal"
   }); 
 
   // 1. Manage the image preview state (defaults to your initial avatar)
@@ -112,6 +119,9 @@ export default function MyAccount() {
                       <div className="text-center">
                         <div className="font-medium text-base mt-3 text-accent-foreground">Admin User</div>
                         <div className="text-xs mt-1">Senior Safety Officer</div>
+                        {formState.accountType === 'company' && <div className="text-error text-xs font-semibold mt-3">
+                          Company account
+                        </div>}
                       </div>
                     </div>
                   </div>
@@ -175,6 +185,16 @@ export default function MyAccount() {
                           </Field>
                       </div>
                       <div className="border-t pt-3 mt-5"></div>
+
+                    <Field className="mb-3">
+                        <div>
+                            <FieldLabel className="font-medium text-accent-foreground mb-2.5">Account Type <span className="text-error">*</span> </FieldLabel>
+                            <CustomRadioGroup value={formState.accountType} setValue={(e)=> setFormState(prev => ({
+                                ...prev,
+                                accountType: e
+                              }))} list={accountTypeList} />
+                        </div>
+                    </Field>
                       <h3 className="flex items-center gap-2 font-semibold mb-2 text-lg">
                         <BriefcaseBusiness className="text-primary" size={25} /> <span>Professional Information</span>
                       </h3>

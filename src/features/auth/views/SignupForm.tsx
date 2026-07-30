@@ -17,7 +17,7 @@ import { useRef, useState } from "react"
 import { CustomRadioGroup, type RadioOption } from "@/shared/components/CustomRadioGroup"
 export  type AccountType = 'personal'|'company'
 
-const accountTypeList : RadioOption<AccountType>[] = [
+export const accountTypeList : RadioOption<AccountType>[] = [
   { id: "personal", value: "personal", label: "Personal" },
   { id: "company", value: "company", label: "Company" }
 ];
