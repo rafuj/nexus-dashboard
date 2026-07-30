@@ -2,8 +2,12 @@
 import { ChevronRight } from "lucide-react";
 import { Icons } from "@/app/icons/icons";
 import { Link } from "react-router";
+import { CertificatesDetailsModal } from "./CertificatesDetailsModal";
+import { useState } from "react";
 
 export default function Certificates() {
+    const [open, setOpen] = useState<boolean>(false)
+    
     const statusData = [
         {
             label: "Up to date",
@@ -57,12 +61,13 @@ export default function Certificates() {
                     </tbody>
                 </table>
             </div>
-            <Link to="#" className="text-xs pr-5 relative inline-flex items-center gap-2 text-accent-foreground ">
+            <Link to="#" className="text-xs pr-5 relative inline-flex items-center gap-2 text-accent-foreground" onClick={()=> setOpen(true)}>
                 View certificates
                 <span>
                     <ChevronRight size={16} />
                 </span>
             </Link>
+            <CertificatesDetailsModal open={open} setOpen={setOpen} />
         </div>
     )
 }
