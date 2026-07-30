@@ -14,9 +14,18 @@ import { PasswordInput } from "../components/PasswordInput"
 import { Link } from "react-router"
 import avatar from '@/assets/avatar.png'
 import { useRef, useState } from "react"
+import { CustomRadioGroup, type RadioOption } from "@/shared/components/CustomRadioGroup"
+export  type AccountType = 'personal'|'company'
+
+const accountTypeList : RadioOption<AccountType>[] = [
+  { id: "personal", value: "personal", label: "Personal" },
+  { id: "company", value: "company", label: "Company" }
+];
 
 
 export default function SignupForm({className, ...props } : React.ComponentProps<typeof Card>) {
+    const [accountType, setAccountType] = useState<AccountType>("personal");
+    
     // 1. Manage the image preview state (defaults to your initial avatar)
     const [previewSrc, setPreviewSrc] = useState<string>(avatar); 
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -49,7 +58,7 @@ export default function SignupForm({className, ...props } : React.ComponentProps
             <form>
                 <FieldGroup className="gap-3">
                     {/*  */}
-                    <label className="border border-dashed border-error rounded-[12px] bg-white/40 py-4.5 px-3.75 cursor-poiter">
+                    {/* <label className="border border-dashed border-error rounded-[12px] bg-white/40 py-4.5 px-3.75 cursor-poiter">
                         <div className="flex items-center gap-2.5">
                             <img src={previewSrc} className="size-10 object-cover rounded-full" alt="" />
                             <span className="font-medium text-sm md:text-base w-0 grow"><span className="text-accent-foreground">Profile Picture</span> (optional)</span>
@@ -59,7 +68,26 @@ export default function SignupForm({className, ...props } : React.ComponentProps
                             </svg>
                             <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
                         </div>
-                    </label>
+                    </label> */}
+                    <Field className="mb-3">
+                        <div>
+                            <FieldLabel className="font-medium text-accent-foreground mb-2.5">Account Type <span className="text-error">*</span> </FieldLabel>
+                            <CustomRadioGroup value={accountType} setValue={setAccountType} list={accountTypeList} />
+                        </div>
+                    </Field>
+                    { accountType === "company" &&
+                        <Field className="mb-3">
+                            <div>
+                                <FieldLabel className="font-medium text-accent-foreground mb-2.5">Company Name <span className="text-foreground">(optional)</span></FieldLabel>
+                                <Input
+                                    type="text"
+                                    placeholder="e.g. Global Rescue"
+                                    required
+                                    className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
+                                />
+                            </div>
+                        </Field>
+                    }
                     <div className="grid grid-cols-2 gap-x-4 gap-y-3">
                         <Field>
                             <div>
@@ -88,17 +116,6 @@ export default function SignupForm({className, ...props } : React.ComponentProps
                     <Field>
                         <div>
                             <FieldLabel className="font-medium text-accent-foreground mb-2.5">Phone Number <span className="text-foreground">(optional)</span></FieldLabel>
-                            <Input
-                                type="text"
-                                placeholder="e.g. Global Rescue"
-                                required
-                                className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                            />
-                        </div>
-                    </Field>
-                    <Field>
-                        <div>
-                            <FieldLabel className="font-medium text-accent-foreground mb-2.5">Company Name <span className="text-foreground">(optional)</span></FieldLabel>
                             <Input
                                 type="text"
                                 placeholder="e.g. Global Rescue"
