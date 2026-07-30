@@ -334,7 +334,7 @@ export default function MyAccount() {
                     </div>
                     <div>
                       <FieldLabel className="font-medium text-accent-foreground mb-2.5 hidden md:block">&nbsp;</FieldLabel>
-                      <button className="h-10 lg:h-14 rounded-full flex items-center justify-center bg-accent-foreground text-white py-2 sm:py-3 px-5 rounded-lg text-sm gap-1.25 sm:w-full max-w-[180px]" type="submit">Update Password</button>
+                      <button className="h-10 lg:h-14 rounded-full flex items-center justify-center bg-accent-foreground text-white py-2 sm:py-3 px-5 text-sm gap-1.25 sm:w-full max-w-[180px]" type="submit">Update Password</button>
                     </div>
                   </div>
               </FieldGroup>

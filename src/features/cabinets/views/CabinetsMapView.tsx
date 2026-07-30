@@ -11,6 +11,7 @@ import { useState } from "react";
 import { mockCabinetsList } from "../mock/mockCabinetsList";
 import { cabinetConfig } from "../types/cabinetList";
 import CabinetDashboardMap from "../components/CabinetMapCard";
+import { CabinetsListMapToolbar } from "../components/CabinetsListMapToolbar";
 
 
 const STATUS_FILTER_ALL = "all";
@@ -65,7 +66,7 @@ export default function CabinetsMapView() {
             </h2>
           </div>
           <div className="mb-2.5">
-            <CabinetsListToolbar
+            <CabinetsListMapToolbar
               search={search}
               onSearchChange={(v) => {
                 setSearch(v);

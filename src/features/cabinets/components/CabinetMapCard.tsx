@@ -1,6 +1,6 @@
 import React, { type Dispatch, type SetStateAction } from 'react';
 import { Map, APIProvider, AdvancedMarker, Pin, InfoWindow } from '@vis.gl/react-google-maps';
-import type { CabinetListRow } from '../types/cabinetList';
+import { cabinetConfig, type CabinetListRow } from '../types/cabinetList';
 import { Icons } from '@/app/icons/icons';
 
 
@@ -9,7 +9,11 @@ const pinHexConfig = {
   active: "#308446",
   maintenance: "#E15501",
   offline: "#CC0605",
+
   paused: "#003E91",
+  ok: "#308446",
+  warning: "#E15501",
+  urgent: "#CC0605",
 };
 
 // Text color mappings matching your custom popover text styling
@@ -17,7 +21,11 @@ const textColorConfig = {
   active: "text-success",
   maintenance: "text-warning",
   offline: "text-error",
+
   paused: "text-info",
+  ok: "text-success",
+  warning: "text-warning",
+  urgent: "text-error",
 };
 interface CabinetMapProps {
   cabinets: CabinetListRow[];
@@ -156,7 +164,7 @@ export default function CabinetDashboardMap({ cabinets, openCabinetId, setOpenCa
                             <div className="flex justify-between pt-1.5">
                                 <span>Status</span>
                                 <span className={`font-semibold capitalize ${textColorConfig[cabinet.status] || ""}`}>
-                                ● {cabinet.status}
+                                    ● {cabinet.status}
                                 </span>
                             </div>
 

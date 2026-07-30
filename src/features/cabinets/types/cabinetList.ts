@@ -32,6 +32,19 @@ export type CabinetsListToolbarProps = {
   onCitiesChange: (value: string) => void
 }
 
+export type CabinetsMapToolbarProps = {
+  search: string
+  onSearchChange: (value: string) => void
+  statusFilter: string
+  onStatusFilterChange: (value: string) => void
+  // typeFilter: string
+  // onTypeFilterChange: (value: string) => void
+  cities: string
+  onCitiesChange: (value: string) => void
+  streets: string
+  onStreetsChange: (value: string) => void
+}
+
 export const cabinetConfig = {
   active: {
     bg: "card-success",
