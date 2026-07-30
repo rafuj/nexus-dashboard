@@ -1,6 +1,7 @@
 import type { SortingState } from "@tanstack/react-table"
-import type { CabinetMonitorProps, FilterStatus } from "../types/cabinetMonitor"
-import { mockCabinetData } from "../mock/cabinetMonitor"
+import type { FilterStatus } from "../types/cabinetMonitor"
+import type { Cabinet } from "../types/cabinetList"
+import { mockCabinetsList } from "../mock/mockCabinetsList"
 
 export type CabinetsQuery = {
   search: string
@@ -8,61 +9,57 @@ export type CabinetsQuery = {
   pageSize: number
   sorting: SortingState
   status: FilterStatus
+  id: string
 }
 
 export type CabinetsPageResult = {
-  rows: CabinetMonitorProps[]
+  rows: Cabinet[]
   totalCount: number,
   status?: string | 'all'
 }
 
 export function filterCabinets(
-  rows: readonly CabinetMonitorProps[],
+  rows: readonly Cabinet[],
   search: string,
-  status: string
-): CabinetMonitorProps[] {
+  status: string,
+  id: string
+): Cabinet[] {
   const q = search.trim().toLowerCase();
   const selectedStatus = status.trim().toLowerCase();
+  const selectedId = id.trim();
 
   return rows.filter((row) => {
-    // 1. Status Filter Logic (if status is 'all' or empty, match everything)
+    // Status filter
     const matchesStatus =
       !selectedStatus ||
-      selectedStatus === 'all' ||
+      selectedStatus === "all" ||
       row.status.toLowerCase() === selectedStatus;
 
-    // 2. Search Query Logic (if search query is empty, match everything)
+    // Cabinet ID filter
+    const matchesId =
+      !selectedId || row.id.toString() === selectedId;
+
+    // If there's no search query, only apply status and ID filters
     if (!q) {
-      return matchesStatus;
+      return matchesStatus && matchesId;
     }
 
-    const inName = row.cabinetName.toLowerCase().includes(q);
-    const inCity = row.city.toLowerCase().includes(q);
-    const inHealth = row.assetHealth.toLowerCase().includes(q);
-    const inPresence = row.assetPresence.toLowerCase().includes(q);
-    const inDoor = row.doorStatus.toLowerCase().includes(q);
-    const inTemp = row.temperature.toString().includes(q);
-    const inStatusText = row.status.toLowerCase().includes(q);
-    const inTooltip = row.healthTooltip
-      ? row.healthTooltip.toLowerCase().includes(q)
-      : false;
-
+    // Search filter
     const matchesSearch =
-      inName ||
-      inCity ||
-      inHealth ||
-      inPresence ||
-      inDoor ||
-      inTemp ||
-      inStatusText ||
-      inTooltip;
+      row.cabinetName.toLowerCase().includes(q) ||
+      row.city.toLowerCase().includes(q) ||
+      row.assetHealth.toLowerCase().includes(q) ||
+      row.assetPresence.toLowerCase().includes(q) ||
+      row.doorStatus.toLowerCase().includes(q) ||
+      row.status.toLowerCase().includes(q) ||
+      (row.healthTooltip?.toLowerCase().includes(q) ?? false);
 
-    // Must pass BOTH search text and status dropdown filter
-    return matchesSearch && matchesStatus;
+    // Must satisfy all active filters
+    return matchesSearch && matchesStatus && matchesId;
   });
 }
 
-function compareRows(a: CabinetMonitorProps, b: CabinetMonitorProps, columnId: string): number {
+function compareRows(a: Cabinet, b: Cabinet, columnId: string): number {
   switch (columnId) {
     case "cabinetName":
       return a.cabinetName.localeCompare(b.cabinetName, undefined, { numeric: true, sensitivity: "base" })
@@ -74,11 +71,8 @@ function compareRows(a: CabinetMonitorProps, b: CabinetMonitorProps, columnId: s
       return a.assetPresence.localeCompare(b.assetPresence)
     case "doorStatus":
       return a.doorStatus.localeCompare(b.doorStatus)
-    case "temperature":
-      // Direct numeric subtraction for accurate temperature sorting
-      return a.temperature - b.temperature 
-    case "lastUpdate":
-      return a.lastUpdate.localeCompare(b.lastUpdate)
+    case "lastActivityAt":
+      return a.lastActivityAt.localeCompare(b.lastActivityAt)
     default:
       return 0
   }
@@ -89,9 +83,10 @@ function compareRows(a: CabinetMonitorProps, b: CabinetMonitorProps, columnId: s
  */
 export function queryCabinetsMonitorPage(query: CabinetsQuery): CabinetsPageResult {
   const filtered = filterCabinets(
-    mockCabinetData,
+    mockCabinetsList,
     query.search,
-    query.status
+    query.status,
+    query.id
   )
 
   const sorted = [...filtered]

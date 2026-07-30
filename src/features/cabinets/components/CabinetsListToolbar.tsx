@@ -46,7 +46,7 @@ export function CabinetsListToolbar({
       <div className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row sm:items-end sm:flex-wrap grow">
           {/* City */}
           <Select value={cities} onValueChange={onCitiesChange}>
-            <SelectTrigger className="w-full min-w-42 sm:w-44 text-sm md:!h-12.5 mr-auto">
+            <SelectTrigger className="w-full min-w-42 sm:w-44 text-sm md:!h-12.5">
               <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                 <span className="font-normal text-foreground">City:</span>
                 <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="All Cities" /></span>
@@ -72,10 +72,11 @@ export function CabinetsListToolbar({
               </div>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={STATUS_FILTER_ALL}>All Status</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="maintenance">Maintenance</SelectItem>
-              <SelectItem value="offline">Offline</SelectItem>
+              <SelectItem value={STATUS_FILTER_ALL}>All</SelectItem>
+              <SelectItem value="ok">OK</SelectItem>
+              <SelectItem value="warning">Warning</SelectItem>
+              <SelectItem value="urgent">Urgent</SelectItem>
+              <SelectItem value="paused">Paused</SelectItem>
             </SelectContent>
           </Select>
           <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-white text-accent-foreground py-2 px-3 sm:py-3 rounded-[10px] text-sm gap-1.25 border border-border">

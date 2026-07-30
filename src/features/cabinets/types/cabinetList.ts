@@ -1,24 +1,40 @@
-export type CabinetStatus = "active" | "maintenance" | "offline"
+export type CabinetStatus =
+  | "ok"
+  | "warning"
+  | "urgent"
+  | "paused"
+  | (string & {});
+export type CabinetConnectionType = "connected" | "non_connected";
 
-export type CabinetConnectionType = "connected" | "non_connected"
+export type AssetHealth = 'Ok' | 'Warning' | 'Urgent' | 'Paused';
+export type AssetPresence = 'Present' | 'Missing';
+export type DoorStatus = 'Closed' | 'Open';
 
-export type CabinetListRow = {
-  id: string
-  name: string
-  serial: string
-  status: CabinetStatus
-  type: CabinetConnectionType
-  location: string
-  locationCoordinates: { lat: number; lng: number }
-  asset: "aed" | "none"
-  temperatureC: number | null
-  lastActivityAt: string
-  city: string
-  zip: string
-  street: string
-  hNo: string
-  cabinetCode: string
-  updaidCode: string
+export interface Cabinet {
+  id: string;
+  name: string;
+  cabinetName: string;
+  city: string;
+  zip: string;
+  street: string;
+  hNo: string;
+  cabinetCode: string;
+  updaidCode: string;
+  serial: string;
+  type: CabinetConnectionType;
+  location: string;
+  locationCoordinates: {
+    lat: number;
+    lng: number;
+  };
+  asset: "aed" | "none";
+  assetPresence: AssetPresence;
+  assetHealth: AssetHealth;
+  doorStatus: DoorStatus;
+  status: CabinetStatus;
+  temperature: number | null;
+  lastActivityAt: string;
+  healthTooltip?: string;
 }
 
 export type CabinetsListToolbarProps = {
@@ -32,46 +48,29 @@ export type CabinetsListToolbarProps = {
   onCitiesChange: (value: string) => void
 }
 
-export type CabinetsMapToolbarProps = {
-  search: string
-  onSearchChange: (value: string) => void
-  statusFilter: string
-  onStatusFilterChange: (value: string) => void
-  // typeFilter: string
-  // onTypeFilterChange: (value: string) => void
-  cities: string
-  onCitiesChange: (value: string) => void
-  streets: string
-  onStreetsChange: (value: string) => void
-}
-
 export const cabinetConfig = {
-  active: {
+  ok: {
     bg: "card-success",
     text: "text-success",
     badge: "bg-success text-white",
     pin: "text-success",
-    label: "Asset OK",
   },
-  maintenance: {
+  warning: {
     bg: "card-warning",
     text: "text-warning",
     badge: "bg-warning text-white",
     pin: "text-warning",
-    label: "Need Attention",
   },
-  offline: {
+  urgent: {
     bg: "card-error",
     text: "text-error",
     badge: "bg-error text-white",
     pin: "text-error",
-    label: "Need Urgent Attention",
   },
   paused: {
-    bg: "card-info",
-    text: "text-info",
-    badge: "bg-info text-white",
-    pin: "text-info",
-    label: "Need Urgent Attention",
+    bg: "card-neutral",
+    text: "text-foreground",
+    badge: "bg-foreground text-white",
+    pin: "text-foreground",
   },
 }

@@ -3,7 +3,7 @@ export const mockCabinet = {
   doorOpen: true,
   aedInside: true,
   status: "active", 
-  temperatureC: 21.4,
+  temperature: 21.4,
   module: {
     imei: "355424014495462",
     lat: 52.373434,

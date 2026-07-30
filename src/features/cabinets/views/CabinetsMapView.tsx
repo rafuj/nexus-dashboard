@@ -1,6 +1,6 @@
 "use client";
 import { Helmet } from "react-helmet-async";
-import { ChevronRight, MapPin, PlusCircle } from "lucide-react";
+import { ChevronRight, PlusCircle } from "lucide-react";
 
 import { CabinetsListToolbar } from "../components/CabinetsListToolbar";
 import { cn } from "@/lib/utils";
@@ -10,23 +10,28 @@ import { Link } from "react-router";
 import { useState } from "react";
 import { mockCabinetsList } from "../mock/mockCabinetsList";
 import { cabinetConfig } from "../types/cabinetList";
-import CabinetDashboardMap from "../components/CabinetMapCard";
-import { CabinetsListMapToolbar } from "../components/CabinetsListMapToolbar";
-
+import { filterCabinets } from "../server/queryCabinetsListPage";
+import CabinetMapCard from "../components/CabinetMapCard";
+import MapPin from "@/assets/icons/map-pin.svg?react"
 
 const STATUS_FILTER_ALL = "all";
 const CITIES_FILTER_ALL = "all";
-const STREETS_FILTER_ALL = "all";
 
 
 export default function CabinetsMapView() {
+  const [openSidebar, setOpenSidebar] = useState<boolean>(false);
+
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>(STATUS_FILTER_ALL);
   const [cities, setCities] = useState<string>(CITIES_FILTER_ALL);
-  const [streets, setStreets] = useState<string>(STREETS_FILTER_ALL);
 
   const [openCabinetId, setOpenCabinetId] = useState<string | null>(null);
-  
+
+  const filteredCabinets = filterCabinets(
+      mockCabinetsList,
+      search,
+      statusFilter
+    )
 
   return (
     <>
@@ -66,18 +71,15 @@ export default function CabinetsMapView() {
             </h2>
           </div>
           <div className="mb-2.5">
-            <CabinetsListMapToolbar
+            <CabinetsListToolbar
               search={search}
               onSearchChange={(v) => {
                 setSearch(v);
+                setOpenSidebar(true);
               }}
               statusFilter={statusFilter}
               onStatusFilterChange={(v) => {
                 setStatusFilter(v);
-              }}
-              streets={streets}
-              onStreetsChange={(v) => {
-                setStreets(v)
               }}
               cities={cities}
               onCitiesChange={(v) => {
@@ -85,19 +87,19 @@ export default function CabinetsMapView() {
               }}
             />
           </div>
-          <section className={cn("lg:h-0 grow gap-2.5 grid grid-cols-1",{"lg:grid-cols-[830fr_310fr]": search})} aria-label="Cabinets">
-              <CabinetDashboardMap cabinets={mockCabinetsList} openCabinetId={openCabinetId} setOpenCabinetId={setOpenCabinetId}  />
+          <section className={cn("lg:h-0 grow gap-2.5 grid grid-cols-1",{"lg:grid-cols-[830fr_310fr]": openSidebar})} aria-label="Cabinets">
+              <CabinetMapCard cabinets={filteredCabinets} openCabinetId={openCabinetId} setOpenCabinetId={setOpenCabinetId}  />
               <div
                 className={cn(
                   "overflow-y-auto rounded-[10px] overflow-x-hidden",
                   {
-                    "hidden": !search
+                    "hidden": !openSidebar
                   }
                 )}
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2.5">
-                  {mockCabinetsList.map((cabinet) => {
-                    const config = cabinetConfig[cabinet.status] || cabinetConfig.active
+                  {filteredCabinets.map((cabinet) => {
+                    const config = cabinetConfig[cabinet.status as keyof typeof cabinetConfig] ?? cabinetConfig.urgent
                     return (
                       <div
                         key={cabinet.id}
@@ -113,17 +115,19 @@ export default function CabinetsMapView() {
                             <div className="h-6 w-6 shrink-0 flex items-center justify-center">
                               <MapPin className={cn("text-primary", config.pin)} size={20} />
                             </div>
-                            <h3 className="text-sm font-semibold line-clamp-1">
-                              {cabinet.name}
-                            </h3>
+                            <Link to={`/cabinets/monitor?id=${cabinet.id}`}>
+                                <h3 className="text-sm font-semibold line-clamp-1 underline">
+                                  {cabinet.name}
+                                </h3>
+                            </Link>
                           </div>
                           <span
                             className={cn(
-                              "px-3 py-1 text-xs rounded-[4px] whitespace-nowrap",
+                              "px-3 py-1 text-xs rounded-[4px] whitespace-nowrap capitalize",
                               config.badge
                             )}
                           >
-                            {config.label}
+                            {cabinet.status}
                           </span>
                         </div>
 

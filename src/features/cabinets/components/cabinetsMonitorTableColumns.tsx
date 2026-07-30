@@ -4,12 +4,12 @@
  */
 import { createColumnHelper } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "@/shared/components/data-table"
-import { cn } from "@/lib/utils" // Adjusted path to use your CabinetData model
-import type { CabinetMonitorProps } from "../types/cabinetMonitor"
+import { cn, formatDateTime } from "@/lib/utils" // Adjusted path to use your CabinetData model
 import { Link } from "react-router"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/components/ui/tooltip"
+import type { Cabinet } from "../types/cabinetList"
 
-const columnHelper = createColumnHelper<CabinetMonitorProps>()
+const columnHelper = createColumnHelper<Cabinet>()
 
 // Badge style mappings matching the UI color schemes
 const getHealthBadgeClass = (health: string) => {
@@ -54,7 +54,7 @@ const getDoorBadgeClass = (door: string) => {
     : "bg-card-error text-error"
 }
 
-const getTemperatureChip = (temp: number) => {
+const gettemperaturehip = (temp: number) => {
   if (temp >= 30) return (
     <span className={cn("px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all bg-card-error text-error")}>
       Urgent
@@ -264,7 +264,7 @@ export const cabinetsMonitorTableColumns = [
                 Paused
               </span>
             ) : (
-              getTemperatureChip(temp)
+              gettemperaturehip(temp)
             )
           }
         </div>
@@ -273,8 +273,8 @@ export const cabinetsMonitorTableColumns = [
   }),
 
   // 7. Last Update Column
-  columnHelper.accessor("lastUpdate", {
-    id: "lastUpdate",
+  columnHelper.accessor("lastActivityAt", {
+    id: "lastActivityAt",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Last Update" />
     ),
@@ -282,6 +282,6 @@ export const cabinetsMonitorTableColumns = [
       headerClassName: "",
       cellClassName: "align-middle whitespace-nowrap",
     },
-    cell: ({ row }) => row.original.lastUpdate,
+    cell: ({ row }) => formatDateTime(row.original.lastActivityAt),
   }),
 ]

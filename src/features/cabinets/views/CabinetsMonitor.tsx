@@ -19,6 +19,7 @@ import { cabinetsMonitorTableColumns } from "../components/cabinetsMonitorTableC
 import { queryCabinetsMonitorPage} from "../server/queryCabinetsMonitorPage";
 import { Icons } from "@/app/icons/icons";
 import type { FilterStatus, Status } from "../types/cabinetMonitor";
+import { useQueryState } from "nuqs";
 
 
 const CITIES_FILTER_ALL = "all";
@@ -29,6 +30,9 @@ export default function CabinetsMonitor() {
   const [search, setSearch] = useState("");
   const [city, setCity] = useState<string>(CITIES_FILTER_ALL);
   const [status, setStatus] = useState<FilterStatus>(STATUS_FILTER_ALL);
+
+  const [cabinetId, setCabinetId] = useQueryState("id", { defaultValue: "" })
+
   const [sorting, setSorting] = useState<SortingState>([
     { id: "cabinet", desc: false },
   ]);
@@ -45,7 +49,8 @@ export default function CabinetsMonitor() {
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
         sorting,
-        status
+        status,
+        id: cabinetId
       }),
     [
       search,
@@ -53,7 +58,8 @@ export default function CabinetsMonitor() {
       pagination.pageSize,
       sorting,
       city,
-      status
+      status,
+      cabinetId
     ],
   );
 

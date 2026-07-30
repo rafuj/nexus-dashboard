@@ -21,7 +21,7 @@ export type CabinetsListPageResult = {
   totalCount: number
 }
 
-function filterCabinets(
+export function filterCabinets(
   rows: readonly CabinetListRow[],
   search: string,
   statusFilter: string,
@@ -54,11 +54,11 @@ function compareRows(a: CabinetListRow, b: CabinetListRow, columnId: string): nu
       return a.location.localeCompare(b.location, undefined, { sensitivity: "base" })
     case "asset":
       return a.asset.localeCompare(b.asset)
-    case "temperatureC": {
-      if (a.temperatureC == null && b.temperatureC == null) return 0
-      if (a.temperatureC == null) return 1
-      if (b.temperatureC == null) return -1
-      return a.temperatureC - b.temperatureC
+    case "temperature": {
+      if (a.temperature == null && b.temperature == null) return 0
+      if (a.temperature == null) return 1
+      if (b.temperature == null) return -1
+      return a.temperature - b.temperature
     }
     case "lastActivityAt":
       return a.lastActivityAt.localeCompare(b.lastActivityAt)

@@ -5,15 +5,16 @@
 import { createColumnHelper } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "@/shared/components/data-table"
 import { cn, formatISODate } from "@/lib/utils"
-import type { CabinetListRow } from "../types/cabinetList"
 import {
   cabinetStatusBadgeClass,
+  cabinetStatusLabel,
   statusBadgeColor
 } from "../lib/cabinetListDisplay"
 import { CabinetRowActions } from "./CabinetRowActions"
 import { Link } from "react-router"
+import type { Cabinet } from "../types/cabinetList"
 
-const columnHelper = createColumnHelper<CabinetListRow>()
+const columnHelper = createColumnHelper<Cabinet>()
 
 export const cabinetListColumns = (canManageCabinets: boolean) => [
   columnHelper.accessor("name", {
@@ -117,8 +118,8 @@ export const cabinetListColumns = (canManageCabinets: boolean) => [
       <span
         className={cn("flex items-center capitalize gap-1")}
       >
-        <span className={cn("size-1 block rounded-full",cabinetStatusBadgeClass(row.original.status))}></span>
-        <span className={cn(statusBadgeColor(row.original.status))}>{row.original.status}</span>
+        <span className={cn("size-1 block rounded-full", cabinetStatusBadgeClass(row.original.status))}></span>
+        <span className={cn(statusBadgeColor(row.original.status))}>{cabinetStatusLabel(row.original.status)}</span>
       </span>
     ),
   }),
