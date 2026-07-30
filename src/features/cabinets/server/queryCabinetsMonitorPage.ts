@@ -1,5 +1,5 @@
 import type { SortingState } from "@tanstack/react-table"
-import type { CabinetMonitorProps } from "../types/cabinetMonitor"
+import type { CabinetMonitorProps, FilterStatus } from "../types/cabinetMonitor"
 import { mockCabinetData } from "../mock/cabinetMonitor"
 
 export type CabinetsQuery = {
@@ -7,37 +7,59 @@ export type CabinetsQuery = {
   pageIndex: number
   pageSize: number
   sorting: SortingState
+  status: FilterStatus
 }
 
 export type CabinetsPageResult = {
   rows: CabinetMonitorProps[]
-  totalCount: number
+  totalCount: number,
+  status?: string | 'all'
 }
 
-function filterCabinets(
+export function filterCabinets(
   rows: readonly CabinetMonitorProps[],
   search: string,
+  status: string
 ): CabinetMonitorProps[] {
-  const q = search.trim().toLowerCase()
-  
-  if (!q) return [...rows]
+  const q = search.trim().toLowerCase();
+  const selectedStatus = status.trim().toLowerCase();
 
   return rows.filter((row) => {
-    const inName = row.cabinetName.toLowerCase().includes(q)
-    const inCity = row.city.toLowerCase().includes(q)
-    const inHealth = row.assetHealth.toLowerCase().includes(q)
-    const inPresence = row.assetPresence.toLowerCase().includes(q)
-    const inDoor = row.doorStatus.toLowerCase().includes(q)
-    
-    // Convert temperature to string for textual search matching (e.g., searching "21")
-    const inTemp = row.temperature.toString().includes(q)
-    
-    // Check optional tooltip text if it exists
-    const inTooltip = row.healthTooltip ? row.healthTooltip.toLowerCase().includes(q) : false
+    // 1. Status Filter Logic (if status is 'all' or empty, match everything)
+    const matchesStatus =
+      !selectedStatus ||
+      selectedStatus === 'all' ||
+      row.status.toLowerCase() === selectedStatus;
 
-    // Return true if it matches any of the fields
-    return inName || inCity || inHealth || inPresence || inDoor || inTemp || inTooltip
-  })
+    // 2. Search Query Logic (if search query is empty, match everything)
+    if (!q) {
+      return matchesStatus;
+    }
+
+    const inName = row.cabinetName.toLowerCase().includes(q);
+    const inCity = row.city.toLowerCase().includes(q);
+    const inHealth = row.assetHealth.toLowerCase().includes(q);
+    const inPresence = row.assetPresence.toLowerCase().includes(q);
+    const inDoor = row.doorStatus.toLowerCase().includes(q);
+    const inTemp = row.temperature.toString().includes(q);
+    const inStatusText = row.status.toLowerCase().includes(q);
+    const inTooltip = row.healthTooltip
+      ? row.healthTooltip.toLowerCase().includes(q)
+      : false;
+
+    const matchesSearch =
+      inName ||
+      inCity ||
+      inHealth ||
+      inPresence ||
+      inDoor ||
+      inTemp ||
+      inStatusText ||
+      inTooltip;
+
+    // Must pass BOTH search text and status dropdown filter
+    return matchesSearch && matchesStatus;
+  });
 }
 
 function compareRows(a: CabinetMonitorProps, b: CabinetMonitorProps, columnId: string): number {
@@ -69,6 +91,7 @@ export function queryCabinetsMonitorPage(query: CabinetsQuery): CabinetsPageResu
   const filtered = filterCabinets(
     mockCabinetData,
     query.search,
+    query.status
   )
 
   const sorted = [...filtered]

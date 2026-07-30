@@ -8,7 +8,7 @@ import {
   type PaginationState,
   type SortingState,
 } from "@tanstack/react-table";
-import { ChevronRight, PlusCircle } from "lucide-react";
+import { ChevronRight, PlusCircle, RotateCcw } from "lucide-react";
 import { DataTable, DataTablePagination } from "@/shared/components/data-table";
 import { cn } from "@/lib/utils";
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
@@ -17,17 +17,18 @@ import { Link } from "react-router";
 import { CabinetsMonitorToolbar } from "../components/CabinetsMonitorToolbar";
 import { cabinetsMonitorTableColumns } from "../components/cabinetsMonitorTableColumns";
 import { queryCabinetsMonitorPage} from "../server/queryCabinetsMonitorPage";
+import { Icons } from "@/app/icons/icons";
+import type { FilterStatus, Status } from "../types/cabinetMonitor";
 
 
 const CITIES_FILTER_ALL = "all";
-const STREETS_FILTER_ALL = "all";
+const STATUS_FILTER_ALL = "all";
 const PAGE_SIZE = 8;
 
 export default function CabinetsMonitor() {
   const [search, setSearch] = useState("");
   const [city, setCity] = useState<string>(CITIES_FILTER_ALL);
-  const [assetHealth, setAssetHealth] = useState<string>(STREETS_FILTER_ALL);
-  const [doorStatus, setDoorStatus] = useState<string>(STREETS_FILTER_ALL);
+  const [status, setStatus] = useState<FilterStatus>(STATUS_FILTER_ALL);
   const [sorting, setSorting] = useState<SortingState>([
     { id: "cabinet", desc: false },
   ]);
@@ -44,6 +45,7 @@ export default function CabinetsMonitor() {
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
         sorting,
+        status
       }),
     [
       search,
@@ -51,8 +53,7 @@ export default function CabinetsMonitor() {
       pagination.pageSize,
       sorting,
       city,
-      assetHealth,
-      doorStatus
+      status
     ],
   );
 
@@ -117,10 +118,21 @@ export default function CabinetsMonitor() {
         </header>
 
         <div className="p-5">
-          <div className="flex flex-wrap md:flex-nowrap gap-5 items-center justify-between mb-5">
-            <h2 className="text-xl md:text-2xl font-semibold">
-              Monitor cabinet status in real time
-            </h2>
+          <div className="flex flex-wrap md:flex-nowrap gap-5 justify-between mb-5 items-center">
+            <div>
+              <h2 className="text-xl md:text-2xl font-semibold">
+                Monitor cabinet status in current state
+              </h2>
+              <p className="text-xs m-0">Overall status uses the highest severity. Paused cabinets are not monitored.</p>
+            </div>
+            <div className="flex flex-wrap gap-4">
+              <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 xl:px-7">
+                <RotateCcw size={16} /> <span>Refresh</span>
+              </button>
+              <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 xl:px-7">
+                <Icons.export /> <span>Export</span>
+              </button>
+            </div>
           </div>
           <section aria-label="Cabinets">
             <div className="mb-2.5">
@@ -134,10 +146,8 @@ export default function CabinetsMonitor() {
                     search,
                     city,
                     setCity,
-                    assetHealth,
-                    setAssetHealth,
-                    doorStatus,
-                    setDoorStatus
+                    status,
+                    setStatus
                   }
                 }
               />

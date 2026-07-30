@@ -8,6 +8,7 @@ export const mockCabinetData: CabinetMonitorProps[] = [
     assetHealth: "Ok",
     assetPresence: "Present",
     doorStatus: "Closed",
+    status: "ok",
     temperature: 21.3,
     lastUpdate: "May 16, 2025 / 13:20",
     healthTooltip: "All systems nominal"
@@ -19,6 +20,7 @@ export const mockCabinetData: CabinetMonitorProps[] = [
     assetHealth: "Warning",
     assetPresence: "Present",
     doorStatus: "Closed",
+    status: "warning",
     temperature: 28.7,
     lastUpdate: "May 16, 2025 / 13:18",
     healthTooltip: "Temperature rising fast"
@@ -30,6 +32,7 @@ export const mockCabinetData: CabinetMonitorProps[] = [
     assetHealth: "Urgent",
     assetPresence: "Missing",
     doorStatus: "Open",
+    status: "urgent",
     temperature: 32.5,
     lastUpdate: "May 16, 2025 / 12:44",
     healthTooltip: "Asset missing and door left open"
@@ -41,6 +44,7 @@ export const mockCabinetData: CabinetMonitorProps[] = [
     assetHealth: "Paused",
     assetPresence: "Present",
     doorStatus: "Closed",
+    status: "paused",
     temperature: 19.8,
     lastUpdate: "May 16, 2025 / 12:20",
     healthTooltip: "Monitoring temporarily paused"
@@ -52,6 +56,7 @@ export const mockCabinetData: CabinetMonitorProps[] = [
     assetHealth: "Ok",
     assetPresence: "Present",
     doorStatus: "Closed",
+    status: "ok",
     temperature: 21.3,
     lastUpdate: "May 16, 2025 / 13:20",
     healthTooltip: "All systems nominal"
@@ -63,6 +68,7 @@ export const mockCabinetData: CabinetMonitorProps[] = [
     assetHealth: "Warning",
     assetPresence: "Present",
     doorStatus: "Closed",
+    status: "warning",
     temperature: 28.7,
     lastUpdate: "May 16, 2025 / 13:18",
     healthTooltip: "Temperature too high"
@@ -72,8 +78,9 @@ export const mockCabinetData: CabinetMonitorProps[] = [
     cabinetName: "Cabinet 007",
     city: "Utrecht",
     assetHealth: "Urgent",
-    assetPresence: "Missing",
+    assetPresence: "Present",
     doorStatus: "Open",
+    status: "urgent",
     temperature: 32.5,
     lastUpdate: "May 16, 2025 / 12:44",
     healthTooltip: "Critical security door open breach"
@@ -85,6 +92,7 @@ export const mockCabinetData: CabinetMonitorProps[] = [
     assetHealth: "Paused",
     assetPresence: "Present",
     doorStatus: "Closed",
+    status: "paused",
     temperature: 19.8,
     lastUpdate: "May 16, 2025 / 12:20",
     healthTooltip: "Monitoring temporarily paused"
@@ -96,6 +104,7 @@ export const mockCabinetData: CabinetMonitorProps[] = [
     assetHealth: "Warning",
     assetPresence: "Present",
     doorStatus: "Closed",
+    status: "warning",
     temperature: 28.7,
     lastUpdate: "May 16, 2025 / 13:18",
     healthTooltip: "Approaching threshold temperature"
@@ -107,6 +116,7 @@ export const mockCabinetData: CabinetMonitorProps[] = [
     assetHealth: "Urgent",
     assetPresence: "Missing",
     doorStatus: "Open",
+    status: "urgent",
     temperature: 32.5,
     lastUpdate: "May 16, 2025 / 12:44",
     healthTooltip: "Hardware disconnected from hub"
@@ -118,6 +128,7 @@ export const mockCabinetData: CabinetMonitorProps[] = [
     assetHealth: "Paused",
     assetPresence: "Present",
     doorStatus: "Closed",
+    status: "paused",
     temperature: 19.8,
     lastUpdate: "May 16, 2025 / 12:20",
     healthTooltip: "Monitoring temporarily paused"

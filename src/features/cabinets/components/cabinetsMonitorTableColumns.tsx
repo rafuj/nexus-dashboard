@@ -21,7 +21,7 @@ const getHealthBadgeClass = (health: string) => {
     case "Urgent":
       return "bg-card-error text-error"
     case "Paused":
-      return "bg-card-info text-info" 
+      return "bg-card-neutral text-foreground" 
     default:
       return "bg-card-neutral text-accent-foreground"
   }
@@ -36,7 +36,7 @@ const getHealthBadgeTooltipColor = (health: string) => {
     case "Urgent":
       return "bg-error [&_.arrow]:bg-error [&_.arrow]:fill-error"
     case "Paused":
-      return "bg-info [&_.arrow]:bg-info [&_.arrow]:fill-info"
+      return "bg-card-neutral text-foreground [&_.arrow]:bg-card-neutral [&_.arrow]:fill-card-neutral" 
     default:
       return "bg-neutral [&_.arrow]:bg-neutral [&_.arrow]:fill-neutral"
   }
@@ -54,10 +54,22 @@ const getDoorBadgeClass = (door: string) => {
     : "bg-card-error text-error"
 }
 
-const getTemperatureClass = (temp: number) => {
-  if (temp >= 30) return "text-error"
-  if (temp >= 25) return "text-warning"
-  return "text-success"
+const getTemperatureChip = (temp: number) => {
+  if (temp >= 30) return (
+    <span className={cn("px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all bg-card-error text-error")}>
+      Urgent
+    </span>
+  )
+  if (temp >= 25) return (
+    <span className={cn("px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all bg-card-warning text-warning")}>
+      Warning
+    </span>
+  )
+  return (
+    <span className={cn("px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all bg-card-success text-success")}>
+      OK
+    </span>
+  )
 }
 
 export const cabinetsMonitorTableColumns = [
@@ -69,9 +81,32 @@ export const cabinetsMonitorTableColumns = [
     ),
     meta: {
       headerClassName: "",
-      cellClassName: "align-middle underline cursor-pointer",
+      cellClassName: "align-middle",
     },
-    cell: ({ row }) => <Link className="text-accent-foreground hover:text-primary truncate" to={`/cabinets/list/${row.original.id}`} >{row.original.cabinetName}</Link>
+    cell: ({ row }) => {
+      const health = row.original.assetHealth
+      const assetPresence = row.original.assetPresence
+      const doorStatus = row.original.doorStatus
+      const temperature = row.original.temperature
+      const status = row.original.status
+
+      const getCabinetStatusColor = () => {
+        if (health === "Urgent" || assetPresence === "Missing" || doorStatus === "Open" || temperature >= 30) {
+          return getHealthBadgeClass("Urgent") // Urgent Chip
+        } else if (health === "Warning" || temperature >= 25) {
+          return getHealthBadgeClass("Warning") // Warning Chip
+        } else if (health === "Paused" || status === "paused") {
+          return getHealthBadgeClass("Paused") // Paused Chip
+        } else {
+          return getHealthBadgeClass("Ok") // Success Chip
+        }
+      }
+      return (
+        <Link className={cn("px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all", getCabinetStatusColor())} to={`/cabinets/list/${row.original.id}`} >
+            {row.original.cabinetName}
+        </Link>
+      )
+    },
   }),
 
   // 2. City Column
@@ -105,14 +140,26 @@ export const cabinetsMonitorTableColumns = [
         <div className="inline-flex items-center gap-1.5 relative">
           <Tooltip>
             <TooltipTrigger>
-              <span
-                className={cn(
-                  "px-3 py-1 rounded-md text-xs min-w-[70px] text-center block transition-all",
-                  getHealthBadgeClass(health)
-                )}
-              >
-                {health}
-              </span>
+              {
+                row.original.status === "paused" ? (
+                  <span className={cn(
+                      "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all",
+                      getHealthBadgeClass("Paused")
+                    )}
+                  >
+                    Paused
+                  </span>
+                ) : (
+                  <span
+                    className={cn(
+                      "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all",
+                      getHealthBadgeClass(health)
+                    )}
+                  >
+                    {health}
+                  </span>
+                )
+              }
             </TooltipTrigger>
             <TooltipContent side="right" className={cn(getHealthBadgeTooltipColor(health))}>
               {tooltip}
@@ -136,14 +183,24 @@ export const cabinetsMonitorTableColumns = [
     cell: ({ row }) => {
       const presence = row.original.assetPresence
       return (
-        <span
-          className={cn(
-            "px-3 py-1 rounded-md text-xs min-w-[75px] text-center inline-block",
-            getPresenceBadgeClass(presence)
-          )}
-        >
-          {presence}
-        </span>
+        row.original.status === "paused" ? (
+          <span className={cn(
+              "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all",
+              getHealthBadgeClass("Paused")
+            )}
+          >
+            Paused
+          </span>
+        ) : (
+          <span
+            className={cn(
+              "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block",
+              getPresenceBadgeClass(presence)
+            )}
+          >
+            {presence}
+          </span>
+        )
       )
     },
   }),
@@ -161,14 +218,24 @@ export const cabinetsMonitorTableColumns = [
     cell: ({ row }) => {
       const door = row.original.doorStatus
       return (
-        <span
-          className={cn(
-            "px-3 py-1 rounded-md text-xs min-w-[70px] text-center inline-block",
-            getDoorBadgeClass(door)
-          )}
-        >
-          {door}
-        </span>
+        row.original.status === "paused" ? (
+          <span className={cn(
+              "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all",
+              getHealthBadgeClass("Paused")
+            )}
+          >
+            Paused
+          </span>
+        ) : (
+          <span
+            className={cn(
+              "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block",
+              getDoorBadgeClass(door)
+            )}
+          >
+            {door}
+          </span>
+        )
       )
     },
   }),
@@ -186,9 +253,21 @@ export const cabinetsMonitorTableColumns = [
     cell: ({ row }) => {
       const temp = row.original.temperature
       return (
-        <span className={cn(getTemperatureClass(temp))}>
-          {temp.toFixed(1)} °C
-        </span>
+        <div className="flex">
+          {
+            row.original.status === "paused" ? (
+              <span className={cn(
+                  "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all",
+                  getHealthBadgeClass("Paused")
+                )}
+              >
+                Paused
+              </span>
+            ) : (
+              getTemperatureChip(temp)
+            )
+          }
+        </div>
       )
     },
   }),
