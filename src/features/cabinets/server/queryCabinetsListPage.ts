@@ -7,12 +7,10 @@ import type { CabinetListRow } from "../types/cabinetList"
 import { mockCabinetsList } from "../mock/mockCabinetsList"
 
 const STATUS_FILTER_ALL = "all"
-const TYPE_FILTER_ALL = "all"
 
 export type CabinetsListQuery = {
   search: string
   statusFilter: string
-  typeFilter: string
   pageIndex: number
   pageSize: number
   sorting: SortingState
@@ -27,14 +25,10 @@ function filterCabinets(
   rows: readonly CabinetListRow[],
   search: string,
   statusFilter: string,
-  typeFilter: string
 ): CabinetListRow[] {
   const q = search.trim().toLowerCase()
   return rows.filter((row) => {
     if (statusFilter !== STATUS_FILTER_ALL && row.status !== statusFilter) {
-      return false
-    }
-    if (typeFilter !== TYPE_FILTER_ALL && row.type !== typeFilter) {
       return false
     }
     if (q) {
@@ -81,8 +75,7 @@ export function queryCabinetsListPage(query: CabinetsListQuery): CabinetsListPag
   const filtered = filterCabinets(
     mockCabinetsList,
     query.search,
-    query.statusFilter,
-    query.typeFilter
+    query.statusFilter
   )
 
   const sorted = [...filtered]

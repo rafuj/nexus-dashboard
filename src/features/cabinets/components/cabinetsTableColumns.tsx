@@ -27,7 +27,7 @@ export const cabinetListColumns = (canManageCabinets: boolean) => [
     },
     cell: ({ row }) => (
       <div className="flex min-w-0 flex-col gap-0.5">
-        <Link to={`/cabinets/list/${row.original.id}`} className="truncate font-medium">{row.original.name}</Link>
+        <Link to={`/cabinets/list/${row.original.id}`} className="truncate font-medium underline">{row.original.name}</Link>
       </div>
     ),
   }),
@@ -83,28 +83,28 @@ export const cabinetListColumns = (canManageCabinets: boolean) => [
     },
     cell: ({ row }) => formatISODate(row.original.lastActivityAt),
   }),
-  columnHelper.accessor("cabinetCode", {
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Cabinet Code" />
-    ),
-    meta: {
-      headerClassName: "",
-      cellClassName:
-        "align-middle whitespace-nowrap",
-    },
-    cell: ({ row }) => row.original.cabinetCode,
-  }),
-  columnHelper.accessor("updaidCode", {
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Updaid Code" />
-    ),
-    meta: {
-      headerClassName: "",
-      cellClassName:
-        "align-middle whitespace-nowrap",
-    },
-    cell: ({ row }) => row.original.updaidCode,
-  }),
+  // columnHelper.accessor("cabinetCode", {
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="Cabinet Code" />
+  //   ),
+  //   meta: {
+  //     headerClassName: "",
+  //     cellClassName:
+  //       "align-middle whitespace-nowrap",
+  //   },
+  //   cell: ({ row }) => row.original.cabinetCode,
+  // }),
+  // columnHelper.accessor("updaidCode", {
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="Updaid Code" />
+  //   ),
+  //   meta: {
+  //     headerClassName: "",
+  //     cellClassName:
+  //       "align-middle whitespace-nowrap",
+  //   },
+  //   cell: ({ row }) => row.original.updaidCode,
+  // }),
   columnHelper.accessor("status", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Status" />

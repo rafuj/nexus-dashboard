@@ -22,6 +22,7 @@ import { can, type Role } from "@/lib/permissions";
 import { useAuth } from "../hooks/useAuth";
 import { Link, useLocation } from "react-router";
 import React, { type ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 type NavSubItem = {
   title: string;
@@ -85,7 +86,7 @@ function NavMainItem({
   }, [pathname, shouldOpen]);
 
   const menuButton = (
-    <SidebarMenuButton asChild isActive={isItemActive} className={visibleSubItems?.length ? '!bg-transparent [&>svg]:text-primary' : ''}>
+    <SidebarMenuButton asChild isActive={isItemActive} className={cn("!bg-transparent", isItemActive ? '!text-primary' : '')}>
       <Link to={item.url??"#"} onClick={()=> item?.onClick?.()}>
         {item.icon}
         <span>{item.title}</span>

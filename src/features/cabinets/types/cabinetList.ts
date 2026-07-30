@@ -30,8 +30,6 @@ export type CabinetsListToolbarProps = {
   // onTypeFilterChange: (value: string) => void
   cities: string
   onCitiesChange: (value: string) => void
-  streets: string
-  onStreetsChange: (value: string) => void
 }
 
 export const cabinetConfig = {
