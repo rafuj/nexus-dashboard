@@ -27,6 +27,7 @@ import { useAuth } from "@/app/hooks/useAuth";
 import { useQueryState } from "nuqs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
 import { SidebarMenuButton } from "@/shared/components/ui/sidebar";
+import { CabinetStatistics } from "../components/CabinetStatistics";
 
 interface BasicInformation {
   cabinetName: string;
@@ -976,6 +977,7 @@ const CabinetView = () => {
                 </div>
               </div>
               <div className="w-full md:w-0 grow">
+                <CabinetStatistics />
                 {switchContent()}
                 {canManageCabinets && (
                   <div className="flex flex-wrap gap-3 sm:gap-5 justify-end py-3.75 bg-background sticky bottom-0 mt-10 w-full">

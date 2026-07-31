@@ -12,7 +12,7 @@ import type { Cabinet } from "../types/cabinetList"
 const columnHelper = createColumnHelper<Cabinet>()
 
 // Badge style mappings matching the UI color schemes
-const getHealthBadgeClass = (health: string) => {
+export const getHealthBadgeClass = (health: string = "Ok") => {
   switch (health) {
     case "Ok":
       return "bg-card-success text-success"
@@ -27,7 +27,7 @@ const getHealthBadgeClass = (health: string) => {
   }
 }
 // health badge tooltip color
-const getHealthBadgeTooltipColor = (health: string) => {
+export const getHealthBadgeTooltipColor = (health: string = "Ok") => {
   switch (health) {
     case "Ok":
       return "bg-success [&_.arrow]:bg-success [&_.arrow]:fill-success"
@@ -42,34 +42,40 @@ const getHealthBadgeTooltipColor = (health: string) => {
   }
 }
 
-const getPresenceBadgeClass = (presence: string) => {
+export const getPresenceBadgeClass = (presence: string = "Present") => {
   return presence === "Present" 
     ? "bg-card-success text-success" 
     : "bg-card-error text-error"
 }
 
-const getDoorBadgeClass = (door: string) => {
+export const getDoorBadgeClass = (door: string = "Closed") => {
   return door === "Closed" 
     ? "bg-card-success text-success" 
     : "bg-card-error text-error"
 }
 
-const gettemperaturehip = (temp: number) => {
+export const getTemperatureChip = (temp: number = 0, className:string) => {
   if (temp >= 30) return (
-    <span className={cn("px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all bg-card-error text-error")}>
+    <span className={cn("px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all bg-card-error text-error", className)}>
       Urgent
     </span>
   )
   if (temp >= 25) return (
-    <span className={cn("px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all bg-card-warning text-warning")}>
+    <span className={cn("px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all bg-card-warning text-warning", className)}>
       Warning
     </span>
   )
   return (
-    <span className={cn("px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all bg-card-success text-success")}>
+    <span className={cn("px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all bg-card-success text-success", className)}>
       OK
     </span>
   )
+}
+
+export const getTemperatureChipClass = (temp: number = 0) => {
+  if (temp >= 30) return "bg-card-error text-error"
+  if (temp >= 25) return "bg-card-warning text-warning"
+  return "bg-card-success text-success"
 }
 
 export const cabinetsMonitorTableColumns = [
@@ -264,7 +270,7 @@ export const cabinetsMonitorTableColumns = [
                 Paused
               </span>
             ) : (
-              gettemperaturehip(temp)
+              getTemperatureChip(temp)
             )
           }
         </div>
