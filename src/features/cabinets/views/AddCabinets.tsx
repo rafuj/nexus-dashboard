@@ -664,18 +664,8 @@ export default function AddCabinets() {
           <div className="border bg-white rounded-[15px] mt-4 p-5">
             <div className="flex flex-wrap gap-10">
               <div className="w-full max-w-[180px] xl:max-w-[280px]">
-                <div className="flex flex-col gap-10 md:min-h-[calc(100dvh-230px)] md:sticky md:top-36">
+                <div className="flex flex-col gap-10 md:sticky md:top-36">
                   <CabinetsStepper step={step} setStep={setStep} stepList={STEPS} />
-                  <div className="flex flex-wrap gap-2.5 md:flex-col md:items-start mt-auto">
-                    <button type="button" className="flex items-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">
-                      <span>Your Credits:</span>
-                      <span className="font-semibold">48</span>
-                    </button>
-                    <button type="button" className="flex items-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">
-                      <ShoppingCart size={18} />
-                      <span>Buy Credits</span>
-                    </button>
-                  </div>
                 </div>
               </div>
               <div className="w-full md:w-0 grow">

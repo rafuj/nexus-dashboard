@@ -126,14 +126,6 @@ export default function CabinetsListView() {
               Overview of all cabinets in your network
             </h2>
             <div className="flex flex-wrap gap-2.5">
-                <button type="button" className="flex items-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">
-                  <span>Your Credits:</span>
-                  <span className="font-semibold">48</span>
-                </button>
-                <button type="button" className="flex items-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 xl:mr-4">
-                  <ShoppingCart size={18} />
-                  <span>Buy Credits</span>
-                </button>
                 <Link to="/cabinets/add" className="flex items-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">
                   <PlusCircle/> <span>Add Cabinet</span>
                 </Link>
