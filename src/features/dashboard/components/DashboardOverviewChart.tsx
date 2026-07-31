@@ -6,6 +6,8 @@ import {
     Cell,
     ResponsiveContainer,
 } from "recharts";
+import { MaintenanceDetailsModal } from "./MaintenanceDetailsModal";
+import { useState } from "react";
 
 const data = [
     { name: "Overdue", value: 4, color: "#D50000" },
@@ -17,6 +19,9 @@ const data = [
 const total = data.reduce((sum, item) => sum + item.value, 0);
 
 export default function DashboardOverviewChart() {
+
+    const [open, setOpen] = useState<boolean>(false)
+
     return (
         <div className="p-5 relative border rounded-[15px] bg-white">
             <h2 className="text-sm font-semibold">Maintenance Overview</h2>
@@ -79,7 +84,8 @@ export default function DashboardOverviewChart() {
                     </div>
                 </div>
             </div>
-            <Link to="#" className="text-xs pr-5 relative inline-flex items-center gap-2 text-accent-foreground ">
+            <MaintenanceDetailsModal open={open} setOpen={setOpen} />
+            <Link to="#" className="text-xs pr-5 relative inline-flex items-center gap-2 text-accent-foreground" onClick={()=> setOpen(true)}>
                 View maintenance details
                 <span>
                     <ChevronRight size={16} />

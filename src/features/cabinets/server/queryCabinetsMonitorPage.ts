@@ -1,46 +1,65 @@
 import type { SortingState } from "@tanstack/react-table"
-import type { CabinetMonitorProps } from "../types/cabinetMonitor"
-import { mockCabinetData } from "../mock/cabinetMonitor"
+import type { FilterStatus } from "../types/cabinetMonitor"
+import type { Cabinet } from "../types/cabinetList"
+import { mockCabinetsList } from "../mock/mockCabinetsList"
 
 export type CabinetsQuery = {
   search: string
   pageIndex: number
   pageSize: number
   sorting: SortingState
+  status: FilterStatus
+  id: string
 }
 
 export type CabinetsPageResult = {
-  rows: CabinetMonitorProps[]
-  totalCount: number
+  rows: Cabinet[]
+  totalCount: number,
+  status?: string | 'all'
 }
 
-function filterCabinets(
-  rows: readonly CabinetMonitorProps[],
+export function filterCabinets(
+  rows: readonly Cabinet[],
   search: string,
-): CabinetMonitorProps[] {
-  const q = search.trim().toLowerCase()
-  
-  if (!q) return [...rows]
+  status: string,
+  id: string
+): Cabinet[] {
+  const q = search.trim().toLowerCase();
+  const selectedStatus = status.trim().toLowerCase();
+  const selectedId = id.trim();
 
   return rows.filter((row) => {
-    const inName = row.cabinetName.toLowerCase().includes(q)
-    const inCity = row.city.toLowerCase().includes(q)
-    const inHealth = row.assetHealth.toLowerCase().includes(q)
-    const inPresence = row.assetPresence.toLowerCase().includes(q)
-    const inDoor = row.doorStatus.toLowerCase().includes(q)
-    
-    // Convert temperature to string for textual search matching (e.g., searching "21")
-    const inTemp = row.temperature.toString().includes(q)
-    
-    // Check optional tooltip text if it exists
-    const inTooltip = row.healthTooltip ? row.healthTooltip.toLowerCase().includes(q) : false
+    // Status filter
+    const matchesStatus =
+      !selectedStatus ||
+      selectedStatus === "all" ||
+      row.status.toLowerCase() === selectedStatus;
 
-    // Return true if it matches any of the fields
-    return inName || inCity || inHealth || inPresence || inDoor || inTemp || inTooltip
-  })
+    // Cabinet ID filter
+    const matchesId =
+      !selectedId || row.id.toString() === selectedId;
+
+    // If there's no search query, only apply status and ID filters
+    if (!q) {
+      return matchesStatus && matchesId;
+    }
+
+    // Search filter
+    const matchesSearch =
+      row.cabinetName.toLowerCase().includes(q) ||
+      row.city.toLowerCase().includes(q) ||
+      row.assetHealth.toLowerCase().includes(q) ||
+      row.assetPresence.toLowerCase().includes(q) ||
+      row.doorStatus.toLowerCase().includes(q) ||
+      row.status.toLowerCase().includes(q) ||
+      (row.healthTooltip?.toLowerCase().includes(q) ?? false);
+
+    // Must satisfy all active filters
+    return matchesSearch && matchesStatus && matchesId;
+  });
 }
 
-function compareRows(a: CabinetMonitorProps, b: CabinetMonitorProps, columnId: string): number {
+function compareRows(a: Cabinet, b: Cabinet, columnId: string): number {
   switch (columnId) {
     case "cabinetName":
       return a.cabinetName.localeCompare(b.cabinetName, undefined, { numeric: true, sensitivity: "base" })
@@ -52,11 +71,8 @@ function compareRows(a: CabinetMonitorProps, b: CabinetMonitorProps, columnId: s
       return a.assetPresence.localeCompare(b.assetPresence)
     case "doorStatus":
       return a.doorStatus.localeCompare(b.doorStatus)
-    case "temperature":
-      // Direct numeric subtraction for accurate temperature sorting
-      return a.temperature - b.temperature 
-    case "lastUpdate":
-      return a.lastUpdate.localeCompare(b.lastUpdate)
+    case "lastActivityAt":
+      return a.lastActivityAt.localeCompare(b.lastActivityAt)
     default:
       return 0
   }
@@ -67,8 +83,10 @@ function compareRows(a: CabinetMonitorProps, b: CabinetMonitorProps, columnId: s
  */
 export function queryCabinetsMonitorPage(query: CabinetsQuery): CabinetsPageResult {
   const filtered = filterCabinets(
-    mockCabinetData,
+    mockCabinetsList,
     query.search,
+    query.status,
+    query.id
   )
 
   const sorted = [...filtered]

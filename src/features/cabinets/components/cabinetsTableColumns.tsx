@@ -5,15 +5,16 @@
 import { createColumnHelper } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "@/shared/components/data-table"
 import { cn, formatISODate } from "@/lib/utils"
-import type { CabinetListRow } from "../types/cabinetList"
 import {
   cabinetStatusBadgeClass,
+  cabinetStatusLabel,
   statusBadgeColor
 } from "../lib/cabinetListDisplay"
 import { CabinetRowActions } from "./CabinetRowActions"
 import { Link } from "react-router"
+import type { Cabinet } from "../types/cabinetList"
 
-const columnHelper = createColumnHelper<CabinetListRow>()
+const columnHelper = createColumnHelper<Cabinet>()
 
 export const cabinetListColumns = (canManageCabinets: boolean) => [
   columnHelper.accessor("name", {
@@ -27,7 +28,7 @@ export const cabinetListColumns = (canManageCabinets: boolean) => [
     },
     cell: ({ row }) => (
       <div className="flex min-w-0 flex-col gap-0.5">
-        <Link to={`/cabinets/list/${row.original.id}`} className="truncate font-medium">{row.original.name}</Link>
+        <Link to={`/cabinets/list/${row.original.id}`} className="truncate font-medium underline">{row.original.name}</Link>
       </div>
     ),
   }),
@@ -83,28 +84,28 @@ export const cabinetListColumns = (canManageCabinets: boolean) => [
     },
     cell: ({ row }) => formatISODate(row.original.lastActivityAt),
   }),
-  columnHelper.accessor("cabinetCode", {
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Cabinet Code" />
-    ),
-    meta: {
-      headerClassName: "",
-      cellClassName:
-        "align-middle whitespace-nowrap",
-    },
-    cell: ({ row }) => row.original.cabinetCode,
-  }),
-  columnHelper.accessor("updaidCode", {
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Updaid Code" />
-    ),
-    meta: {
-      headerClassName: "",
-      cellClassName:
-        "align-middle whitespace-nowrap",
-    },
-    cell: ({ row }) => row.original.updaidCode,
-  }),
+  // columnHelper.accessor("cabinetCode", {
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="Cabinet Code" />
+  //   ),
+  //   meta: {
+  //     headerClassName: "",
+  //     cellClassName:
+  //       "align-middle whitespace-nowrap",
+  //   },
+  //   cell: ({ row }) => row.original.cabinetCode,
+  // }),
+  // columnHelper.accessor("updaidCode", {
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="Updaid Code" />
+  //   ),
+  //   meta: {
+  //     headerClassName: "",
+  //     cellClassName:
+  //       "align-middle whitespace-nowrap",
+  //   },
+  //   cell: ({ row }) => row.original.updaidCode,
+  // }),
   columnHelper.accessor("status", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Status" />
@@ -117,8 +118,8 @@ export const cabinetListColumns = (canManageCabinets: boolean) => [
       <span
         className={cn("flex items-center capitalize gap-1")}
       >
-        <span className={cn("size-1 block rounded-full",cabinetStatusBadgeClass(row.original.status))}></span>
-        <span className={cn(statusBadgeColor(row.original.status))}>{row.original.status}</span>
+        <span className={cn("size-1 block rounded-full", cabinetStatusBadgeClass(row.original.status))}></span>
+        <span className={cn(statusBadgeColor(row.original.status))}>{cabinetStatusLabel(row.original.status)}</span>
       </span>
     ),
   }),

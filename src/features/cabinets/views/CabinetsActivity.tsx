@@ -8,7 +8,7 @@ import {
   type PaginationState,
   type SortingState,
 } from "@tanstack/react-table";
-import { ChevronRight, PlusCircle } from "lucide-react";
+import { ChevronRight, PlusCircle, RotateCcw } from "lucide-react";
 import { DataTable, DataTablePagination } from "@/shared/components/data-table";
 import { cn } from "@/lib/utils";
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
@@ -203,8 +203,11 @@ export default function CabinetsActivity() {
                       })}>{item.count}</span>
                     </li>
                   ))}
-                  <li className="text-sm ml-auto self-center text-accent-foreground flex items-center gap-1.5">
-                     <LastUpdateIcon /> Last update: 13:58
+                  <li className="text-sm ml-auto self-center text-accent-foreground flex items-center gap-4">
+                     <span>Last update: 13:58</span>
+                     <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 xl:px-7">
+                      <RotateCcw size={16} /> <span>Refresh</span>
+                    </button>
                   </li>
                 </ul>
               </div>

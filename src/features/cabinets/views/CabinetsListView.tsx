@@ -26,15 +26,12 @@ import { MANAGE_CABINETS } from "@/features/dashboard/mock/mockDashboardStats";
 const STATUS_FILTER_ALL = "all";
 const TYPE_FILTER_ALL = "all";
 const CITIES_FILTER_ALL = "all";
-const STREETS_FILTER_ALL = "all";
 const PAGE_SIZE = 8;
 
 export default function CabinetsListView() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>(STATUS_FILTER_ALL);
-  const [typeFilter, setTypeFilter] = useState<string>(TYPE_FILTER_ALL);
   const [cities, setCities] = useState<string>(CITIES_FILTER_ALL);
-  const [streets, setStreets] = useState<string>(STREETS_FILTER_ALL);
   const [sorting, setSorting] = useState<SortingState>([
     { id: "cabinet", desc: false },
   ]);
@@ -48,7 +45,6 @@ export default function CabinetsListView() {
       queryCabinetsListPage({
         search,
         statusFilter,
-        typeFilter,
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
         sorting,
@@ -56,12 +52,10 @@ export default function CabinetsListView() {
     [
       search,
       statusFilter,
-      typeFilter,
       pagination.pageIndex,
       pagination.pageSize,
       sorting,
-      cities,
-      streets
+      cities
     ],
   );
 
@@ -121,9 +115,6 @@ export default function CabinetsListView() {
                 <div className="max-sm:hidden">
                   <DateAndTimeChip />
                 </div>
-                <Link to="/cabinets/add" className="flex items-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">
-                  <PlusCircle/> <span>Add Cabinet</span>
-                </Link>
               </div>
             </div>
           </div>
@@ -135,14 +126,9 @@ export default function CabinetsListView() {
               Overview of all cabinets in your network
             </h2>
             <div className="flex flex-wrap gap-2.5">
-                <button type="button" className="flex items-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">
-                  <span>Your Credits:</span>
-                  <span className="font-semibold">48</span>
-                </button>
-                <button type="button" className="flex items-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">
-                  <ShoppingCart size={18} />
-                  <span>Buy Credits</span>
-                </button>
+                <Link to="/cabinets/add" className="flex items-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">
+                  <PlusCircle/> <span>Add Cabinet</span>
+                </Link>
             </div>
           </div>
           <section aria-label="Cabinets">
@@ -158,19 +144,10 @@ export default function CabinetsListView() {
                   setStatusFilter(v);
                   resetPage();
                 }}
-                streets={streets}
-                onStreetsChange={(v) => {
-                  setStreets(v)
-                }}
                 cities={cities}
                 onCitiesChange={(v) => {
                   setCities(v)
                 }}
-                // typeFilter={typeFilter}
-                // onTypeFilterChange={(v) => {
-                //   setTypeFilter(v);
-                //   resetPage();
-                // }}
               />
             </div>
             <div

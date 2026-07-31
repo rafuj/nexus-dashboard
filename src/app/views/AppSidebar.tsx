@@ -167,10 +167,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </div>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent className="pb-10 pt-5">
+      <SidebarContent className="pb-4 pt-5">
         <NavMain items={sidebarMainMenu()} />
         <div className="mt-auto pt-5"></div>
         <NavMain items={sidebarBottomMenu()} />
+
+        <div className="mx-5 mt-3">
+          <div className="border bg-[#F7F9FC] border-[#E4E8F1] rounded-[12px] py-2 px-3 flex items-center">
+            <div className="w-0 grow">
+              <span className="text-[10px] block text-foreground">Credits</span>
+              <span className="font-semibold block text-[11px]">48 available</span>
+            </div>
+            <button type="button" className="text-[#C22722] transition-all border border-[#C22722] text-[10px] font-semibold rounded-[10px] px-3 h-7.5 duration-200 hover:bg-white">Buy credits</button>
+          </div>
+        </div>
+
         <SupportModal open={supportModal} setOpen={setSupportModal} />
         <FeedbackModal open={feedbackModal} setOpen={setFeedbackModal} />
       </SidebarContent>

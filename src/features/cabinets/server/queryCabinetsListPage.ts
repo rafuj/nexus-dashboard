@@ -7,12 +7,10 @@ import type { CabinetListRow } from "../types/cabinetList"
 import { mockCabinetsList } from "../mock/mockCabinetsList"
 
 const STATUS_FILTER_ALL = "all"
-const TYPE_FILTER_ALL = "all"
 
 export type CabinetsListQuery = {
   search: string
   statusFilter: string
-  typeFilter: string
   pageIndex: number
   pageSize: number
   sorting: SortingState
@@ -23,18 +21,14 @@ export type CabinetsListPageResult = {
   totalCount: number
 }
 
-function filterCabinets(
+export function filterCabinets(
   rows: readonly CabinetListRow[],
   search: string,
   statusFilter: string,
-  typeFilter: string
 ): CabinetListRow[] {
   const q = search.trim().toLowerCase()
   return rows.filter((row) => {
     if (statusFilter !== STATUS_FILTER_ALL && row.status !== statusFilter) {
-      return false
-    }
-    if (typeFilter !== TYPE_FILTER_ALL && row.type !== typeFilter) {
       return false
     }
     if (q) {
@@ -60,11 +54,11 @@ function compareRows(a: CabinetListRow, b: CabinetListRow, columnId: string): nu
       return a.location.localeCompare(b.location, undefined, { sensitivity: "base" })
     case "asset":
       return a.asset.localeCompare(b.asset)
-    case "temperatureC": {
-      if (a.temperatureC == null && b.temperatureC == null) return 0
-      if (a.temperatureC == null) return 1
-      if (b.temperatureC == null) return -1
-      return a.temperatureC - b.temperatureC
+    case "temperature": {
+      if (a.temperature == null && b.temperature == null) return 0
+      if (a.temperature == null) return 1
+      if (b.temperature == null) return -1
+      return a.temperature - b.temperature
     }
     case "lastActivityAt":
       return a.lastActivityAt.localeCompare(b.lastActivityAt)
@@ -81,8 +75,7 @@ export function queryCabinetsListPage(query: CabinetsListQuery): CabinetsListPag
   const filtered = filterCabinets(
     mockCabinetsList,
     query.search,
-    query.statusFilter,
-    query.typeFilter
+    query.statusFilter
   )
 
   const sorted = [...filtered]

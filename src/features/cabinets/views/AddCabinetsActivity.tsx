@@ -98,7 +98,7 @@ export default function AddCabinetsActivity() {
                   </div>
                 </div>
                 <div className="mb-3.75">
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Activity status <span className="text-error">*</span></Label>
+                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Public Availability <span className="text-error">*</span></Label>
                   <CustomRadioGroup value={activity} setValue={setActivity} list={activityStatusList} />
                 </div>
                 <div>
