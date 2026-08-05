@@ -45,7 +45,7 @@ export const mockCabinetsList: Cabinet[] = [
     assetHealth: "Warning",
     doorStatus: "Closed",
     status: "warning",
-    temperature: 22.7,
+    temperature: 30,
     lastActivityAt: "2026-04-10T08:05:00.000Z",
     healthTooltip: "Temperature rising fast"
   },

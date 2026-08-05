@@ -54,7 +54,7 @@ export const getDoorBadgeClass = (door: string = "Closed") => {
     : "bg-card-error text-error"
 }
 
-export const getTemperatureChip = (temp: number = 0, className:string) => {
+export const getTemperatureChip = (temp: number = 0, className?:string) => {
   if (temp >= 30) return (
     <span className={cn("px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all bg-card-error text-error", className)}>
       Urgent
@@ -80,8 +80,8 @@ export const getTemperatureChipClass = (temp: number = 0) => {
 
 export const cabinetsMonitorTableColumns = [
   // 1. Cabinet Name Column
-  columnHelper.accessor("cabinetName", {
-    id: "cabinetName",
+  columnHelper.accessor("name", {
+    id: "name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Cabinet Name" />
     ),
@@ -109,7 +109,7 @@ export const cabinetsMonitorTableColumns = [
       }
       return (
         <Link className={cn("px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all", getCabinetStatusColor())} to={`/cabinets/list/${row.original.id}`} >
-            {row.original.cabinetName}
+            {row.original.name}
         </Link>
       )
     },

@@ -31,7 +31,7 @@ export interface Cabinet {
   assetHealth: AssetHealth;
   doorStatus: DoorStatus;
   status: CabinetStatus;
-  temperature: number | null;
+  temperature: number;
   lastActivityAt: string;
   healthTooltip?: string;
 }

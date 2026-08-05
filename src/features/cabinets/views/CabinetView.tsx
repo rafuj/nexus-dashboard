@@ -17,7 +17,7 @@ import { DatePicker } from "@/shared/components/ui/date-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { cn } from "@/lib/utils";
 import SchedulePicker from "../components/SchedulePicker";
-import type { AccessTypeI, AssetType, AvailabilityType, BrightnessType, ColorType, DayConfig, PadsType, StepType, VolumeType } from "../types/addCabinet";
+import type { AccessTypeI, AvailabilityType, BrightnessType, ColorType, DayConfig, PadsType, StepType, VolumeType } from "../types/addCabinet";
 import { assetTypeList, availabilityTypeList, brightnessList, colorList, dayList, padsTypeList, STEPS, volumeList } from "../mock/addCabinetData";
 import { ConfirmationModal } from "../components/ConfirmationModal";
 import { Checkbox } from "@/shared/components/ui/checkbox";
@@ -30,7 +30,7 @@ import { SidebarMenuButton } from "@/shared/components/ui/sidebar";
 import { CabinetStatistics } from "../components/CabinetStatistics";
 
 interface BasicInformation {
-  cabinetName: string;
+  name: string;
   description: string;
   addressLine1: string;
   addressLine2: string;
@@ -101,7 +101,7 @@ const CabinetView = () => {
   });
 
   const [basicInformation, setBasicInformation] = useState<BasicInformation>({
-    cabinetName: "Amsterdam Central - Platform 5",
+    name: "Amsterdam Central - Platform 5",
     description: "Hangs next to the kiosk",
     addressLine1: "Stationsplein 15",
     addressLine2: "",
@@ -788,10 +788,10 @@ const CabinetView = () => {
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
                       readOnly={fieldsReadOnly}
-                      value={basicInformation.cabinetName}
+                      value={basicInformation.name}
                       onChange={(e)=> setBasicInformation(prev => ({
                         ...prev,
-                        cabinetName: e.target.value
+                        name: e.target.value
                       }))}
                     />
                   </div>

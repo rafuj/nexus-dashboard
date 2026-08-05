@@ -46,7 +46,7 @@ export function filterCabinets(
 
     // Search filter
     const matchesSearch =
-      row.cabinetName.toLowerCase().includes(q) ||
+      row.name.toLowerCase().includes(q) ||
       row.city.toLowerCase().includes(q) ||
       row.assetHealth.toLowerCase().includes(q) ||
       row.assetPresence.toLowerCase().includes(q) ||
@@ -61,8 +61,8 @@ export function filterCabinets(
 
 function compareRows(a: Cabinet, b: Cabinet, columnId: string): number {
   switch (columnId) {
-    case "cabinetName":
-      return a.cabinetName.localeCompare(b.cabinetName, undefined, { numeric: true, sensitivity: "base" })
+    case "name":
+      return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" })
     case "city":
       return a.city.localeCompare(b.city, undefined, { sensitivity: "base" })
     case "assetHealth":

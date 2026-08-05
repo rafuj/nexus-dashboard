@@ -49,6 +49,15 @@ export const CabinetStatistics = () => {
       value: cabinet.assetHealth,
     },
     {
+      title: "Temperature",
+      Icon: TemperatureIcon,
+      badgeClass: `p-0 ${getTemperatureChipClass(cabinet.temperature ?? 0)}`,
+      value: getTemperatureChip(
+            cabinet.temperature ?? 0,
+            "px-3 py-1 rounded-[4px] text-xs w-full text-center inline-block !min-w-0"
+          ),
+    },
+    {
       title: "Connectivity",
       Icon: ConnectivityIcon,
       badgeClass:
@@ -90,38 +99,6 @@ export const CabinetStatistics = () => {
           </div>
         </div>
       ))}
-
-      {/* Temperature */}
-      <div className="border p-3 bg-white rounded-[10px] text-center flex flex-col gap-2 items-center justify-center">
-        <div
-          className={cn(
-            "size-7 flex items-center justify-center rounded-full",
-            isPaused
-              ? getHealthBadgeClass("Paused")
-              : getTemperatureChipClass(cabinet.temperature ?? 0)
-          )}
-        >
-          <TemperatureIcon />
-        </div>
-
-        <h6 className="text-xs font-semibold">Temperature</h6>
-
-        {isPaused ? (
-          <div
-            className={cn(
-              "px-3 py-1 rounded-[4px] text-xs w-full text-center inline-block",
-              getHealthBadgeClass("Paused")
-            )}
-          >
-            Paused
-          </div>
-        ) : (
-          getTemperatureChip(
-            cabinet.temperature ?? 0,
-            "px-3 py-1 rounded-[4px] text-xs w-full text-center inline-block !min-w-0"
-          )
-        )}
-      </div>
     </div>
   );
 };
