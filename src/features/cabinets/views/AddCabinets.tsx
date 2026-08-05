@@ -25,6 +25,14 @@ import { AVAILABLE_CREDITS } from "@/features/dashboard/mock/mockDashboardStats"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
 import { SidebarMenuButton } from "@/shared/components/ui/sidebar";
 
+export interface BrandInfo {
+  name: string;
+  model: string;
+  isNotInList: boolean;
+  customName: string;
+  customModel: string;
+}
+
 export default function AddCabinets() {
   const navigate = useNavigate();
 
@@ -37,6 +45,14 @@ export default function AddCabinets() {
   const [availability, setAvailability] = useState<AvailabilityType>('24/7')
   const [accessType, setAccessType] = useState<AccessTypeI>('public')
   const [schedule, setSchedule] = useState<DayConfig[]>(dayList)
+
+  const [brandInfo, setBrandInfo] = useState<BrandInfo>({
+    name: "",
+    model: "",
+    isNotInList: false,
+    customName: "",
+    customModel: ""
+  })
 
   const [padsExpiration, setPadsExpiration] = useState<Date | undefined>(new Date())
   const [batteryExpiration, setBatteryExpiration] = useState<Date | undefined>(new Date())
@@ -107,10 +123,15 @@ export default function AddCabinets() {
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand<span className="text-error">*</span></Label>
-                    <Select>
-                      <SelectTrigger className="w-full !h-12.5">
+                    <Select value={brandInfo.name} onValueChange={(value)=> setBrandInfo(prev => ({
+                      ...prev,
+                      name: value
+                    }))} disabled={brandInfo.isNotInList}>
+                      <SelectTrigger className={cn("w-full !h-12.5", {
+                        "opacity-70" : brandInfo.isNotInList
+                      })}>
                         <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-                          <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Nexus" /></span>
+                          <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder={"Select Brand"} /></span>
                         </div>
                       </SelectTrigger>
                       <SelectContent>
@@ -123,10 +144,15 @@ export default function AddCabinets() {
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Model<span className="text-error">*</span></Label>
-                    <Select>
-                      <SelectTrigger className="w-full !h-12.5">
+                    <Select value={brandInfo.model} onValueChange={(value)=> setBrandInfo(prev => ({
+                      ...prev,
+                      model: value
+                    }))} disabled={brandInfo.isNotInList}>
+                      <SelectTrigger className={cn("w-full !h-12.5", {
+                        "opacity-70" : brandInfo.isNotInList
+                      })}>
                         <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-                          <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Pro" /></span>
+                          <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder={"Select Model"} /></span>
                         </div>
                       </SelectTrigger>
                       <SelectContent>
@@ -139,28 +165,46 @@ export default function AddCabinets() {
                   </div>
                   <div className="col-span-2">
                     <label className="flex items-center space-x-3 cursor-pointer select-none mb-2">
-                      <Checkbox className="bg-transparent border-border" />
+                      <Checkbox className="bg-transparent border-border" checked={brandInfo.isNotInList} onCheckedChange={()=> setBrandInfo(prev => ({
+                      ...prev,
+                      isNotInList: !brandInfo.isNotInList
+                    }))} />
                       <span className={cn("text-xs text-accent-foreground transition-colors")}>
                         Brand or model not in list
                       </span>
                     </label>
                   </div>
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand Name</Label>
-                    <Input
-                      placeholder="Enter brand name"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Model Name</Label>
-                    <Input
-                      placeholder="Enter model name"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                    />
-                  </div>
+                  {brandInfo.isNotInList && <>
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand Name</Label>
+                      <Input
+                        placeholder="Enter brand name"
+                        autoComplete="off"
+                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                        value={brandInfo.customName}
+                        onChange={(e)=> setBrandInfo(prev => ({
+                            ...prev,
+                            customName: e.target.value
+                          })
+                        )}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Model Name</Label>
+                      <Input
+                        placeholder="Enter model name"
+                        autoComplete="off"
+                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                        value={brandInfo.customModel}
+                        onChange={(e)=> setBrandInfo(prev => ({
+                            ...prev,
+                            customModel: e.target.value
+                          })
+                        )}
+                      />
+                    </div>
+                  </>
+                  }
                   <div className="col-span-2">
                     <div className="bg-card-info rounded-md px-2.5 py-3 text-accent-foreground text-xs flex gap-2.5">
                       <Info size={18} />

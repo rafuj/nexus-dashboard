@@ -28,6 +28,7 @@ import { useQueryState } from "nuqs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
 import { SidebarMenuButton } from "@/shared/components/ui/sidebar";
 import { CabinetStatistics } from "../components/CabinetStatistics";
+import type { BrandInfo } from "./AddCabinets";
 
 interface BasicInformation {
   name: string;
@@ -40,10 +41,6 @@ interface BasicInformation {
 }
 interface CabinetDetails {
   serialNumber: string;
-  brand: string;
-  model: string;
-  brandName: string;
-  modelName: string;
   moduleCode: string;
   assignCredits: string;
   lockCode: string;
@@ -111,15 +108,19 @@ const CabinetView = () => {
   })
   const [cabinetDetails, setCabinetDetails] = useState<CabinetDetails>({
     serialNumber:"",
-    brand: "nexus",
-    model: "pro",
-    brandName: "Nexus Brand",
-    modelName: "ZXCBNM3X32",
     moduleCode: "NEXUSMODULEXC43",
     assignCredits: "1",
     lockCode: "UDWKSNDMS"
   })
-  console.log("batteryExpiration",batteryExpiration)
+  
+  const [brandInfo, setBrandInfo] = useState<BrandInfo>({
+    name: "",
+    model: "",
+    isNotInList: true,
+    customName: "Nexus Custom Model",
+    customModel: "Nexus Custom Model"
+  })
+
   const [assetInformation, setAssetInformation] = useState<AssetInformation>({
     padsInformation: {
       firstSetPads: {
@@ -202,10 +203,15 @@ const CabinetView = () => {
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand<span className="text-error">*</span></Label>
-                    <Select disabled={fieldsReadOnly}>
-                      <SelectTrigger className="w-full !h-12.5">
+                    <Select value={brandInfo.name} onValueChange={(value)=> setBrandInfo(prev => ({
+                      ...prev,
+                      name: value
+                    }))} disabled={fieldsReadOnly || brandInfo.isNotInList}>
+                      <SelectTrigger className={cn("w-full !h-12.5", {
+                          "opacity-70" : brandInfo.isNotInList
+                        })}>
                         <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-                          <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Nexus" /></span>
+                          <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Brand" /></span>
                         </div>
                       </SelectTrigger>
                       <SelectContent>
@@ -218,10 +224,15 @@ const CabinetView = () => {
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Model<span className="text-error">*</span></Label>
-                    <Select disabled={fieldsReadOnly}>
-                      <SelectTrigger className="w-full !h-12.5">
+                    <Select value={brandInfo.model} onValueChange={(value)=> setBrandInfo(prev => ({
+                      ...prev,
+                      model: value
+                    }))} disabled={fieldsReadOnly || brandInfo.isNotInList}>
+                      <SelectTrigger className={cn("w-full !h-12.5", {
+                          "opacity-70" : brandInfo.isNotInList
+                        })}>
                         <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-                          <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Pro" /></span>
+                          <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Model" /></span>
                         </div>
                       </SelectTrigger>
                       <SelectContent>
@@ -234,40 +245,47 @@ const CabinetView = () => {
                   </div>
                   <div className="col-span-2">
                     <label className="flex items-center space-x-3 cursor-pointer select-none mb-2">
-                      <Checkbox className="bg-transparent border-border" readOnly={fieldsReadOnly} />
+                      <Checkbox className="bg-transparent border-border" checked={brandInfo.isNotInList} onCheckedChange={()=> setBrandInfo(prev => ({
+                      ...prev,
+                      isNotInList: !brandInfo.isNotInList
+                    }))} disabled={fieldsReadOnly} />
                       <span className={cn("text-xs text-accent-foreground transition-colors")}>
                         Brand or model not in list
                       </span>
                     </label>
                   </div>
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand Name</Label>
-                    <Input
-                      placeholder="Enter brand name"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                      readOnly={fieldsReadOnly}
-                      value={cabinetDetails.brandName}
-                      onChange={(e)=> setCabinetDetails(prev => ({
-                        ...prev,
-                        brandName: e.target.value
-                      }))}
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Model Name</Label>
-                    <Input
-                      placeholder="Enter model name"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                      readOnly={fieldsReadOnly}
-                      value={cabinetDetails.modelName}
-                      onChange={(e)=> setCabinetDetails(prev => ({
-                        ...prev,
-                        modelName: e.target.value
-                      }))}
-                    />
-                  </div>
+                  {brandInfo.isNotInList && <>
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand Name</Label>
+                      <Input
+                        placeholder="Enter brand name"
+                        autoComplete="off"
+                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                        readOnly={fieldsReadOnly}
+                        value={brandInfo.customName}
+                        onChange={(e)=> setBrandInfo(prev => ({
+                            ...prev,
+                            customName: e.target.value
+                          })
+                        )}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Model Name</Label>
+                      <Input
+                        placeholder="Enter model name"
+                        autoComplete="off"
+                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                        readOnly={fieldsReadOnly}
+                        value={brandInfo.customModel}
+                        onChange={(e)=> setBrandInfo(prev => ({
+                            ...prev,
+                            customModel: e.target.value
+                          })
+                        )}
+                      />
+                    </div>
+                  </>}
                   <div className="col-span-2">
                     <div className="bg-card-info rounded-md px-2.5 py-3 text-accent-foreground text-xs flex gap-2.5">
                       <Info size={18} />
