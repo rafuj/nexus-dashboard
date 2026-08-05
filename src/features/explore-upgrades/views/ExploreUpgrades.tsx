@@ -3,11 +3,18 @@ import { ArrowLeft, CheckCircle, History, Users, Wifi } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 
 import whyConnectedImg from "@/assets/why-connected.avif"
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import updaidLogo from "@/assets/updaid-logo.png"
+import { useEffect } from "react";
 
 export default function ExploreUpgrades() {
 
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  
   return (
     <>
       <Helmet>

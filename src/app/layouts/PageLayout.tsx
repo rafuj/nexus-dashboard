@@ -1,4 +1,4 @@
-import { Navigate, Outlet } from "react-router";
+import { Navigate, Outlet, useLocation } from "react-router";
 import { AppSidebar } from "../views/AppSidebar";
 
 import {
@@ -8,6 +8,7 @@ import {
   useSidebar,
 } from "@/shared/components/ui/sidebar";
 import { useAuth } from "../hooks/useAuth";
+import { useEffect } from "react";
 
 export function CollapsedSidebarTrigger() {
   const { isMobile, state } = useSidebar();
@@ -23,6 +24,12 @@ export function CollapsedSidebarTrigger() {
 
 export default function PageLayout() {
   const { user } = useAuth();
+
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   if (!user) {
     return <Navigate to="/login" />;

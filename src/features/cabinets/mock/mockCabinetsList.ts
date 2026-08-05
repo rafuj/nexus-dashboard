@@ -19,13 +19,15 @@ export const mockCabinetsList: Cabinet[] = [
     location: "Jan van Galenstraat 1390, 1061 AZ",
     locationCoordinates: { lat: 52.3768, lng: 4.8462 },
     asset: "aed",
-    assetPresence: "Present",
+    assetPresence: "Missing",
     assetHealth: "Ok",
     doorStatus: "Closed",
-    status: "ok",
+    status: "warning",
     temperature: 21.3,
     lastActivityAt: "2026-04-09T14:22:00.000Z",
-    healthTooltip: "All systems nominal"
+    doorOpenedAt: null,
+    assetTakenAt: "2026-10-09T14:22:00.000Z",
+    temperatureOutOfRangeSince: "2026-10-09T14:22:00.000Z"
   },
   {
     id: "C0000002",
@@ -43,11 +45,13 @@ export const mockCabinetsList: Cabinet[] = [
     asset: "aed",
     assetPresence: "Present",
     assetHealth: "Warning",
-    doorStatus: "Closed",
-    status: "warning",
+    doorStatus: "Open",
+    status: "urgent",
     temperature: 30,
     lastActivityAt: "2026-04-10T08:05:00.000Z",
-    healthTooltip: "Temperature rising fast"
+    doorOpenedAt: "2026-08-12T08:06:00.000Z",
+    assetTakenAt: null,
+    temperatureOutOfRangeSince: "2026-10-09T14:22:00.000Z"
   },
   {
     id: "C0000003",
@@ -69,7 +73,9 @@ export const mockCabinetsList: Cabinet[] = [
     status: "urgent",
     temperature: 25.5,
     lastActivityAt: "2026-04-07T11:40:00.000Z",
-    healthTooltip: "Asset missing and door left open"
+    doorOpenedAt: "2026-04-10T08:05:00.000Z",
+    assetTakenAt: "2026-04-10T08:05:00.000Z",
+    temperatureOutOfRangeSince: "2026-04-10T08:05:00.000Z"
   },
   {
     id: "C0000004",
@@ -81,7 +87,7 @@ export const mockCabinetsList: Cabinet[] = [
     cabinetCode: "CAB-0004",
     updaidCode: "SN-193KD8402KF",
     serial: "SC-2025-002",
-    type: "non_connected",
+    type: "not_connected",
     location: "Hoofdweg 450, 1056 CM",
     locationCoordinates: { lat: 52.3731, lng: 4.8488 },
     asset: "none",
@@ -91,7 +97,9 @@ export const mockCabinetsList: Cabinet[] = [
     status: "paused",
     temperature: 19.8,
     lastActivityAt: "2026-03-28T09:15:00.000Z",
-    healthTooltip: "Monitoring temporarily paused"
+    doorOpenedAt: null,
+    assetTakenAt: null,
+    temperatureOutOfRangeSince: "2026-04-10T08:05:00.000Z"
   },
   {
     id: "C0000005",
@@ -103,17 +111,19 @@ export const mockCabinetsList: Cabinet[] = [
     cabinetCode: "CAB-0005",
     updaidCode: "SN-749FJ3920DH",
     serial: "SC-2024-055",
-    type: "non_connected",
+    type: "not_connected",
     location: "Stationsplein, 1012 AB",
     locationCoordinates: { lat: 52.3791, lng: 4.9003 },
     asset: "aed",
     assetPresence: "Present",
     assetHealth: "Ok",
     doorStatus: "Closed",
-    status: "ok",
+    status: "Connection Lost",
     temperature: 21.3,
     lastActivityAt: "2026-04-10T06:58:00.000Z",
-    healthTooltip: "All systems nominal"
+    doorOpenedAt: null,
+    assetTakenAt: null,
+    temperatureOutOfRangeSince: "2026-10-09T14:22:00.000Z"
   },
   {
     id: "C0000006",
@@ -135,7 +145,9 @@ export const mockCabinetsList: Cabinet[] = [
     status: "warning",
     temperature: 28.7,
     lastActivityAt: "2026-04-09T16:30:00.000Z",
-    healthTooltip: "Temperature too high"
+    doorOpenedAt: null,
+    assetTakenAt: null,
+    temperatureOutOfRangeSince: "2026-10-09T14:22:00.000Z"
   },
   {
     id: "C0000007",
@@ -157,7 +169,9 @@ export const mockCabinetsList: Cabinet[] = [
     status: "urgent",
     temperature: 12.5,
     lastActivityAt: "2026-04-01T12:00:00.000Z",
-    healthTooltip: "Critical security door open breach"
+    doorOpenedAt: "2026-04-10T08:05:00.000Z",
+    assetTakenAt: null,
+    temperatureOutOfRangeSince: "2026-10-09T14:22:00.000Z"
   },
   {
     id: "C0000008",
@@ -169,7 +183,7 @@ export const mockCabinetsList: Cabinet[] = [
     cabinetCode: "CAB-0008",
     updaidCode: "SN-930KD7482LD",
     serial: "SC-2025-018",
-    type: "non_connected",
+    type: "not_connected",
     location: "Mirakelplein 24, 1033 SK",
     locationCoordinates: { lat: 52.4042, lng: 4.8864 },
     asset: "aed",
@@ -179,7 +193,9 @@ export const mockCabinetsList: Cabinet[] = [
     status: "paused",
     temperature: 19.8,
     lastActivityAt: "2026-04-10T07:12:00.000Z",
-    healthTooltip: "Monitoring temporarily paused"
+    doorOpenedAt: null,
+    assetTakenAt: null,
+    temperatureOutOfRangeSince: "2026-10-09T14:22:00.000Z"
   },
   {
     id: "C0000009",
@@ -191,7 +207,7 @@ export const mockCabinetsList: Cabinet[] = [
     cabinetCode: "CAB-0009",
     updaidCode: "SN-293JF8492KD",
     serial: "SC-2024-067",
-    type: "non_connected",
+    type: "connected",
     location: "Radarweg 60, 1043 NZ",
     locationCoordinates: { lat: 52.3892, lng: 4.8374 },
     asset: "aed",
@@ -201,7 +217,9 @@ export const mockCabinetsList: Cabinet[] = [
     status: "warning",
     temperature: 21.7,
     lastActivityAt: "2026-04-08T09:45:00.000Z",
-    healthTooltip: "Approaching threshold temperature"
+    doorOpenedAt: null,
+    assetTakenAt: null,
+    temperatureOutOfRangeSince: "2026-10-09T14:22:00.000Z"
   },
   {
     id: "C0000010",
@@ -223,7 +241,9 @@ export const mockCabinetsList: Cabinet[] = [
     status: "urgent",
     temperature: 20.1,
     lastActivityAt: "2026-04-10T10:00:00.000Z",
-    healthTooltip: "Hardware disconnected from hub"
+    doorOpenedAt: "2026-04-10T08:05:00.000Z",
+    assetTakenAt: "2026-04-10T08:05:00.000Z",
+    temperatureOutOfRangeSince: "2026-10-09T14:22:00.000Z"
   },
   {
     id: "C0000011",
@@ -245,7 +265,9 @@ export const mockCabinetsList: Cabinet[] = [
     status: "paused",
     temperature: 19.8,
     lastActivityAt: "2026-04-09T22:18:00.000Z",
-    healthTooltip: "Monitoring temporarily paused"
+    doorOpenedAt: null,
+    assetTakenAt: null,
+    temperatureOutOfRangeSince: "2026-10-09T14:22:00.000Z"
   },
   {
     id: "C0000012",
@@ -266,7 +288,10 @@ export const mockCabinetsList: Cabinet[] = [
     doorStatus: "Closed",
     status: "paused",
     temperature: 21.1,
-    lastActivityAt: "2026-04-10T11:05:00.000Z"
+    lastActivityAt: "2026-04-10T11:05:00.000Z",
+    doorOpenedAt: null,
+    assetTakenAt: null,
+    temperatureOutOfRangeSince: "2026-10-09T14:22:00.000Z"
   },
   {
     id: "C0000013",
@@ -278,16 +303,19 @@ export const mockCabinetsList: Cabinet[] = [
     cabinetCode: "CAB-0012",
     updaidCode: "SN-104KF9482ND",
     serial: "SC-2025-031",
-    type: "connected",
+    type: "not_connected",
     location: "Steigereiland 200, 1086 TM",
     locationCoordinates: { lat: 52.3592, lng: 4.9764 },
     asset: "aed",
     assetPresence: "Present",
-    assetHealth: "Paused",
+    assetHealth: "Warning",
     doorStatus: "Closed",
     status: "Connection lost",
     temperature: 21.1,
-    lastActivityAt: "2026-04-10T11:05:00.000Z"
+    lastActivityAt: "2026-04-10T11:05:00.000Z",
+    doorOpenedAt: null,
+    assetTakenAt: null,
+    temperatureOutOfRangeSince: "2026-04-10T08:05:00.000Z"
   },
   {
     id: "C0000014",
@@ -299,15 +327,18 @@ export const mockCabinetsList: Cabinet[] = [
     cabinetCode: "CAB-0014",
     updaidCode: "SN-104KF9482ND",
     serial: "SC-2025-031",
-    type: "connected",
+    type: "not_connected",
     location: "Steigereiland 200, 1086 TM",
     locationCoordinates: { lat: 52.3592, lng: 4.9764 },
     asset: "aed",
     assetPresence: "Present",
     assetHealth: "Paused",
     doorStatus: "Closed",
-    status: "Connection lost",
+    status: "paused",
     temperature: 21.1,
-    lastActivityAt: "2026-04-10T11:05:00.000Z"
+    lastActivityAt: "2026-04-10T11:05:00.000Z",
+    doorOpenedAt: null,
+    assetTakenAt: null,
+    temperatureOutOfRangeSince: "2026-10-09T14:22:00.000Z"
   }
 ];

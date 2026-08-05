@@ -4,7 +4,7 @@ export type CabinetStatus =
   | "urgent"
   | "paused"
   | (string & {});
-export type CabinetConnectionType = "connected" | "non_connected";
+export type CabinetConnectionType = "connected" | "not_connected";
 
 export type AssetHealth = 'Ok' | 'Warning' | 'Urgent' | 'Paused';
 export type AssetPresence = 'Present' | 'Missing';
@@ -33,7 +33,9 @@ export interface Cabinet {
   status: CabinetStatus;
   temperature: number;
   lastActivityAt: string;
-  healthTooltip?: string;
+  doorOpenedAt: Date | string | null;
+  assetTakenAt: Date | string | null;
+  temperatureOutOfRangeSince: Date | string | null;
 }
 
 export type CabinetsListToolbarProps = {
