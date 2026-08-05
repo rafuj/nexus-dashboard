@@ -1,5 +1,5 @@
 import type { RadioOption } from "@/shared/components/CustomRadioGroup";
-import type { AssetType, AvailabilityType, BrightnessType, ColorType, DayConfig, PadsType, StepConfig, VolumeType } from "../types/addCabinet";
+import type { AssetType, AvailabilityType, BrightnessType, ColorType, DayConfig, StepConfig, VolumeType } from "../types/addCabinet";
 
 // Stepper
 export const STEPS: StepConfig[] = [
@@ -15,13 +15,6 @@ export const assetTypeList : AssetType[] = [
   { label: "First-Aid Kit", value: "first-aid-kit" },
   { label: "Life Bouy", value: "life-bouy" },
   { label: "Other", value: "other" }
-];
-
-// Pads
-export const padsTypeList : RadioOption<PadsType>[] = [
-  { id: "adult", value: "adult", label: "Adult Only" },
-  { id: "children", value: "children", label: "Children Only" },
-  { id: "all", value: "all", label: "Both adult and children" }
 ];
 
 // Volume

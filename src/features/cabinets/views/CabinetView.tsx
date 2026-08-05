@@ -1,6 +1,6 @@
 "use client";
 import { Helmet } from "react-helmet-async";
-import { ChevronDown, ChevronLeft, ChevronRight, CircleCheck, Info, InfoIcon, ShoppingCart } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, CircleCheck, Info, InfoIcon } from "lucide-react";
 
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
@@ -17,8 +17,8 @@ import { DatePicker } from "@/shared/components/ui/date-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { cn } from "@/lib/utils";
 import SchedulePicker from "../components/SchedulePicker";
-import type { AccessTypeI, AvailabilityType, BrightnessType, ColorType, DayConfig, PadsType, StepType, VolumeType } from "../types/addCabinet";
-import { assetTypeList, availabilityTypeList, brightnessList, colorList, dayList, padsTypeList, STEPS, volumeList } from "../mock/addCabinetData";
+import type { AccessTypeI, AvailabilityType, BrightnessType, ColorType, DayConfig, StepType, VolumeType } from "../types/addCabinet";
+import { assetTypeList, availabilityTypeList, brightnessList, colorList, dayList, STEPS, volumeList } from "../mock/addCabinetData";
 import { ConfirmationModal } from "../components/ConfirmationModal";
 import { Checkbox } from "@/shared/components/ui/checkbox";
 import { AVAILABLE_CREDITS, MANAGE_CABINETS } from "@/features/dashboard/mock/mockDashboardStats";
@@ -28,7 +28,8 @@ import { useQueryState } from "nuqs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
 import { SidebarMenuButton } from "@/shared/components/ui/sidebar";
 import { CabinetStatistics } from "../components/CabinetStatistics";
-import type { BrandInfo } from "./AddCabinets";
+import type { AssetInformation, BrandInfo } from "./AddCabinets";
+import { brandsList } from "../mock/mockBrands";
 
 interface BasicInformation {
   name: string;
@@ -45,29 +46,6 @@ interface CabinetDetails {
   assignCredits: string;
   lockCode: string;
 }
-interface AssetInformation {
-  padsInformation: {
-    firstSetPads: {
-      for: "adult" | "adult+children" | "children",
-      expiration: Date | undefined,
-      IotNumber: string
-    },
-    secondSetPads: {
-      for: "adult" | "adult+children" | "children",
-      expiration: Date | undefined,
-      IotNumber: string
-    },
-  },
-  batteryInformation: {
-    batterySerial: string,
-    batteryExpiration: Date | undefined,
-    batteryIotNumber: string
-  }
-  brand: string,
-  model: string,
-  notes: string,
-}
-
 
 const CabinetView = () => {
 
@@ -75,7 +53,6 @@ const CabinetView = () => {
 
   const [step, setStep] = useState<StepType>('basic-information')
   const [assetType, setAssetType] = useState<string>(assetTypeList[0].value)
-  const [padsType, setPadsType] = useState<PadsType>('adult')
   const [volume, setVolume] = useState<VolumeType>('0%')
   const [brightness, setBrightness] = useState<BrightnessType>('0%')
   const [color, setColor] = useState<ColorType>('white')
@@ -83,8 +60,7 @@ const CabinetView = () => {
   const [accessType, setAccessType] = useState<AccessTypeI>('public')
   const [schedule, setSchedule] = useState<DayConfig[]>(dayList)
 
-  const [padsExpiration, setPadsExpiration] = useState<Date | undefined>(new Date())
-  const [batteryExpiration, setBatteryExpiration] = useState<Date | undefined>(new Date())
+  const [warrantyExpiration, setWarrantyExpiration] = useState<Date | undefined>(new Date())
 
   const [assetExpiration, setAssetExpiration] = useState<Date | undefined>(new Date("Tue Jul 07 2026 10:20:38 GMT+0600"))
   const [checkupDate, setCheckupDate] = useState<Date | undefined>(new Date("Tue Jul 07 2026 14:20:38 GMT+0600"))
@@ -120,7 +96,7 @@ const CabinetView = () => {
     customName: "Nexus Custom Model",
     customModel: "Nexus Custom Model"
   })
-
+  
   const [assetInformation, setAssetInformation] = useState<AssetInformation>({
     padsInformation: {
       firstSetPads: {
@@ -139,9 +115,14 @@ const CabinetView = () => {
       batteryExpiration: new Date("Tue Jul 07 2026 14:20:38 GMT+0600"),
       batteryIotNumber: "B-98765"
     },
-    brand: "NEXUS",
-    model: "NEX - 193812",
     notes: "lorem ipsum dolor set amet",
+    brandInfo: {
+      name: "",
+      model: "",
+      isNotInList: false,
+      customName: "",
+      customModel: ""
+    }
   })
 
   const { user } = useAuth();
@@ -205,7 +186,8 @@ const CabinetView = () => {
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand<span className="text-error">*</span></Label>
                     <Select value={brandInfo.name} onValueChange={(value)=> setBrandInfo(prev => ({
                       ...prev,
-                      name: value
+                      name: value,
+                      model: ""
                     }))} disabled={fieldsReadOnly || brandInfo.isNotInList}>
                       <SelectTrigger className={cn("w-full !h-12.5", {
                           "opacity-70" : brandInfo.isNotInList
@@ -215,10 +197,9 @@ const CabinetView = () => {
                         </div>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="nexus">Nexus</SelectItem>
-                        <SelectItem value="nexus-2">Nexus 2</SelectItem>
-                        <SelectItem value="nexus-3">Nexus 3</SelectItem>
-                        <SelectItem value="nexus-4">Nexus 4</SelectItem>
+                      {
+                        brandsList.map((item)=> <SelectItem value={item.brand} key={item.brand}>{item.brand}</SelectItem> )
+                      }
                       </SelectContent>
                     </Select>
                   </div>
@@ -236,10 +217,9 @@ const CabinetView = () => {
                         </div>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="pro">Pro</SelectItem>
-                        <SelectItem value="pro-2">Pro 2</SelectItem>
-                        <SelectItem value="pro-3">Pro 3</SelectItem>
-                        <SelectItem value="pro-4">Pro 4</SelectItem>
+                      {
+                        brandsList.find(item => item.brand === brandInfo.name)?.models?.map((item)=> <SelectItem value={item} key={item}>{item}</SelectItem> )
+                      }
                       </SelectContent>
                     </Select>
                   </div>
@@ -518,77 +498,137 @@ const CabinetView = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-              {assetType === "fire-extinguisher" ? <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 my-3.75 gap-4">
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand</Label>
-                      <Input 
-                        placeholder="e.g. Acme" 
-                        className="h-12.5 px-5 placeholder:text-accent-foreground/20" 
-                        readOnly={fieldsReadOnly} 
-                        value={assetInformation.brand}
-                        onChange={(e)=> setAssetInformation(prev=> ({
-                          ...prev,
-                          brand: e.target.value
-                        }))}
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Model</Label>
-                      <Input 
-                        placeholder="e.g. Pro 2000" 
-                        className="h-12.5 px-5 placeholder:text-accent-foreground/20" 
-                        readOnly={fieldsReadOnly} 
-                        value={assetInformation.model}
-                        onChange={(e)=> setAssetInformation(prev=> ({
-                          ...prev,
-                          model: e.target.value
-                        }))}
-                      />
-                    </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 my-3.75 gap-4">
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Asset Expiration Date<span className="text-error">*</span></Label>
-                    <DatePicker value={assetExpiration} onChange={setAssetExpiration} className="!bg-white text-xs pl-5 pr-4" disabled={fieldsReadOnly} />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Check-Up Date<span className="text-error">*</span></Label>
-                    <DatePicker value={checkupDate} onChange={setCheckupDate} className="!bg-white text-xs pl-5 pr-4" disabled={fieldsReadOnly} />
-                  </div>
-                  <div className="sm:col-span-2 xl:col-span-3">
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Notes<span className="text-error">*</span></Label>
-                    <Textarea
-                      placeholder="Add any additional notes..."
-                      autoComplete="off"
-                      className="p-5 placeholder:text-accent-foreground/20"
-                      readOnly={fieldsReadOnly}
-                      value={assetInformation.notes}
-                      onChange={(e)=> setAssetInformation(prev=> ({
-                        ...prev,
-                        notes: e.target.value
-                      }))}
-                    />
-                  </div>
-                </div>
-              </> :
-                <>
               <div className="grid grid-cols-1 sm:grid-cols-2 my-3.75 gap-4">
                 <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Pads expiration date<span className="text-error">*</span></Label>
-                  <DatePicker value={padsExpiration} onChange={setPadsExpiration} disabled={fieldsReadOnly} className="!bg-white text-xs pl-5 pr-4" />
+                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand<span className="text-error">*</span></Label>
+                  <Select value={assetInformation.brandInfo.name} onValueChange={(value)=> setAssetInformation(prev => ({
+                    ...prev,
+                    brandInfo:{
+                      ...prev.brandInfo,
+                      name: value,
+                      model: ""
+                    }
+                  }))} disabled={fieldsReadOnly || assetInformation.brandInfo.isNotInList}>
+                    <SelectTrigger className={cn("w-full !h-12.5", {
+                        "opacity-70" : assetInformation.brandInfo.isNotInList
+                      })}>
+                      <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
+                        <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Brand" /></span>
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {
+                        brandsList.map((item)=> <SelectItem value={item.brand} key={item.brand}>{item.brand}</SelectItem> )
+                      }
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery expiration date<span className="text-error">*</span></Label>
-                  <DatePicker value={batteryExpiration} onChange={setBatteryExpiration} disabled={fieldsReadOnly} className="!bg-white text-xs pl-5 pr-4" />
+                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Model<span className="text-error">*</span></Label>
+                  <Select value={assetInformation.brandInfo.model} onValueChange={(value)=> setAssetInformation(prev => ({
+                    ...prev,
+                    brandInfo: {
+                      ...prev.brandInfo,
+                      model: value
+                    }
+                  }))} disabled={fieldsReadOnly || assetInformation.brandInfo.isNotInList}>
+                    <SelectTrigger className={cn("w-full !h-12.5", {
+                        "opacity-70" : assetInformation.brandInfo.isNotInList
+                      })}>
+                      <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
+                        <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Model" /></span>
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {
+                        brandsList.find(item => item.brand === assetInformation.brandInfo.name)?.models?.map((item)=> <SelectItem value={item} key={item}>{item}</SelectItem> )
+                      }
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="col-span-2">
+                  <label className="flex items-center space-x-3 cursor-pointer select-none mb-2">
+                    <Checkbox className="bg-transparent border-border" checked={assetInformation.brandInfo.isNotInList} onCheckedChange={()=> setAssetInformation(prev => ({
+                    ...prev,
+                    brandInfo:{
+                      ...prev.brandInfo,
+                      isNotInList: !assetInformation.brandInfo.isNotInList
+                    }
+                  }))} disabled={fieldsReadOnly} />
+                    <span className={cn("text-xs text-accent-foreground transition-colors")}>
+                      Brand or model not in list
+                    </span>
+                  </label>
+                </div>
+                {assetInformation.brandInfo.isNotInList && <>
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand Name</Label>
+                    <Input
+                      placeholder="Enter brand name"
+                      autoComplete="off"
+                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      readOnly={fieldsReadOnly}
+                      value={assetInformation.brandInfo.customName}
+                      onChange={(e)=> setAssetInformation(prev => ({
+                          ...prev,
+                          brandInfo: {
+                            ...prev.brandInfo,
+                            customName: e.target.value
+                          }
+                        })
+                      )}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Model Name</Label>
+                    <Input
+                      placeholder="Enter model name"
+                      autoComplete="off"
+                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      readOnly={fieldsReadOnly}
+                      value={assetInformation.brandInfo.customModel}
+                      onChange={(e)=> setAssetInformation(prev => ({
+                          ...prev,
+                          brandInfo: {
+                            ...prev.brandInfo,
+                            customModel: e.target.value
+                          }
+                        })
+                      )}
+                    />
+                  </div>
+                </>}
+              </div>
+
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 my-3.75 gap-4">
+                <div>
+                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Asset Expiration Date<span className="text-error">*</span></Label>
+                  <DatePicker value={assetExpiration} onChange={setAssetExpiration} className="!bg-white text-xs pl-5 pr-4" disabled={fieldsReadOnly} />
+                </div>
+                <div>
+                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Check-Up Date<span className="text-error">*</span></Label>
+                  <DatePicker value={checkupDate} onChange={setCheckupDate} className="!bg-white text-xs pl-5 pr-4" disabled={fieldsReadOnly} />
+                </div>
+                <div>
+                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Warranty Expiration date <span className="text-error">*</span></Label>
+                  <DatePicker value={warrantyExpiration} onChange={setWarrantyExpiration} disabled={fieldsReadOnly} className="!bg-white text-xs pl-5 pr-4" />
+                </div>
+                <div className="sm:col-span-2 xl:col-span-3">
+                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Notes<span className="text-error">*</span></Label>
+                  <Textarea
+                    placeholder="Add any additional notes..."
+                    autoComplete="off"
+                    className="p-5 placeholder:text-accent-foreground/20"
+                    readOnly={fieldsReadOnly}
+                    value={assetInformation.notes}
+                    onChange={(e)=> setAssetInformation(prev=> ({
+                      ...prev,
+                      notes: e.target.value
+                    }))}
+                  />
                 </div>
               </div>
-              <div>
-                <Label className="text-xs text-accent-foreground font-medium block mb-3">Pads type<span className="text-error">*</span></Label>
-                <CustomRadioGroup value={padsType} setValue={setPadsType} list={padsTypeList} readOnly={fieldsReadOnly}/>
-              </div>
-              </>
-              }
             </div>
             {assetType !== "fire-extinguisher" && 
               <>
@@ -792,7 +832,7 @@ const CabinetView = () => {
       default: 
         return (
             <div>
-              {/* Cabinet Details */}
+                <CabinetStatistics />
               <div>
                 <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75">
                   <span className="w-0 grow">Name & Description</span>
@@ -985,7 +1025,6 @@ const CabinetView = () => {
                 </div>
               </div>
               <div className="w-full md:w-0 grow">
-                <CabinetStatistics />
                 {switchContent()}
                 {canManageCabinets && (
                   <div className="flex flex-wrap gap-3 sm:gap-5 justify-end py-3.75 bg-background sticky bottom-0 mt-10 w-full">
