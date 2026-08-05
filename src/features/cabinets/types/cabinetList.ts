@@ -13,11 +13,10 @@ export type DoorStatus = 'Closed' | 'Open';
 export interface Cabinet {
   id: string;
   name: string;
-  cabinetName: string;
   city: string;
   zip: string;
   street: string;
-  hNo: string;
+  houseNumber: string;
   cabinetCode: string;
   updaidCode: string;
   serial: string;
@@ -42,10 +41,10 @@ export type CabinetsListToolbarProps = {
   onSearchChange: (value: string) => void
   statusFilter: string
   onStatusFilterChange: (value: string) => void
-  // typeFilter: string
-  // onTypeFilterChange: (value: string) => void
-  cities: string
-  onCitiesChange: (value: string) => void
+  city: string
+  onCityChange: (value: string) => void
+  resetPage: () => void
+  onRefresh: () => void
 }
 
 export const cabinetConfig = {

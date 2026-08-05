@@ -8,7 +8,7 @@ import {
   type PaginationState,
   type SortingState,
 } from "@tanstack/react-table";
-import { ChevronRight, PlusCircle, ShoppingCart } from "lucide-react";
+import { ChevronRight, PlusCircle } from "lucide-react";
 
 import { CabinetsListToolbar } from "../components/CabinetsListToolbar";
 import { cabinetListColumns } from "../components/cabinetsTableColumns";
@@ -24,14 +24,13 @@ import { MANAGE_CABINETS } from "@/features/dashboard/mock/mockDashboardStats";
 
 
 const STATUS_FILTER_ALL = "all";
-const TYPE_FILTER_ALL = "all";
-const CITIES_FILTER_ALL = "all";
+const CITY_FILTER_ALL = "all";
 const PAGE_SIZE = 8;
 
 export default function CabinetsListView() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>(STATUS_FILTER_ALL);
-  const [cities, setCities] = useState<string>(CITIES_FILTER_ALL);
+  const [city, setCity] = useState<string>(CITY_FILTER_ALL);
   const [sorting, setSorting] = useState<SortingState>([
     { id: "cabinet", desc: false },
   ]);
@@ -48,6 +47,7 @@ export default function CabinetsListView() {
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
         sorting,
+        city
       }),
     [
       search,
@@ -55,7 +55,7 @@ export default function CabinetsListView() {
       pagination.pageIndex,
       pagination.pageSize,
       sorting,
-      cities
+      city
     ],
   );
 
@@ -65,11 +65,18 @@ export default function CabinetsListView() {
 
   const columns = useMemo(() => cabinetListColumns(canManageCabinets), []);
 
-  const resetPage = () =>
+  const resetPage = () => {
+    setSearch("")
+    setStatusFilter(STATUS_FILTER_ALL)
+    setCity(CITY_FILTER_ALL)
+    resetPagination()
+  }
+  const resetPagination = () => {
     setPagination((p) => ({
       ...p,
       pageIndex: 0,
-    }));
+    }))
+  }
 
   // eslint-disable-next-line react-hooks/incompatible-library -- useReactTable
   const table = useReactTable({
@@ -91,6 +98,8 @@ export default function CabinetsListView() {
       sorting,
     },
   });
+
+  const onRefresh = () => {}
 
   return (
     <>
@@ -137,17 +146,20 @@ export default function CabinetsListView() {
                 search={search}
                 onSearchChange={(v) => {
                   setSearch(v);
-                  resetPage();
+                  resetPagination();
                 }}
                 statusFilter={statusFilter}
                 onStatusFilterChange={(v) => {
                   setStatusFilter(v);
-                  resetPage();
+                  resetPagination();
                 }}
-                cities={cities}
-                onCitiesChange={(v) => {
-                  setCities(v)
+                city={city}
+                onCityChange={(v) => {
+                  setCity(v);
+                  resetPagination()
                 }}
+                resetPage={resetPage}
+                onRefresh={onRefresh}
               />
             </div>
             <div

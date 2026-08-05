@@ -62,16 +62,16 @@ export const cabinetListColumns = (canManageCabinets: boolean) => [
     },
     cell: ({ row }) => row.original.street
   }),
-  columnHelper.accessor("hNo", {
+  columnHelper.accessor("houseNumber", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="h. No." />
+      <DataTableColumnHeader column={column} title="Number" />
     ),
     meta: {
       headerClassName: "",
       cellClassName:
         "align-middle whitespace-nowrap",
     },
-    cell: ({ row }) => formatISODate(row.original.hNo),
+    cell: ({ row }) => row.original.houseNumber,
   }),
   columnHelper.accessor("lastActivityAt", {
     header: ({ column }) => (

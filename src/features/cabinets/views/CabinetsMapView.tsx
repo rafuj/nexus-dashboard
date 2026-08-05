@@ -15,7 +15,7 @@ import CabinetMapCard from "../components/CabinetMapCard";
 import MapPin from "@/assets/icons/map-pin.svg?react"
 
 const STATUS_FILTER_ALL = "all";
-const CITIES_FILTER_ALL = "all";
+const CITY_FILTER_ALL = "all";
 
 
 export default function CabinetsMapView() {
@@ -23,15 +23,24 @@ export default function CabinetsMapView() {
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>(STATUS_FILTER_ALL);
-  const [cities, setCities] = useState<string>(CITIES_FILTER_ALL);
+  const [city, setCity] = useState<string>(CITY_FILTER_ALL);
 
   const [openCabinetId, setOpenCabinetId] = useState<string | null>(null);
 
   const filteredCabinets = filterCabinets(
       mockCabinetsList,
       search,
-      statusFilter
+      statusFilter,
+      city
     )
+
+  const resetPage = () => {
+    setSearch("")
+    setStatusFilter(STATUS_FILTER_ALL)
+    setCity(CITY_FILTER_ALL)
+  }
+
+  const onRefresh = () => {}
 
   return (
     <>
@@ -72,20 +81,22 @@ export default function CabinetsMapView() {
           </div>
           <div className="mb-2.5">
             <CabinetsListToolbar
-              search={search}
-              onSearchChange={(v) => {
-                setSearch(v);
-                setOpenSidebar(true);
-              }}
-              statusFilter={statusFilter}
-              onStatusFilterChange={(v) => {
-                setStatusFilter(v);
-              }}
-              cities={cities}
-              onCitiesChange={(v) => {
-                setCities(v)
-              }}
-            />
+                search={search}
+                onSearchChange={(v) => {
+                  setSearch(v);
+                  setOpenSidebar(true);
+                }}
+                statusFilter={statusFilter}
+                onStatusFilterChange={(v) => {
+                  setStatusFilter(v);
+                }}
+                city={city}
+                onCityChange={(v) => {
+                  setCity(v);
+                }}
+                resetPage={resetPage}
+                onRefresh={onRefresh}
+              />
           </div>
           <section className={cn("lg:h-0 grow gap-2.5 grid grid-cols-1",{"lg:grid-cols-[830fr_310fr]": openSidebar})} aria-label="Cabinets">
               <CabinetMapCard cabinets={filteredCabinets} openCabinetId={openCabinetId} setOpenCabinetId={setOpenCabinetId}  />
