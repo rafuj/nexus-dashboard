@@ -261,6 +261,53 @@ export default function AddCabinets() {
                   </div>
                 </div>                
               </div>
+              {/* Access Details */}
+              <div>
+                <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75 mt-5">
+                  <span className="w-0 grow">Access Details</span>
+                  <InfoIcon size={20} />
+                </div>
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Access Type <span className="text-error">*</span></Label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <button type="button" className={cn("flex items-center gap-3.75 text-left p-4 border border-border rounded-[10px]", {
+                        "bg-primary/7 border-primary/20": 'public' === accessType
+                      })} onClick={()=> setAccessType('public')}>
+                        <Icons.team />
+                        <div className="w-0 grow">
+                          <h6 className="font-semibold text-xs">Public</h6>
+                          <div className="text-xs">Accessible to everyone</div>
+                        </div>
+                      </button>
+                      <button type="button" className={cn("flex items-center gap-3.75 text-left p-4 border border-border rounded-[10px]", {
+                        "bg-primary/7 border-primary/20": 'private' === accessType
+                      })} onClick={()=> setAccessType('private')}>
+                        <Icons.lock2 />
+                        <div className="w-0 grow">
+                          <h6 className="font-semibold text-xs">Private</h6>
+                          <div className="text-xs">Restricted to authorized users</div>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Lock code (optional)</Label>
+                    <Input
+                      placeholder="Enter 4-8 digit lock code"
+                      autoComplete="off"
+                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Public availability</Label>
+                    <CustomRadioGroup value={availability} setValue={setAvailability} list={availabilityTypeList} />
+                  </div>
+                  {availability === 'custom-days-and-types' && (
+                    <SchedulePicker schedule={schedule} onScheduleChange={setSchedule} />
+                  )}
+                </div>
+              </div>
               {/* Updaid Connection */}
               <div>
                 <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75 mt-5">
@@ -374,53 +421,6 @@ export default function AddCabinets() {
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Brightness</Label>
                     <CustomRadioGroup value={brightness} setValue={setBrightness} list={brightnessList} />
                   </div>
-                </div>
-              </div>
-              {/* Access Details */}
-              <div>
-                <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75 mt-5">
-                  <span className="w-0 grow">Access Details</span>
-                  <InfoIcon size={20} />
-                </div>
-                <div className="grid grid-cols-1 gap-4">
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Access Type <span className="text-error">*</span></Label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <button type="button" className={cn("flex items-center gap-3.75 text-left p-4 border border-border rounded-[10px]", {
-                        "bg-primary/7 border-primary/20": 'public' === accessType
-                      })} onClick={()=> setAccessType('public')}>
-                        <Icons.team />
-                        <div className="w-0 grow">
-                          <h6 className="font-semibold text-xs">Public</h6>
-                          <div className="text-xs">Accessible to everyone</div>
-                        </div>
-                      </button>
-                      <button type="button" className={cn("flex items-center gap-3.75 text-left p-4 border border-border rounded-[10px]", {
-                        "bg-primary/7 border-primary/20": 'private' === accessType
-                      })} onClick={()=> setAccessType('private')}>
-                        <Icons.lock2 />
-                        <div className="w-0 grow">
-                          <h6 className="font-semibold text-xs">Private</h6>
-                          <div className="text-xs">Restricted to authorized users</div>
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Lock code (optional)</Label>
-                    <Input
-                      placeholder="Enter 4-8 digit lock code"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Public availability</Label>
-                    <CustomRadioGroup value={availability} setValue={setAvailability} list={availabilityTypeList} />
-                  </div>
-                  {availability === 'custom-days-and-types' && (
-                    <SchedulePicker schedule={schedule} onScheduleChange={setSchedule} />
-                  )}
                 </div>
               </div>
             </div>
