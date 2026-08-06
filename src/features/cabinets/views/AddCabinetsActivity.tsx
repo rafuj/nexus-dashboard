@@ -45,7 +45,7 @@ export default function AddCabinetsActivity() {
   return (
     <>
       <Helmet>
-        <title>Add Cabinets | Updaid</title>
+        <title>Add Activity | Updaid</title>
       </Helmet>
 
       <main>
@@ -75,7 +75,7 @@ export default function AddCabinetsActivity() {
         <div className="p-5">
           <button type="button" className="inline-flex items-center gap-2 text-xl font-semibold text-accent-foreground" onClick={()=> navigate(-1)}>
             <ChevronLeft size={24} />
-            <span>Add Cabinet</span>
+            <span>Add Activity</span>
           </button>
             <div className="border bg-white rounded-[15px] mt-4">
               <h4 className="border-b text-base font-semibold px-5 py-4">Details</h4>
@@ -98,7 +98,7 @@ export default function AddCabinetsActivity() {
                   </div>
                 </div>
                 <div className="mb-3.75">
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Public Availability <span className="text-error">*</span></Label>
+                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Status <span className="text-error">*</span></Label>
                   <CustomRadioGroup value={activity} setValue={setActivity} list={activityStatusList} />
                 </div>
                 <div>
