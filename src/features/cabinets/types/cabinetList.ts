@@ -4,6 +4,9 @@ export type CabinetStatus =
   | "urgent"
   | "paused"
   | (string & {});
+  
+export type FilterStatus = "ok" | "warning" | "urgent" | "paused" | 'all'
+
 export type CabinetConnectionType = "connected" | "not_connected";
 
 export type AssetHealth = 'Ok' | 'Warning' | 'Urgent' | 'Paused';

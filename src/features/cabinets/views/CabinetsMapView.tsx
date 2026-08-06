@@ -9,21 +9,27 @@ import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Link } from "react-router";
 import { useState } from "react";
 import { mockCabinetsList } from "../mock/mockCabinetsList";
-import { cabinetConfig } from "../types/cabinetList";
+import { cabinetConfig, type CabinetStatus, type FilterStatus } from "../types/cabinetList";
 import { filterCabinets } from "../server/queryCabinetsListPage";
 import CabinetMapCard from "../components/CabinetMapCard";
 import MapPin from "@/assets/icons/map-pin.svg?react"
+import { parseAsStringLiteral, useQueryState } from "nuqs";
 
 const STATUS_FILTER_ALL = "all";
 const CITY_FILTER_ALL = "all";
-
+const filterStatuses = [
+  "paused",
+  "ok",
+  "warning",
+  "urgent",
+  "all"
+] as const satisfies readonly CabinetStatus[];
 
 export default function CabinetsMapView() {
   const [openSidebar, setOpenSidebar] = useState<boolean>(false);
-
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>(STATUS_FILTER_ALL);
-  const [city, setCity] = useState<string>(CITY_FILTER_ALL);
+  const [search, setSearch] = useQueryState("search", { defaultValue:"" });
+  const [statusFilter, setStatusFilter] = useQueryState("status", parseAsStringLiteral(filterStatuses).withDefault(STATUS_FILTER_ALL))
+  const [city, setCity] = useQueryState("city", { defaultValue: CITY_FILTER_ALL });
 
   const [openCabinetId, setOpenCabinetId] = useState<string | null>(null);
 
@@ -88,7 +94,7 @@ export default function CabinetsMapView() {
                 }}
                 statusFilter={statusFilter}
                 onStatusFilterChange={(v) => {
-                  setStatusFilter(v);
+                  setStatusFilter(v as FilterStatus);
                 }}
                 city={city}
                 onCityChange={(v) => {

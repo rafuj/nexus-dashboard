@@ -7,35 +7,40 @@ export const mockDashboardStats: DashboardStatDefinition[] = [
     title: "Total Cabinets",
     value: "128",
     icon: Icons.cabinets,
-    className: "card-info"
+    className: "card-info",
+    url: "/cabinets/monitor?status=all",
   },
   {
     id: "active-cabinets",
     title: "Ok",
     value: "112",
     icon: Icons.activeCabinets,
-    className: "card-success"
+    className: "card-success",
+    url: "/cabinets/monitor?status=ok",
   },
   {
     id: "maintenance-warning",
     title: "Warning",
     value: "9",
     icon: Icons.warning,
-    className: "card-warning"
+    className: "card-warning",
+    url: "/cabinets/monitor?status=warning",
   },
   {
     id: "assets-urgent",
     title: "Urgent",
     value: "340",
     icon: Icons.urgent,
-    className: "card-error"
+    className: "card-error",
+    url: "/cabinets/monitor?status=urgent",
   },
   {
     id: "assets-paused",
     title: "Paused",
     value: "3",
     icon: Icons.paused,
-    className: "card-neutral"
+    className: "card-neutral",
+    url: "/cabinets/monitor?status=paused",
   },
 ];
 

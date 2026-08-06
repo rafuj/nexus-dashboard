@@ -18,19 +18,25 @@ import { CabinetsMonitorToolbar } from "../components/CabinetsMonitorToolbar";
 import { cabinetsMonitorTableColumns } from "../components/cabinetsMonitorTableColumns";
 import { queryCabinetsMonitorPage} from "../server/queryCabinetsMonitorPage";
 import { Icons } from "@/app/icons/icons";
-import type { FilterStatus } from "../types/cabinetMonitor";
-import { useQueryState } from "nuqs";
+import { parseAsStringLiteral, useQueryState } from "nuqs";
+import type { CabinetStatus } from "../types/cabinetList";
 
 
 const CITY_FILTER_ALL = "all";
 const STATUS_FILTER_ALL = "all";
 const PAGE_SIZE = 8;
+const filterStatuses = [
+  "paused",
+  "ok",
+  "warning",
+  "urgent",
+  "all"
+] as const satisfies readonly CabinetStatus[];
 
 export default function CabinetsMonitor() {
-  const [search, setSearch] = useState("");
-  const [city, setCity] = useState<string>(CITY_FILTER_ALL);
-  const [status, setStatus] = useState<FilterStatus>(STATUS_FILTER_ALL);
-
+  const [search, setSearch] = useQueryState("search", { defaultValue:"" });
+  const [city, setCity] = useQueryState("city", { defaultValue: CITY_FILTER_ALL });
+  const [status, setStatus] = useQueryState("status", parseAsStringLiteral(filterStatuses).withDefault(STATUS_FILTER_ALL))
   const [cabinetId, setCabinetId] = useQueryState("id", { defaultValue: "" })
 
   const [sorting, setSorting] = useState<SortingState>([

@@ -45,7 +45,7 @@ export default function DashboardView() {
           <div className="space-y-5">
             {/* Top Statistics Cards */}
             <section
-              className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(152px,1fr))] xl:grid-cols-[repeat(auto-fit,minmax(140px,1fr))]"
+              className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(120px,1fr))]"
               aria-label="Key metrics"
             >
               <div className="col-span-2 py-4 px-5 relative border rounded-[20px] bg-white">

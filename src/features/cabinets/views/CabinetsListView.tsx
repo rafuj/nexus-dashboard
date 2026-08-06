@@ -21,16 +21,25 @@ import { Link } from "react-router";
 import { useAuth } from "@/app/hooks/useAuth";
 import { can, type Role } from "@/lib/permissions";
 import { MANAGE_CABINETS } from "@/features/dashboard/mock/mockDashboardStats";
+import { parseAsStringLiteral, useQueryState } from "nuqs";
+import type { FilterStatus } from "../types/cabinetList";
 
 
 const STATUS_FILTER_ALL = "all";
 const CITY_FILTER_ALL = "all";
 const PAGE_SIZE = 8;
+const filterStatuses = [
+  "paused",
+  "ok",
+  "warning",
+  "urgent",
+  "all"
+] as const satisfies readonly FilterStatus[];
 
 export default function CabinetsListView() {
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>(STATUS_FILTER_ALL);
-  const [city, setCity] = useState<string>(CITY_FILTER_ALL);
+  const [search, setSearch] = useQueryState("search", { defaultValue:"" });
+  const [statusFilter, setStatusFilter] = useQueryState("status", parseAsStringLiteral(filterStatuses).withDefault(STATUS_FILTER_ALL))
+  const [city, setCity] = useQueryState("city", { defaultValue: CITY_FILTER_ALL });
   const [sorting, setSorting] = useState<SortingState>([
     { id: "cabinet", desc: false },
   ]);
@@ -150,7 +159,7 @@ export default function CabinetsListView() {
                 }}
                 statusFilter={statusFilter}
                 onStatusFilterChange={(v) => {
-                  setStatusFilter(v);
+                  setStatusFilter(v as FilterStatus);
                   resetPagination();
                 }}
                 city={city}
