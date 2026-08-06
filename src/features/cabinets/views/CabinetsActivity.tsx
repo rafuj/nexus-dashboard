@@ -20,6 +20,8 @@ import { cabinetsActivityTableColumns } from "../components/cabinetsActivityTabl
 import { queryCabinetsActivityPage } from "../server/queryCabinetsActivityPage";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
 import { mockCabinetActivities } from "../mock/mockCabinetsActivity";
+import { AddActivityModal } from "./AddActivityModal";
+import { EndActivityModal } from "./EndActivityModal";
 const CABINET_FILTER_ALL = "all";
 const ACTIVITY_FILTER_ALL = "all";
 const PAGE_SIZE = 8;
@@ -39,6 +41,8 @@ export default function CabinetsActivity() {
   const [sorting, setSorting] = useState<SortingState>([
     { id: "cabinet", desc: false },
   ]);
+  const [openActivity, setOpenActivity] = useState<boolean>(false)
+
   const today = new Date();
   const [dateRange, setDateRange] = useState<DateRange>({
     from: today,
@@ -166,12 +170,12 @@ export default function CabinetsActivity() {
             <h2 className="text-xl md:text-2xl font-semibold">
               Cabinet activity & maintenance tracking
             </h2>
-              <Link to="/cabinets/activity/add" className="flex items-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">
+              <button className="flex items-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25" type="button" onClick={()=> setOpenActivity(true)}>
                 <PlusCircle size={18} />
                 <span>Add Activity</span>
-              </Link>
+              </button>
           </div>
-          <section aria-label="Cabinets">
+          <section aria-label="Cabinets Activity">
             <div
               className={cn(
                 "bg-white border rounded-[10px] border-border",
@@ -243,6 +247,12 @@ export default function CabinetsActivity() {
                 </div>
               </div>
             </div>
+            <AddActivityModal {
+                ...{
+                  open: openActivity,
+                  setOpen: setOpenActivity
+                }
+              } />
           </section>
         </div>
       </main>

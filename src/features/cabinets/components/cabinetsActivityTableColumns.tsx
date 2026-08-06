@@ -6,6 +6,7 @@ import { createColumnHelper } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "@/shared/components/data-table"
 import type { CabinetActivityRow } from "../types/activityList"
 import { ActivityIcons } from "@/app/icons/icons"
+import { EndActivityAction } from "./EndActivityAction"
 
 const columnHelper = createColumnHelper<CabinetActivityRow>()
 
@@ -146,9 +147,7 @@ export const cabinetsActivityTableColumns = (tabValue: string) => [
         }
 
         return (
-          <div className="flex items-center gap-2">
-            <button type="button" className="card-error px-4 py-1.25 text-error border rounded-[4px] text-xs">End Activity</button>
-          </div>
+          <EndActivityAction row={row} />
         )
       },
     })
