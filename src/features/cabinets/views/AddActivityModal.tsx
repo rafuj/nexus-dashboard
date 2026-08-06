@@ -1,6 +1,6 @@
 "use client";
 import { Check, InfoIcon, Search, XCircle } from "lucide-react";
-import { useRef, useState, type Dispatch, type SetStateAction } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import { Label } from "@/shared/components/ui/label";
 import {
   Dialog,
@@ -11,7 +11,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/components/ui/dialog"
-import type { ActivityStatus } from "../types/addActivity";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/shared/components/ui/combobox";
 import { mockCabinetsList } from "../mock/mockCabinetsList";
@@ -24,13 +23,13 @@ interface ModalProps {
 
 export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
   
-  const [activity, setActivity] = useState<ActivityStatus>('ongoing')
+  const [activity, setActivity] = useState<string>('')
   const [search, setSearch] = useState("");
 
   const [selectedCabinet, setSelectedCabinet] = useState<Cabinet | null>(null);
 
   const filteredCabinets = mockCabinetsList.filter((item) =>
-    item.name.toLowerCase().includes(search.toLowerCase())
+    item.name.toLowerCase().includes(search.toLowerCase()) || item.city.toLowerCase().includes(search.toLowerCase()) || item.location.toLowerCase().includes(search.toLowerCase())
   );
   
 
@@ -110,7 +109,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Activity Type</Label>
-                    <Select>
+                    <Select value={activity} onValueChange={(value)=> setActivity(value)}>
                       <SelectTrigger className="w-full !h-12.5">
                         <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                           <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select activity type" /></span>
