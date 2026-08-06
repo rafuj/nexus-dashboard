@@ -1,10 +1,7 @@
 "use client";
-import { InfoIcon, Search, XCircle } from "lucide-react";
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { Check, InfoIcon, Search, XCircle } from "lucide-react";
+import { useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { Label } from "@/shared/components/ui/label";
-import { Textarea } from "@/shared/components/ui/textarea";
-import { SingleImageUploader } from "@/shared/components/image-uploader/single-image-uploader";
-import { CustomRadioGroup } from "@/shared/components/CustomRadioGroup";
 import {
   Dialog,
   DialogClose,
@@ -14,10 +11,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/shared/components/ui/dialog"
-import { activityStatusList } from "../mock/addCabinetActivity";
 import type { ActivityStatus } from "../types/addActivity";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
-import { Input } from "@/shared/components/ui/input";
+import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/shared/components/ui/combobox";
+import { mockCabinetsList } from "../mock/mockCabinetsList";
+import type { Cabinet } from "../types/cabinetList";
 
 interface ModalProps {
   open: boolean,
@@ -27,27 +25,14 @@ interface ModalProps {
 export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
   
   const [activity, setActivity] = useState<ActivityStatus>('ongoing')
-  const [search, setSearch] = useState<string>("")
+  const [search, setSearch] = useState("");
 
+  const [selectedCabinet, setSelectedCabinet] = useState<Cabinet | null>(null);
 
-  const [images, setImages] = useState({
-    picture1: "",
-    picture2: "",
-    picture3: "",
-  });
-
-  const handleImageChange = (
-    key: "picture1" | "picture2" | "picture3",
-    file: File | null
-  ) => {
-    if (!file) return;
-
-    setImages((prev) => ({
-      ...prev,
-      [key]: URL.createObjectURL(file),
-    }));
-  };
-
+  const filteredCabinets = mockCabinetsList.filter((item) =>
+    item.name.toLowerCase().includes(search.toLowerCase())
+  );
+  
 
   return (
     <>
@@ -62,25 +47,66 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
                 </button>
               </DialogClose>
             </DialogHeader>
-            <DialogDescription>
+            <DialogDescription asChild>
               <div className="pt-1">
                 <div className="grid grid-cols-1 gap-5">
-                  <div>
+                  <div className="relative">
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Cabinet</Label>
-                    <div className="relative">
-                      <Search
-                        className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2"
-                        aria-hidden
-                      />
-                      <Input
-                        id="cabinet-search"
-                        placeholder="Search for a cabinet"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="pl-9 h-10 border border-border bg-white md:!h-12.5"
-                        autoComplete="off"
-                      />
-                    </div>
+                    {
+                      selectedCabinet ? <>
+                        <div className="border border-border rounded-[10px] flex items-center gap-2.5 px-3 py-2 md:max-w-[90%]">
+                          <div className="rounded-full text-[#A72822] bg-[#FDF3F2] w-6 h-7.5 flex items-center justify-center">
+                            <Check size={16} />
+                          </div>
+                          <div className="w-0 grow">
+                            <h5 className="text-xs font-medium">{selectedCabinet.name}</h5>
+                            <div className="text-xs text-[#717893]">{selectedCabinet.street} {selectedCabinet.city}</div>
+                          </div>
+                          <button type="button" className="text-[#A72822] font-medium text-xs select-none" onClick={()=> {
+                            setSelectedCabinet(null);
+                          }}>Change</button>
+                        </div>
+                      </> : 
+                      <Combobox
+                        items={filteredCabinets}
+                        value={selectedCabinet}
+                      >
+                        <div className="relative">
+                          <Search
+                            className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 pointer-events-none"
+                            aria-hidden
+                          />
+                          <ComboboxInput
+                            placeholder="Search for a cabinet"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="h-10 md:h-12.5 border-border !ring-0"
+                            autoFocus
+                            showClear
+                          />
+                        </div>
+                        <ComboboxContent className="pointer-events-auto p-0">
+                          <ComboboxEmpty className="px-6 py-10">
+                            No Cabinet found.
+                          </ComboboxEmpty>
+                          <ComboboxList className="max-h-60 overflow-y-auto">
+                            {(item) => (
+                              <ComboboxItem key={item.id} value={item.name} className="data-highlighted:bg-[#FDF3F2]"
+                                onClick={()=> {
+                                  setSelectedCabinet(item)
+                                  setSearch("")
+                                }}
+                              >
+                                <div>
+                                  <h5 className="font-medium text-xs">{item.name}</h5>
+                                  <span className="text-xs text-[#717893]">{item.street} {item.city}</span>
+                                </div>
+                              </ComboboxItem>
+                            )}
+                          </ComboboxList>
+                        </ComboboxContent>
+                      </Combobox>
+                    }
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Activity Type</Label>
