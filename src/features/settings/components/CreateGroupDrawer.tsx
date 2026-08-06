@@ -17,6 +17,7 @@ import { Textarea } from "@/shared/components/ui/textarea"
 import { Icons } from "@/app/icons/icons"
 import { cn } from "@/lib/utils"
 import { groupIcons, selectedGroupIcon } from "../mock/group-icons"
+import { cabinetStatusSoftBadgeClass } from "@/features/cabinets/lib/cabinetListDisplay"
 
 interface CreateDrawerProps {
   open: boolean,
@@ -130,34 +131,27 @@ export const CreateGroupDrawer: React.FC<CreateDrawerProps>  = ({ open, setOpen,
                           const isSelected = selectedCabinets.some((c) => c.id === i.id)
                           return (
                             <div className="border-b border-border last:border-0 p-2.5 flex items-center justify-between" key={i.id}>
-                              <div className="flex items-center gap-2.5 w-[40%]">
+                              <div className="flex items-center gap-2.5 w-[40%] grow">
                                 <Icons.cabinet />
                                 <div className="">
                                   <h6 className="text-xs font-medium">{i.name}</h6>
                                   <div className="text-xs">{i.location}</div>
                                 </div>
                               </div>
-                              <span className="flex items-center gap-1.5 text-xs capitalize w-25">
-                                <span className={cn("size-1 block rounded-full", {
-                                  "bg-success": i.status === 'connected',
-                                  "bg-warning": i.status === 'warning',
-                                  "bg-error": i.status === 'disconnected'
-                                })}></span>
-                                <span className={cn("", {
-                                  "text-success": i.status === 'connected',
-                                  "text-warning": i.status === 'warning',
-                                  "text-error": i.status === 'disconnected'
-                                })}>{i.status}</span>
+                              <span className="flex items-center gap-1.5 text-xs capitalize w-25 grow">
+                                <span className={cn("py-1 px-2 rounded text-[10px] capitalize", cabinetStatusSoftBadgeClass(i.status))}>{i.status}</span>
                               </span>
-                              <Button
-                                type="button"
-                                disabled={isSelected}
-                                onClick={() => handleAdd(i)}
-                                className="h-7.5 rounded-full text-xs px-3 bg-border text-accent-foreground gap-1"
-                              >
-                                <PlusCircle size={14} />
-                                {isSelected ? "Added" : "Add"}
-                              </Button>
+                              <div className="w-21 flex justify-end">
+                                <Button
+                                  type="button"
+                                  disabled={isSelected}
+                                  onClick={() => handleAdd(i)}
+                                  className="h-7.5 rounded-full text-xs px-3 bg-border text-accent-foreground gap-1"
+                                >
+                                  <PlusCircle size={14} />
+                                  {isSelected ? "Added" : "Add"}
+                                </Button>
+                              </div>
                             </div>
                           )}
                         )}

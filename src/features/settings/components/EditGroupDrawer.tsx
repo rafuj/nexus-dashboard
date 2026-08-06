@@ -20,6 +20,8 @@ import { groupIcons } from "../mock/group-icons"
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select"
 import { members } from "../mock/settingsListData"
+import { mockCabinetsList } from "@/features/cabinets/mock/mockCabinetsList"
+import { cabinetStatusSoftBadgeClass } from "@/features/cabinets/lib/cabinetListDisplay"
 interface EditGroupDrawerProps {
   open: boolean,
   setOpen: Dispatch<SetStateAction<boolean>>,
@@ -27,9 +29,15 @@ interface EditGroupDrawerProps {
 }
 
 export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen, children}) => {
-    const [selectedCabinets, setSelectedCabinets] = useState<typeof cabinets>([])
+    const [selectedCabinets, setSelectedCabinets] = useState<typeof mockCabinetsList>([])
 
     const [selectedIconId, setSelectedIconId] = useState<string>("icon-5")
+
+    const [searchQuery, setSearchQuery] = useState("")
+
+    const filteredCabinets = mockCabinetsList.filter((cabinet) =>
+      cabinet.name.toLowerCase().includes(searchQuery.toLowerCase().trim())
+    );
 
     // Add cabinet
     const handleAdd = (cabinet: any) => {
@@ -109,7 +117,7 @@ export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen
                       </div>
                     </div>
                     <div className="pt-4">
-                      <h6 className="text-sm font-semibold">Cabinets in this group (48)</h6>
+                      <h6 className="text-sm font-semibold">Cabinets in this group ({mockCabinetsList.length})</h6>
                       <p className="text-xs mb-3">Cabinet assigned to this group will inherit its notifications and settings.</p>
                       <div className="border rounded-[10px] mt-3.75">
                         <table className="w-full">
@@ -122,7 +130,7 @@ export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen
                             </tr>
                           </thead>
                           <tbody>
-                            {cabinets.map((i)=> {
+                            {mockCabinetsList.map((i)=> {
                               const isSelected = selectedCabinets.some((c) => c.id === i.id)
                               return (
                                 <tr className="group p-2.5" key={i.id}>
@@ -130,21 +138,10 @@ export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen
                                     <h6 className="text-xs text-accent-foreground">{i.name}</h6>
                                   </td>
                                   <td className="border-b border-border group-last:border-0 px-2.5 py-2">
-                                    <div className="text-xs">{i.location}</div>
+                                    <div className="text-xs line-clamp-1 max-w-[80px]">{i.location}</div>
                                   </td>
                                   <td className="border-b border-border group-last:border-0 px-2.5 py-2">
-                                    <span className="flex items-center gap-1.5 text-xs capitalize w-25">
-                                      <span className={cn("size-1 block rounded-full", {
-                                        "bg-success": i.status === 'connected',
-                                        "bg-warning": i.status === 'warning',
-                                        "bg-error": i.status === 'disconnected'
-                                      })}></span>
-                                      <span className={cn("", {
-                                        "text-success": i.status === 'connected',
-                                        "text-warning": i.status === 'warning',
-                                        "text-error": i.status === 'disconnected'
-                                      })}>{i.status}</span>
-                                    </span>
+                                      <span className={cn("py-1 px-2 rounded text-[10px] capitalize", cabinetStatusSoftBadgeClass(i.status))}>{i.status}</span>
                                   </td>
                                   <td className="border-b border-border group-last:border-0 px-2.5 py-2">
                                     <div className="text-center">
@@ -175,50 +172,46 @@ export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen
                           placeholder="Search cabinet name..."
                           required
                           className="placeholder:text-foreground/40 bg-white border-border h-10 lg:h-12.5 pl-10 pr-12 peer"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
                         />
                         <Button
                           type="button"
                           className="h-7.5 w-7.5 rounded-full text-xs bg-chip text-accent-foreground absolute top-1/2 -translate-y-1/2 right-2 peer-placeholder-shown:hidden"
+                          onClick={()=>setSearchQuery("")}
                         >
                           <XCircle size={14} />
                         </Button>
                       </div>
                       <div className="border rounded-[10px] mt-3.75">
-                        {cabinets.map((i)=> {
+                        {filteredCabinets?.length > 0 ?filteredCabinets.map((i)=> {
                           const isSelected = selectedCabinets.some((c) => c.id === i.id)
                           return (
                             <div className="border-b border-border last:border-0 p-2.5 flex items-center justify-between" key={i.id}>
-                              <div className="flex items-center gap-2.5 w-[40%]">
+                              <div className="flex items-center gap-2.5 w-[40%] grow">
                                 <Icons.cabinet />
                                 <div className="">
                                   <h6 className="text-xs font-medium">{i.name}</h6>
                                   <div className="text-xs">{i.location}</div>
                                 </div>
                               </div>
-                              <span className="flex items-center gap-1.5 text-xs capitalize w-25">
-                                <span className={cn("size-1 block rounded-full", {
-                                  "bg-success": i.status === 'connected',
-                                  "bg-warning": i.status === 'warning',
-                                  "bg-error": i.status === 'disconnected'
-                                })}></span>
-                                <span className={cn("", {
-                                  "text-success": i.status === 'connected',
-                                  "text-warning": i.status === 'warning',
-                                  "text-error": i.status === 'disconnected'
-                                })}>{i.status}</span>
+                              <span className="flex items-center gap-1.5 text-xs capitalize w-25 grow">
+                                <span className={cn("py-1 px-2 rounded text-[10px] capitalize whitespace-nowrap", cabinetStatusSoftBadgeClass(i.status))}>{i.status}</span>
                               </span>
-                              <Button
-                                type="button"
-                                disabled={isSelected}
-                                onClick={() => handleAdd(i)}
-                                className="h-7.5 rounded-full text-xs px-3 bg-border text-accent-foreground gap-1"
-                              >
-                                <PlusCircle size={14} />
-                                {isSelected ? "Added" : "Add"}
-                              </Button>
+                              <div className="w-21 flex justify-end">
+                                <Button
+                                  type="button"
+                                  disabled={isSelected}
+                                  onClick={() => handleAdd(i)}
+                                  className="h-7.5 rounded-full text-xs px-3 bg-border text-accent-foreground gap-1"
+                                >
+                                  <PlusCircle size={14} />
+                                  {isSelected ? "Added" : "Add"}
+                                </Button>
+                              </div>
                             </div>
                           )}
-                        )}
+                        ): <div className="text-sm text-center p-7">No Cabinets Found</div> }
                       </div>
                       {selectedCabinets?.length > 0 && (
                         <div className="mt-5">
@@ -271,17 +264,11 @@ export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen
                       <div className="border rounded-[10px] mt-3.75 p-5">
                         <h6 className="text-sm font-semibold">Members & notification coverage</h6>
                         <div className="mt-2 grid grid-cols-2">
-                          <div className="flex items-center border-r border-border gap-3">
+                          <div className="flex items-center gap-3">
                             <Icons.members />
                             <div className="w-0 grow">
                               <h5 className="text-sm font-semibold">12 members</h5>
                               <div className="text-xs">Assigned to this group</div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-3 pl-6 xl:pl-12.5">
-                            <div className="w-0 grow">
-                              <h5 className="text-sm font-semibold relative before:absolute before:-left-3 before:size-1.5 before:rounded-full before:bg-success before:top-1/2 before:-translate-y-1/2">97% coverage</h5>
-                              <div className="text-xs">44 of 48 cabinets connected</div>
                             </div>
                           </div>
                         </div>
@@ -372,29 +359,3 @@ export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen
         </Drawer>
     )
 }
-const cabinets = [
-  {
-    id:"1",
-    name: "AMS-001",
-    location: "Amsterdam, NL",
-    status: "connected",
-  },
-  {
-    id:"2",
-    name: "AMS-002",
-    location: "Amsterdam, NL",
-    status: "warning",
-  },
-  {
-    id:"3",
-    name: "AMS-015",
-    location: "Amsterdam, NL",
-    status: "disconnected",
-  },
-  {
-    id:"4",
-    name: "AMS-007",
-    location: "Utrecht, NL",
-    status: "connected",
-  },
-]

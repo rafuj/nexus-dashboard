@@ -30,6 +30,20 @@ export function cabinetStatusBadgeClass(status: CabinetStatus) {
       return "bg-error"
   }
 }
+export function cabinetStatusSoftBadgeClass(status: CabinetStatus) {
+  switch (status) {
+    case "urgent":
+      return "bg-card-error text-error"
+    case "ok":
+      return "bg-card-success text-success"
+    case "warning":
+      return "bg-card-warning text-warning"
+    case "paused":
+      return "bg-card-neutral text-accent-foreground"
+    default :
+      return "bg-card-error text-error"
+  }
+}
 export function statusBadgeColor(status: CabinetStatus) {
   switch (status) {
     case "urgent":

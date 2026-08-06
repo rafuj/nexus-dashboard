@@ -340,5 +340,29 @@ export const mockCabinetsList: Cabinet[] = [
     doorOpenedAt: null,
     assetTakenAt: null,
     temperatureOutOfRangeSince: "2026-10-09T14:22:00.000Z"
+  },
+  {
+    id: "C0000015",
+    name: "Cabinet 0015",
+    city: "Groningen",
+    zip: "1086 TM",
+    street: "Steigereiland",
+    houseNumber: "200",
+    cabinetCode: "CAB-0015",
+    updaidCode: "SN-104KF9482ND",
+    serial: "SC-2025-031",
+    type: "connected",
+    location: "Steigereiland 200, 1086 TM",
+    locationCoordinates: { lat: 52.3592, lng: 4.9764 },
+    asset: "aed",
+    assetPresence: "Present",
+    assetHealth: "Ok",
+    doorStatus: "Closed",
+    status: "ok",
+    temperature: 21.1,
+    lastActivityAt: "2026-04-10T11:05:00.000Z",
+    doorOpenedAt: null,
+    assetTakenAt: null,
+    temperatureOutOfRangeSince: null
   }
 ];
