@@ -22,7 +22,7 @@ export type CabinetActivityRow = {
   id: string;
   timestamp: string;      // "May 26, 13:38"
   activity: ActivityType;
-  cabinetCode: string;    // "CAB - 102"
+  name: string;    // "CAB - 102"
   location: string;       // "Amsterdam Zuid"
   addedBy: "Cabinet" | ActivityUser;
   status: ActivityStatus;

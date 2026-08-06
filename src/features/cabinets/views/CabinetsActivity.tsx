@@ -18,8 +18,7 @@ import { CabinetsActivityListToolbar } from "../components/CabinetsActivityListT
 import type { DateRange } from "react-day-picker";
 import { cabinetsActivityTableColumns } from "../components/cabinetsActivityTableColumns";
 import { queryCabinetsActivityPage } from "../server/queryCabinetsActivityPage";
-import { useQueryState } from "nuqs";
-import LastUpdateIcon from "@/assets/icons/last-update.svg?react"
+import { parseAsStringLiteral, useQueryState } from "nuqs";
 import { mockCabinetActivities } from "../mock/mockCabinetsActivity";
 const CABINET_FILTER_ALL = "all";
 const ACTIVITY_FILTER_ALL = "all";
@@ -69,7 +68,7 @@ export default function CabinetsActivity() {
       count: tabCounts.Resolved
     }
   ]
-  const [tabValue, setTabValue] = useQueryState("tabs", { defaultValue: "Ongoing" })
+  const [tabValue, setTabValue] = useQueryState("tabs",   parseAsStringLiteral(["Resolved", "Ongoing"]).withDefault("Ongoing"))
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
