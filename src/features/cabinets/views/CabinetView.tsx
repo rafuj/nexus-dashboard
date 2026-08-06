@@ -30,6 +30,7 @@ import { SidebarMenuButton } from "@/shared/components/ui/sidebar";
 import { CabinetStatistics } from "../components/CabinetStatistics";
 import type { AssetInformation, BrandInfo } from "./AddCabinets";
 import { brandsList } from "../mock/mockBrands";
+import { MaintenanceMode } from "../components/MaintenanceMode";
 
 interface BasicInformation {
   name: string;
@@ -832,6 +833,7 @@ const CabinetView = () => {
       default: 
         return (
             <div>
+                <MaintenanceMode />
                 <CabinetStatistics />
               <div>
                 <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75">
