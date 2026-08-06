@@ -87,7 +87,6 @@ const table = useReactTable({
             key="member-setting"
             table={table}
             emptyMessage="No data found"
-            tableClassName="min-w-[920px] table-fixed"
         />
         <div className="border-border border-t px-4 py-3">
             <DataTablePagination
