@@ -60,7 +60,7 @@ export const mockSystemLogs: SystemLogsDefinition[] = [
 
 export const HAS_CONNECTED_CABINETS = false
 
-export const AVAILABLE_CREDITS = 0
+export const AVAILABLE_CREDITS: number = 50;
 
 // permissions
 export const MANAGE_CABINETS = "manage_cabinets"

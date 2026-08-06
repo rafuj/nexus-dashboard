@@ -7,7 +7,7 @@ import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Icons } from "@/app/icons/icons";
 import {  useNavigate } from "react-router";
 import { CabinetsStepper } from "../components/CabinetsStepper";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Input } from "@/shared/components/ui/input"
 import { Label } from "@/shared/components/ui/label";
 import { Textarea } from "@/shared/components/ui/textarea";
@@ -15,7 +15,7 @@ import { SingleImageUploader } from "@/shared/components/image-uploader/single-i
 import { CustomRadioGroup } from "@/shared/components/CustomRadioGroup";
 import { DatePicker } from "@/shared/components/ui/date-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
-import { cn } from "@/lib/utils";
+import { cn, formatDateSlash } from "@/lib/utils";
 import SchedulePicker from "../components/SchedulePicker";
 import type { AccessTypeI, AvailabilityType, BrightnessType, ColorType, DayConfig, StepType, VolumeType } from "../types/addCabinet";
 import { assetTypeList, availabilityTypeList, brightnessList, colorList, dayList, STEPS, volumeList } from "../mock/addCabinetData";
@@ -82,6 +82,8 @@ export default function AddCabinets() {
   const [checkupDate, setCheckupDate] = useState<Date | undefined>(new Date())
 
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false)
+
+  const [assignCredits, setAssignCredits] = useState<number>(0)
   
   const [images, setImages] = useState({
     picture1: "",
@@ -140,6 +142,33 @@ export default function AddCabinets() {
     } else {
       setConfirmModalOpen(true)
     }
+  };
+
+  const connectivityUntil = useMemo(() => {
+      if (typeof assignCredits !== "number" || assignCredits <= 0) {
+        return null;
+      }
+
+      const targetDate = new Date();
+      // Accurately adds N years (handles leap years correctly)
+      targetDate.setFullYear(targetDate.getFullYear() + assignCredits);
+      return targetDate;
+    }, [assignCredits]);
+
+  const handleAssignCreditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, "").replace(/^0+(?=\d)/, "");
+
+    if (value === "") {
+      setAssignCredits("");
+      return;
+    }
+
+    let numericValue = Number(value);
+    if (numericValue > AVAILABLE_CREDITS) {
+      numericValue = AVAILABLE_CREDITS;
+    }
+
+    setAssignCredits(numericValue);
   };
 
   const switchContent = () => {
@@ -314,8 +343,8 @@ export default function AddCabinets() {
                   <span className="w-0 grow">Updaid Connection</span>
                   <InfoIcon size={20} />
                 </div>
-                <div className="grid grid-cols-1 my-3.75 gap-4">
-                  <div>
+                <div className="grid grid-cols-1 xl:grid-cols-2 my-3.75 gap-4">
+                  <div className="xl:col-span-2">
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Module Code<span className="text-error">*</span></Label>
                     <div className="relative">
                       <Input
@@ -337,7 +366,7 @@ export default function AddCabinets() {
                     <Label className="text-xs text-accent-foreground font-medium flex justify-between items-center mb-3">
                       <span>Assign credits<span className="text-error">*</span></span>
                       <span>Available credits: <span className={cn("text-[#11BE48]", {
-                        "text-error":AVAILABLE_CREDITS === 0
+                        "text-error": AVAILABLE_CREDITS === 0
                       })}>{AVAILABLE_CREDITS}</span></span>
                     </Label>
                     <Input
@@ -346,8 +375,11 @@ export default function AddCabinets() {
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
                       type="number"
                       min="0"
+                      max={AVAILABLE_CREDITS}
+                      value={assignCredits === 0 ? "" : assignCredits}
+                      onChange={handleAssignCreditChange}
                     />
-                    {AVAILABLE_CREDITS == 0 && (
+                    {AVAILABLE_CREDITS === 0 && (
                       <div className="bg-card-error rounded-md px-2.5 py-3 text-accent-foreground text-xs flex gap-2.5 mt-2">
                         <Info size={18} />
                         <div className="w-0 grow self-center">
@@ -355,7 +387,17 @@ export default function AddCabinets() {
                         </div>
                       </div>
                     )}
-                    <div className="text-xs mt-2">1 credit = 1 year of connectivity</div>
+                    <div className="text-xs flex justify-between flex-wrap mt-2 gap-3">
+                      <div className="grow">
+                        {connectivityUntil && <div className="flex justify-between items-center border border-[#151C48] rounded px-2.5 py-1.25 bg-[#F8F9FB] text-accent-foreground">
+                          <div>
+                              Connectivity until:
+                          </div>
+                          <strong className="font-semibold">{formatDateSlash(connectivityUntil)}</strong>
+                        </div>}
+                      </div>
+                      <div className="text-xs mt-2">1 credit = 1 year of connectivity</div>
+                    </div>
                   </div>
                 </div>
               </div>
