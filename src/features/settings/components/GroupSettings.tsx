@@ -5,7 +5,6 @@ import {
   getCoreRowModel,
   useReactTable,
   type PaginationState,
-  type SortingState,
 } from "@tanstack/react-table";
 import { XCircle } from "lucide-react";
 
@@ -14,9 +13,9 @@ import { SettingsToolbar } from "../components/SettingsToolbar";
 import { querySettingsPage } from "@/features/settings/server/querySettingsPage";
 import { settingGroupColumns } from "../components/settingGroupColumns";
 import { Icons } from "@/app/icons/icons";
+import { useQueryState } from "nuqs";
 
 const STATUS_FILTER_ALL = "all";
-const TYPE_FILTER_ALL = "all";
 const SORT_BY = "all";
 const PAGE_SIZE = 8;
 
@@ -24,13 +23,9 @@ const STORAGE_KEY = "group_notification_dismissed_until";
 const DURATION_24_HOURS = 24 * 60 * 60 * 1000;
 
 export default function GroupSettings() {
-    const [search, setSearch] = useState("");
-    const [statusFilter, setStatusFilter] = useState<string>(STATUS_FILTER_ALL);
-    const [typeFilter, setTypeFilter] = useState<string>(TYPE_FILTER_ALL);
-    const [sortBy, setSortBy] = useState<string>(SORT_BY);
-    const [sorting, setSorting] = useState<SortingState>([
-      { id: "cabinet", desc: false },
-    ]);
+    const [search, setSearch] = useQueryState("search", { defaultValue: "" });
+    const [statusFilter, setStatusFilter] = useQueryState("status", { defaultValue: STATUS_FILTER_ALL });
+    const [sortBy, setSortBy] = useQueryState("sort-by", { defaultValue: SORT_BY });
     const [pagination, setPagination] = useState<PaginationState>({
       pageIndex: 0,
       pageSize: PAGE_SIZE,
@@ -41,17 +36,15 @@ export default function GroupSettings() {
   const pageResult = useMemo(() => querySettingsPage({
       search,
       statusFilter,
-      typeFilter,
       pageIndex: pagination.pageIndex,
       pageSize: pagination.pageSize,
-      sorting,
+      sortBy
     }), [
     search,
     statusFilter,
-    typeFilter,
     pagination.pageIndex,
     pagination.pageSize,
-    sorting,
+    sortBy
   ]);
 
   // 2. Select columns cleanly
@@ -69,10 +62,17 @@ export default function GroupSettings() {
     getCoreRowModel: getCoreRowModel(),
     onPaginationChange: setPagination,
     state: {
-      pagination,
-      sorting,
+      pagination
     },
   });
+
+
+  const resetPage = () => {
+    setSearch("")
+    setStatusFilter(STATUS_FILTER_ALL)
+    setSortBy(SORT_BY)
+  }
+
   return (
       <div>
         <div className="mb-3.5">
@@ -81,10 +81,9 @@ export default function GroupSettings() {
                 onSearchChange={setSearch}
                 statusFilter={statusFilter}
                 onStatusFilterChange={setStatusFilter}
-                typeFilter={typeFilter}
-                onTypeFilterChange={setTypeFilter}
                 sortBy={sortBy}
                 onSortByChange={setSortBy}
+                resetPage={resetPage}
             />
         </div>
         <NotificationBanner />

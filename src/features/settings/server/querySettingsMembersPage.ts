@@ -3,15 +3,15 @@
  */
 import type { SortingState } from "@tanstack/react-table"
 import { membersData } from "../mock/settingsListData" // Your dataset array
-import type { UserDashboardItem } from "../types/settingsList"
+import type { MemberRoleFilter, UserDashboardItem } from "../types/settingsList"
 
 export type SettingsGroupQuery = {
   search: string
   statusFilter: string
-  typeFilter: string // Maps to your Role filter dropdown if applicable
   pageIndex: number
   pageSize: number
   sorting: SortingState
+  role: MemberRoleFilter
 }
 
 export type SettingsMembersPageResult = {
@@ -22,6 +22,7 @@ export type SettingsMembersPageResult = {
 /**
  * Filter members based on Name, Email, Phone, Title, or Group name.
  */
+
 function filterMembers(
   rows: readonly UserDashboardItem[],
   search: string
@@ -88,9 +89,9 @@ export function querySettingsMembersPage(query: SettingsGroupQuery): SettingsMem
   }
 
   // 3. Exact Select Role Filter (e.g., 'admin', 'viewer', 'owner', 'super')
-  if (query.typeFilter && query.typeFilter !== "all") {
+  if (query.role && query.role !== "all") {
     filtered = filtered.filter(
-      (row) => row.role.toLowerCase() === query.typeFilter.toLowerCase()
+      (row) => row.role.toLowerCase() === query.role.toLowerCase()
     )
   }
 
