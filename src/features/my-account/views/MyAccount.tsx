@@ -17,6 +17,14 @@ import { useRef, useState } from "react"
 import { BriefcaseBusiness, Pen, User2, UserLock } from "lucide-react";
 import { CustomRadioGroup, type RadioOption } from "@/shared/components/CustomRadioGroup";
 import { accountTypeList, type AccountType } from "@/features/auth/views/SignupForm";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/components/ui/select"
+import { countries } from "@/features/settings/mock/mockCountries";
 
 interface FormState {
     firstName: string;
@@ -27,8 +35,11 @@ interface FormState {
     jobTitle: string;
     chamberOfCommerceNumber: string;
     vatNumber: string;
-    privateAddress: string;
-    workAddress: string;
+    street: string;
+    houseNumber: string;
+    zipCode: string;
+    city: string;
+    country: string;
     accountType: AccountType
 }
 
@@ -45,8 +56,11 @@ export default function MyAccount() {
       jobTitle: "Senior Safety Officer",
       chamberOfCommerceNumber: "029472826",
       vatNumber: "CBHSKJSLYYUK73298KD7",
-      privateAddress: "1207 Tipu Sultan",
-      workAddress: "Elephant Road Bata Signal Mor",
+      street: "12",
+      houseNumber: "14",
+      zipCode: "1023",
+      city: "Amsterdam",
+      country: "Netherlands",
       accountType: "personal"
   }); 
 
@@ -195,102 +209,150 @@ export default function MyAccount() {
                               }))} list={accountTypeList} />
                         </div>
                     </Field>
-                      <h3 className="flex items-center gap-2 font-semibold mb-2 text-lg">
-                        <BriefcaseBusiness className="text-primary" size={25} /> <span>Professional Information</span>
-                      </h3>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3">
-                        <Field>
+                    {
+                      formState.accountType === 'company' &&
+                        <>
+                          <h3 className="flex items-center gap-2 font-semibold mb-2 text-lg">
+                            <BriefcaseBusiness className="text-primary" size={25} /> <span>Professional Information</span>
+                          </h3>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3">
+                            <Field>
+                                <div>
+                                    <FieldLabel className="font-medium text-accent-foreground mb-2.5">Company Name</FieldLabel>
+                                    <Input
+                                        type="text"
+                                        placeholder="e.g. Global Rescue"
+                                        className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
+                                        value={formState.companyName}
+                                        onChange={(e)=> setFormState(prev => ({
+                                          ...prev,
+                                          companyName: e.target.value
+                                        }))}
+                                    />
+                                </div>
+                            </Field>
+                            <Field>
+                                <div>
+                                    <FieldLabel className="font-medium text-accent-foreground mb-2.5">Position / job title</FieldLabel>
+                                    <Input
+                                        type="text"
+                                        placeholder="e.g. Safety Officer"
+                                        className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
+                                        value={formState.jobTitle}
+                                        onChange={(e)=> setFormState(prev => ({
+                                          ...prev,
+                                          jobTitle: e.target.value
+                                        }))}
+                                    />
+                                </div>
+                            </Field>
+                            <Field>
+                                <div>
+                                    <FieldLabel className="font-medium text-accent-foreground mb-2.5">Chamber of Commerce number</FieldLabel>
+                                    <Input
+                                        type="text"
+                                        placeholder="e.g. 029472826"
+                                        className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
+                                        value={formState.chamberOfCommerceNumber}
+                                        onChange={(e)=> setFormState(prev => ({
+                                          ...prev,
+                                          chamberOfCommerceNumber: e.target.value
+                                        }))}
+                                    />
+                                </div>
+                            </Field>
+                            <Field>
+                                <div>
+                                    <FieldLabel className="font-medium text-accent-foreground mb-2.5">VAT number</FieldLabel>
+                                    <Input
+                                        type="text"
+                                        placeholder="e.g. CBHSKJSLYYUK73298KD7"
+                                        className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
+                                        value={formState.vatNumber}
+                                        onChange={(e)=> setFormState(prev => ({
+                                          ...prev,
+                                          vatNumber: e.target.value
+                                        }))}
+                                    />
+                                </div>
+                            </Field>
+                            <Field>
+                                <div>
+                                    <FieldLabel className="font-medium text-accent-foreground mb-2.5">Street</FieldLabel>
+                                    <Input
+                                        type="text"
+                                        placeholder="e.g. 12"
+                                        className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
+                                        value={formState.street}
+                                        onChange={(e)=> setFormState(prev => ({
+                                          ...prev,
+                                          street: e.target.value
+                                        }))}
+                                    />
+                                </div>
+                            </Field>
+                            <Field>
+                                <div>
+                                    <FieldLabel className="font-medium text-accent-foreground mb-2.5">House Number</FieldLabel>
+                                    <Input
+                                        type="text"
+                                        placeholder="e.g. 12"
+                                        className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
+                                        value={formState.houseNumber}
+                                        onChange={(e)=> setFormState(prev => ({
+                                          ...prev,
+                                          houseNumber: e.target.value
+                                        }))}
+                                    />
+                                </div>
+                            </Field>
+                            <Field className="col-span-2">
+                                <div>
+                                    <FieldLabel className="font-medium text-accent-foreground mb-2.5">Zip Code</FieldLabel>
+                                    <Input
+                                        type="text"
+                                        placeholder="e.g. 12"
+                                        className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
+                                        value={formState.zipCode}
+                                        onChange={(e)=> setFormState(prev => ({
+                                          ...prev,
+                                          zipCode: e.target.value
+                                        }))}
+                                    />
+                                </div>
+                            </Field>
                             <div>
-                                <FieldLabel className="font-medium text-accent-foreground mb-2.5">Company Name</FieldLabel>
-                                <Input
-                                    type="text"
-                                    placeholder="e.g. Global Rescue"
-                                    className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                                    value={formState.companyName}
-                                    onChange={(e)=> setFormState(prev => ({
-                                      ...prev,
-                                      companyName: e.target.value
-                                    }))}
-                                />
+                                <FieldLabel className="font-medium text-accent-foreground mb-2.5">Country</FieldLabel>
+                              <Select value={formState.country} onValueChange={(value)=> setFormState(prev => ({
+                                  ...prev,
+                                  country: value,
+                                  city: ""
+                                }))}>
+                                  <SelectTrigger className="w-full text-sm md:!h-14">
+                                    <SelectValue placeholder="Select Country" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {countries.map(country => <SelectItem value={country.name} key={country.name}>{country.name}</SelectItem>)}
+                                  </SelectContent>
+                                </Select>
                             </div>
-                        </Field>
-                        <Field>
                             <div>
-                                <FieldLabel className="font-medium text-accent-foreground mb-2.5">Position / job title</FieldLabel>
-                                <Input
-                                    type="text"
-                                    placeholder="e.g. Safety Officer"
-                                    className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                                    value={formState.jobTitle}
-                                    onChange={(e)=> setFormState(prev => ({
-                                      ...prev,
-                                      jobTitle: e.target.value
-                                    }))}
-                                />
+                                <FieldLabel className="font-medium text-accent-foreground mb-2.5">City</FieldLabel>
+                                <Select value={formState.city} onValueChange={(value)=> setFormState(prev => ({
+                                  ...prev,
+                                  city: value
+                                }))}>
+                                  <SelectTrigger className="w-full text-sm md:!h-14">
+                                    <SelectValue placeholder="Select City" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {countries.find(item => item.name === formState.country)?.cities?.map((item)=> <SelectItem value={item} key={item}>{item}</SelectItem> )}
+                                  </SelectContent>
+                                </Select>
                             </div>
-                        </Field>
-                        <Field>
-                            <div>
-                                <FieldLabel className="font-medium text-accent-foreground mb-2.5">Chamber of Commerce number</FieldLabel>
-                                <Input
-                                    type="text"
-                                    placeholder="e.g. 029472826"
-                                    className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                                    value={formState.chamberOfCommerceNumber}
-                                    onChange={(e)=> setFormState(prev => ({
-                                      ...prev,
-                                      chamberOfCommerceNumber: e.target.value
-                                    }))}
-                                />
-                            </div>
-                        </Field>
-                        <Field>
-                            <div>
-                                <FieldLabel className="font-medium text-accent-foreground mb-2.5">VAT number</FieldLabel>
-                                <Input
-                                    type="text"
-                                    placeholder="e.g. CBHSKJSLYYUK73298KD7"
-                                    className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                                    value={formState.vatNumber}
-                                    onChange={(e)=> setFormState(prev => ({
-                                      ...prev,
-                                      vatNumber: e.target.value
-                                    }))}
-                                />
-                            </div>
-                        </Field>
-                        <Field>
-                            <div>
-                                <FieldLabel className="font-medium text-accent-foreground mb-2.5">Private address</FieldLabel>
-                                <Input
-                                    type="text"
-                                    placeholder="e.g. 1207 Tipu Sultan"
-                                    className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                                    value={formState.privateAddress}
-                                    onChange={(e)=> setFormState(prev => ({
-                                      ...prev,
-                                      privateAddress: e.target.value
-                                    }))}
-                                />
-                            </div>
-                        </Field>
-                        <Field>
-                            <div>
-                                <FieldLabel className="font-medium text-accent-foreground mb-2.5">Work address</FieldLabel>
-                                <Input
-                                    type="text"
-                                    placeholder="e.g. Elephant Road Bata Signal Mor"
-                                    className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-
-                                    value={formState.workAddress}
-                                    onChange={(e)=> setFormState(prev => ({
-                                      ...prev,
-                                      workAddress: e.target.value
-                                    }))}
-                                />
-                            </div>
-                        </Field>
-                      </div>
+                          </div>
+                        </>
+                    }
                       <Field>
                           <div className="flex flex-wrap gap-3 justify-end w-full mt-5">
                             <button className="h-10 lg:h-14 rounded-full flex items-center justify-center bg-chip text-accent-foreground py-2 sm:py-3 px-5 rounded-full text-sm gap-1.25 sm:w-full max-w-[140px]" type="reset">Cancel</button>
