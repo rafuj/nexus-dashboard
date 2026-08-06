@@ -7,8 +7,6 @@ export interface AssetType {
   value: string;
 }
 
-export type PadsType = 'adult' | 'children' | 'all';
-
 export type VolumeType = '0%' | '50%' | '100%';
 
 export type BrightnessType = '0%' | '50%' | '100%';

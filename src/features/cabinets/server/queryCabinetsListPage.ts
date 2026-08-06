@@ -3,10 +3,11 @@
  * Mock server-side list filtering and sorting for cabinets list.
  */
 import type { SortingState } from "@tanstack/react-table"
-import type { CabinetListRow } from "../types/cabinetList"
+import type { Cabinet } from "../types/cabinetList"
 import { mockCabinetsList } from "../mock/mockCabinetsList"
 
 const STATUS_FILTER_ALL = "all"
+const CITY_FILTER_ALL = "all"
 
 export type CabinetsListQuery = {
   search: string
@@ -14,21 +15,26 @@ export type CabinetsListQuery = {
   pageIndex: number
   pageSize: number
   sorting: SortingState
+  city: string
 }
 
 export type CabinetsListPageResult = {
-  rows: CabinetListRow[]
+  rows: Cabinet[]
   totalCount: number
 }
 
 export function filterCabinets(
-  rows: readonly CabinetListRow[],
+  rows: readonly Cabinet[],
   search: string,
   statusFilter: string,
-): CabinetListRow[] {
+  city: string,
+): Cabinet[] {
   const q = search.trim().toLowerCase()
   return rows.filter((row) => {
     if (statusFilter !== STATUS_FILTER_ALL && row.status !== statusFilter) {
+      return false
+    }
+    if (city !== CITY_FILTER_ALL && row.city !== city) {
       return false
     }
     if (q) {
@@ -40,7 +46,7 @@ export function filterCabinets(
   })
 }
 
-function compareRows(a: CabinetListRow, b: CabinetListRow, columnId: string): number {
+function compareRows(a: Cabinet, b: Cabinet, columnId: string): number {
   switch (columnId) {
     case "cabinet":
       return (
@@ -75,7 +81,8 @@ export function queryCabinetsListPage(query: CabinetsListQuery): CabinetsListPag
   const filtered = filterCabinets(
     mockCabinetsList,
     query.search,
-    query.statusFilter
+    query.statusFilter,
+    query.city
   )
 
   const sorted = [...filtered]

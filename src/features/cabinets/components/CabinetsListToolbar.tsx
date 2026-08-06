@@ -11,18 +11,17 @@ import type { CabinetsListToolbarProps } from "../types/cabinetList"
 import { Icons } from "@/app/icons/icons"
 
 const STATUS_FILTER_ALL = "all"
-// const TYPE_FILTER_ALL = "all"
-const CITIES_FILTER_ALL = "all"
+const CITY_FILTER_ALL = "all"
 
 export function CabinetsListToolbar({
   search,
   onSearchChange,
   statusFilter,
   onStatusFilterChange,
-  // typeFilter,
-  // onTypeFilterChange,
-  cities,
-  onCitiesChange
+  city,
+  onCityChange,
+  resetPage,
+  onRefresh
 }: CabinetsListToolbarProps) {
   return (
     <div className="flex flex-wrap gap-3 sm:gap-4 flex-row sm:items-end">
@@ -43,7 +42,7 @@ export function CabinetsListToolbar({
         </div>
       </div>
       {/* City */}
-      <Select value={cities} onValueChange={onCitiesChange}>
+      <Select value={city} onValueChange={onCityChange}>
         <SelectTrigger className="w-full min-w-42 sm:w-44 text-sm md:!h-12.5">
           <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
             <span className="font-normal text-foreground">City:</span>
@@ -51,14 +50,14 @@ export function CabinetsListToolbar({
           </div>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value={CITIES_FILTER_ALL}>All Cities</SelectItem>
-          <SelectItem value="amsterdam">Amsterdam</SelectItem>
-          <SelectItem value="rotterdam">Rotterdam</SelectItem>
-          <SelectItem value="the-hague">The Hague (Den Haag)</SelectItem>
-          <SelectItem value="utrecht">Utrecht</SelectItem>
-          <SelectItem value="eindhoven">Eindhoven</SelectItem>
-          <SelectItem value="delft">Delft</SelectItem>
-          <SelectItem value="groningen">Groningen</SelectItem>
+          <SelectItem value={CITY_FILTER_ALL}>All Cities</SelectItem>
+          <SelectItem value="Amsterdam">Amsterdam</SelectItem>
+          <SelectItem value="Rotterdam">Rotterdam</SelectItem>
+          <SelectItem value="The Hague (Den Haag)">The Hague (Den Haag)</SelectItem>
+          <SelectItem value="Utrecht">Utrecht</SelectItem>
+          <SelectItem value="Eindhoven">Eindhoven</SelectItem>
+          <SelectItem value="Delft">Delft</SelectItem>
+          <SelectItem value="Groningen">Groningen</SelectItem>
         </SelectContent>
       </Select>
       {/* Status Filter */}
@@ -77,10 +76,10 @@ export function CabinetsListToolbar({
           <SelectItem value="paused">Paused</SelectItem>
         </SelectContent>
       </Select>
-      <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-white text-accent-foreground py-2 px-3 sm:py-3 rounded-[10px] text-sm gap-1.25 border border-border">
+      <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-white text-accent-foreground py-2 px-3 sm:py-3 rounded-[10px] text-sm gap-1.25 border border-border" onClick={resetPage}>
         <RotateCcw size={16} /> <span>Reset Filter</span>
       </button>
-      <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">
+      <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25" onClick={onRefresh}>
         <RotateCcw size={16} /> <span>Refresh</span>
       </button>
       <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">

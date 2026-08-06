@@ -9,7 +9,7 @@ import {
   ShieldCheck,
   LockOpen,
 } from "lucide-react"
-import dayjs from "dayjs"
+import dayjs, { type ConfigType } from "dayjs"
 
 import type { RecentActivityDefinition } from "@/features/dashboard/types/dashboardStats"
 import type { SystemLogsDefinition } from "@/features/dashboard/types/dashboardStats"
@@ -29,6 +29,12 @@ export function formatISODate(isoOrLocal: string) {
 /** Formatting Date from ISO to a readable format */
 export function formatDateTime(isoOrLocal: string) {
   return dayjs(isoOrLocal).format("DD MMM YYYY, HH:mm");
+}
+/** Formatting Date from ISO to a readable format */
+export function formatDateSlash(date?: ConfigType) {
+  if (!date) return "";
+  const d = dayjs(date);
+  return d.isValid() ? d.format("DD/MM/YYYY") : "";
 }
 
 /** Get icon for recent activity or system logs based on the type */

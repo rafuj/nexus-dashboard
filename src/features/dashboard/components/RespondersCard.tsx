@@ -101,6 +101,9 @@ export default function RespondersCard() {
                         <div className="relative grow flex flex-col justify-center">
                             <div className="py-6 px-9 shadow-card bg-white rounded-[10px] text-center relative max-w-[400px] mx-auto">
                                 <div className="max-w-[343px] mx-auto">
+                                    <div className="flex justify-center mb-2.5">
+                                        <Icons.lock />
+                                    </div>
                                     <h4 className="mb-2 text-sm font-semibold">
                                         Responder overview requires <br /> connected cabinets.
                                     </h4>

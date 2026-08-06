@@ -11,6 +11,7 @@ export type DashboardStatDefinition = {
   hint?: string
   icon: ComponentType<IconProps>
   className?: string
+  url: string
 }
 
 export type RecentActivityDefinition = {

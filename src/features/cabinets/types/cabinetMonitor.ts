@@ -9,4 +9,5 @@ export type CabinetMonitorToolbarProps = {
   setCity: (value: string) => void;
   status: FilterStatus; // Changed from string
   setStatus: (value: FilterStatus) => void; // Changed from string
+  resetPage: () => void;
 };

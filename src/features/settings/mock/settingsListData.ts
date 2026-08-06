@@ -7,6 +7,7 @@ export const mockGroupData: SettingsGroupRow[] = [
     name: "Amsterdam Offices",
     description: "Office locations in Amsterdam",
     type: "office",
+    status: "active",
     cabinetsCount: 48,
     members: {
       avatarUrls: [
@@ -27,6 +28,7 @@ export const mockGroupData: SettingsGroupRow[] = [
     name: "Rotterdam Retail",
     description: "Retail stores in Rotterdam",
     type: "retail",
+    status: "maintenance",
     cabinetsCount: 62,
     members: {
       avatarUrls: [
@@ -47,6 +49,7 @@ export const mockGroupData: SettingsGroupRow[] = [
     name: "Utrecht Logistics",
     description: "Logistics & warehouse sites",
     type: "logistics",
+    status: "offline",
     cabinetsCount: 36,
     members: {
       avatarUrls: [
@@ -67,6 +70,7 @@ export const mockGroupData: SettingsGroupRow[] = [
     name: "Public Access",
     description: "Public accessible cabinets",
     type: "public_access",
+    status: "active",
     cabinetsCount: 24,
     members: {
       avatarUrls: [
@@ -87,6 +91,7 @@ export const mockGroupData: SettingsGroupRow[] = [
     name: "High Priority",
     description: "Mission critical cabinets",
     type: "high_priority",
+    status: "maintenance",
     cabinetsCount: 18,
     members: {
       avatarUrls: [
@@ -108,7 +113,6 @@ export const mockGroupData: SettingsGroupRow[] = [
 
 
 // Mock data for settings members
-
 export const membersData: UserDashboardItem[] = [
   {
     id: "1",
@@ -128,7 +132,7 @@ export const membersData: UserDashboardItem[] = [
     name: "Emerson Siphron",
     title: "Facility Coordinator",
     avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80",
-    role: "admin", // Mapped from Editor
+    role: "editor",
     email: "emerson@updaid.com",
     phone: "+31 928 348 1992",
     group: "Rotterdam Retail",
@@ -141,7 +145,7 @@ export const membersData: UserDashboardItem[] = [
     name: "Wilson Schleifer",
     title: "Operations Manager",
     avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80",
-    role: "admin", // Mapped from Editor
+    role: "admin",
     email: "wilson@updaid.com",
     phone: "+31 842 293 1102",
     group: "Utrecht Logistics",
@@ -167,7 +171,7 @@ export const membersData: UserDashboardItem[] = [
     name: "Ahmad Carder",
     title: "Facility Coordinator",
     avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80",
-    role: "admin", // Mapped from Editor
+    role: "admin",
     email: "ahmad@updaid.com",
     phone: "+31 928 348 1992",
     group: "Rotterdam Retail",
@@ -193,7 +197,7 @@ export const membersData: UserDashboardItem[] = [
     name: "Jaxson Septimus",
     title: "Facility Coordinator",
     avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80",
-    role: "admin",
+    role: "editor",
     email: "jaxson@updaid.com",
     phone: "+31 772 013 4832",
     group: "Amsterdam Offices",
@@ -206,7 +210,7 @@ export const membersData: UserDashboardItem[] = [
     name: "Cristofer Bator",
     title: "Facility Coordinator",
     avatarUrl: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80",
-    role: "admin", // Mapped from Editor
+    role: "admin",
     email: "cristofer@updaid.com",
     phone: "+31 928 348 1992",
     group: "Rotterdam Retail",

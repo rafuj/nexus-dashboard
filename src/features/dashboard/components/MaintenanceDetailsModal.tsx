@@ -26,7 +26,7 @@ type Status = 'all' | 'warning' | 'urgent' | 'up-to-date';
 
 export type CabinetItem = 'Pads' | 'Battery';
 export interface Cabinet {
-  cabinetName: string;
+  name: string;
   city: string;
   status: Status;
   expiryDate: string;
@@ -34,42 +34,42 @@ export interface Cabinet {
 }
 export const cabinetData: Cabinet[] = [
   {
-    cabinetName: 'Cabinet 014',
+    name: 'Cabinet 014',
     city: 'Delft',
     status: 'urgent',
     expiryDate: '24 Jul 2026',
     what: 'Pads',
   },
   {
-    cabinetName: 'Cabinet 031',
+    name: 'Cabinet 031',
     city: 'Rotterdam',
     status: 'warning',
     expiryDate: '4 Aug 2026',
     what: 'Battery',
   },
   {
-    cabinetName: 'Cabinet 047',
+    name: 'Cabinet 047',
     city: 'Utrecht',
     status: 'warning',
     expiryDate: '11 Aug 2026',
     what: 'Pads',
   },
   {
-    cabinetName: 'Cabinet 079',
+    name: 'Cabinet 079',
     city: 'Amsterdam',
     status: 'warning',
     expiryDate: '27 Aug 2026',
     what: 'Pads',
   },
   {
-    cabinetName: 'Cabinet 062',
+    name: 'Cabinet 062',
     city: 'Eindhoven',
     status: 'up-to-date',
     expiryDate: '18 Aug 2026',
     what: 'Battery',
   },
   {
-    cabinetName: 'Cabinet 103',
+    name: 'Cabinet 103',
     city: 'Groningen',
     status: 'up-to-date',
     expiryDate: '9 Sep 2026',
@@ -159,7 +159,7 @@ export const MaintenanceDetailsModal: React.FC<ModalProps>  = ({ open, setOpen }
                                         <tbody className="divide-y divide-slate-[#FDFDFE] bg-white">
                                             {filterCabinets(cabinetData, status).map((row, index) => (
                                                 <tr key={index} className="hover:bg-slate-50/50 transition-colors">
-                                                <td className="px-3.5 py-4 font-medium text-slate-900">{row.cabinetName}</td>
+                                                <td className="px-3.5 py-4 font-medium text-slate-900">{row.name}</td>
                                                 <td className="px-3.5 py-4 text-slate-600">{row.city}</td>
                                                 <td className="px-3.5 py-4">{getStatusChip(row.status)}</td>
                                                 <td className="px-3.5 py-4 text-slate-600">{row.expiryDate}</td>

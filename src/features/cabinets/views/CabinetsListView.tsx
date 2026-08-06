@@ -8,7 +8,7 @@ import {
   type PaginationState,
   type SortingState,
 } from "@tanstack/react-table";
-import { ChevronRight, PlusCircle, ShoppingCart } from "lucide-react";
+import { ChevronRight, PlusCircle } from "lucide-react";
 
 import { CabinetsListToolbar } from "../components/CabinetsListToolbar";
 import { cabinetListColumns } from "../components/cabinetsTableColumns";
@@ -21,17 +21,25 @@ import { Link } from "react-router";
 import { useAuth } from "@/app/hooks/useAuth";
 import { can, type Role } from "@/lib/permissions";
 import { MANAGE_CABINETS } from "@/features/dashboard/mock/mockDashboardStats";
+import { parseAsStringLiteral, useQueryState } from "nuqs";
+import type { FilterStatus } from "../types/cabinetList";
 
 
 const STATUS_FILTER_ALL = "all";
-const TYPE_FILTER_ALL = "all";
-const CITIES_FILTER_ALL = "all";
+const CITY_FILTER_ALL = "all";
 const PAGE_SIZE = 8;
+const filterStatuses = [
+  "paused",
+  "ok",
+  "warning",
+  "urgent",
+  "all"
+] as const satisfies readonly FilterStatus[];
 
 export default function CabinetsListView() {
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>(STATUS_FILTER_ALL);
-  const [cities, setCities] = useState<string>(CITIES_FILTER_ALL);
+  const [search, setSearch] = useQueryState("search", { defaultValue:"" });
+  const [statusFilter, setStatusFilter] = useQueryState("status", parseAsStringLiteral(filterStatuses).withDefault(STATUS_FILTER_ALL))
+  const [city, setCity] = useQueryState("city", { defaultValue: CITY_FILTER_ALL });
   const [sorting, setSorting] = useState<SortingState>([
     { id: "cabinet", desc: false },
   ]);
@@ -48,6 +56,7 @@ export default function CabinetsListView() {
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
         sorting,
+        city
       }),
     [
       search,
@@ -55,7 +64,7 @@ export default function CabinetsListView() {
       pagination.pageIndex,
       pagination.pageSize,
       sorting,
-      cities
+      city
     ],
   );
 
@@ -65,11 +74,18 @@ export default function CabinetsListView() {
 
   const columns = useMemo(() => cabinetListColumns(canManageCabinets), []);
 
-  const resetPage = () =>
+  const resetPage = () => {
+    setSearch("")
+    setStatusFilter(STATUS_FILTER_ALL)
+    setCity(CITY_FILTER_ALL)
+    resetPagination()
+  }
+  const resetPagination = () => {
     setPagination((p) => ({
       ...p,
       pageIndex: 0,
-    }));
+    }))
+  }
 
   // eslint-disable-next-line react-hooks/incompatible-library -- useReactTable
   const table = useReactTable({
@@ -84,13 +100,15 @@ export default function CabinetsListView() {
     onPaginationChange: setPagination,
     onSortingChange: (updater) => {
       setSorting(updater);
-      resetPage();
+      resetPagination();
     },
     state: {
       pagination,
       sorting,
     },
   });
+
+  const onRefresh = () => {}
 
   return (
     <>
@@ -137,17 +155,20 @@ export default function CabinetsListView() {
                 search={search}
                 onSearchChange={(v) => {
                   setSearch(v);
-                  resetPage();
+                  resetPagination();
                 }}
                 statusFilter={statusFilter}
                 onStatusFilterChange={(v) => {
-                  setStatusFilter(v);
-                  resetPage();
+                  setStatusFilter(v as FilterStatus);
+                  resetPagination();
                 }}
-                cities={cities}
-                onCitiesChange={(v) => {
-                  setCities(v)
+                city={city}
+                onCityChange={(v) => {
+                  setCity(v);
+                  resetPagination()
                 }}
+                resetPage={resetPage}
+                onRefresh={onRefresh}
               />
             </div>
             <div

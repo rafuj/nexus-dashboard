@@ -89,7 +89,7 @@ export const settingGroupColumns = [
   columnHelper.accessor("lastUpdated", {
     id: "cabinet",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Last Updaid" />
+      <DataTableColumnHeader column={column} title="Last Update" />
     ),
     meta: {
       headerClassName: "",

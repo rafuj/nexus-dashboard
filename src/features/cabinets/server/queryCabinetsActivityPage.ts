@@ -32,7 +32,7 @@ function filterActivities(
     }
 
     if (q) {
-      const inCabinet = row.cabinetCode.toLowerCase().includes(q);
+      const inCabinet = row.name.toLowerCase().includes(q);
       const inLocation = row.location.toLowerCase().includes(q);
       const inActivity = row.activity.toLowerCase().includes(q);
 
@@ -64,12 +64,11 @@ function filterActivities(
 function compareRows(a: CabinetActivityRow, b: CabinetActivityRow, columnId: string): number {
   switch (columnId) {
     case "time":
-      // Fallback plain string sorting works fine for "May 26, 13:38" layout sequentially
       return a.timestamp.localeCompare(b.timestamp)
     case "activity":
       return a.activity.localeCompare(b.activity)
     case "cabinet":
-      return a.cabinetCode.localeCompare(b.cabinetCode, undefined, { sensitivity: "base" })
+      return a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
     case "location":
       return a.location.localeCompare(b.location, undefined, { sensitivity: "base" })
     case "addedBy": {

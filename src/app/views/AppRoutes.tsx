@@ -10,7 +10,6 @@ import CabinetView from "@/features/cabinets/views/CabinetView";
 import CabinetsListView from "@/features/cabinets/views/CabinetsListView";
 import DashboardView from "@/features/dashboard/views/DashboardView";
 import AddCabinets from "@/features/cabinets/views/AddCabinets";
-import AddCabinetsActivity from "@/features/cabinets/views/AddCabinetsActivity";
 import CabinetsActivity from "@/features/cabinets/views/CabinetsActivity";
 import CabinetsMonitor from "@/features/cabinets/views/CabinetsMonitor";
 import CabinetsMapView from "@/features/cabinets/views/CabinetsMapView";
@@ -68,7 +67,6 @@ export default function AppRoutes() {
               <Route path="/cabinets/list" element={<CabinetsListView />} />
               <Route path="/cabinets/add" element={<AddCabinets />} />
               <Route path="/cabinets/activity" element={<CabinetsActivity />} />
-              <Route path="/cabinets/activity/add" element={<AddCabinetsActivity />} />
               <Route path="/cabinets/monitor" element={<CabinetsMonitor />} />
               <Route path="/cabinets/map" element={<CabinetsMapView />} />
               <Route path="/cabinets/list/:id" element={<CabinetView />} />

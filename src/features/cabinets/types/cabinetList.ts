@@ -4,7 +4,10 @@ export type CabinetStatus =
   | "urgent"
   | "paused"
   | (string & {});
-export type CabinetConnectionType = "connected" | "non_connected";
+  
+export type FilterStatus = "ok" | "warning" | "urgent" | "paused" | 'all'
+
+export type CabinetConnectionType = "connected" | "not_connected";
 
 export type AssetHealth = 'Ok' | 'Warning' | 'Urgent' | 'Paused';
 export type AssetPresence = 'Present' | 'Missing';
@@ -13,11 +16,10 @@ export type DoorStatus = 'Closed' | 'Open';
 export interface Cabinet {
   id: string;
   name: string;
-  cabinetName: string;
   city: string;
   zip: string;
   street: string;
-  hNo: string;
+  houseNumber: string;
   cabinetCode: string;
   updaidCode: string;
   serial: string;
@@ -32,9 +34,11 @@ export interface Cabinet {
   assetHealth: AssetHealth;
   doorStatus: DoorStatus;
   status: CabinetStatus;
-  temperature: number | null;
+  temperature: number;
   lastActivityAt: string;
-  healthTooltip?: string;
+  doorOpenedAt: Date | string | null;
+  assetTakenAt: Date | string | null;
+  temperatureOutOfRangeSince: Date | string | null;
 }
 
 export type CabinetsListToolbarProps = {
@@ -42,10 +46,10 @@ export type CabinetsListToolbarProps = {
   onSearchChange: (value: string) => void
   statusFilter: string
   onStatusFilterChange: (value: string) => void
-  // typeFilter: string
-  // onTypeFilterChange: (value: string) => void
-  cities: string
-  onCitiesChange: (value: string) => void
+  city: string
+  onCityChange: (value: string) => void
+  resetPage: () => void
+  onRefresh: () => void
 }
 
 export const cabinetConfig = {

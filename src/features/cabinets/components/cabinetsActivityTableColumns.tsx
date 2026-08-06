@@ -6,21 +6,23 @@ import { createColumnHelper } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "@/shared/components/data-table"
 import type { CabinetActivityRow } from "../types/activityList"
 import { ActivityIcons } from "@/app/icons/icons"
+import { EndActivityAction } from "./EndActivityAction"
 
 const columnHelper = createColumnHelper<CabinetActivityRow>()
 
 export const cabinetsActivityTableColumns = (tabValue: string) => [
-  // 1. Time Column
-  columnHelper.accessor("timestamp", {
-    id: "time",
+
+  // 1. Cabinet Name
+  columnHelper.accessor("name", {
+    id: "name",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Time" />
+      <DataTableColumnHeader column={column} title="Cabinet Name" />
     ),
     meta: {
       headerClassName: "",
-      cellClassName: "align-middle whitespace-nowrap",
+      cellClassName: "align-middle tabular-nums",
     },
-    cell: ({ row }) => row.original.timestamp,
+    cell: ({ row }) => row.original.name,
   }),
 
   // 2. Activity Column (Includes Dynamic Activity Description & Placeholder Icons)
@@ -46,18 +48,19 @@ export const cabinetsActivityTableColumns = (tabValue: string) => [
     },
   }),
 
-  // 3. Cabinet Code Column
-  columnHelper.accessor("cabinetCode", {
-    id: "cabinet",
+  // 3. Time Column
+  columnHelper.accessor("timestamp", {
+    id: "time",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Cabinet" />
+      <DataTableColumnHeader column={column} title="Time" />
     ),
     meta: {
       headerClassName: "",
-      cellClassName: "align-middle tabular-nums",
+      cellClassName: "align-middle whitespace-nowrap",
     },
-    cell: ({ row }) => row.original.cabinetCode,
+    cell: ({ row }) => row.original.timestamp,
   }),
+
 
   // 5. Added by Column (Can render a string or an Avatar + User layout)
   columnHelper.accessor("addedBy", {
@@ -144,9 +147,7 @@ export const cabinetsActivityTableColumns = (tabValue: string) => [
         }
 
         return (
-          <div className="flex items-center gap-2">
-            <button type="button" className="card-error px-4 py-1.25 text-error border rounded-[4px] text-xs">End Activity</button>
-          </div>
+          <EndActivityAction row={row} />
         )
       },
     })

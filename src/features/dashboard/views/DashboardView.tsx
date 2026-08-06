@@ -45,12 +45,12 @@ export default function DashboardView() {
           <div className="space-y-5">
             {/* Top Statistics Cards */}
             <section
-              className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(152px,1fr))] xl:grid-cols-[repeat(auto-fit,minmax(140px,1fr))]"
+              className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(120px,1fr))]"
               aria-label="Key metrics"
             >
               <div className="col-span-2 py-4 px-5 relative border rounded-[20px] bg-white">
                 <div className="text-sm text-accent-foreground">Network Readiness</div>
-                {<Icons.network className="absolute top-5 right-5" />}
+                {<Icons.network className="absolute top-5 right-5 text-[#A82820]" />}
                 <div>
                   <h3 className="text-2xl font-semibold mt-6 mb-2">
                     96% <span className="text-sm font-normal text-accent-foreground text-primary">ready</span>
