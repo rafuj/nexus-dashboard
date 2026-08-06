@@ -91,7 +91,7 @@ export default function CabinetsListView() {
     onPaginationChange: setPagination,
     onSortingChange: (updater) => {
       setSorting(updater);
-      resetPage();
+      resetPagination();
     },
     state: {
       pagination,

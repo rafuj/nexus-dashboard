@@ -9,7 +9,8 @@ export type CabinetsQuery = {
   pageSize: number
   sorting: SortingState
   status: FilterStatus
-  id: string
+  id: string,
+  city: string
 }
 
 export type CabinetsPageResult = {
@@ -22,43 +23,47 @@ export function filterCabinets(
   rows: readonly Cabinet[],
   search: string,
   status: string,
-  id: string
+  id: string,
+  city: string
 ): Cabinet[] {
   const q = search.trim().toLowerCase();
   const selectedStatus = status.trim().toLowerCase();
   const selectedId = id.trim();
+  const selectedCity = city.trim().toLowerCase();
 
   return rows.filter((row) => {
     // Status filter
     const matchesStatus =
       !selectedStatus ||
       selectedStatus === "all" ||
-      row.status.toLowerCase() === selectedStatus;
+      row.status?.toLowerCase() === selectedStatus;
 
     // Cabinet ID filter
     const matchesId =
-      !selectedId || row.id.toString() === selectedId;
+      !selectedId || row.id?.toString() === selectedId;
 
-    // If there's no search query, only apply status and ID filters
-    if (!q) {
-      return matchesStatus && matchesId;
-    }
+    // City filter
+    const matchesCity =
+      !selectedCity ||
+      selectedCity === "all" ||
+      row.city?.toLowerCase() === selectedCity;
 
-    // Search filter
+    // Search query filter across text fields
     const matchesSearch =
-      row.name.toLowerCase().includes(q) ||
-      row.city.toLowerCase().includes(q) ||
-      row.assetHealth.toLowerCase().includes(q) ||
-      row.assetPresence.toLowerCase().includes(q) ||
-      row.doorStatus.toLowerCase().includes(q) ||
-      row.status.toLowerCase().includes(q) ||
-      (row.healthTooltip?.toLowerCase().includes(q) ?? false);
+      !q ||
+      [
+        row.name,
+        row.city,
+        row.assetHealth,
+        row.assetPresence,
+        row.doorStatus,
+        row.status,
+      ].some((field) => field?.toLowerCase().includes(q));
 
     // Must satisfy all active filters
-    return matchesSearch && matchesStatus && matchesId;
+    return matchesStatus && matchesId && matchesCity && matchesSearch;
   });
 }
-
 function compareRows(a: Cabinet, b: Cabinet, columnId: string): number {
   switch (columnId) {
     case "name":
@@ -86,7 +91,8 @@ export function queryCabinetsMonitorPage(query: CabinetsQuery): CabinetsPageResu
     mockCabinetsList,
     query.search,
     query.status,
-    query.id
+    query.id,
+    query.city
   )
 
   const sorted = [...filtered]

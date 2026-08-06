@@ -10,7 +10,7 @@ import {
 import type { CabinetMonitorToolbarProps } from "../types/cabinetMonitor"
 
 
-const CABINET_GROUP = "all"
+const CITY_FILTER_ALL = "all"
 const ACTIVITY_TYPE = "all"
 
 export function CabinetsMonitorToolbar({
@@ -19,7 +19,8 @@ export function CabinetsMonitorToolbar({
   city,
   setCity,
   status,
-  setStatus
+  setStatus,
+  resetPage
 }: CabinetMonitorToolbarProps) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
@@ -50,14 +51,14 @@ export function CabinetsMonitorToolbar({
               </div>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value={CABINET_GROUP}>All Cities</SelectItem>
-              <SelectItem value="amsterdam">Amsterdam</SelectItem>
-              <SelectItem value="rotterdam">Rotterdam</SelectItem>
-              <SelectItem value="the-hague">The Hague (Den Haag)</SelectItem>
-              <SelectItem value="utrecht">Utrecht</SelectItem>
-              <SelectItem value="eindhoven">Eindhoven</SelectItem>
-              <SelectItem value="delft">Delft</SelectItem>
-              <SelectItem value="groningen">Groningen</SelectItem>
+              <SelectItem value={CITY_FILTER_ALL}>All Cities</SelectItem>
+              <SelectItem value="Amsterdam">Amsterdam</SelectItem>
+              <SelectItem value="Rotterdam">Rotterdam</SelectItem>
+              <SelectItem value="The Hague (Den Haag)">The Hague (Den Haag)</SelectItem>
+              <SelectItem value="Utrecht">Utrecht</SelectItem>
+              <SelectItem value="Eindhoven">Eindhoven</SelectItem>
+              <SelectItem value="Delft">Delft</SelectItem>
+              <SelectItem value="Groningen">Groningen</SelectItem>
             </SelectContent>
           </Select>
           {/* Status */}
@@ -76,7 +77,7 @@ export function CabinetsMonitorToolbar({
               <SelectItem value="paused">Paused</SelectItem>
             </SelectContent>
           </Select>
-          <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-white text-accent-foreground py-2 px-3 sm:py-3 rounded-[10px] text-sm gap-1.25 border border-border">
+          <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-white text-accent-foreground py-2 px-3 sm:py-3 rounded-[10px] text-sm gap-1.25 border border-border" onClick={resetPage}>
             <RotateCcw size={16} /> <span>Reset Filter</span>
           </button>
       </div>

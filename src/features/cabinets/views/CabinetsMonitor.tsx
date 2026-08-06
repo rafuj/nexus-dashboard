@@ -18,17 +18,17 @@ import { CabinetsMonitorToolbar } from "../components/CabinetsMonitorToolbar";
 import { cabinetsMonitorTableColumns } from "../components/cabinetsMonitorTableColumns";
 import { queryCabinetsMonitorPage} from "../server/queryCabinetsMonitorPage";
 import { Icons } from "@/app/icons/icons";
-import type { FilterStatus, Status } from "../types/cabinetMonitor";
+import type { FilterStatus } from "../types/cabinetMonitor";
 import { useQueryState } from "nuqs";
 
 
-const CITIES_FILTER_ALL = "all";
+const CITY_FILTER_ALL = "all";
 const STATUS_FILTER_ALL = "all";
 const PAGE_SIZE = 8;
 
 export default function CabinetsMonitor() {
   const [search, setSearch] = useState("");
-  const [city, setCity] = useState<string>(CITIES_FILTER_ALL);
+  const [city, setCity] = useState<string>(CITY_FILTER_ALL);
   const [status, setStatus] = useState<FilterStatus>(STATUS_FILTER_ALL);
 
   const [cabinetId, setCabinetId] = useQueryState("id", { defaultValue: "" })
@@ -50,7 +50,8 @@ export default function CabinetsMonitor() {
         pageSize: pagination.pageSize,
         sorting,
         status,
-        id: cabinetId
+        id: cabinetId,
+        city
       }),
     [
       search,
@@ -65,11 +66,18 @@ export default function CabinetsMonitor() {
 
   const columns = useMemo(() => cabinetsMonitorTableColumns, []);
 
-  const resetPage = () =>
+  const resetPage = () => {
+    setSearch("")
+    setCity(CITY_FILTER_ALL)
+    setStatus(STATUS_FILTER_ALL)
+    resetPagination()
+  }
+  const resetPagination = () => {
     setPagination((p) => ({
       ...p,
       pageIndex: 0,
-    }));
+    }))
+  }
 
   // eslint-disable-next-line react-hooks/incompatible-library -- useReactTable
   const table = useReactTable({
@@ -84,13 +92,14 @@ export default function CabinetsMonitor() {
     onPaginationChange: setPagination,
     onSortingChange: (updater) => {
       setSorting(updater);
-      resetPage();
+      resetPagination();
     },
     state: {
       pagination,
       sorting,
     },
   });
+
 
   return (
     <>
@@ -145,7 +154,7 @@ export default function CabinetsMonitor() {
               <CabinetsMonitorToolbar
                 onSearchChange={(v) => {
                   setSearch(v);
-                  resetPage();
+                  resetPagination();
                 }}
                 {
                   ...{
@@ -153,7 +162,8 @@ export default function CabinetsMonitor() {
                     city,
                     setCity,
                     status,
-                    setStatus
+                    setStatus,
+                    resetPage
                   }
                 }
               />
