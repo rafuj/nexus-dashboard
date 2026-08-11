@@ -6,3 +6,4 @@ dist/*
 dist
 .env
 .env.local
+api-docs.json

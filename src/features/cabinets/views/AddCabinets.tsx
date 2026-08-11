@@ -83,7 +83,7 @@ export default function AddCabinets() {
 
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false)
 
-  const [assignCredits, setAssignCredits] = useState<number>(0)
+  const [assignCredits, setAssignCredits] = useState<number|''>(0)
   
   const [images, setImages] = useState({
     picture1: "",
@@ -504,121 +504,191 @@ export default function AddCabinets() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 my-3.75 gap-4">
-                <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand<span className="text-error">*</span></Label>
-                  <Select value={assetInformation.brandInfo.name} onValueChange={(value)=> setAssetInformation(prev => ({
-                    ...prev,
-                    brandInfo:{
-                      ...prev.brandInfo,
-                      name: value,
-                      model: ""
-                    }
-                  }))} disabled={assetInformation.brandInfo.isNotInList}>
-                    <SelectTrigger className={cn("w-full !h-12.5", {
-                        "opacity-70" : assetInformation.brandInfo.isNotInList
-                      })}>
-                      <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-                        <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Brand" /></span>
-                      </div>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {
-                        brandsList.map((item)=> <SelectItem value={item.brand} key={item.brand}>{item.brand}</SelectItem> )
-                      }
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Model<span className="text-error">*</span></Label>
-                  <Select value={assetInformation.brandInfo.model} onValueChange={(value)=> setAssetInformation(prev => ({
-                    ...prev,
-                    brandInfo: {
-                      ...prev.brandInfo,
-                      model: value
-                    }
-                  }))} disabled={assetInformation.brandInfo.isNotInList}>
-                    <SelectTrigger className={cn("w-full !h-12.5", {
-                        "opacity-70" : assetInformation.brandInfo.isNotInList
-                      })}>
-                      <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-                        <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Model" /></span>
-                      </div>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {
-                        brandsList.find(item => item.brand === assetInformation.brandInfo.name)?.models?.map((item)=> <SelectItem value={item} key={item}>{item}</SelectItem> )
-                      }
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="col-span-2">
-                  <label className="flex items-center space-x-3 cursor-pointer select-none mb-2">
-                    <Checkbox className="bg-transparent border-border" checked={assetInformation.brandInfo.isNotInList} onCheckedChange={()=> setAssetInformation(prev => ({
-                    ...prev,
-                    brandInfo:{
-                      ...prev.brandInfo,
-                      isNotInList: !assetInformation.brandInfo.isNotInList
-                    }
-                  }))} />
-                    <span className={cn("text-xs text-accent-foreground transition-colors")}>
-                      Brand or model not in list
-                    </span>
-                  </label>
-                </div>
-                {assetInformation.brandInfo.isNotInList && <>
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand Name</Label>
-                    <Input
-                      placeholder="Enter brand name"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                      value={assetInformation.brandInfo.customName}
-                      onChange={(e)=> setAssetInformation(prev => ({
-                          ...prev,
-                          brandInfo: {
-                            ...prev.brandInfo,
-                            customName: e.target.value
+              
+              
+                {assetType === "defibrillator" ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 my-3.75 gap-4">
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand<span className="text-error">*</span></Label>
+                      <Select value={assetInformation.brandInfo.name} onValueChange={(value)=> setAssetInformation(prev => ({
+                        ...prev,
+                        brandInfo:{
+                          ...prev.brandInfo,
+                          name: value,
+                          model: ""
+                        }
+                      }))} disabled={assetInformation.brandInfo.isNotInList}>
+                        <SelectTrigger className={cn("w-full !h-12.5", {
+                            "opacity-70" : assetInformation.brandInfo.isNotInList
+                          })}>
+                          <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
+                            <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Brand" /></span>
+                          </div>
+                        </SelectTrigger>
+                        <SelectContent>
+                          {
+                            brandsList.map((item)=> <SelectItem value={item.brand} key={item.brand}>{item.brand}</SelectItem> )
                           }
-                        })
-                      )}
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Model Name</Label>
-                    <Input
-                      placeholder="Enter model name"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                      value={assetInformation.brandInfo.customModel}
-                      onChange={(e)=> setAssetInformation(prev => ({
-                          ...prev,
-                          brandInfo: {
-                            ...prev.brandInfo,
-                            customModel: e.target.value
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Model<span className="text-error">*</span></Label>
+                      <Select value={assetInformation.brandInfo.model} onValueChange={(value)=> setAssetInformation(prev => ({
+                        ...prev,
+                        brandInfo: {
+                          ...prev.brandInfo,
+                          model: value
+                        }
+                      }))} disabled={assetInformation.brandInfo.isNotInList}>
+                        <SelectTrigger className={cn("w-full !h-12.5", {
+                            "opacity-70" : assetInformation.brandInfo.isNotInList
+                          })}>
+                          <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
+                            <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Model" /></span>
+                          </div>
+                        </SelectTrigger>
+                        <SelectContent>
+                          {
+                            brandsList.find(item => item.brand === assetInformation.brandInfo.name)?.models?.map((item)=> <SelectItem value={item} key={item}>{item}</SelectItem> )
                           }
-                        })
-                      )}
-                    />
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="flex items-center space-x-3 cursor-pointer select-none mb-2">
+                        <Checkbox className="bg-transparent border-border" checked={assetInformation.brandInfo.isNotInList} onCheckedChange={()=> setAssetInformation(prev => ({
+                        ...prev,
+                        brandInfo:{
+                          ...prev.brandInfo,
+                          isNotInList: !assetInformation.brandInfo.isNotInList
+                        }
+                      }))} />
+                        <span className={cn("text-xs text-accent-foreground transition-colors")}>
+                          Brand or model not in list
+                        </span>
+                      </label>
+                    </div>
+                    {assetInformation.brandInfo.isNotInList && <>
+                      <div>
+                        <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand Name</Label>
+                        <Input
+                          placeholder="Enter brand name"
+                          autoComplete="off"
+                          className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                          value={assetInformation.brandInfo.customName}
+                          onChange={(e)=> setAssetInformation(prev => ({
+                              ...prev,
+                              brandInfo: {
+                                ...prev.brandInfo,
+                                customName: e.target.value
+                              }
+                            })
+                          )}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs text-accent-foreground font-medium block mb-3">Model Name</Label>
+                        <Input
+                          placeholder="Enter model name"
+                          autoComplete="off"
+                          className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                          value={assetInformation.brandInfo.customModel}
+                          onChange={(e)=> setAssetInformation(prev => ({
+                              ...prev,
+                              brandInfo: {
+                                ...prev.brandInfo,
+                                customModel: e.target.value
+                              }
+                            })
+                          )}
+                        />
+                      </div>
+                    </>}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 my-3.75 gap-4 sm:col-span-2">
+                      <div>
+                        <Label className="text-xs text-accent-foreground font-medium block mb-3">Serial number</Label>
+                        <Input
+                          placeholder="Enter serial number"
+                          autoComplete="off"
+                          className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                          value={assetInformation.brandInfo.customName}
+                          onChange={(e)=> setAssetInformation(prev => ({
+                              ...prev,
+                              brandInfo: {
+                                ...prev.brandInfo,
+                                customName: e.target.value
+                              }
+                            })
+                          )}
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs text-accent-foreground font-medium block mb-3">Date of purchase</Label>
+                        <DatePicker value={assetExpiration} onChange={setAssetExpiration} className="!bg-white text-xs pl-5 pr-4" />
+                      </div>
+                      <div>
+                        <Label className="text-xs text-accent-foreground font-medium block mb-3">Next check-up</Label>
+                        <DatePicker value={checkupDate} onChange={setCheckupDate} className="!bg-white text-xs pl-5 pr-4" />
+                      </div>
+                    </div>
                   </div>
-                </>}
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 my-3.75 gap-4">
-                <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Asset Expiration Date<span className="text-error">*</span></Label>
-                  <DatePicker value={assetExpiration} onChange={setAssetExpiration} className="!bg-white text-xs pl-5 pr-4" />
-                </div>
-                <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Check-Up Date<span className="text-error">*</span></Label>
-                  <DatePicker value={checkupDate} onChange={setCheckupDate} className="!bg-white text-xs pl-5 pr-4" />
-                </div>
-                <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Warranty Expiration date <span className="text-error">*</span></Label>
-                  <DatePicker value={warrantyExpiration} onChange={setWarrantyExpiration} className="!bg-white text-xs pl-5 pr-4" />
-                </div>
-                <div className="sm:col-span-2 xl:col-span-3">
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Notes<span className="text-error">*</span></Label>
+                ) : (
+                  <>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 my-3.75 gap-4">
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand</Label>
+                      <Input
+                        placeholder="Enter brand name"
+                        autoComplete="off"
+                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                        value={assetInformation.brandInfo.customName}
+                        onChange={(e)=> setAssetInformation(prev => ({
+                            ...prev,
+                            brandInfo: {
+                              ...prev.brandInfo,
+                              customName: e.target.value
+                            }
+                          })
+                        )}
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Model</Label>
+                      <Input
+                        placeholder="Enter model name"
+                        autoComplete="off"
+                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                        value={assetInformation.brandInfo.customModel}
+                        onChange={(e)=> setAssetInformation(prev => ({
+                            ...prev,
+                            brandInfo: {
+                              ...prev.brandInfo,
+                              customModel: e.target.value
+                            }
+                          })
+                        )}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 my-3.75 gap-4">
+                    <div>
+                        <Label className="text-xs text-accent-foreground font-medium block mb-3">Asset Expiration Date</Label>
+                        <DatePicker value={assetExpiration} onChange={setAssetExpiration} className="!bg-white text-xs pl-5 pr-4" />
+                      </div>
+                      <div>
+                        <Label className="text-xs text-accent-foreground font-medium block mb-3">Check-Up Date</Label>
+                        <DatePicker value={checkupDate} onChange={setCheckupDate} className="!bg-white text-xs pl-5 pr-4" />
+                      </div>
+                      <div>
+                        <Label className="text-xs text-accent-foreground font-medium block mb-3">Date of Purchase</Label>
+                        <DatePicker value={warrantyExpiration} onChange={setWarrantyExpiration} className="!bg-white text-xs pl-5 pr-4" />
+                      </div>
+                  </div>
+                  </>
+                )}
+                <div className="pt-[2px]">
+                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Notes</Label>
                   <Textarea
                     placeholder="Add any additional notes..."
                     autoComplete="off"
@@ -630,9 +700,8 @@ export default function AddCabinets() {
                     }))}
                   />
                 </div>
-              </div>
             </div>
-            {assetType !== "fire-extinguisher" && 
+            {assetType === "defibrillator" && 
               <>
                 {/* Battery Information */}
                 <div className="mt-5">
@@ -775,7 +844,20 @@ export default function AddCabinets() {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-3 my-3.75 gap-4">
                     <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery serial number<span className="text-error">*</span></Label>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery expiration date<span className="text-error">*</span></Label>
+                      <DatePicker value={assetInformation.batteryInformation.batteryExpiration} onChange={(value) =>
+                          setAssetInformation((prev) => ({
+                            ...prev,
+                            batteryInformation: {
+                              ...prev.batteryInformation,
+                              batteryExpiration: value
+                            },
+                          }))
+                        }
+                        className="!bg-white text-xs pl-5 pr-4" />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery serial number</Label>
                       <Input
                         placeholder="e.g. SN928492819"
                         autoComplete="off"
@@ -792,20 +874,7 @@ export default function AddCabinets() {
                       />
                     </div>
                     <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery expiration date<span className="text-error">*</span></Label>
-                      <DatePicker value={assetInformation.batteryInformation.batteryExpiration} onChange={(value) =>
-                          setAssetInformation((prev) => ({
-                            ...prev,
-                            batteryInformation: {
-                              ...prev.batteryInformation,
-                              batteryExpiration: value
-                            },
-                          }))
-                        }
-                        className="!bg-white text-xs pl-5 pr-4" />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery Iot number<span className="text-error">*</span></Label>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery lot number</Label>
                       <Input
                         placeholder="e.g. B-98765"
                         autoComplete="off"
