@@ -20,7 +20,6 @@ import SchedulePicker from "../components/SchedulePicker";
 import type { AccessTypeI, AvailabilityType, BrightnessType, ColorType, DayConfig, StepType, VolumeType } from "../types/addCabinet";
 import { assetTypeList, availabilityTypeList, brightnessList, colorList, dayList, STEPS, volumeList } from "../mock/addCabinetData";
 import { ConfirmationModal } from "../components/ConfirmationModal";
-import { Checkbox } from "@/shared/components/ui/checkbox";
 import { AVAILABLE_CREDITS, MANAGE_CABINETS } from "@/features/dashboard/mock/mockDashboardStats";
 import { can, type Role } from "@/lib/permissions";
 import { useAuth } from "@/app/hooks/useAuth";
@@ -93,9 +92,6 @@ const CabinetView = () => {
   const [brandInfo, setBrandInfo] = useState<BrandInfo>({
     name: "",
     model: "",
-    isNotInList: true,
-    customName: "Nexus Custom Model",
-    customModel: "Nexus Custom Model"
   })
   
   const [assetInformation, setAssetInformation] = useState<AssetInformation>({
@@ -120,9 +116,6 @@ const CabinetView = () => {
     brandInfo: {
       name: "",
       model: "",
-      isNotInList: false,
-      customName: "",
-      customModel: ""
     }
   })
 
@@ -177,7 +170,7 @@ const CabinetView = () => {
                       }))}
                     />
                     <div className="text-xs mt-2">If the serial number is recognised the brand, model and module code (if applicable) will be filled in automatically.</div>
-                    <div className="flex items-center text-sm text-accent-foreground my-5 lg:my-6.5 gap-3">
+                    <div className="flex items-center text-sm text-accent-foreground my-5 gap-3">
                       <span className="h-px grow bg-accent-foreground"></span>
                       <span>Or enter cabinet details manually</span>
                       <span className="h-px grow bg-accent-foreground"></span>
@@ -189,10 +182,8 @@ const CabinetView = () => {
                       ...prev,
                       name: value,
                       model: ""
-                    }))} disabled={fieldsReadOnly || brandInfo.isNotInList}>
-                      <SelectTrigger className={cn("w-full !h-12.5", {
-                          "opacity-70" : brandInfo.isNotInList
-                        })}>
+                    }))} disabled={fieldsReadOnly}>
+                      <SelectTrigger className={cn("w-full !h-12.5")}>
                         <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                           <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Brand" /></span>
                         </div>
@@ -209,10 +200,8 @@ const CabinetView = () => {
                     <Select value={brandInfo.model} onValueChange={(value)=> setBrandInfo(prev => ({
                       ...prev,
                       model: value
-                    }))} disabled={fieldsReadOnly || brandInfo.isNotInList}>
-                      <SelectTrigger className={cn("w-full !h-12.5", {
-                          "opacity-70" : brandInfo.isNotInList
-                        })}>
+                    }))} disabled={fieldsReadOnly}>
+                      <SelectTrigger className={cn("w-full !h-12.5")}>
                         <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                           <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Model" /></span>
                         </div>
@@ -224,49 +213,6 @@ const CabinetView = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="col-span-2">
-                    <label className="flex items-center space-x-3 cursor-pointer select-none mb-2">
-                      <Checkbox className="bg-transparent border-border" checked={brandInfo.isNotInList} onCheckedChange={()=> setBrandInfo(prev => ({
-                      ...prev,
-                      isNotInList: !brandInfo.isNotInList
-                    }))} disabled={fieldsReadOnly} />
-                      <span className={cn("text-xs text-accent-foreground transition-colors")}>
-                        Brand or model not in list
-                      </span>
-                    </label>
-                  </div>
-                  {brandInfo.isNotInList && <>
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand Name</Label>
-                      <Input
-                        placeholder="Enter brand name"
-                        autoComplete="off"
-                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                        readOnly={fieldsReadOnly}
-                        value={brandInfo.customName}
-                        onChange={(e)=> setBrandInfo(prev => ({
-                            ...prev,
-                            customName: e.target.value
-                          })
-                        )}
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Model Name</Label>
-                      <Input
-                        placeholder="Enter model name"
-                        autoComplete="off"
-                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                        readOnly={fieldsReadOnly}
-                        value={brandInfo.customModel}
-                        onChange={(e)=> setBrandInfo(prev => ({
-                            ...prev,
-                            customModel: e.target.value
-                          })
-                        )}
-                      />
-                    </div>
-                  </>}
                   <div className="col-span-2">
                     <div className="bg-card-info rounded-md px-2.5 py-3 text-accent-foreground text-xs flex gap-2.5">
                       <Info size={18} />
@@ -509,10 +455,8 @@ const CabinetView = () => {
                       name: value,
                       model: ""
                     }
-                  }))} disabled={fieldsReadOnly || assetInformation.brandInfo.isNotInList}>
-                    <SelectTrigger className={cn("w-full !h-12.5", {
-                        "opacity-70" : assetInformation.brandInfo.isNotInList
-                      })}>
+                  }))} disabled={fieldsReadOnly}>
+                    <SelectTrigger className={cn("w-full !h-12.5",)}>
                       <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                         <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Brand" /></span>
                       </div>
@@ -532,10 +476,8 @@ const CabinetView = () => {
                       ...prev.brandInfo,
                       model: value
                     }
-                  }))} disabled={fieldsReadOnly || assetInformation.brandInfo.isNotInList}>
-                    <SelectTrigger className={cn("w-full !h-12.5", {
-                        "opacity-70" : assetInformation.brandInfo.isNotInList
-                      })}>
+                  }))} disabled={fieldsReadOnly}>
+                    <SelectTrigger className={cn("w-full !h-12.5")}>
                       <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                         <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Model" /></span>
                       </div>
@@ -547,58 +489,6 @@ const CabinetView = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="col-span-2">
-                  <label className="flex items-center space-x-3 cursor-pointer select-none mb-2">
-                    <Checkbox className="bg-transparent border-border" checked={assetInformation.brandInfo.isNotInList} onCheckedChange={()=> setAssetInformation(prev => ({
-                    ...prev,
-                    brandInfo:{
-                      ...prev.brandInfo,
-                      isNotInList: !assetInformation.brandInfo.isNotInList
-                    }
-                  }))} disabled={fieldsReadOnly} />
-                    <span className={cn("text-xs text-accent-foreground transition-colors")}>
-                      Brand or model not in list
-                    </span>
-                  </label>
-                </div>
-                {assetInformation.brandInfo.isNotInList && <>
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand Name</Label>
-                    <Input
-                      placeholder="Enter brand name"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                      readOnly={fieldsReadOnly}
-                      value={assetInformation.brandInfo.customName}
-                      onChange={(e)=> setAssetInformation(prev => ({
-                          ...prev,
-                          brandInfo: {
-                            ...prev.brandInfo,
-                            customName: e.target.value
-                          }
-                        })
-                      )}
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Model Name</Label>
-                    <Input
-                      placeholder="Enter model name"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                      readOnly={fieldsReadOnly}
-                      value={assetInformation.brandInfo.customModel}
-                      onChange={(e)=> setAssetInformation(prev => ({
-                          ...prev,
-                          brandInfo: {
-                            ...prev.brandInfo,
-                            customModel: e.target.value
-                          }
-                        })
-                      )}
-                    />
-                  </div>
-                </>}
               </div>
 
 

@@ -20,7 +20,6 @@ import SchedulePicker from "../components/SchedulePicker";
 import type { AccessTypeI, AvailabilityType, BrightnessType, ColorType, DayConfig, StepType, VolumeType } from "../types/addCabinet";
 import { assetTypeList, availabilityTypeList, brightnessList, colorList, dayList, STEPS, volumeList } from "../mock/addCabinetData";
 import { ConfirmationModal } from "../components/ConfirmationModal";
-import { Checkbox } from "@/shared/components/ui/checkbox";
 import { AVAILABLE_CREDITS } from "@/features/dashboard/mock/mockDashboardStats";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
 import { SidebarMenuButton } from "@/shared/components/ui/sidebar";
@@ -29,9 +28,6 @@ import { brandsList } from "../mock/mockBrands";
 export interface BrandInfo {
   name: string;
   model: string;
-  isNotInList: boolean;
-  customName: string;
-  customModel: string;
 }
 
 export interface AssetInformation {
@@ -113,9 +109,6 @@ export default function AddCabinets() {
       brandInfo: {
         name: "",
         model: "",
-        isNotInList: false,
-        customName: "",
-        customModel: ""
       }
     })
 
@@ -191,7 +184,7 @@ export default function AddCabinets() {
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
                     />
                     <div className="text-xs mt-2">If the serial number is recognised the brand, model and module code (if applicable) will be filled in automatically.</div>
-                    <div className="flex items-center text-sm text-accent-foreground my-5 lg:my-6.5 gap-3">
+                    <div className="flex items-center text-sm text-accent-foreground my-5 gap-3">
                       <span className="h-px grow bg-accent-foreground"></span>
                       <span>Or enter cabinet details manually</span>
                       <span className="h-px grow bg-accent-foreground"></span>
@@ -203,10 +196,8 @@ export default function AddCabinets() {
                       ...prev,
                       name: value,
                       model: ""
-                    }))} disabled={brandInfo.isNotInList}>
-                      <SelectTrigger className={cn("w-full !h-12.5", {
-                        "opacity-70" : brandInfo.isNotInList
-                      })}>
+                    }))}>
+                      <SelectTrigger className={cn("w-full !h-12.5")}>
                         <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                           <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder={"Select Brand"} /></span>
                         </div>
@@ -223,10 +214,8 @@ export default function AddCabinets() {
                     <Select value={brandInfo.model} onValueChange={(value)=> setBrandInfo(prev => ({
                       ...prev,
                       model: value
-                    }))} disabled={brandInfo.isNotInList}>
-                      <SelectTrigger className={cn("w-full !h-12.5", {
-                        "opacity-70" : brandInfo.isNotInList
-                      })}>
+                    }))}>
+                      <SelectTrigger className={cn("w-full !h-12.5")}>
                         <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                           <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder={"Select Model"} /></span>
                         </div>
@@ -238,48 +227,6 @@ export default function AddCabinets() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="col-span-2">
-                    <label className="flex items-center space-x-3 cursor-pointer select-none mb-2">
-                      <Checkbox className="bg-transparent border-border" checked={brandInfo.isNotInList} onCheckedChange={()=> setBrandInfo(prev => ({
-                      ...prev,
-                      isNotInList: !brandInfo.isNotInList
-                    }))} />
-                      <span className={cn("text-xs text-accent-foreground transition-colors")}>
-                        Brand or model not in list
-                      </span>
-                    </label>
-                  </div>
-                  {brandInfo.isNotInList && <>
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand Name</Label>
-                      <Input
-                        placeholder="Enter brand name"
-                        autoComplete="off"
-                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                        value={brandInfo.customName}
-                        onChange={(e)=> setBrandInfo(prev => ({
-                            ...prev,
-                            customName: e.target.value
-                          })
-                        )}
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Model Name</Label>
-                      <Input
-                        placeholder="Enter model name"
-                        autoComplete="off"
-                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                        value={brandInfo.customModel}
-                        onChange={(e)=> setBrandInfo(prev => ({
-                            ...prev,
-                            customModel: e.target.value
-                          })
-                        )}
-                      />
-                    </div>
-                  </>
-                  }
                   <div className="col-span-2">
                     <div className="bg-card-info rounded-md px-2.5 py-3 text-accent-foreground text-xs flex gap-2.5">
                       <Info size={18} />
@@ -555,56 +502,6 @@ export default function AddCabinets() {
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="sm:col-span-2">
-                      <label className="flex items-center space-x-3 cursor-pointer select-none mb-2">
-                        <Checkbox className="bg-transparent border-border" checked={assetInformation.brandInfo.isNotInList} onCheckedChange={()=> setAssetInformation(prev => ({
-                        ...prev,
-                        brandInfo:{
-                          ...prev.brandInfo,
-                          isNotInList: !assetInformation.brandInfo.isNotInList
-                        }
-                      }))} />
-                        <span className={cn("text-xs text-accent-foreground transition-colors")}>
-                          Brand or model not in list
-                        </span>
-                      </label>
-                    </div>
-                    {assetInformation.brandInfo.isNotInList && <>
-                      <div>
-                        <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand Name</Label>
-                        <Input
-                          placeholder="Enter brand name"
-                          autoComplete="off"
-                          className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                          value={assetInformation.brandInfo.customName}
-                          onChange={(e)=> setAssetInformation(prev => ({
-                              ...prev,
-                              brandInfo: {
-                                ...prev.brandInfo,
-                                customName: e.target.value
-                              }
-                            })
-                          )}
-                        />
-                      </div>
-                      <div>
-                        <Label className="text-xs text-accent-foreground font-medium block mb-3">Model Name</Label>
-                        <Input
-                          placeholder="Enter model name"
-                          autoComplete="off"
-                          className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                          value={assetInformation.brandInfo.customModel}
-                          onChange={(e)=> setAssetInformation(prev => ({
-                              ...prev,
-                              brandInfo: {
-                                ...prev.brandInfo,
-                                customModel: e.target.value
-                              }
-                            })
-                          )}
-                        />
-                      </div>
-                    </>}
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 my-3.75 gap-4 sm:col-span-2">
                       <div>
                         <Label className="text-xs text-accent-foreground font-medium block mb-3">Serial number</Label>
@@ -635,56 +532,20 @@ export default function AddCabinets() {
                   </div>
                 ) : (
                   <>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 my-3.75 gap-4">
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand</Label>
-                      <Input
-                        placeholder="Enter brand name"
-                        autoComplete="off"
-                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                        value={assetInformation.brandInfo.customName}
-                        onChange={(e)=> setAssetInformation(prev => ({
-                            ...prev,
-                            brandInfo: {
-                              ...prev.brandInfo,
-                              customName: e.target.value
-                            }
-                          })
-                        )}
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Model</Label>
-                      <Input
-                        placeholder="Enter model name"
-                        autoComplete="off"
-                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                        value={assetInformation.brandInfo.customModel}
-                        onChange={(e)=> setAssetInformation(prev => ({
-                            ...prev,
-                            brandInfo: {
-                              ...prev.brandInfo,
-                              customModel: e.target.value
-                            }
-                          })
-                        )}
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 my-3.75 gap-4">
-                    <div>
-                        <Label className="text-xs text-accent-foreground font-medium block mb-3">Asset Expiration Date</Label>
-                        <DatePicker value={assetExpiration} onChange={setAssetExpiration} className="!bg-white text-xs pl-5 pr-4" />
-                      </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 my-3.75 gap-4">
                       <div>
-                        <Label className="text-xs text-accent-foreground font-medium block mb-3">Check-Up Date</Label>
-                        <DatePicker value={checkupDate} onChange={setCheckupDate} className="!bg-white text-xs pl-5 pr-4" />
-                      </div>
-                      <div>
-                        <Label className="text-xs text-accent-foreground font-medium block mb-3">Date of Purchase</Label>
-                        <DatePicker value={warrantyExpiration} onChange={setWarrantyExpiration} className="!bg-white text-xs pl-5 pr-4" />
-                      </div>
-                  </div>
+                          <Label className="text-xs text-accent-foreground font-medium block mb-3">Asset Expiration Date</Label>
+                          <DatePicker value={assetExpiration} onChange={setAssetExpiration} className="!bg-white text-xs pl-5 pr-4" />
+                        </div>
+                        <div>
+                          <Label className="text-xs text-accent-foreground font-medium block mb-3">Check-Up Date</Label>
+                          <DatePicker value={checkupDate} onChange={setCheckupDate} className="!bg-white text-xs pl-5 pr-4" />
+                        </div>
+                        <div>
+                          <Label className="text-xs text-accent-foreground font-medium block mb-3">Date of Purchase</Label>
+                          <DatePicker value={warrantyExpiration} onChange={setWarrantyExpiration} className="!bg-white text-xs pl-5 pr-4" />
+                        </div>
+                    </div>
                   </>
                 )}
                 <div className="pt-[2px]">
