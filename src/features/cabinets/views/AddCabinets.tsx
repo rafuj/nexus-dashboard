@@ -66,10 +66,7 @@ export default function AddCabinets() {
 
   const [brandInfo, setBrandInfo] = useState<BrandInfo>({
     name: "",
-    model: "",
-    isNotInList: false,
-    customName: "",
-    customModel: ""
+    model: ""
   })
 
   const [warrantyExpiration, setWarrantyExpiration] = useState<Date | undefined>(new Date())
@@ -464,10 +461,8 @@ export default function AddCabinets() {
                           name: value,
                           model: ""
                         }
-                      }))} disabled={assetInformation.brandInfo.isNotInList}>
-                        <SelectTrigger className={cn("w-full !h-12.5", {
-                            "opacity-70" : assetInformation.brandInfo.isNotInList
-                          })}>
+                      }))}>
+                        <SelectTrigger className={cn("w-full !h-12.5")}>
                           <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                             <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Brand" /></span>
                           </div>
@@ -487,10 +482,8 @@ export default function AddCabinets() {
                           ...prev.brandInfo,
                           model: value
                         }
-                      }))} disabled={assetInformation.brandInfo.isNotInList}>
-                        <SelectTrigger className={cn("w-full !h-12.5", {
-                            "opacity-70" : assetInformation.brandInfo.isNotInList
-                          })}>
+                      }))}>
+                        <SelectTrigger className={cn("w-full !h-12.5")}>
                           <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                             <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Model" /></span>
                           </div>
@@ -509,15 +502,6 @@ export default function AddCabinets() {
                           placeholder="Enter serial number"
                           autoComplete="off"
                           className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                          value={assetInformation.brandInfo.customName}
-                          onChange={(e)=> setAssetInformation(prev => ({
-                              ...prev,
-                              brandInfo: {
-                                ...prev.brandInfo,
-                                customName: e.target.value
-                              }
-                            })
-                          )}
                         />
                       </div>
                       <div>

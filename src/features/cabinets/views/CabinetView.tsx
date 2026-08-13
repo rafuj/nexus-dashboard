@@ -445,68 +445,94 @@ const CabinetView = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 my-3.75 gap-4">
-                <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand<span className="text-error">*</span></Label>
-                  <Select value={assetInformation.brandInfo.name} onValueChange={(value)=> setAssetInformation(prev => ({
-                    ...prev,
-                    brandInfo:{
-                      ...prev.brandInfo,
-                      name: value,
-                      model: ""
-                    }
-                  }))} disabled={fieldsReadOnly}>
-                    <SelectTrigger className={cn("w-full !h-12.5",)}>
-                      <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-                        <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Brand" /></span>
-                      </div>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {
-                        brandsList.map((item)=> <SelectItem value={item.brand} key={item.brand}>{item.brand}</SelectItem> )
+              {assetType === "defibrillator" ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 my-3.75 gap-4">
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand<span className="text-error">*</span></Label>
+                    <Select value={assetInformation.brandInfo.name} onValueChange={(value)=> setAssetInformation(prev => ({
+                      ...prev,
+                      brandInfo:{
+                        ...prev.brandInfo,
+                        name: value,
+                        model: ""
                       }
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Model<span className="text-error">*</span></Label>
-                  <Select value={assetInformation.brandInfo.model} onValueChange={(value)=> setAssetInformation(prev => ({
-                    ...prev,
-                    brandInfo: {
-                      ...prev.brandInfo,
-                      model: value
-                    }
-                  }))} disabled={fieldsReadOnly}>
-                    <SelectTrigger className={cn("w-full !h-12.5")}>
-                      <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-                        <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Model" /></span>
-                      </div>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {
-                        brandsList.find(item => item.brand === assetInformation.brandInfo.name)?.models?.map((item)=> <SelectItem value={item} key={item}>{item}</SelectItem> )
+                    }))} disabled={fieldsReadOnly}>
+                      <SelectTrigger className={cn("w-full !h-12.5",)}>
+                        <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
+                          <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Brand" /></span>
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {
+                          brandsList.map((item)=> <SelectItem value={item.brand} key={item.brand}>{item.brand}</SelectItem> )
+                        }
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Model<span className="text-error">*</span></Label>
+                    <Select value={assetInformation.brandInfo.model} onValueChange={(value)=> setAssetInformation(prev => ({
+                      ...prev,
+                      brandInfo: {
+                        ...prev.brandInfo,
+                        model: value
                       }
-                    </SelectContent>
-                  </Select>
+                    }))} disabled={fieldsReadOnly}>
+                      <SelectTrigger className={cn("w-full !h-12.5")}>
+                        <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
+                          <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Model" /></span>
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {
+                          brandsList.find(item => item.brand === assetInformation.brandInfo.name)?.models?.map((item)=> <SelectItem value={item} key={item}>{item}</SelectItem> )
+                        }
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 my-3.75 gap-4 sm:col-span-2">
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Serial number</Label>
+                      <Input
+                        placeholder="Enter serial number"
+                        autoComplete="off"
+                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Date of purchase</Label>
+                      <DatePicker value={assetExpiration} onChange={setAssetExpiration} className="!bg-white text-xs pl-5 pr-4" />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Next check-up</Label>
+                      <DatePicker value={checkupDate} onChange={setCheckupDate} className="!bg-white text-xs pl-5 pr-4" />
+                    </div>
+                  </div>
                 </div>
-              </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 my-3.75 gap-4">
+                      <div>
+                          <Label className="text-xs text-accent-foreground font-medium block mb-3">Asset Expiration Date</Label>
+                          <DatePicker value={assetExpiration} onChange={setAssetExpiration} className="!bg-white text-xs pl-5 pr-4" />
+                        </div>
+                        <div>
+                          <Label className="text-xs text-accent-foreground font-medium block mb-3">Check-Up Date</Label>
+                          <DatePicker value={checkupDate} onChange={setCheckupDate} className="!bg-white text-xs pl-5 pr-4" />
+                        </div>
+                        <div>
+                          <Label className="text-xs text-accent-foreground font-medium block mb-3">Date of Purchase</Label>
+                          <DatePicker value={warrantyExpiration} onChange={setWarrantyExpiration} className="!bg-white text-xs pl-5 pr-4" />
+                        </div>
+                    </div>
+                  </>
+                )
+              }
 
 
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 my-3.75 gap-4">
-                <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Asset Expiration Date<span className="text-error">*</span></Label>
-                  <DatePicker value={assetExpiration} onChange={setAssetExpiration} className="!bg-white text-xs pl-5 pr-4" disabled={fieldsReadOnly} />
-                </div>
-                <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Check-Up Date<span className="text-error">*</span></Label>
-                  <DatePicker value={checkupDate} onChange={setCheckupDate} className="!bg-white text-xs pl-5 pr-4" disabled={fieldsReadOnly} />
-                </div>
-                <div>
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Warranty Expiration date <span className="text-error">*</span></Label>
-                  <DatePicker value={warrantyExpiration} onChange={setWarrantyExpiration} disabled={fieldsReadOnly} className="!bg-white text-xs pl-5 pr-4" />
-                </div>
                 <div className="sm:col-span-2 xl:col-span-3">
-                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Notes<span className="text-error">*</span></Label>
+                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Notes</Label>
                   <Textarea
                     placeholder="Add any additional notes..."
                     autoComplete="off"
@@ -521,7 +547,7 @@ const CabinetView = () => {
                 </div>
               </div>
             </div>
-            {assetType !== "fire-extinguisher" && 
+            {assetType === "defibrillator" && 
               <>
                 {/* Battery Information */}
                 <div className="mt-5">
@@ -666,7 +692,20 @@ const CabinetView = () => {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-3 my-3.75 gap-4">
                     <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery serial number<span className="text-error">*</span></Label>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery expiration date<span className="text-error">*</span></Label>
+                      <DatePicker value={assetInformation.batteryInformation.batteryExpiration} onChange={(value) =>
+                          setAssetInformation((prev) => ({
+                            ...prev,
+                            batteryInformation: {
+                              ...prev.batteryInformation,
+                              batteryExpiration: value
+                            },
+                          }))
+                        }
+                        disabled={fieldsReadOnly} className="!bg-white text-xs pl-5 pr-4" />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery serial number</Label>
                       <Input
                         placeholder="e.g. SN928492819"
                         autoComplete="off"
@@ -684,20 +723,7 @@ const CabinetView = () => {
                       />
                     </div>
                     <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery expiration date<span className="text-error">*</span></Label>
-                      <DatePicker value={assetInformation.batteryInformation.batteryExpiration} onChange={(value) =>
-                          setAssetInformation((prev) => ({
-                            ...prev,
-                            batteryInformation: {
-                              ...prev.batteryInformation,
-                              batteryExpiration: value
-                            },
-                          }))
-                        }
-                        disabled={fieldsReadOnly} className="!bg-white text-xs pl-5 pr-4" />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery Iot number<span className="text-error">*</span></Label>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery Iot number</Label>
                       <Input
                         placeholder="e.g. B-98765"
                         autoComplete="off"
