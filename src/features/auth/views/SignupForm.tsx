@@ -1,145 +1,334 @@
-import { cn } from "@/lib/utils"
-import { Button } from "@/shared/components/ui/button"
-import {
-  Card
-} from "@/shared/components/ui/card"
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/shared/components/ui/field"
-import { Input } from "@/shared/components/ui/input"
-import { PasswordInput } from "../components/PasswordInput"
-import { Link } from "react-router"
-import avatar from '@/assets/avatar.png'
-import { useRef, useState } from "react"
-import { CustomRadioGroup, type RadioOption } from "@/shared/components/CustomRadioGroup"
-export  type AccountType = 'personal'|'company'
+import { cn } from "@/lib/utils";
+import { Button } from "@/shared/components/ui/button";
+import { Input } from "@/shared/components/ui/input";
+import { PasswordInput } from "../components/PasswordInput";
+import { Link } from "react-router";
+import avatar from "@/assets/avatar.png";
+import { useRef, useState } from "react";
+import { CustomRadioGroup, type RadioOption } from "@/shared/components/CustomRadioGroup";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
-export const accountTypeList : RadioOption<AccountType>[] = [
-  { id: "personal", value: "personal", label: "Personal" },
-  { id: "company", value: "company", label: "Company" }
+export type AccountType = "personal" | "business";
+
+export const accountTypeList: RadioOption<AccountType>[] = [
+  {
+    id: "personal",
+    value: "personal",
+    label: "Personal",
+  },
+  {
+    id: "business",
+    value: "business",
+    label: "Company",
+  },
 ];
 
+const validationSchema = Yup.object({
+  accountType: Yup.string()
+    .oneOf(["personal", "business"])
+    .required("Account type is required"),
 
-export default function SignupForm({className, ...props } : React.ComponentProps<typeof Card>) {
-    const [accountType, setAccountType] = useState<AccountType>("personal");
-    
-    // 1. Manage the image preview state (defaults to your initial avatar)
-    const [previewSrc, setPreviewSrc] = useState<string>(avatar); 
-    const fileInputRef = useRef<HTMLInputElement>(null);
+  companyName: Yup.string().when("accountType", {
+    is: "business",
+    then: (schema) => schema.required("Company Name is required"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
 
-    // 2. Handle file selection and generate a preview URL
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-            // Optional: Add simple validation for images
-            if (!file.type.startsWith('image/')) {
-                alert('Please upload an image file.');
-                return;
-            }
+  firstName: Yup.string()
+    .trim()
+    .required("First name is required"),
 
-            const objectUrl = URL.createObjectURL(file);
-            setPreviewSrc(objectUrl);
+  lastName: Yup.string()
+    .trim()
+    .required("Last name is required"),
 
-            // TODO: Send 'file' to your backend or cloud storage here
-            console.log('Selected file:', file);
-        }
-    };
-    return (
-        <div className={cn("", className)} {...props}>
+  email: Yup.string()
+    .email("Please enter a valid email address")
+    .required("Email is required"),
+
+  phone: Yup.string()
+    .notRequired(),
+
+  password: Yup.string()
+    .min(8, "Password must be at least 8 characters")
+    // .matches(
+    //   /[A-Z]/,
+    //   "Password must contain at least 1 uppercase letter",
+    // )
+    // .matches(
+    //   /[a-z]/,
+    //   "Password must contain at least 1 lowercase letter",
+    // )
+    // .matches(
+    //   /[0-9]/,
+    //   "Password must contain at least 1 number",
+    // )
+    // .matches(
+    //   /[^A-Za-z0-9]/,
+    //   "Password must contain at least 1 special character",
+    // )
+    // .required("Password is required"),
+});
+
+export default function SignupForm({
+  className,
+}: {
+  className?: string
+}) {
+  const [previewSrc, setPreviewSrc] = useState<string>(avatar);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const formik = useFormik({
+    initialValues: {
+      accountType: "personal" as AccountType,
+      companyName: "",
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      password: "",
+      avatar: null as File | null,
+    },
+
+    validationSchema,
+
+    onSubmit: async (values) => {
+      console.log("Signup values:", values);
+
+      // API call here
+    },
+  });
+
+  const handleFileChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      // Replace with your errorToast if you're using toast
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+
+    setPreviewSrc(objectUrl);
+
+    formik.setFieldValue("avatar", file);
+  };
+
+  return (
+    <div className={cn("", className)}>
+      <div>
+        <h1 className="font-medium text-2xl md:text-[28px] mb-2">
+          Sign Up
+        </h1>
+
+        <p className="mb-7 text-sm md:text-base">
+          Create you account to join our rescue network
+        </p>
+      </div>
+
+      <form onSubmit={formik.handleSubmit}>
+        <div className="space-y-3">
+          {/* Account Type */}
+          <div className="mb-3">
+            <label className="font-medium text-accent-foreground mb-2.5 block">
+              Account Type{" "}
+              <span className="text-error">*</span>
+            </label>
+
+            <CustomRadioGroup
+              value={formik.values.accountType}
+              setValue={(value) => {
+                formik.setFieldValue("accountType", value);
+              }}
+              list={accountTypeList}
+              textClassName="text-sm"
+            />
+
+            {formik.touched.accountType &&
+              formik.errors.accountType && (
+                <p className="mt-1 text-sm text-error">
+                  {formik.errors.accountType}
+                </p>
+              )}
+          </div>
+
+          {/* Company Name */}
+          {formik.values.accountType === "business" && (
+            <div className="mb-3">
+              <label className="font-medium text-accent-foreground mb-2.5 block">
+                Company Name{" "}
+                <span className="text-foreground">
+                  *
+                </span>
+              </label>
+
+              <Input
+                type="text"
+                name="companyName"
+                placeholder="e.g. Global Rescue"
+                value={formik.values.companyName}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
+              />
+
+              {formik.touched.companyName &&
+                formik.errors.companyName && (
+                  <p className="mt-1 text-sm text-error">
+                    {formik.errors.companyName}
+                  </p>
+                )}
+            </div>
+          )}
+
+          {/* First & Last Name */}
+          <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+            <div>
+              <label className="font-medium text-accent-foreground mb-2.5 block">
+                First Name{" "}
+                <span className="text-error">*</span>
+              </label>
+
+              <Input
+                type="text"
+                name="firstName"
+                placeholder="eg. John"
+                value={formik.values.firstName}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
+              />
+
+              {formik.touched.firstName &&
+                formik.errors.firstName && (
+                  <p className="mt-1 text-sm text-error">
+                    {formik.errors.firstName}
+                  </p>
+                )}
+            </div>
+
+            <div>
+              <label className="font-medium text-accent-foreground mb-2.5 block">
+                Last Name{" "}
+                <span className="text-error">*</span>
+              </label>
+
+              <Input
+                type="text"
+                name="lastName"
+                placeholder="eg. Smith"
+                value={formik.values.lastName}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
+              />
+
+              {formik.touched.lastName &&
+                formik.errors.lastName && (
+                  <p className="mt-1 text-sm text-error">
+                    {formik.errors.lastName}
+                  </p>
+                )}
+            </div>
+          </div>
+
+          {/* Email */}
           <div>
-            <h1 className="font-medium text-2xl md:text-[28px] mb-2">Sign Up</h1>
-            <p className="mb-7 text-sm md:text-base">
-              Create you account to join our rescue network
+            <label className="font-medium text-accent-foreground mb-2.5 block">
+              Email <span className="text-error">*</span>
+            </label>
+
+            <Input
+              type="email"
+              name="email"
+              placeholder="e.g. johnsmith@xyz.com"
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
+            />
+
+            {formik.touched.email && formik.errors.email && (
+              <p className="mt-1 text-sm text-error">
+                {formik.errors.email}
+              </p>
+            )}
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label className="font-medium text-accent-foreground mb-2.5 block">
+              Phone Number{" "}
+              <span className="text-foreground">
+                (optional)
+              </span>
+            </label>
+
+            <Input
+              type="text"
+              name="phone"
+              placeholder="e.g. +123456789"
+              value={formik.values.phone}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
+            />
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="font-medium text-accent-foreground mb-2.5 block">
+              Password <span className="text-error">*</span>
+            </label>
+
+            <PasswordInput
+              name="password"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              placeholder="Choose a strong password"
+            />
+
+            {formik.touched.password &&
+              formik.errors.password && (
+                <p className="mt-1 text-sm text-error">
+                  {formik.errors.password}
+                </p>
+              )}
+          </div>
+
+          {/* Submit */}
+          <div className="pt-2">
+            <Button
+              className="h-10 lg:h-14 rounded-full w-full"
+              type="submit"
+              disabled={
+                !formik.isValid ||
+                !formik.dirty ||
+                formik.isSubmitting
+              }
+            >
+              Create Account
+            </Button>
+
+            <p className="px-6 text-center text-accent-foreground lg:text-base mt-2">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="!no-underline font-semibold"
+              >
+                Sign in
+              </Link>
             </p>
           </div>
-            <form>
-                <FieldGroup className="gap-3">
-                    {/*  */}
-                    {/* <label className="border border-dashed border-error rounded-[12px] bg-white/40 py-4.5 px-3.75 cursor-poiter">
-                        <div className="flex items-center gap-2.5">
-                            <img src={previewSrc} className="size-10 object-cover rounded-full" alt="" />
-                            <span className="font-medium text-sm md:text-base w-0 grow"><span className="text-accent-foreground">Profile Picture</span> (optional)</span>
-                            <span className="mx-2 border-l h-7 border-border"></span>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M5 20H19C19.2833 20 19.521 20.096 19.713 20.288C19.905 20.48 20.0007 20.7173 20 21C19.9993 21.2827 19.9033 21.5203 19.712 21.713C19.5207 21.9057 19.2833 22.0013 19 22H5C4.71667 22 4.47934 21.904 4.288 21.712C4.09667 21.52 4.00067 21.2827 4 21C3.99934 20.7173 4.09534 20.48 4.288 20.288C4.48067 20.096 4.718 20 5 20ZM10 18C9.71667 18 9.47934 17.904 9.288 17.712C9.09667 17.52 9.00067 17.2827 9 17V11H7.05C6.63334 11 6.33334 10.8127 6.15 10.438C5.96667 10.0633 6 9.709 6.25 9.375L11.2 3.025C11.3 2.89167 11.421 2.79167 11.563 2.725C11.705 2.65833 11.8507 2.625 12 2.625C12.1493 2.625 12.2953 2.65833 12.438 2.725C12.5807 2.79167 12.7013 2.89167 12.8 3.025L17.75 9.375C18 9.70833 18.0333 10.0627 17.85 10.438C17.6667 10.8133 17.3667 11.0007 16.95 11H15V17C15 17.2833 14.904 17.521 14.712 17.713C14.52 17.905 14.2827 18.0007 14 18H10ZM11 16H13V9H14.9L12 5.25L9.1 9H11V16Z" fill="#151C48"/>
-                            </svg>
-                            <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
-                        </div>
-                    </label> */}
-                    <Field className="mb-3">
-                        <div>
-                            <FieldLabel className="font-medium text-accent-foreground mb-2.5">Account Type <span className="text-error">*</span> </FieldLabel>
-                            <CustomRadioGroup value={accountType} setValue={setAccountType} list={accountTypeList} />
-                        </div>
-                    </Field>
-                    { accountType === "company" &&
-                        <Field className="mb-3">
-                            <div>
-                                <FieldLabel className="font-medium text-accent-foreground mb-2.5">Company Name <span className="text-foreground">(optional)</span></FieldLabel>
-                                <Input
-                                    type="text"
-                                    placeholder="e.g. Global Rescue"
-                                    required
-                                    className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                                />
-                            </div>
-                        </Field>
-                    }
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-                        <Field>
-                            <div>
-                                <FieldLabel className="font-medium text-accent-foreground mb-2.5">First Name <span className="text-error">*</span> </FieldLabel>
-                                <Input type="text" placeholder="eg. John" className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5" required />
-                            </div>
-                        </Field>
-                        <Field>
-                            <div>
-                                <FieldLabel className="font-medium text-accent-foreground mb-2.5">Last Name <span className="text-error">*</span> </FieldLabel>
-                                <Input type="text" placeholder="eg. Smith" className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5" required />
-                            </div>
-                        </Field>
-                    </div>
-                    <Field>
-                        <div>
-                            <FieldLabel className="font-medium text-accent-foreground mb-2.5">Email <span className="text-error">*</span></FieldLabel>
-                            <Input
-                                type="email"
-                                placeholder="e.g. johnsmith@xyz.com"
-                                required
-                                className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                            />
-                        </div>
-                    </Field>
-                    <Field>
-                        <div>
-                            <FieldLabel className="font-medium text-accent-foreground mb-2.5">Phone Number <span className="text-foreground">(optional)</span></FieldLabel>
-                            <Input
-                                type="text"
-                                placeholder="e.g. Global Rescue"
-                                required
-                                className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                            />
-                        </div>
-                    </Field>
-                    <Field>
-                        <div>
-                            <FieldLabel className="font-medium text-accent-foreground mb-2.5">Password <span className="text-error">*</span></FieldLabel>
-                            <PasswordInput placeholder="Choose a strong password" />
-                        </div>
-                    </Field>
-                    <FieldGroup>
-                    <Field>
-                        <Button className="h-10 lg:h-14 rounded-full" type="submit">Sign Up</Button>
-                        <FieldDescription className="px-6 text-center text-accent-foreground lg:text-base">
-                            Already have an account? <Link to="/login" className="!no-underline font-semibold">Sign in</Link>
-                        </FieldDescription>
-                    </Field>
-                    </FieldGroup>
-                </FieldGroup>
-            </form> 
         </div>
-    )
+      </form>
+    </div>
+  );
 }

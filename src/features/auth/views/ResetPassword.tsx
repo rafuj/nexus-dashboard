@@ -1,149 +1,209 @@
 import { cn } from "@/lib/utils";
 import {
-  Field,
-  FieldGroup,
   FieldLabel,
 } from "@/shared/components/ui/field";
 import { useNavigate } from "react-router";
 import { PasswordInput } from "../components/PasswordInput";
-import { useState, useMemo } from "react";
 import { Button } from "@/shared/components/ui/button";
-import { Check } from "lucide-react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+
+const validationSchema = Yup.object({
+  password: Yup.string()
+    .min(8, "Password must be at least 8 characters")
+    .matches(/[A-Z]/, "Password must contain at least 1 uppercase letter")
+    .matches(/[a-z]/, "Password must contain at least 1 lowercase letter")
+    .matches(/[0-9]/, "Password must contain at least 1 number")
+    .matches(
+      /[^A-Za-z0-9]/,
+      "Password must contain at least 1 special character",
+    )
+    .required("Password is required"),
+
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password")], "Passwords do not match")
+    .required("Please confirm your password"),
+});
+
 export default function ResetPassword({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const [value, setValue] = useState({
-    password: '',
-    confirmPassword: ''
-  });
-
   const navigate = useNavigate();
 
-  // 1. Define validation checkpoints based on image_29a7df.png
-  const validations = useMemo(() => {
-    const pwd = value.password;
-    return {
-      minLength: pwd.length >= 8,
-      hasUpper: /[A-Z]/.test(pwd),
-      hasLower: /[a-z]/.test(pwd),
-      hasNumber: /[0-9]/.test(pwd),
-      hasSpecial: /[^A-Za-z0-9]/.test(pwd),
-    };
-  }, [value.password]);
+  const formik = useFormik({
+    initialValues: {
+      password: "",
+      confirmPassword: "",
+    },
 
-  // 2. Calculate the password strength bar indicator progress
-  const strengthScore = useMemo(() => {
-    return Object.values(validations).filter(Boolean).length;
-  }, [validations]);
+    validationSchema,
 
-  const handleInputChange = (field: 'password' | 'confirmPassword', val: string) => {
-    setValue(prev => ({ ...prev, [field]: val }));
+    onSubmit: async (values) => {
+      console.log("Submitting password update...", values.password);
+
+      // API call here
+    },
+  });
+
+  const password = formik.values.password;
+
+  const validations = {
+    minLength: password.length >= 8,
+    hasUpper: /[A-Z]/.test(password),
+    hasLower: /[a-z]/.test(password),
+    hasNumber: /[0-9]/.test(password),
+    hasSpecial: /[^A-Za-z0-9]/.test(password),
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Final structural form verification
-    const allValid = Object.values(validations).every(Boolean);
-    if (!allValid) {
-      alert("Please meet all password requirements.");
-      return;
-    }
-
-    if (value.password !== value.confirmPassword) {
-      alert("Passwords do not match.");
-      return;
-    }
-
-    console.log("Submitting password update...", value.password);
-    // Proceed with your API call here
-  };
+  const strengthScore =
+    Object.values(validations).filter(Boolean).length;
 
   return (
-      <div className={cn("", className)} {...props}>
+    <div className={cn("", className)} {...props}>
+      <div>
         <div>
-          <div>
-            <div className="mb-4">
-              <button type="button" className="md:-translate-x-3" onClick={()=> navigate(-1)}>
-                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M22.5817 12.5801L12.5817 22.5801C12.3997 22.7703 12.2569 22.9946 12.1617 23.2401C11.9617 23.727 11.9617 24.2732 12.1617 24.7601C12.2569 25.0056 12.3997 25.2299 12.5817 25.4201L22.5817 35.4201C22.7682 35.6066 22.9896 35.7545 23.2332 35.8554C23.4769 35.9564 23.738 36.0083 24.0017 36.0083C24.5343 36.0083 25.0451 35.7967 25.4217 35.4201C25.7984 35.0435 26.0099 34.5327 26.0099 34.0001C26.0099 33.4675 25.7984 32.9567 25.4217 32.5801L18.8217 26.0001H34.0017C34.5322 26.0001 35.0409 25.7894 35.416 25.4143C35.791 25.0393 36.0017 24.5306 36.0017 24.0001C36.0017 23.4697 35.791 22.961 35.416 22.5859C35.0409 22.2108 34.5322 22.0001 34.0017 22.0001H18.8217L25.4217 15.4201C25.6092 15.2342 25.758 15.013 25.8595 14.7693C25.9611 14.5256 26.0133 14.2641 26.0133 14.0001C26.0133 13.7361 25.9611 13.4747 25.8595 13.231C25.758 12.9872 25.6092 12.766 25.4217 12.5801C25.2358 12.3927 25.0146 12.2439 24.7709 12.1423C24.5272 12.0408 24.2658 11.9885 24.0017 11.9885C23.7377 11.9885 23.4763 12.0408 23.2326 12.1423C22.9889 12.2439 22.7677 12.3927 22.5817 12.5801Z" fill="#151C48"/>
-                </svg>
-              </button>
+          <div className="mb-4">
+            <button
+              type="button"
+              className="md:-translate-x-3"
+              onClick={() => navigate(-1)}
+            >
+              <svg
+                width="48"
+                height="48"
+                viewBox="0 0 48 48"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M22.5817 12.5801L12.5817 22.5801C12.3997 22.7703 12.2569 22.9946 12.1617 23.2401C11.9617 23.727 11.9617 24.2732 12.1617 24.7601C12.2569 25.0056 12.3997 25.2299 12.5817 25.4201L22.5817 35.4201C22.7682 35.6066 22.9896 35.7545 23.2332 35.8554C23.4769 35.9564 23.738 36.0083 24.0017 36.0083C24.5343 36.0083 25.0451 35.7967 25.4217 35.4201C25.7984 35.0435 26.0099 34.5327 26.0099 34.0001C26.0099 33.4675 25.7984 32.9567 25.4217 32.5801L18.8217 26.0001H34.0017C34.5322 26.0001 35.0409 25.7894 35.416 25.4143C35.791 25.0393 36.0017 24.5306 36.0017 24.0001C36.0017 23.4697 35.791 22.961 35.416 22.5859C35.0409 22.2108 34.5322 22.0001 34.0017 22.0001H18.8217L25.4217 15.4201C25.6092 15.2342 25.758 15.013 25.8595 14.7693C25.9611 14.5256 26.0133 14.2641 26.0133 14.0001C26.0133 13.7361 25.9611 13.4747 25.8595 13.231C25.758 12.9872 25.6092 12.766 25.4217 12.5801C25.2358 12.3927 25.0146 12.2439 24.7709 12.1423C24.5272 12.0408 24.2658 11.9885 24.0017 11.9885C23.7377 11.9885 23.4763 12.0408 23.2326 12.1423C22.9889 12.2439 22.7677 12.3927 22.5817 12.5801Z"
+                  fill="#151C48"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <h1 className="font-medium text-2xl md:text-[28px] mb-2">
+            Change your password?
+          </h1>
+
+          <p className="mb-7 text-sm md:text-base">
+            Please choose a different password
+          </p>
+        </div>
+
+        <div>
+          <form onSubmit={formik.handleSubmit}>
+            {/* New Password */}
+            <div className="flex flex-col">
+              <FieldLabel className="font-medium text-accent-foreground text-base mb-2">
+                New Password
+              </FieldLabel>
+
+              <PasswordInput
+                name="password"
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                placeholder="******************"
+              />
             </div>
-            <h1 className="font-medium text-2xl md:text-[28px] mb-2">Change your password?</h1>
-            <p className="mb-7 text-sm md:text-base">
-              Please choose a different password
-            </p>
-          </div>
-          <div>
-            <form onSubmit={handleSubmit}>
-              <FieldGroup>
-                {/* New Password Input */}
-                <Field>
-                  <div className="flex flex-col">
-                    <FieldLabel className="font-medium text-accent-foreground text-base mb-2">New Password</FieldLabel>
-                    <PasswordInput 
-                      value={value.password} 
-                      onChange={(e) => handleInputChange('password', e.target.value)} 
-                      placeholder="******************"
+
+            {/* Confirm Password */}
+            <div className="mt-5">
+              <div className="flex flex-col">
+                <FieldLabel className="font-medium text-accent-foreground text-base mb-2">
+                  Confirm Password
+                </FieldLabel>
+
+                <PasswordInput
+                  name="confirmPassword"
+                  value={formik.values.confirmPassword}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  placeholder="******************"
+                />
+                {formik.touched.confirmPassword &&
+                  formik.errors.confirmPassword && (
+                    <p className="mt-2 text-sm text-destructive">
+                      {formik.errors.confirmPassword}
+                    </p>
+                  )}
+              </div>
+
+              {/* Password Strength */}
+              <div className="grid grid-cols-4 gap-1 mt-2">
+                {[1, 2, 3, 4].map((index) => {
+                  const isLit = strengthScore >= index * 1.25;
+
+                  return (
+                    <div
+                      key={index}
+                      className={cn(
+                        "h-[2px] rounded-full transition-colors duration-300",
+                        isLit
+                          ? "bg-[#1ACD6F]"
+                          : "bg-foreground/30",
+                      )}
                     />
-                  </div>
-                </Field>
+                  );
+                })}
+              </div>
 
-                {/* Confirm Password Input */}
-                <div>
-                  <Field>
-                    <div className="flex flex-col">
-                      <FieldLabel className="font-medium text-accent-foreground text-base mb-2">Confirm Password</FieldLabel>
-                      <PasswordInput 
-                        value={value.confirmPassword} 
-                        onChange={(e) => handleInputChange('password' in e.target ? 'password' : 'confirmPassword', e.target.value)} 
-                        placeholder="******************"
-                      />
-                    </div>
-                  </Field>
-                  <div className="grid grid-cols-4 gap-1 mt-2">
-                    {[1, 2, 3, 4].map((index) => {
-                      // If it hits full completion (5/5 rules), all bars light up green.
-                      // Otherwise, segments turn green proportional to current verified rules.
-                      const isLit = strengthScore >= (index * 1.25); 
-                      return (
-                        <div 
-                          key={index} 
-                          className={cn(
-                            "h-[2px] rounded-full transition-colors duration-300", 
-                            isLit ? "bg-[#1ACD6F]" : "bg-foreground/30"
-                          )} 
-                        />
-                      );
-                    })}
-                  </div>
+              {/* Password Requirements */}
+              <div className="mt-5 space-y-1.5 lg:space-y-2.5 text-accent-foreground">
+                <p className="text-sm lg:text-base">
+                  Password must contain:
+                </p>
 
-                  <div className="mt-5 space-y-1.5 lg:space-y-2.5 text-accent-foreground">
-                    <p className="text-sm lg:text-base">Password must contain:</p>
-                    <CheckItem label="8 or more characters" isValid={validations.minLength} />
-                    <CheckItem label="At least 1 uppercase letter" isValid={validations.hasUpper} />
-                    <CheckItem label="At least 1 lowercase letter" isValid={validations.hasLower} />
-                    <CheckItem label="At least 1 number" isValid={validations.hasNumber} />
-                    <CheckItem label="At least 1 special character" isValid={validations.hasSpecial} />
-                  </div>
-                </div>
-                <Field>
-                  <Button
-                    type="submit"
-                    className="h-10 lg:h-14 rounded-full lg:text-base"
-                  >
-                    Change Password
-                  </Button>
-                </Field>
-              </FieldGroup>
-            </form>
-          </div>
+                <CheckItem
+                  label="8 or more characters"
+                  isValid={validations.minLength}
+                />
+
+                <CheckItem
+                  label="At least 1 uppercase letter"
+                  isValid={validations.hasUpper}
+                />
+
+                <CheckItem
+                  label="At least 1 lowercase letter"
+                  isValid={validations.hasLower}
+                />
+
+                <CheckItem
+                  label="At least 1 number"
+                  isValid={validations.hasNumber}
+                />
+
+                <CheckItem
+                  label="At least 1 special character"
+                  isValid={validations.hasSpecial}
+                />
+              </div>
+
+            </div>
+
+            <Button
+              type="submit"
+              disabled={
+                !formik.isValid ||
+                !formik.dirty ||
+                formik.isSubmitting
+              }
+              className="h-10 lg:h-14 rounded-full lg:text-base mt-5 w-full"
+            >
+              Change Password
+            </Button>
+
+          </form>
         </div>
       </div>
-    );
+    </div>
+  );
 }
+
 function CheckItem({ label, isValid }: { label: string; isValid: boolean }) {
   return (
     <div className="flex items-center gap-2 text-sm md:text-base">

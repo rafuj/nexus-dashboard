@@ -15,6 +15,7 @@ interface CustomRadioGroupProps<T extends string> {
   setValue: (value: T) => void;
   list: RadioOption<T>[];
   className?: string;
+  textClassName?: string;
   readOnly?: boolean
 }
 
@@ -24,6 +25,7 @@ export function CustomRadioGroup<T extends string>({
   setValue,
   list,
   className = "",
+  textClassName = "",
   readOnly
 }: CustomRadioGroupProps<T>) {
   return (
@@ -36,7 +38,7 @@ export function CustomRadioGroup<T extends string>({
       {list.map((option) => (
         <label key={option.id} className={cn("flex items-center gap-2")}>
           <RadioGroupItem value={option.value} id={option.id} className={cn({"cursor-auto":readOnly})} />
-          <span className={cn("cursor-pointer text-accent-foreground font-normal text-xs", {
+          <span className={cn("cursor-pointer text-accent-foreground font-normal text-xs", textClassName, {
             "cursor-auto":readOnly
           })}>
             {option.label}
