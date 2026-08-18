@@ -45,13 +45,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
    *   to authenticated sessionToken
    */
   const verifyOtp = async (otpCode: string) => {
-    try {
-      await api.post(API_ROUTES.VERIFY_OTP, {
-        otpCode: otpCode
-      })
-      setUser({ id: 1, name: "Owner User", email: "owner@nexus.com", role: "owner" }) // As User Info Endpoint is not Available User is being Set Static
-      persistUser({ id: 1, name: "Owner User", email: "owner@nexus.com", role: "owner" }) // As User Info Endpoint is not Available User is being Set Static
-    }catch (error){}
+    await api.post(API_ROUTES.VERIFY_OTP, {
+      otpCode: otpCode
+    })
+    setUser({ id: 1, name: "Owner User", email: "owner@nexus.com", role: "owner" }) // As User Info Endpoint is not Available User is being Set Static
+    persistUser({ id: 1, name: "Owner User", email: "owner@nexus.com", role: "owner" }) // As User Info Endpoint is not Available User is being Set Static   
   }
 
   /**
