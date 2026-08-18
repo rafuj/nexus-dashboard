@@ -1,51 +1,132 @@
 import { useState } from "react"
 import type { ReactNode } from "react"
 
-import { AuthContext } from "./auth-context"
+import { AuthContext, type VerifyOtpRegPayload } from "./auth-context"
+import type { User } from "@/features/auth/types/auth"
+import { rolePermissions, type Role } from "@/lib/permissions"
+import { api } from "@/app/api-manage/api"
+import { API_ROUTES } from "@/app/api-manage/api-routes"
+
 import {
   clearStoredUser,
   persistUser,
   readStoredUser,
-} from "./auth-storage"
-import { mockUsers } from "@/features/auth/data/mockUsers"
-import type { User } from "@/features/auth/types/auth"
-import { rolePermissions, type Role } from "@/lib/permissions"
+} from "./auth-storage" // static will be changed in future
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(() => readStoredUser())
+  // const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
 
   /**
-   * Mock auth: any non-empty password works if the email matches a mock user.
-   * Replace with a real API call later.
+   * LOGIN
+   *
+   * POST /login
+   *
+   * Backend:
+   * - validates email/password
+   * - sends login OTP
+   * - sets temporary sessionToken cookie
    */
-  const login = async (
-    email: string,
-    password: string,
-  ): Promise<User | null> => {
-    if (!password.trim()) {
-      throw new Error("Password is required")
-    }
-    const normalized = email.trim().toLowerCase()
-    const foundUser =
-      mockUsers.find((u) => u.email.toLowerCase() === normalized) ?? null
-    if (!foundUser) {
-      throw new Error("Invalid email or password")
-    }
-    setUser(foundUser)
-    persistUser(foundUser)
-    return foundUser
+  const login = async (email: string, password: string) => {
+    await api.post(API_ROUTES.LOGIN, {
+      email: email.trim().toLowerCase(),
+      password,
+    })
   }
 
-  const logout = () => {
-    clearStoredUser()
-    setUser(null)
+  /**
+   * VERIFY LOGIN OTP
+   *
+   * POST /verify-otp
+   *
+   * Backend:
+   * - verifies OTP
+   * - changes temporary sessionToken
+   *   to authenticated sessionToken
+   */
+  const verifyOtp = async (otpCode: string) => {
+    try {
+      await api.post(API_ROUTES.VERIFY_OTP, {
+        otpCode: otpCode
+      })
+      setUser({ id: 1, name: "Owner User", email: "owner@nexus.com", role: "owner" }) // As User Info Endpoint is not Available User is being Set Static
+      persistUser({ id: 1, name: "Owner User", email: "owner@nexus.com", role: "owner" }) // As User Info Endpoint is not Available User is being Set Static
+    }catch (error){}
   }
 
-  const role: Role | null = user?.role ?? null 
-  const permissions = role ? rolePermissions[role] : []
+  /**
+   * SEND REGISTRATION OTP
+   *
+   * POST /send-otp-reg
+   *
+   * Backend:
+   * - sends registration OTP to email
+   */
+  const sendOtpReg = async (email: string) => {
+    await api.post(API_ROUTES.SEND_OTP_REG, {
+      email: email.trim().toLowerCase(),
+    })
+  }
+
+  /**
+   * VERIFY REGISTRATION OTP
+   *
+   * POST /verify-otp-reg
+   *
+   * Backend:
+   * - verifies registration OTP
+   * - allows registration to continue
+   */
+  const verifyOtpReg = async (data: VerifyOtpRegPayload) => {
+    await api.post(API_ROUTES.VERIFY_OTP_REG, data)
+  }
+
+  /**
+   * CREATE ACCOUNT
+   *
+   * POST /users
+   */
+  const signup = async (data: object) => {
+    await api.post(API_ROUTES.USERS, data)
+  }
+
+  /**
+   * LOGOUT
+   */
+  const logout = async () => {
+    try {
+      await api.post(API_ROUTES.LOGOUT)
+    } finally {
+      clearStoredUser()
+      setUser(null)
+    }
+  }
+
+  const role: Role | null = user?.role ?? null
+
+  const permissions = role
+    ? rolePermissions[role]
+    : []
+
+  
 
   return (
-    <AuthContext.Provider value={{ user, role, permissions, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        role,
+        permissions,
+
+        login,
+        verifyOtp,
+
+        sendOtpReg,
+        verifyOtpReg,
+
+        signup,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   )

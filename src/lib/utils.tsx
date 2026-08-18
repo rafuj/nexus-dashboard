@@ -56,3 +56,20 @@ export const getIcon = (type: RecentActivityDefinition["type"] | SystemLogsDefin
       return <Building2 className="h-4 w-4" />
   }
 }
+
+
+export const removeEmptyValues = <T,>(obj: T): T => {
+  if (Array.isArray(obj)) {
+    return obj.map(removeEmptyValues) as T;
+  }
+
+  if (obj !== null && typeof obj === "object") {
+    return Object.fromEntries(
+      Object.entries(obj)
+        .filter(([, value]) => value !== "" && value !== null && value !== undefined)
+        .map(([key, value]) => [key, removeEmptyValues(value)])
+    ) as T;
+  }
+
+  return obj;
+};
