@@ -21,7 +21,8 @@ export function CabinetsListToolbar({
   city,
   onCityChange,
   resetPage,
-  onRefresh
+  onRefresh,
+  isFetching
 }: CabinetsListToolbarProps) {
   return (
     <div className="flex flex-wrap gap-3 sm:gap-4 flex-row sm:items-end">
@@ -79,7 +80,7 @@ export function CabinetsListToolbar({
       <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-white text-accent-foreground py-2 px-3 sm:py-3 rounded-[10px] text-sm gap-1.25 border border-border" onClick={resetPage}>
         <RotateCcw size={16} /> <span>Reset Filter</span>
       </button>
-      <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25" onClick={onRefresh}>
+      <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25" onClick={onRefresh} disabled={isFetching}>
         <RotateCcw size={16} /> <span>Refresh</span>
       </button>
       <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">

@@ -50,6 +50,7 @@ export type CabinetsListToolbarProps = {
   onCityChange: (value: string) => void
   resetPage: () => void
   onRefresh: () => void
+  isFetching?: boolean
 }
 
 export const cabinetConfig = {
