@@ -84,7 +84,7 @@ export default function CabinetsListView() {
     limit: pagination.pageSize,
     sorting,
   })
-
+console.log("pageResult",pageResult)
   const { user } = useAuth();
   const role: Role = user?.role ?? "viewer";
   const canManageCabinets = can(role, MANAGE_CABINETS)
@@ -106,9 +106,9 @@ export default function CabinetsListView() {
   
   // eslint-disable-next-line react-hooks/incompatible-library -- useReactTable
   const table = useReactTable({
-    data: pageResult?.rows ?? [],
+    data: pageResult || [],
     columns,
-    rowCount: pageResult?.totalCount ?? 0,
+    rowCount: pageResult?.length ?? 0, // here totalCount will be shown
 
     manualPagination: true,
     manualSorting: true,

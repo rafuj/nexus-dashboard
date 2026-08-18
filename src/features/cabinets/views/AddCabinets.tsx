@@ -24,6 +24,12 @@ import { AVAILABLE_CREDITS } from "@/features/dashboard/mock/mockDashboardStats"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
 import { SidebarMenuButton } from "@/shared/components/ui/sidebar";
 import { brandsList } from "../mock/mockBrands";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { errorToast, successToast } from "@/lib/toast";
+import type { CreateCabinetFormValues } from "../api/cabinet.api";
+import { useCreateCabinet } from "../hooks/useCreateCabinet";
+
 
 export interface BrandInfo {
   name: string;
@@ -52,6 +58,47 @@ export interface AssetInformation {
   brandInfo: BrandInfo
 }
 
+const validationSchema = Yup.object({
+  name: Yup.string()
+    .trim()
+    .required("Cabinet name is required"),
+
+  description: Yup.string()
+    .trim(),
+
+  street: Yup.string()
+    .trim()
+    .required("Address is required"),
+
+  building: Yup.string()
+    .trim(),
+
+  postalCode: Yup.string()
+    .trim()
+    .required("Zip code is required"),
+
+  city: Yup.string()
+    .trim()
+    .required("City is required"),
+
+  country: Yup.string()
+    .trim()
+    .required("Country is required"),
+})
+
+const initialValues: CreateCabinetFormValues = {
+  name: "",
+  description: "",
+  street: "",
+  building: "",
+  postalCode: "",
+  city: "",
+  country: "",
+  picture1: null,
+  picture2: null,
+  picture3: null,
+}
+
 export default function AddCabinets() {
   const navigate = useNavigate();
 
@@ -77,6 +124,28 @@ export default function AddCabinets() {
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false)
 
   const [assignCredits, setAssignCredits] = useState<number|''>(0)
+
+  const createCabinetMutation = useCreateCabinet()
+
+  const formik = useFormik({
+    initialValues,
+    validationSchema,
+    onSubmit: async (values) => {
+      try {
+        await createCabinetMutation.mutateAsync(values)
+        successToast("Cabinet created successfully")
+        formik.resetForm()
+      } catch (error) {
+        errorToast(
+          error instanceof Error
+            ? error.message
+            : "Something went wrong",
+        );
+      }
+    },
+  });
+
+
   
   const [images, setImages] = useState({
     picture1: "",
@@ -122,16 +191,29 @@ export default function AddCabinets() {
   };
 
   const handleNext = () => {
-    // Find the index of the current active step
-    const currentIndex = STEPS.findIndex((s) => s.id === step);
 
-    // Check if there is a subsequent step in the array
-    if (currentIndex !== -1 && currentIndex < STEPS.length - 1) {
-      const nextStep = STEPS[currentIndex + 1].id;
-      setStep(nextStep);
-    } else {
-      setConfirmModalOpen(true)
+    if (step === "basic-information") {
+      formik.handleSubmit()
+      return
     }
+    if (step === "cabinet-details") {
+      return setConfirmModalOpen(true)
+    }
+
+    if (step === "asset-information") {
+      return setConfirmModalOpen(true)
+    }
+
+    // // Find the index of the current active step
+    // const currentIndex = STEPS.findIndex((s) => s.id === step);
+
+    // // Check if there is a subsequent step in the array
+    // if (currentIndex !== -1 && currentIndex < STEPS.length - 1) {
+    //   const nextStep = STEPS[currentIndex + 1].id;
+    //   setStep(nextStep);
+    // } else {
+      
+    // }
   };
 
   const connectivityUntil = useMemo(() => {
@@ -757,6 +839,11 @@ export default function AddCabinets() {
                       placeholder="e.g. Amsterdam Central - Platform 5"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      name="name"
+                      value={formik.values.name}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      errors={formik.touched.name ? formik.errors.name : ''}
                     />
                   </div>
                   <div className="mb-3">
@@ -765,6 +852,10 @@ export default function AddCabinets() {
                       placeholder="Describe the location or any important details..."
                       autoComplete="off"
                       className="p-5 placeholder:text-accent-foreground/20"
+                      name="description"
+                      value={formik.values.description}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
                     />
                   </div>
                 </div>
@@ -780,17 +871,26 @@ export default function AddCabinets() {
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Address Line 1 <span className="text-error">*</span></Label>
                     <Input
-                      placeholder="Enter address 1"
+                      placeholder="Street"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      name="street"
+                      value={formik.values.street}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      errors={formik.touched.street ? formik.errors.street : ''}
                     />
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Address Line 2</Label>
                     <Input
-                      placeholder="Enter zip code"
+                      placeholder="e.g. building name"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      name="building"
+                      value={formik.values.building}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
                     />
                   </div>
                 </div>
@@ -798,17 +898,27 @@ export default function AddCabinets() {
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Zip code <span className="text-error">*</span></Label>
                     <Input
-                      placeholder="city"
+                      placeholder="Enter zip code"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      name="postalCode"
+                      value={formik.values.postalCode}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      errors={formik.touched.postalCode ? formik.errors.postalCode : ''}
                     />
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">City <span className="text-error">*</span></Label>
                     <Input
-                      placeholder="Enter address 2"
+                      placeholder="Enter city"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      name="city"
+                      value={formik.values.city}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      errors={formik.touched.city ? formik.errors.city : ''}
                     />
                   </div>
                   <div>
@@ -817,6 +927,11 @@ export default function AddCabinets() {
                       placeholder="Enter country"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      name="country"
+                      value={formik.values.country}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      errors={formik.touched.country ? formik.errors.country : ''}
                     />
                   </div>
                 </div>

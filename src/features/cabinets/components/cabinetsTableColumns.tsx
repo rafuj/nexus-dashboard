@@ -50,7 +50,7 @@ export const cabinetListColumns = (canManageCabinets: boolean) => [
       headerClassName: "",
       cellClassName: "tabular-nums",
     },
-    cell: ({ row }) => row.original.zip
+    cell: ({ row }) => row.original.postalCode
   }),
   columnHelper.accessor("street", {
     header: ({ column }) => (
