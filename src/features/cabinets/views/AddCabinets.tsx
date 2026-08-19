@@ -33,6 +33,7 @@ import { useAssetTypes } from "../hooks/useAssetTypes";
 import { useAssetTypesModels } from "../hooks/useAssetTypesModels";
 import { useComponentTypes } from "../hooks/useComponentTypes";
 import { useComponentTypesVariants } from "../hooks/useComponentTypesVariants";
+import { useAssetTypesBrands } from "../hooks/useAssetTypesBrands";
 
 
 export interface BrandInfo {
@@ -107,7 +108,7 @@ export default function AddCabinets() {
   const navigate = useNavigate();
 
   const [step, setStep] = useState<StepType>('basic-information')
-  const [assetType, setAssetType] = useState<string>(assetTypeList[0].value)
+  const [assetType, setAssetType] = useState<string>("")
   const [volume, setVolume] = useState<VolumeType>('0%')
   const [brightness, setBrightness] = useState<BrightnessType>('0%')
   const [color, setColor] = useState<ColorType>('white')
@@ -130,7 +131,8 @@ export default function AddCabinets() {
   const [assignCredits, setAssignCredits] = useState<number|''>(0)
 
   const { data: assetTypesData } = useAssetTypes()
-  const { data: assetTypesModelsData } = useAssetTypesModels("1")
+  const { data: assetTypesBrandsData } = useAssetTypesBrands("1")
+  const { data: assetTypesModelsData } = useAssetTypesModels("1", {brand:'CU Medical Systems'})
   
   const { data: componentTypesData } = useComponentTypes()
   const { data: componentTypeDataVariants } = useComponentTypesVariants("1")
@@ -520,7 +522,7 @@ export default function AddCabinets() {
                       size="lg"
                       className={cn("data-[state=open]:text-sidebar-accent-foreground cursor-pointer rounded-none !bg-white !ring-0 border border-border h-12.5 rounded-[10px] font-semibold !text-accent-foreground !px-5 text-xs")}
                     >
-                      {assetTypeList.find(i => i.value === assetType)?.label}
+                      {assetTypesData?.find(i => i.id === assetType)?.name}
                       <ChevronDown className="ml-auto size-4" />
                     </SidebarMenuButton>
                   </DropdownMenuTrigger>
@@ -531,9 +533,9 @@ export default function AddCabinets() {
                     sideOffset={4}
                   >
                     <DropdownMenuGroup>
-                      {assetTypeList.map((option) => (
-                        <DropdownMenuItem className="text-accent-foreground font-semibold text-xs h-10 py-2 px-2.5 hover:!bg-chip" onClick={()=> setAssetType(option.value)}>
-                          {option.label}
+                      {assetTypesData?.map((option) => (
+                        <DropdownMenuItem className="text-accent-foreground font-semibold text-xs h-10 py-2 px-2.5 hover:!bg-chip" onClick={()=> setAssetType(option.id)}>
+                          {option.name}
                         </DropdownMenuItem>
                       ))}
                     </DropdownMenuGroup>

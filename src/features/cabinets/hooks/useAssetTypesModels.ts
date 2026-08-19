@@ -1,11 +1,11 @@
 
 import { useQuery } from "@tanstack/react-query"
-import { getAssetTypesModels } from "../api/assetTypesModels.api"
+import { getAssetTypesModels, type AEDTypesModels } from "../api/assetTypesModels.api"
 
-export const useAssetTypesModels = (id: string) => {
+export const useAssetTypesModels = (id: string, params: AEDTypesModels) => {
     return useQuery({
-      queryKey: ["asset-types", id],
-      queryFn: () => getAssetTypesModels(id),
+      queryKey: ["asset-types", "models", params],
+      queryFn: () => getAssetTypesModels(id, params),
       placeholderData: (previousData) => previousData,
       staleTime: 10 * 60 * 1000
     })
