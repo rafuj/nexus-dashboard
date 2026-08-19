@@ -18,6 +18,7 @@ type DatePickerProps = {
   onChange?: (date?: Date) => void
   disabled?: boolean
   className?: string
+  dateType?: "future" | "past"
 }
 
 export function DatePicker({
@@ -25,6 +26,7 @@ export function DatePicker({
   onChange,
   disabled = false,
   className = "",
+  dateType
 }: DatePickerProps) {
   const [open, setOpen] = React.useState(false)
 
@@ -54,6 +56,13 @@ export function DatePicker({
           selected={value}
           onSelect={handleSelect}
           defaultMonth={value}
+          disabled={
+            dateType === "future"
+              ? { before: new Date() }
+              : dateType === "past"
+                ? { after: new Date() }
+                : undefined
+          }
         />
       </PopoverContent>
     </Popover>

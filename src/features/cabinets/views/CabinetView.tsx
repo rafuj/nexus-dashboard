@@ -28,7 +28,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 import { SidebarMenuButton } from "@/shared/components/ui/sidebar";
 import { CabinetStatistics } from "../components/CabinetStatistics";
 import type { AssetInformation, BrandInfo } from "./AddCabinets";
-import { brandsList } from "../mock/mockBrands";
+import { mockBrandsList } from "../mock/mockBrands";
 import { MaintenanceMode } from "../components/MaintenanceMode";
 
 interface BasicInformation {
@@ -464,7 +464,7 @@ const CabinetView = () => {
                       </SelectTrigger>
                       <SelectContent>
                         {
-                          brandsList.map((item)=> <SelectItem value={item.brand} key={item.brand}>{item.brand}</SelectItem> )
+                          mockBrandsList.map((item)=> <SelectItem value={item.brand} key={item.brand}>{item.brand}</SelectItem> )
                         }
                       </SelectContent>
                     </Select>
@@ -485,7 +485,7 @@ const CabinetView = () => {
                       </SelectTrigger>
                       <SelectContent>
                         {
-                          brandsList.find(item => item.brand === assetInformation.brandInfo.name)?.models?.map((item)=> <SelectItem value={item} key={item}>{item}</SelectItem> )
+                          mockBrandsList.find(item => item.brand === assetInformation.brandInfo.name)?.models?.map((item)=> <SelectItem value={item} key={item}>{item}</SelectItem> )
                         }
                       </SelectContent>
                     </Select>

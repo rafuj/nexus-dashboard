@@ -3,7 +3,7 @@ interface AEDData {
   models: string[];
 }
 
-export const brandsList: AEDData[] = [
+export const mockBrandsList: AEDData[] = [
   {
     brand: "Physio Control",
     models: ["Lifepak Express", "Lifepak CR Plus", "Lifepak 1000", "CR2 3G/WIFI/USB"]
