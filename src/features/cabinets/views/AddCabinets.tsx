@@ -7,7 +7,7 @@ import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Icons } from "@/app/icons/icons";
 import {  useNavigate } from "react-router";
 import { CabinetsStepper } from "../components/CabinetsStepper";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Input } from "@/shared/components/ui/input"
 import { Label } from "@/shared/components/ui/label";
 import { Textarea } from "@/shared/components/ui/textarea";
@@ -29,6 +29,10 @@ import * as Yup from "yup";
 import { errorToast, successToast } from "@/lib/toast";
 import type { CreateCabinetFormValues } from "../api/cabinet.api";
 import { useCreateCabinet } from "../hooks/useCreateCabinet";
+import { useAssetTypes } from "../hooks/useAssetTypes";
+import { useAssetTypesModels } from "../hooks/useAssetTypesModels";
+import { useComponentTypes } from "../hooks/useComponentTypes";
+import { useComponentTypesVariants } from "../hooks/useComponentTypesVariants";
 
 
 export interface BrandInfo {
@@ -124,6 +128,12 @@ export default function AddCabinets() {
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false)
 
   const [assignCredits, setAssignCredits] = useState<number|''>(0)
+
+  const { data: assetTypesData } = useAssetTypes()
+  const { data: assetTypesModelsData } = useAssetTypesModels("1")
+  
+  const { data: componentTypesData } = useComponentTypes()
+  const { data: componentTypeDataVariants } = useComponentTypesVariants("1")
 
   const createCabinetMutation = useCreateCabinet()
 

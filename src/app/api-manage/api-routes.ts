@@ -13,5 +13,7 @@ export const API_ROUTES = {
     
     // CABINETS
     CABINETS: `${API_VERSION}/cabinets`,
-
+    ASSET_TYPES: `${API_VERSION}/asset-types`,
+    COMPONENT_TYPES: `${API_VERSION}/component-types`,
+    
 }
