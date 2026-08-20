@@ -863,16 +863,6 @@ export default function AddCabinets() {
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Country <span className="text-error">*</span></Label>
-                    {/* <Input
-                      placeholder="Enter country"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                      name="country"
-                      value={values.country}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      errors={touched.country ? errors.country : ''}
-                    /> */}
                     <Select
                       value={values.country || ""}
                       onValueChange={(value) => setFieldValue("country", value)}

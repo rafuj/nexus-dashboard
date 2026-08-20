@@ -1,7 +1,7 @@
 import { parseAsStringLiteral, useQueryState } from "nuqs";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
-import { countries } from "@/features/settings/mock/mockCountries";
+
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { useFormik } from "formik";
@@ -12,8 +12,9 @@ import { removeEmptyValues } from "@/lib/utils";
 import { PasswordInput } from "../components/PasswordInput";
 import { Link, useNavigate } from "react-router";
 import { CustomRadioGroup, type RadioOption } from "@/shared/components/CustomRadioGroup";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import OtpInput from 'react-otp-input';
+import { COUNTRY_OPTIONS, getCitiesByCountry } from "@/lib/country-helper";
 
 export type TenantType = "personal" | "business";
 
@@ -187,6 +188,11 @@ export default function SignUp() {
       )
     }
   }
+
+  
+  const availableCities = useMemo(() => {
+    return getCitiesByCountry(formik.values.organization.country);
+  }, [formik.values.organization.country]);
 
   const switchComponent = () => {
     switch (tabs) {
@@ -378,18 +384,31 @@ export default function SignUp() {
                       <div className="grid grid-cols-2 gap-x-4 gap-y-3">
                         <div>
                             <label className="font-medium text-accent-foreground mb-2.5 block">Country <span className="text-error">*</span></label>
-                          <Select value={formik.values.organization.country} onValueChange={(value) => {
-                              formik.setFieldValue("organization.country", value);
-                              formik.setFieldValue("organization.city", "");
-                              formik.setFieldTouched("organization.city", false)
-                          }}>
+                          <Select
+                              onValueChange={(value) => {
+                                formik.setFieldValue("organization.country", value);
+                                formik.setFieldValue("organization.city", "");
+                                formik.setFieldTouched("organization.city", false)
+                            }}
+                            >
                               <SelectTrigger className="w-full text-sm md:!h-14 bg-transparent" onBlur={() => formik.setFieldTouched("organization.country", true)}>
-                                <SelectValue placeholder="Select Country" />
+                                <span className="line-clamp-1 w-0 grow text-left">
+                                  <SelectValue placeholder="Select country" />
+                                </span>
                               </SelectTrigger>
+        
                               <SelectContent>
-                                {countries.map(country => <SelectItem value={country.name} key={country.name}>{country.name}</SelectItem>)}
+                                {COUNTRY_OPTIONS.map((country) => (
+                                  <SelectItem key={country.iso2} value={country.iso2}>
+                                    <div className="flex items-center justify-between w-full gap-2">
+                                      <span>{country.name}</span>
+                                      <span className="text-muted-foreground text-xs">({country.iso2})</span>
+                                    </div>
+                                  </SelectItem>
+                                ))}
                               </SelectContent>
                             </Select>
+
                             {formik.touched.organization?.country &&
                               formik.errors.organization?.country && (
                                 <p className="mt-1 text-sm text-error">
@@ -404,7 +423,7 @@ export default function SignUp() {
                                 <SelectValue placeholder="Select City" />
                               </SelectTrigger>
                               <SelectContent>
-                                {countries.find(item => item.name === formik.values.organization.country)?.cities?.map((item)=> <SelectItem value={item} key={item}>{item}</SelectItem> )}
+                                {availableCities?.map((item)=> <SelectItem value={item.name} key={item.name}>{item.name}</SelectItem> )}
                               </SelectContent>
                             </Select>
                             {formik.touched.organization?.city &&

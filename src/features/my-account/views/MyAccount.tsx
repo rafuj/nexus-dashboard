@@ -13,7 +13,7 @@ import {
 import { Input } from "@/shared/components/ui/input"
 import { PasswordInput } from "@/features/auth/components/PasswordInput";
 import avatar from '@/assets/avatar-placeholder.png'
-import { useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { BriefcaseBusiness, Pen, User2, UserLock } from "lucide-react";
 import { CustomRadioGroup } from "@/shared/components/CustomRadioGroup";
 import {
@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/components/ui/select"
-import { countries } from "@/features/settings/mock/mockCountries";
+import { COUNTRY_OPTIONS, getCitiesByCountry } from "@/lib/country-helper";
 import { tenantTypeList, type TenantType } from "@/features/auth/views/SignUp";
 
 interface FormState {
@@ -60,7 +60,7 @@ export default function MyAccount() {
       houseNumber: "14",
       zipCode: "1023",
       city: "Amsterdam",
-      country: "Netherlands",
+      country: "NL",
       tenantType: "personal"
   }); 
 
@@ -85,6 +85,11 @@ export default function MyAccount() {
             console.log('Selected file:', file);
         }
     };
+
+
+    const availableCities = useMemo(() => {
+      return getCitiesByCountry(formState.country);
+    }, [formState.country]);
 
   return (
     <>
@@ -322,7 +327,7 @@ export default function MyAccount() {
                                 </div>
                             </Field>
                             <div>
-                                <FieldLabel className="font-medium text-accent-foreground mb-2.5">Country</FieldLabel>
+                              <FieldLabel className="font-medium text-accent-foreground mb-2.5">Country</FieldLabel>
                               <Select value={formState.country} onValueChange={(value)=> setFormState(prev => ({
                                   ...prev,
                                   country: value,
@@ -332,7 +337,7 @@ export default function MyAccount() {
                                     <SelectValue placeholder="Select Country" />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    {countries.map(country => <SelectItem value={country.name} key={country.name}>{country.name}</SelectItem>)}
+                                    {COUNTRY_OPTIONS.map(country => <SelectItem value={country.name} key={country.name}>{country.name}</SelectItem>)}
                                   </SelectContent>
                                 </Select>
                             </div>
@@ -346,7 +351,7 @@ export default function MyAccount() {
                                     <SelectValue placeholder="Select City" />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    {countries.find(item => item.name === formState.country)?.cities?.map((item)=> <SelectItem value={item} key={item}>{item}</SelectItem> )}
+                                    {availableCities?.map((item)=> <SelectItem value={item.name} key={item.name}>{item.name}</SelectItem> )}
                                   </SelectContent>
                                 </Select>
                             </div>
