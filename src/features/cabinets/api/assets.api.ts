@@ -22,19 +22,19 @@ export interface AssetFormValues {
     firstSetPads: {
       for: string;
       expiration: string | Date | null;
-      IotNumber: string;
+      lotNumber: string;
     };
     secondSetPads: {
       for: string;
       expiration: string | Date | null;
-      IotNumber: string;
+      lotNumber: string;
     };
   };
 
   batteryInformation: {
     batterySerial: string;
     batteryExpiration: string | Date | null;
-    batteryIotNumber: string;
+    batterylotNumber: string;
   };
 
   notes: string;

@@ -73,3 +73,30 @@ export const removeEmptyValues = <T,>(obj: T): T => {
 
   return obj;
 };
+// export const formatDateDDMMYYYY = (dateVal: Date) => {
+//   if (!dateVal) return "";
+//   const date = new Date(dateVal);
+//   if (isNaN(date.getTime())) return "";
+
+//   const day = String(date.getDate()).padStart(2, "0");
+//   const month = String(date.getMonth() + 1).padStart(2, "0");
+//   const year = date.getFullYear();
+
+//   return `${day}-${month}-${year}`;
+// };
+
+export const formatDateDDMMYYYY = (dateVal: Date) => {
+  if (!dateVal) return "";
+  const date = new Date(dateVal);
+  if (isNaN(date.getTime())) return "";
+
+  // Dynamic formatting using internationalization API
+  const formatter = new Intl.DateTimeFormat("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+
+  // Replaces default "/" separator dynamically with "-"
+  return formatter.format(date).replace(/\//g, "-");
+};

@@ -45,7 +45,7 @@ export function DatePicker({
             "!bg-[#BDBDBD]/15 !border-border cursor-auto !opacity-100" : disabled
           })}
         >
-          {value ? format(value, "dd/MM/yyyy") : format(new Date(), "dd/MM/yyyy")}
+          {value ? format(value, "dd/MM/yyyy") : "Select date"}
           {!disabled && (<CalendarIcon />)}
         </Button>
       </PopoverTrigger>

@@ -34,8 +34,7 @@ import { useComponentTypes } from "../hooks/useComponentTypes";
 import { useAssetTypesBrands } from "../hooks/useAssetTypesBrands";
 import ComponentVariant from "../components/ComponentVariant";
 import { mockBrandsList } from "../mock/mockBrands";
-import type { AssetFormValues } from "../api/assets.api";
-
+import { COUNTRY_OPTIONS } from "@/lib/country-helper";
 
 export interface BrandInfo {
   name: string;
@@ -43,6 +42,7 @@ export interface BrandInfo {
 }
 
 const validationSchema = Yup.object({
+  // step 1 (basic information)
   name: Yup.string()
     .trim()
     .required("Cabinet name is required"),
@@ -50,14 +50,14 @@ const validationSchema = Yup.object({
   description: Yup.string()
     .trim(),
 
-  street: Yup.string()
+  addressLine1: Yup.string()
     .trim()
     .required("Address is required"),
 
-  building: Yup.string()
+  addressLine2: Yup.string()
     .trim(),
 
-  postalCode: Yup.string()
+  zipCode: Yup.string()
     .trim()
     .required("Zip code is required"),
 
@@ -68,103 +68,116 @@ const validationSchema = Yup.object({
   country: Yup.string()
     .trim()
     .required("Country is required"),
-})
+    // step 2 (cabinet details)
+    accessType: Yup.string()
+    .trim()
+    .required("Access type is required"),
+    // Step 3: Asset (Conditional Validation)
+  asset: Yup.lazy((assetValues) => {
+    const isTypeOne = String(assetValues?.id ?? "") === "1";
+
+    return Yup.object({
+      id: Yup.string().notRequired(),
+      name: Yup.string().trim().required("Asset name is required"),
+      assetModelId: isTypeOne ? Yup.string().trim().required("Model is required") : Yup.string().trim().notRequired(),
+      
+      brand: isTypeOne ? Yup.string().trim().required("Brand is required") : Yup.string().trim().notRequired(),
+
+      components: isTypeOne
+        ? Yup.array().test(
+            "validate-required-components",
+            "Required components validation",
+            function (components) {
+              if (!components || !Array.isArray(components)) return true;
+
+              const errors = [];
+
+              // Index 0: 1st Set Pads (Required)
+              if (!components[0]?.componentVariantId) {
+                errors.push(
+                  this.createError({
+                    path: `${this.path}[0].componentVariantId`,
+                    message: "1st set pads type is required",
+                  })
+                );
+              }
+              if (!components[0]?.expiresAt) {
+                errors.push(
+                  this.createError({
+                    path: `${this.path}[0].expiresAt`,
+                    message: "1st set pads expiration date is required",
+                  })
+                );
+              }
+
+              // Index 1: 2nd Set Pads (Optional - No validation required)
+
+              // Index 2: Battery (Required)
+              if (!components[2]?.expiresAt) {
+                errors.push(
+                  this.createError({
+                    path: `${this.path}[2].expiresAt`,
+                    message: "Battery expiration date is required",
+                  })
+                );
+              }
+
+              // Return all collected errors directly as a ValidationError stack
+              if (errors.length > 0) {
+                return new Yup.ValidationError(errors);
+              }
+
+              return true;
+            }
+          )
+        : Yup.array().notRequired(),
+
+      checkupDate: Yup.date().nullable().notRequired(),
+      expiresAt: Yup.date().nullable().notRequired(),
+      purchaseDate: Yup.date().nullable().notRequired(),
+      serialNumber: Yup.string().trim().notRequired(),
+      notes: Yup.string().trim().notRequired(),
+    });
+  }),
+});
 const initialValues: CreateCabinetFormValues = {
+  accessType: "public",
+
   name: "",
   description: "",
-  street: "",
-  building: "",
-  postalCode: "",
+
+  addressLine1: "",
+  addressLine2: "",
+  zipCode: "",
   city: "",
   country: "",
+
+  serialNumber: "",
+  lockCode: "",
+
   picture1: null,
   picture2: null,
   picture3: null,
-}
-const assetFormikInitialValues: AssetFormValues = {
-  assetType: {
+
+  asset: {
+    assetModelId: "",
+    checkupDate: undefined,
+    components: [
+      { componentTypeId: "1", componentVariantId: "", expiresAt: undefined, lotNumber: "", serialNumber: "", componentVariantName: "" }, // Index 0: 1st Set Pads (Required)
+      { componentTypeId: "1", componentVariantId: "", expiresAt: undefined, lotNumber: "", serialNumber: "", componentVariantName: "" }, // Index 1: 2nd Set Pads (Optional)
+      { componentTypeId: "2", componentVariantId: "", expiresAt: undefined, lotNumber: "", serialNumber: "" }, // Index 2: Battery (Required)
+    ],
+    expiresAt: undefined,
+    name: "",
+    notes: "",
+    purchaseDate: undefined,
+    serialNumber: "",
+
+    // states for validations
+    brand: "",
     id: "",
-    name: ""
-  }, // required
-  brandInfo: {
-    name: "", // required when assetType.id === "1" 
-    model: "", // required when assetType.id === "1" 
   },
-  serialNumber: "",
-  dateOfPurchase: null,
-  nextCheckUp: null,
-  padsInformation: {
-    firstSetPads: {
-      for: "", // required when assetType.id === "1" 
-      expiration: "", // required when assetType.id === "1" 
-      IotNumber: ""
-    },
-    secondSetPads: {
-      for: "",
-      expiration: "",
-      IotNumber: ""
-    },
-  },
-  batteryInformation: {
-    batterySerial: "",
-    batteryExpiration: "", // required when assetType.id === "1" 
-    batteryIotNumber: ""
-  },
-  notes: ""
 }
-export const assetFormikValidationSchema = Yup.lazy((values) => {
-  // Directly inspect form values on every validation run
-  const isTypeOne = String(values?.assetType?.id) === "1";
-
-  return Yup.object({
-    assetType: Yup.object({
-      id: Yup.string().required("Asset type is required"),
-      name: Yup.string().notRequired(),
-    }),
-
-    brandInfo: Yup.object({
-      name: isTypeOne
-        ? Yup.string().trim().required("Brand is required")
-        : Yup.string().notRequired(),
-      model: isTypeOne
-        ? Yup.string().trim().required("Model is required")
-        : Yup.string().notRequired(),
-    }),
-
-    serialNumber: Yup.string().trim().notRequired(),
-    dateOfPurchase: Yup.date().nullable().notRequired(),
-    nextCheckUp: Yup.date().nullable().notRequired(),
-
-    padsInformation: Yup.object({
-      firstSetPads: Yup.object({
-        for: isTypeOne
-          ? Yup.string().trim().required("Pad type is required")
-          : Yup.string().notRequired(),
-        expiration: isTypeOne
-          ? Yup.string().required("Pad expiration is required")
-          : Yup.string().notRequired(),
-        IotNumber: Yup.string().trim().notRequired(),
-      }),
-
-      secondSetPads: Yup.object({
-        for: Yup.string().trim().notRequired(),
-        expiration: Yup.string().notRequired(),
-        IotNumber: Yup.string().trim().notRequired(),
-      }),
-    }),
-
-    batteryInformation: Yup.object({
-      batterySerial: Yup.string().trim().notRequired(),
-      batteryExpiration: isTypeOne
-        ? Yup.string().required("Battery expiration is required")
-        : Yup.string().notRequired(),
-      batteryIotNumber: Yup.string().trim().notRequired(),
-    }),
-
-    notes: Yup.string().trim().notRequired(),
-  });
-});
-
 
 export default function AddCabinets() {
   const navigate = useNavigate();
@@ -175,7 +188,7 @@ export default function AddCabinets() {
   const [brightness, setBrightness] = useState<BrightnessType>('0%')
   const [color, setColor] = useState<ColorType>('white')
   const [availability, setAvailability] = useState<AvailabilityType>('24/7')
-  const [accessType, setAccessType] = useState<AccessTypeI>('public')
+  
   const [schedule, setSchedule] = useState<DayConfig[]>(dayList)
 
   const [brandInfo, setBrandInfo] = useState<BrandInfo>({
@@ -186,31 +199,11 @@ export default function AddCabinets() {
   const [assetExpiration, setAssetExpiration] = useState<Date | undefined>(new Date())
 
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false)
+  const [successModalOpen, setSuccessModalOpen] = useState<boolean>(false)
 
   const [assignCredits, setAssignCredits] = useState<number|''>(0)
 
   const createCabinetMutation = useCreateCabinet()
-
-  // Assets Information
-  const assetFormik = useFormik({
-    initialValues: assetFormikInitialValues,
-    validationSchema: assetFormikValidationSchema,
-    onSubmit: async (values) => {
-      try {
-        // await createCabinetMutation.mutateAsync(values)
-        // successToast("Cabinet created successfully")
-        // assetFormik.resetForm()
-      } catch (error) {
-        errorToast(
-          error instanceof Error
-            ? error.message
-            : "Something went wrong",
-        );
-      }
-    },
-  });
-  
-
 
   // Basic Information
   const formik = useFormik({
@@ -218,8 +211,35 @@ export default function AddCabinets() {
     validationSchema,
     onSubmit: async (values) => {
       try {
+        const cleanedComponents = values.asset?.components?.filter((comp, index) => {
+          // Index 1 is 2nd set pads
+          if (index === 1 && comp.componentTypeId === "1") {
+            const hasValue =
+              comp.componentVariantId ||
+              comp.expiresAt ||
+              comp.lotNumber ||
+              comp.serialNumber;
+
+            // Drop 2nd set pads if user entered nothing
+            return Boolean(hasValue);
+          }
+          return true; // Keep 1st set pads and Battery
+        });
+
+        const payload = {
+          ...values,
+          asset: {
+            ...values.asset,
+            components: cleanedComponents,
+          },
+        };
+
+        console.log("Cleaned API Payload:", payload);
         await createCabinetMutation.mutateAsync(values)
         successToast("Cabinet created successfully")
+        setStep("basic-information")
+        setConfirmModalOpen(false)
+        setSuccessModalOpen(true)
         formik.resetForm()
       } catch (error) {
         errorToast(
@@ -231,51 +251,31 @@ export default function AddCabinets() {
     },
   });
 
-  const { data: assetTypes } = useAssetTypes()
-  const { data: brandsList } = useAssetTypesBrands(assetFormik?.values?.assetType?.id)
-  const { data: modelsList } = useAssetTypesModels(assetFormik?.values?.assetType?.id, {brand: assetFormik.values.brandInfo.name })
+  const {values, setFieldValue, errors, touched, handleChange, handleBlur} = formik
+
+  console.log("values",values)
+  console.log("errors",errors)
+  console.log("touched",touched)
+  
+  const { data: assetTypes, isLoading } = useAssetTypes()
+  const { data: brandsList } = useAssetTypesBrands(values.asset.id)
+  const { data: modelsList } = useAssetTypesModels(values.asset.id, {brand: values.asset.brand })
   const { data: componentTypes } = useComponentTypes()
   
-  const [images, setImages] = useState({
-    picture1: "",
-    picture2: "",
-    picture3: "",
-  });
-
   const handleImageChange = (
     key: "picture1" | "picture2" | "picture3",
     file: File | null
   ) => {
     if (!file) return;
-
-    setImages((prev) => ({
-      ...prev,
-      [key]: URL.createObjectURL(file),
-    }));
+    setFieldValue(key, URL.createObjectURL(file))
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
 
-    if (step === "basic-information") {
-      formik.handleSubmit()
-      return
-    }
-    if (step === "cabinet-details") {
-      return setConfirmModalOpen(true)
-    }
+    const errors = await formik.validateForm();
 
-    if (step === "asset-information") {
-      handleContinue()
-    }
-  };
-
-  const handleContinue = async () => {
-    const errors = await assetFormik.validateForm();
-
-    if (Object.keys(errors).length === 0) {
-      setConfirmModalOpen(true);
-    } else {
-      assetFormik.setTouched(
+    if(Object.keys(errors).length !== 0){
+      formik.setTouched(
         Object.keys(errors).reduce(
           (acc, key) => {
             acc[key] = true;
@@ -284,12 +284,35 @@ export default function AddCabinets() {
           {} as Record<string, boolean>
         )
       );
+    }
 
-      errorToast("Please fill all required fields");
+    if (step === "basic-information") {
+      if(errors.name || errors.addressLine1 || errors.zipCode || errors.city || errors.country) {
+        return
+      } else {
+        formik.setErrors({})
+        formik.setTouched({})
+        setStep("cabinet-details")
+      }
+    }
+    if (step === "cabinet-details") {
+      if(errors.accessType) {
+        return
+      } else {
+        formik.setErrors({})
+        formik.setTouched({})
+        setStep("asset-information")
+      }
+    }
+
+    if (step === "asset-information") {
+      if(Object.keys(errors).length !== 0){
+        errorToast("Please fill all required fields")
+      }else {
+        setConfirmModalOpen(true)
+      }
     }
   };
-
-  console.log("assetFormik", assetFormik)
 
   const connectivityUntil = useMemo(() => {
       if (typeof assignCredits !== "number" || assignCredits <= 0) {
@@ -336,6 +359,10 @@ export default function AddCabinets() {
                       placeholder="e.g. SN1234567890"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      name="serialNumber"
+                      value={values.serialNumber}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                     />
                     <div className="text-xs mt-2">If the serial number is recognised the brand, model and module code (if applicable) will be filled in automatically.</div>
                     <div className="flex items-center text-sm text-accent-foreground my-5 gap-3">
@@ -358,7 +385,7 @@ export default function AddCabinets() {
                       </SelectTrigger>
                       <SelectContent>
                       {
-                        mockBrandsList.map((item)=> <SelectItem value={item.brand} key={item.brand}>{item.brand}</SelectItem> )
+                        mockBrandsList.map((item)=> <SelectItem value={item.brand} key={item.brand+"mock-model"}>{item.brand}</SelectItem> )
                       }
                       </SelectContent>
                     </Select>
@@ -376,7 +403,7 @@ export default function AddCabinets() {
                       </SelectTrigger>
                       <SelectContent>
                       {
-                        mockBrandsList.find(item => item.brand === brandInfo.name)?.models?.map((item)=> <SelectItem value={item} key={item}>{item}</SelectItem> )
+                        mockBrandsList.find(item => item.brand === brandInfo.name)?.models?.map((item)=> <SelectItem value={item} key={item+'mock-model'}>{item}</SelectItem> )
                       }
                       </SelectContent>
                     </Select>
@@ -402,8 +429,8 @@ export default function AddCabinets() {
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Access Type <span className="text-error">*</span></Label>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <button type="button" className={cn("flex items-center gap-3.75 text-left p-4 border border-border rounded-[10px]", {
-                        "bg-primary/7 border-primary/20": 'public' === accessType
-                      })} onClick={()=> setAccessType('public')}>
+                        "bg-primary/7 border-primary/20": 'public' === formik.values.accessType
+                      })} onClick={()=> setFieldValue("accessType", 'public')}>
                         <Icons.team />
                         <div className="w-0 grow">
                           <h6 className="font-semibold text-xs">Public</h6>
@@ -411,8 +438,8 @@ export default function AddCabinets() {
                         </div>
                       </button>
                       <button type="button" className={cn("flex items-center gap-3.75 text-left p-4 border border-border rounded-[10px]", {
-                        "bg-primary/7 border-primary/20": 'private' === accessType
-                      })} onClick={()=> setAccessType('private')}>
+                        "bg-primary/7 border-primary/20": 'private' === formik.values.accessType
+                      })} onClick={()=> setFieldValue("accessType", 'private')}>
                         <Icons.lock2 />
                         <div className="w-0 grow">
                           <h6 className="font-semibold text-xs">Private</h6>
@@ -585,7 +612,7 @@ export default function AddCabinets() {
                       size="lg"
                       className={cn("data-[state=open]:text-sidebar-accent-foreground cursor-pointer rounded-none !bg-white !ring-0 border border-border h-12.5 rounded-[10px] font-semibold !text-accent-foreground !px-5 text-xs")}
                     >
-                      {assetFormik?.values?.assetType?.name || "Select Asset Type"}
+                      {values.asset.name || "Select Asset Type"}
                       <ChevronDown className="ml-auto size-4" />
                     </SidebarMenuButton>
                   </DropdownMenuTrigger>
@@ -596,12 +623,11 @@ export default function AddCabinets() {
                     sideOffset={4}
                   >
                     <DropdownMenuGroup>
-                      {assetTypes?.map((option) => (
+                      {!isLoading && assetTypes?.map((option) => (
                         <DropdownMenuItem className="text-accent-foreground font-semibold text-xs h-10 py-2 px-2.5 hover:!bg-chip" 
                           onClick={()=> {
-                            assetFormik.setFieldValue("assetType.id", option.id)
-                            assetFormik.setFieldValue("assetType.name", option.name)
-                            assetFormik.handleBlur("assetType")
+                            setFieldValue("asset.id", option.id)
+                            setFieldValue("asset.name", option.name)
                           }} key={option.id}>
                           {option.name}
                         </DropdownMenuItem>
@@ -609,21 +635,21 @@ export default function AddCabinets() {
                     </DropdownMenuGroup>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                {assetFormik.touched.assetType && assetFormik.errors.assetType?.id && (
+                {touched.asset && errors?.asset?.name && (
                     <p className="mt-1 text-xs text-error">
-                      {assetFormik.errors.assetType.id}
+                      {errors.asset.name}
                     </p>
                   )}
               </div>
               
               
-                {assetFormik?.values?.assetType?.id === "1" ? (
+                {values.asset.id === "1" ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 my-3.75 gap-4">
                     <div>
                       <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand<span className="text-error">*</span></Label>
-                      <Select value={assetFormik.values.brandInfo.name} onValueChange={(value)=> {
-                          assetFormik.setFieldValue("brandInfo.name", value)
-                          assetFormik.setFieldValue("brandInfo.model", "")
+                      <Select value={values.asset.brand} onValueChange={(value)=> {
+                          setFieldValue("asset.brand", value)
+                          setFieldValue("asset.assetModelId", "")
                         }} disabled={!brandsList}>
                         <SelectTrigger className={cn("w-full !h-12.5")}>
                           <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
@@ -632,20 +658,20 @@ export default function AddCabinets() {
                         </SelectTrigger>
                         <SelectContent>
                           {
-                            brandsList?.map((item)=> <SelectItem value={item} key={item}>{item}</SelectItem> )
+                            brandsList?.map((item)=> <SelectItem value={item} key={item+"brand"}>{item}</SelectItem> )
                           }
                         </SelectContent>
                       </Select>
-                      {assetFormik.touched.brandInfo && assetFormik.errors.brandInfo?.name && (
+                      {touched.asset && errors.asset?.brand && (
                           <p className="mt-1 text-xs text-error">
-                            {assetFormik.errors.brandInfo.name}
+                            {errors.asset?.brand}
                           </p>
                         )}
                     </div>
                     <div>
                       <Label className="text-xs text-accent-foreground font-medium block mb-3">Model<span className="text-error">*</span></Label>
-                      <Select value={assetFormik.values.brandInfo.model} onValueChange={(value)=> {
-                          assetFormik.setFieldValue("brandInfo.model", value)
+                      <Select value={values.asset.assetModelId} onValueChange={(value)=> {
+                          setFieldValue("asset.assetModelId", value)
                         }} disabled={!modelsList}>
                         <SelectTrigger className={cn("w-full !h-12.5")}>
                           <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
@@ -654,13 +680,13 @@ export default function AddCabinets() {
                         </SelectTrigger>
                         <SelectContent>
                           {
-                            modelsList?.map((item)=> <SelectItem value={item.modelName} key={item}>{item.modelName}</SelectItem> )
+                            modelsList?.map((item)=> <SelectItem value={item.id} key={item+"model"}>{item.modelName}</SelectItem> )
                           }
                         </SelectContent>
                       </Select>
-                      {assetFormik.touched.brandInfo && assetFormik.errors.brandInfo?.model && (
+                      {touched.asset && errors.asset?.assetModelId && (
                         <p className="mt-1 text-xs text-error">
-                          {assetFormik.errors.brandInfo.model}
+                          {errors.asset?.assetModelId}
                         </p>
                       )}
                     </div>
@@ -672,24 +698,24 @@ export default function AddCabinets() {
                           autoComplete="off"
                           className="h-12.5 px-5 placeholder:text-accent-foreground/20"
                           name="serialNumber"
-                          value={assetFormik.values.serialNumber}
+                          value={values.serialNumber}
                           onChange={formik.handleChange}
-                          errors={assetFormik.touched.brandInfo ? assetFormik.errors.brandInfo?.model : ''}
+                          errors={touched.asset ? errors.asset?.serialNumber : ''}
                         />
                       </div>
                       <div>
                         <Label className="text-xs text-accent-foreground font-medium block mb-3">Date of purchase</Label>
                         <DatePicker className="!bg-white text-xs pl-5 pr-4"
                           dateType="past"
-                          value={assetFormik.values.dateOfPurchase} 
-                          onChange={(value)=>assetFormik.setFieldValue("dateOfPurchase", value)} />
+                          value={values.asset.purchaseDate}
+                          onChange={(value)=>setFieldValue("asset.purchaseDate", value)} />
                       </div>
                       <div>
                         <Label className="text-xs text-accent-foreground font-medium block mb-3">Next check-up</Label>
                         <DatePicker className="!bg-white text-xs pl-5 pr-4"
                           dateType="future"
-                          value={assetFormik.values.nextCheckUp} 
-                          onChange={(value)=>assetFormik.setFieldValue("nextCheckUp", value)} />
+                          value={values.asset.checkupDate} 
+                          onChange={(value)=>setFieldValue("asset.checkupDate", value)} />
                       </div>
                     </div>
                   </div>
@@ -704,14 +730,14 @@ export default function AddCabinets() {
                           <Label className="text-xs text-accent-foreground font-medium block mb-3">Check-Up Date</Label>
                           <DatePicker className="!bg-white text-xs pl-5 pr-4" 
                             dateType="future"
-                            value={assetFormik.values.nextCheckUp} 
-                            onChange={(value)=>assetFormik.setFieldValue("nextCheckUp", value)}/>
+                            value={values.asset.checkupDate} 
+                            onChange={(value)=>setFieldValue("asset.checkupDate", value)}/>
                         </div>
                         <div>
                           <Label className="text-xs text-accent-foreground font-medium block mb-3">Date of Purchase</Label>
                           <DatePicker className="!bg-white text-xs pl-5 pr-4" dateType="past"
-                            value={assetFormik.values.dateOfPurchase} 
-                            onChange={(value)=>assetFormik.setFieldValue("dateOfPurchase", value)} />
+                            value={values.asset.purchaseDate} 
+                            onChange={(value)=>setFieldValue("asset.purchaseDate", value)} />
                         </div>
                     </div>
                   </>
@@ -722,16 +748,16 @@ export default function AddCabinets() {
                     placeholder="Add any additional notes..."
                     autoComplete="off"
                     className="p-5 placeholder:text-accent-foreground/20"
-                    value={assetFormik.values.notes}
-                    name="notes"
-                    onChange={assetFormik.handleChange}
+                    value={values.asset.notes}
+                    name="asset.notes"
+                    onChange={handleChange}
                   />
                 </div>
             </div>
-            {assetFormik?.values?.assetType?.id === "1" && (
+            {values.asset.id === "1" && (
               <>
                 {componentTypes?.map((componentType:{id:string, name:string})=> (
-                  <ComponentVariant componentType={componentType} key={componentType.id} assetFormik={assetFormik} />
+                  <ComponentVariant componentType={componentType} key={componentType.id} formik={formik} />
                 ))}
               </>
             )}
@@ -754,10 +780,10 @@ export default function AddCabinets() {
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
                       name="name"
-                      value={formik.values.name}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      errors={formik.touched.name ? formik.errors.name : ''}
+                      value={values.name}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      errors={touched.name ? errors.name : ''}
                     />
                   </div>
                   <div className="mb-3">
@@ -767,9 +793,9 @@ export default function AddCabinets() {
                       autoComplete="off"
                       className="p-5 placeholder:text-accent-foreground/20"
                       name="description"
-                      value={formik.values.description}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
+                      value={values.description}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                     />
                   </div>
                 </div>
@@ -785,26 +811,26 @@ export default function AddCabinets() {
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Address Line 1 <span className="text-error">*</span></Label>
                     <Input
-                      placeholder="Street"
+                      placeholder="addressLine1"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                      name="street"
-                      value={formik.values.street}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      errors={formik.touched.street ? formik.errors.street : ''}
+                      name="addressLine1"
+                      value={values.addressLine1}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      errors={touched.addressLine1 ? errors.addressLine1 : ''}
                     />
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Address Line 2</Label>
                     <Input
-                      placeholder="e.g. building name"
+                      placeholder="e.g. building"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                      name="building"
-                      value={formik.values.building}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
+                      name="addressLine2"
+                      value={values.addressLine2}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                     />
                   </div>
                 </div>
@@ -815,11 +841,11 @@ export default function AddCabinets() {
                       placeholder="Enter zip code"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                      name="postalCode"
-                      value={formik.values.postalCode}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      errors={formik.touched.postalCode ? formik.errors.postalCode : ''}
+                      name="zipCode"
+                      value={values.zipCode}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      errors={touched.zipCode ? errors.zipCode : ''}
                     />
                   </div>
                   <div>
@@ -829,24 +855,47 @@ export default function AddCabinets() {
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
                       name="city"
-                      value={formik.values.city}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      errors={formik.touched.city ? formik.errors.city : ''}
+                      value={values.city}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      errors={touched.city ? errors.city : ''}
                     />
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Country <span className="text-error">*</span></Label>
-                    <Input
+                    {/* <Input
                       placeholder="Enter country"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
                       name="country"
-                      value={formik.values.country}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      errors={formik.touched.country ? formik.errors.country : ''}
-                    />
+                      value={values.country}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      errors={touched.country ? errors.country : ''}
+                    /> */}
+                    <Select
+                      value={values.country || ""}
+                      onValueChange={(value) => setFieldValue("country", value)}
+                    >
+                      <SelectTrigger className="w-full !h-12.5">
+                        <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
+                          <span className="line-clamp-1 w-0 grow text-left">
+                            <SelectValue placeholder="Select country" />
+                          </span>
+                        </div>
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        {COUNTRY_OPTIONS.map((country) => (
+                          <SelectItem key={country.iso2} value={country.iso2}>
+                            <div className="flex items-center justify-between w-full gap-2">
+                              <span>{country.name}</span>
+                              <span className="text-muted-foreground text-xs">({country.iso2})</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
@@ -860,16 +909,19 @@ export default function AddCabinets() {
                 <Label className="text-xs text-accent-foreground font-medium block mb-3">Pictures <span className="text-foreground">(max. 3)</span></Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <SingleImageUploader
-                    value={images.picture1}
+                    value={values.picture1}
                     onChange={(file) => handleImageChange("picture1", file)}
+                    onRemove={() => setFieldValue("picture1", null)}
                   />
                   <SingleImageUploader
-                    value={images.picture2}
+                    value={values.picture2}
                     onChange={(file) => handleImageChange("picture2", file)}
+                    onRemove={() => setFieldValue("picture2", null)}
                   />
                   <SingleImageUploader
-                    value={images.picture3}
+                    value={values.picture3}
                     onChange={(file) => handleImageChange("picture3", file)}
+                    onRemove={() => setFieldValue("picture3", null)}
                   />
                 </div>
               </div>
@@ -930,7 +982,17 @@ export default function AddCabinets() {
             </div>
           </div>
         </div>
-        <ConfirmationModal open={confirmModalOpen} setOpen={setConfirmModalOpen} values={assetFormik.values} />
+        <ConfirmationModal {
+            ...{
+              open:confirmModalOpen,
+              setOpen: setConfirmModalOpen,
+              successModalOpen,
+              setSuccessModalOpen,
+              values,
+              handleSubmit: formik.handleSubmit
+            }
+          }
+        />
       </main>
     </>
   );
