@@ -1,17 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import {
-  createCabinet
-} from "../api/cabinet.api"
+import { createAsset } from "../api/assets.api"
 
-export const useCreateCabinet = () => {
+export const useCreateAssets = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: createCabinet,
+    mutationFn: createAsset,
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["cabinets", "create"],
+        queryKey: ["assets", "create"],
       })
     },
   })
