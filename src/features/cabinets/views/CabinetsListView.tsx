@@ -50,25 +50,6 @@ export default function CabinetsListView() {
     pageSize: PAGE_SIZE,
   });
 
-  // const pageResult = useMemo(
-  //   () =>
-  //     queryCabinetsListPage({
-  //       search,
-  //       statusFilter,
-  //       pageIndex: pagination.pageIndex,
-  //       pageSize: pagination.pageSize,
-  //       sorting,
-  //       city
-  //     }),
-  //   [
-  //     search,
-  //     statusFilter,
-  //     pagination.pageIndex,
-  //     pagination.pageSize,
-  //     sorting,
-  //     city
-  //   ],
-  // );
   const debouncedSearch = useDebounce(search, 400)
   const {
     data: pageResult,

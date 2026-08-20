@@ -17,8 +17,8 @@ export interface Cabinet {
   id: string;
   name: string;
   city: string;
-  zip: string;
-  street: string;
+  zipCode: string;
+  addressLine1: string;
   houseNumber: string;
   cabinetCode: string;
   updaidCode: string;
