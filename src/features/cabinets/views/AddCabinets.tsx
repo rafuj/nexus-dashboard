@@ -24,9 +24,7 @@ import { AVAILABLE_CREDITS } from "@/features/dashboard/mock/mockDashboardStats"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
 import { SidebarMenuButton } from "@/shared/components/ui/sidebar";
 import { useFormik } from "formik";
-import * as Yup from "yup";
 import { errorToast, successToast } from "@/lib/toast";
-import type { CreateCabinetFormValues } from "../api/cabinet.api";
 import { useCreateCabinet } from "../hooks/useCreateCabinet";
 import { useAssetTypes } from "../hooks/useAssetTypes";
 import { useAssetTypesModels } from "../hooks/useAssetTypesModels";
@@ -35,149 +33,13 @@ import { useAssetTypesBrands } from "../hooks/useAssetTypesBrands";
 import ComponentVariant from "../components/ComponentVariant";
 import { mockBrandsList } from "../mock/mockBrands";
 import { COUNTRY_OPTIONS } from "@/lib/country-helper";
+import { cabinetInitialValues, cabinetValidationSchema } from "../types/addCabinet";
 
 export interface BrandInfo {
   name: string;
   model: string;
 }
 
-const validationSchema = Yup.object({
-  // step 1 (basic information)
-  name: Yup.string()
-    .trim()
-    .required("Cabinet name is required"),
-
-  description: Yup.string()
-    .trim(),
-
-  addressLine1: Yup.string()
-    .trim()
-    .required("Address is required"),
-
-  addressLine2: Yup.string()
-    .trim(),
-
-  zipCode: Yup.string()
-    .trim()
-    .required("Zip code is required"),
-
-  city: Yup.string()
-    .trim()
-    .required("City is required"),
-
-  country: Yup.string()
-    .trim()
-    .required("Country is required"),
-    // step 2 (cabinet details)
-    accessType: Yup.string()
-    .trim()
-    .required("Access type is required"),
-    // Step 3: Asset (Conditional Validation)
-  asset: Yup.lazy((assetValues) => {
-    const isTypeOne = String(assetValues?.id ?? "") === "1";
-
-    return Yup.object({
-      id: Yup.string().notRequired(),
-      name: Yup.string().trim().required("Asset name is required"),
-      assetModelId: isTypeOne ? Yup.string().trim().required("Model is required") : Yup.string().trim().notRequired(),
-      
-      brand: isTypeOne ? Yup.string().trim().required("Brand is required") : Yup.string().trim().notRequired(),
-
-      components: isTypeOne
-        ? Yup.array().test(
-            "validate-required-components",
-            "Required components validation",
-            function (components) {
-              if (!components || !Array.isArray(components)) return true;
-
-              const errors = [];
-
-              // Index 0: 1st Set Pads (Required)
-              if (!components[0]?.componentVariantId) {
-                errors.push(
-                  this.createError({
-                    path: `${this.path}[0].componentVariantId`,
-                    message: "1st set pads type is required",
-                  })
-                );
-              }
-              if (!components[0]?.expiresAt) {
-                errors.push(
-                  this.createError({
-                    path: `${this.path}[0].expiresAt`,
-                    message: "1st set pads expiration date is required",
-                  })
-                );
-              }
-
-              // Index 1: 2nd Set Pads (Optional - No validation required)
-
-              // Index 2: Battery (Required)
-              if (!components[2]?.expiresAt) {
-                errors.push(
-                  this.createError({
-                    path: `${this.path}[2].expiresAt`,
-                    message: "Battery expiration date is required",
-                  })
-                );
-              }
-
-              // Return all collected errors directly as a ValidationError stack
-              if (errors.length > 0) {
-                return new Yup.ValidationError(errors);
-              }
-
-              return true;
-            }
-          )
-        : Yup.array().notRequired(),
-
-      checkupDate: Yup.date().nullable().notRequired(),
-      expiresAt: Yup.date().nullable().notRequired(),
-      purchaseDate: Yup.date().nullable().notRequired(),
-      serialNumber: Yup.string().trim().notRequired(),
-      notes: Yup.string().trim().notRequired(),
-    });
-  }),
-});
-const initialValues: CreateCabinetFormValues = {
-  accessType: "public",
-
-  name: "",
-  description: "",
-
-  addressLine1: "",
-  addressLine2: "",
-  zipCode: "",
-  city: "",
-  country: "",
-
-  serialNumber: "",
-  lockCode: "",
-
-  picture1: null,
-  picture2: null,
-  picture3: null,
-
-  asset: {
-    assetModelId: "",
-    checkupDate: undefined,
-    components: [
-      { componentTypeId: "1", componentVariantId: "", expiresAt: undefined, lotNumber: "", serialNumber: "", componentVariantName: "" }, // Index 0: 1st Set Pads (Required)
-      { componentTypeId: "1", componentVariantId: "", expiresAt: undefined, lotNumber: "", serialNumber: "", componentVariantName: "" }, // Index 1: 2nd Set Pads (Optional)
-      { componentTypeId: "2", componentVariantId: "", expiresAt: undefined, lotNumber: "", serialNumber: "" }, // Index 2: Battery (Required)
-    ],
-    expiresAt: undefined,
-    name: "",
-    notes: "",
-    purchaseDate: undefined,
-    serialNumber: "",
-
-    // states for validations
-    brand: "",
-    id: "",
-  },
-}
 
 export default function AddCabinets() {
   const navigate = useNavigate();
@@ -207,8 +69,8 @@ export default function AddCabinets() {
 
   // Basic Information
   const formik = useFormik({
-    initialValues,
-    validationSchema,
+    initialValues: cabinetInitialValues(),
+    validationSchema: cabinetValidationSchema,
     onSubmit: async (values) => {
       try {
         const cleanedComponents = values.asset?.components?.filter((comp, index) => {
