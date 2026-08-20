@@ -22,7 +22,7 @@ export default function LoginForm({
   const [otp, setOtp] = useState<string>("")
   const OTP_LENGTH = 6
 
-  const { login, verifyOtp } = useAuth();
+  const { login, verifyOtp, getUserRolePermission } = useAuth();
   const navigate = useNavigate();
 
   const [tabs, setTabs] = useState("login")
@@ -67,6 +67,7 @@ export default function LoginForm({
 
     try {
       await verifyOtp(otp)
+      await getUserRolePermission();
       successToast("OTP verified successfully")
       navigate("/")
     } catch (error) {

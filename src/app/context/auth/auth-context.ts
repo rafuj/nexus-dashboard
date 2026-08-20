@@ -23,7 +23,8 @@ export type AuthContextType = {
   sendOtpReg: (otp: string) => Promise<void>
   verifyOtpReg: (data: VerifyOtpRegPayload) => Promise<void>
   signup: (props: object) => Promise<void>
-
+  
+  getUserRolePermission: () => void
   logout: () => void
 }
 

@@ -10,6 +10,7 @@ export const API_ROUTES = {
     SEND_OTP_REG: `${API_VERSION}/send-otp-reg`,
     VERIFY_OTP_REG: `${API_VERSION}/verify-otp-reg`,
     USERS: `${API_VERSION}/users`,
+    USERS_ROLES: `${API_VERSION}/users/roles`,
     
     // CABINETS
     CABINETS: `${API_VERSION}/cabinets`,

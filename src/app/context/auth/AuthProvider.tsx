@@ -12,6 +12,7 @@ import {
   persistUser,
   readStoredUser,
 } from "./auth-storage" // static will be changed in future
+import { errorToast } from "@/lib/toast"
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(() => readStoredUser())
@@ -100,6 +101,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }
 
+  /**
+   * GET USERS ROLES API
+  **/
+
+  const getUserRolePermission = async () => {
+    try {
+      const { data } = await api.get(API_ROUTES.USERS_ROLES);
+      localStorage.setItem("updaid-permissions", JSON.stringify(data));
+
+    } catch (error) {
+      errorToast("Failed to fetch Role");
+      throw error;
+    }
+  };
+
   const role: Role | null = user?.role ?? null
 
   const permissions = role
@@ -114,6 +130,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         user,
         role,
         permissions,
+        getUserRolePermission,
 
         login,
         verifyOtp,
