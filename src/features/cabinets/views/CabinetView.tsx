@@ -17,7 +17,7 @@ import { DatePicker } from "@/shared/components/ui/date-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { cn } from "@/lib/utils";
 import SchedulePicker from "../components/SchedulePicker";
-import type { AccessTypeI, AvailabilityType, BrightnessType, ColorType, DayConfig, StepType, VolumeType } from "../types/addCabinet";
+import { cabinetInitialValues, cabinetValidationSchema, type AccessTypeI, type AvailabilityType, type BrightnessType, type ColorType, type DayConfig, type StepType, type VolumeType } from "../types/addCabinet";
 import { assetTypeList, availabilityTypeList, brightnessList, colorList, dayList, STEPS, volumeList } from "../mock/addCabinetData";
 import { ConfirmationModal } from "../components/ConfirmationModal";
 import { AVAILABLE_CREDITS, MANAGE_CABINETS } from "@/features/dashboard/mock/mockDashboardStats";
@@ -27,9 +27,17 @@ import { useQueryState } from "nuqs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
 import { SidebarMenuButton } from "@/shared/components/ui/sidebar";
 import { CabinetStatistics } from "../components/CabinetStatistics";
-import type { AssetInformation, BrandInfo } from "./AddCabinets";
+import type { BrandInfo } from "./AddCabinets";
 import { mockBrandsList } from "../mock/mockBrands";
 import { MaintenanceMode } from "../components/MaintenanceMode";
+import { useFormik } from "formik";
+import { errorToast, successToast } from "@/lib/toast";
+import { COUNTRY_OPTIONS } from "@/lib/country-helper";
+import { useAssetTypes } from "../hooks/useAssetTypes";
+import { useAssetTypesBrands } from "../hooks/useAssetTypesBrands";
+import { useAssetTypesModels } from "../hooks/useAssetTypesModels";
+import { useComponentTypes } from "../hooks/useComponentTypes";
+import ComponentVariant from "../components/ComponentVariant";
 
 interface BasicInformation {
   name: string;
@@ -66,6 +74,7 @@ const CabinetView = () => {
   const [checkupDate, setCheckupDate] = useState<Date | undefined>(new Date("Tue Jul 07 2026 14:20:38 GMT+0600"))
 
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false)
+  const [successModalOpen, setSuccessModalOpen] = useState<boolean>(false)
   
   const [images, setImages] = useState({
     picture1: "https://images.pexels.com/photos/4089662/pexels-photo-4089662.jpeg?_gl=1*1pmmgo6*_ga*MjUxOTAzMDY5LjE3ODE5MjE5NjQ.*_ga_8JE65Q40S6*czE3ODM0MDgyNzMkbzIkZzEkdDE3ODM0MDgzMDYkajI3JGwwJGgw",
@@ -94,30 +103,113 @@ const CabinetView = () => {
     model: "",
   })
   
-  const [assetInformation, setAssetInformation] = useState<AssetInformation>({
-    padsInformation: {
-      firstSetPads: {
-        for: "adult+children",
-        expiration: new Date("Tue Jul 07 2026 14:20:38 GMT+0600"),
-        IotNumber: "12233"
-      },
-      secondSetPads: {
-        for: "adult",
-        expiration: new Date("Tue Jul 07 2026 14:20:38 GMT+0600"),
-        IotNumber: "12233"
-      },
+  const formik = useFormik({
+    initialValues: cabinetInitialValues(
+      {
+        accessType: "public",
+        name: "AMS-028",
+        description: "lorem ipsum dolor set amet",
+
+        addressLine1: "1011/AA Amsterdam",
+        addressLine2: "",
+        zipCode: "1011",
+        city: "Amsterdam",
+        country: "NL",
+
+        serialNumber: "",
+        lockCode: "",
+
+        picture1: null,
+        picture2: null,
+        picture3: null,
+
+        asset: {
+            assetModelId: "51",
+            checkupDate: new Date("10-10-2026"),
+            components: [{
+              componentTypeId: "1",
+              componentVariantId: "1",
+              expiresAt: new Date("10-10-2026"),
+              lotNumber: "BG-323",
+              serialNumber: "SN-567832",
+              componentVariantName: "",
+            }, // Index 0: 1st Set Pads
+            {
+              componentTypeId: "1",
+              componentVariantId: "",
+              expiresAt: undefined,
+              lotNumber: "",
+              serialNumber: "",
+              componentVariantName: "",
+            }, // Index 1: 2nd Set Pads
+            {
+              componentTypeId: "2",
+              componentVariantId: "",
+              expiresAt: new Date("10-10-2026"),
+              lotNumber: "L-239823",
+              serialNumber: "SN-278323",
+            }, // Index 2: Battery
+            ],
+            name: "AED",
+            notes: "",
+            expiresAt: new Date("10-10-2026"),
+            purchaseDate: new Date("10-10-2026"),
+            serialNumber: "SN456238998",
+
+            // states for validations
+            brand: "Bexen Cardio",
+            id: "1",
+        }
+      }
+    ),
+    validationSchema:cabinetValidationSchema,
+    onSubmit: async (values) => {
+      try {
+        const cleanedComponents = values.asset?.components?.filter((comp, index) => {
+          // Index 1 is 2nd set pads
+          if (index === 1 && comp.componentTypeId === "1") {
+            const hasValue =
+              comp.componentVariantId ||
+              comp.expiresAt ||
+              comp.lotNumber ||
+              comp.serialNumber;
+
+            // Drop 2nd set pads if user entered nothing
+            return Boolean(hasValue);
+          }
+          return true; // Keep 1st set pads and Battery
+        });
+
+        const payload = {
+          ...values,
+          asset: {
+            ...values.asset,
+            components: cleanedComponents,
+          },
+        };
+
+        // console.log("Cleaned API Payload:", payload);
+        // await createCabinetMutation.mutateAsync(values)
+        successToast("Updated")
+        setStep("basic-information")
+        setConfirmModalOpen(false)
+        setSuccessModalOpen(true)
+        formik.resetForm()
+      } catch (error) {
+        errorToast(
+          error instanceof Error
+            ? error.message
+            : "Something went wrong",
+        );
+      }
     },
-    batteryInformation: {
-      batterySerial: "SN928492819",
-      batteryExpiration: new Date("Tue Jul 07 2026 14:20:38 GMT+0600"),
-      batteryIotNumber: "B-98765"
-    },
-    notes: "lorem ipsum dolor set amet",
-    brandInfo: {
-      name: "",
-      model: "",
-    }
-  })
+  });
+  const {values, setFieldValue, errors, touched, handleChange, handleBlur} = formik
+  
+  const { data: assetTypes, isLoading } = useAssetTypes()
+    const { data: brandsList } = useAssetTypesBrands(values.asset.id)
+    const { data: modelsList } = useAssetTypesModels(values.asset.id, {brand: values.asset.brand })
+    const { data: componentTypes } = useComponentTypes()
 
   const { user } = useAuth();
   const role: Role = user?.role ?? "viewer";
@@ -190,7 +282,7 @@ const CabinetView = () => {
                       </SelectTrigger>
                       <SelectContent>
                       {
-                        brandsList.map((item)=> <SelectItem value={item.brand} key={item.brand}>{item.brand}</SelectItem> )
+                        mockBrandsList.map((item)=> <SelectItem value={item.brand} key={item.brand}>{item.brand}</SelectItem> )
                       }
                       </SelectContent>
                     </Select>
@@ -208,7 +300,7 @@ const CabinetView = () => {
                       </SelectTrigger>
                       <SelectContent>
                       {
-                        brandsList.find(item => item.brand === brandInfo.name)?.models?.map((item)=> <SelectItem value={item} key={item}>{item}</SelectItem> )
+                        mockBrandsList.find(item => item.brand === brandInfo.name)?.models?.map((item)=> <SelectItem value={item} key={item}>{item}</SelectItem> )
                       }
                       </SelectContent>
                     </Select>
@@ -361,8 +453,8 @@ const CabinetView = () => {
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Access Type <span className="text-error">*</span></Label>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <button type="button" className={cn("flex items-center gap-3.75 text-left p-4 border border-border rounded-[10px]", {
-                        "bg-primary/7 border-primary/20": 'public' === accessType
-                      })} onClick={()=> setAccessType('public')} disabled={fieldsReadOnly}>
+                        "bg-primary/7 border-primary/20": 'public' === formik.values.accessType
+                      })} onClick={()=> setFieldValue("accessType", 'public')} disabled={fieldsReadOnly}>
                         <Icons.team />
                         <div className="w-0 grow">
                           <h6 className="font-semibold text-xs">Public</h6>
@@ -370,8 +462,8 @@ const CabinetView = () => {
                         </div>
                       </button>
                       <button type="button" className={cn("flex items-center gap-3.75 text-left p-4 border border-border rounded-[10px]", {
-                        "bg-primary/7 border-primary/20": 'private' === accessType
-                      })} onClick={()=> setAccessType('private')} disabled={fieldsReadOnly}>
+                        "bg-primary/7 border-primary/20": 'private' === formik.values.accessType
+                      })} onClick={()=> setFieldValue("accessType", 'private')} disabled={fieldsReadOnly}>
                         <Icons.lock2 />
                         <div className="w-0 grow">
                           <h6 className="font-semibold text-xs">Private</h6>
@@ -425,7 +517,7 @@ const CabinetView = () => {
                       })}
                       disabled={fieldsReadOnly}
                     >
-                      {assetTypeList.find(i => i.value === assetType)?.label}
+                      {values.asset.name || "Select Asset Type"}
                       {!fieldsReadOnly && <ChevronDown className="ml-auto size-4" />}
                     </SidebarMenuButton>
                   </DropdownMenuTrigger>
@@ -436,48 +528,54 @@ const CabinetView = () => {
                     sideOffset={4}
                   >
                     <DropdownMenuGroup>
-                      {assetTypeList.map((option) => (
-                        <DropdownMenuItem className="text-accent-foreground font-semibold text-xs h-10 py-2 px-2.5 hover:!bg-chip" onClick={()=> setAssetType(option.value)}>
-                          {option.label}
+                      {!isLoading && assetTypes?.map((option) => (
+                        <DropdownMenuItem className="text-accent-foreground font-semibold text-xs h-10 py-2 px-2.5 hover:!bg-chip" 
+                          onClick={()=> {
+                            setFieldValue("asset.id", option.id)
+                            setFieldValue("asset.name", option.name)
+                          }} key={option.id}>
+                          {option.name}
                         </DropdownMenuItem>
                       ))}
                     </DropdownMenuGroup>
                   </DropdownMenuContent>
                 </DropdownMenu>
+                {touched.asset && errors?.asset?.name && (
+                    <p className="mt-1 text-xs text-error">
+                      {errors.asset.name}
+                    </p>
+                  )}
               </div>
-              {assetType === "defibrillator" ? (
+              {values.asset.id === "1" ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 my-3.75 gap-4">
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand<span className="text-error">*</span></Label>
-                    <Select value={assetInformation.brandInfo.name} onValueChange={(value)=> setAssetInformation(prev => ({
-                      ...prev,
-                      brandInfo:{
-                        ...prev.brandInfo,
-                        name: value,
-                        model: ""
-                      }
-                    }))} disabled={fieldsReadOnly}>
-                      <SelectTrigger className={cn("w-full !h-12.5",)}>
+                    <Select value={values.asset.brand} onValueChange={(value)=> {
+                        setFieldValue("asset.brand", value)
+                        setFieldValue("asset.assetModelId", "")
+                      }} disabled={!brandsList || fieldsReadOnly}>
+                      <SelectTrigger className={cn("w-full !h-12.5")}>
                         <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                           <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Brand" /></span>
                         </div>
                       </SelectTrigger>
                       <SelectContent>
                         {
-                          mockBrandsList.map((item)=> <SelectItem value={item.brand} key={item.brand}>{item.brand}</SelectItem> )
+                          brandsList?.map((item)=> <SelectItem value={item} key={item+"brand"}>{item}</SelectItem> )
                         }
                       </SelectContent>
                     </Select>
+                    {touched.asset && errors.asset?.brand && (
+                        <p className="mt-1 text-xs text-error">
+                          {errors.asset?.brand}
+                        </p>
+                      )}
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Model<span className="text-error">*</span></Label>
-                    <Select value={assetInformation.brandInfo.model} onValueChange={(value)=> setAssetInformation(prev => ({
-                      ...prev,
-                      brandInfo: {
-                        ...prev.brandInfo,
-                        model: value
-                      }
-                    }))} disabled={fieldsReadOnly}>
+                    <Select value={values.asset.assetModelId} onValueChange={(value)=> {
+                        setFieldValue("asset.assetModelId", value)
+                      }} disabled={!modelsList || fieldsReadOnly}>
                       <SelectTrigger className={cn("w-full !h-12.5")}>
                         <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                           <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Model" /></span>
@@ -485,10 +583,15 @@ const CabinetView = () => {
                       </SelectTrigger>
                       <SelectContent>
                         {
-                          mockBrandsList.find(item => item.brand === assetInformation.brandInfo.name)?.models?.map((item)=> <SelectItem value={item} key={item}>{item}</SelectItem> )
+                          modelsList?.map((item)=> <SelectItem value={item.id} key={item+"model"}>{item.modelName}</SelectItem> )
                         }
                       </SelectContent>
                     </Select>
+                    {touched.asset && errors.asset?.assetModelId && (
+                      <p className="mt-1 text-xs text-error">
+                        {errors.asset?.assetModelId}
+                      </p>
+                    )}
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 my-3.75 gap-4 sm:col-span-2">
                     <div>
@@ -497,15 +600,26 @@ const CabinetView = () => {
                         placeholder="Enter serial number"
                         autoComplete="off"
                         className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                        name="serialNumber"
+                        value={values.serialNumber}
+                        onChange={formik.handleChange}
+                        errors={touched.asset ? errors.asset?.serialNumber : ''}
+                        readOnly={fieldsReadOnly}
                       />
                     </div>
                     <div>
                       <Label className="text-xs text-accent-foreground font-medium block mb-3">Date of purchase</Label>
-                      <DatePicker value={assetExpiration} onChange={setAssetExpiration} className="!bg-white text-xs pl-5 pr-4" />
+                      <DatePicker className="!bg-white text-xs pl-5 pr-4" 
+                          dateType="past"
+                          value={values.asset.purchaseDate}
+                          onChange={(value)=>setFieldValue("asset.purchaseDate", value)} disabled={fieldsReadOnly} />
                     </div>
                     <div>
                       <Label className="text-xs text-accent-foreground font-medium block mb-3">Next check-up</Label>
-                      <DatePicker value={checkupDate} onChange={setCheckupDate} className="!bg-white text-xs pl-5 pr-4" />
+                      <DatePicker className="!bg-white text-xs pl-5 pr-4"
+                          dateType="future"
+                          value={values.asset.checkupDate} 
+                          onChange={(value)=>setFieldValue("asset.checkupDate", value)} disabled={fieldsReadOnly} />
                     </div>
                   </div>
                 </div>
@@ -514,21 +628,29 @@ const CabinetView = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 my-3.75 gap-4">
                       <div>
                           <Label className="text-xs text-accent-foreground font-medium block mb-3">Asset Expiration Date</Label>
-                          <DatePicker value={assetExpiration} onChange={setAssetExpiration} className="!bg-white text-xs pl-5 pr-4" />
+                          <DatePicker className="!bg-white text-xs pl-5 pr-4"
+                            dateType="future"
+                            value={values.asset.expiresAt}
+                            onChange={(value)=>setFieldValue("asset.expiresAt", value)} disabled={fieldsReadOnly} />
                         </div>
                         <div>
                           <Label className="text-xs text-accent-foreground font-medium block mb-3">Check-Up Date</Label>
-                          <DatePicker value={checkupDate} onChange={setCheckupDate} className="!bg-white text-xs pl-5 pr-4" />
+                          <DatePicker className="!bg-white text-xs pl-5 pr-4"
+                            dateType="future"
+                            value={values.asset.checkupDate} 
+                            onChange={(value)=>setFieldValue("asset.checkupDate", value)} disabled={fieldsReadOnly} />
                         </div>
                         <div>
                           <Label className="text-xs text-accent-foreground font-medium block mb-3">Date of Purchase</Label>
-                          <DatePicker value={warrantyExpiration} onChange={setWarrantyExpiration} className="!bg-white text-xs pl-5 pr-4" />
+                          <DatePicker className="!bg-white text-xs pl-5 pr-4" 
+                            dateType="past"
+                            value={values.asset.purchaseDate} 
+                            onChange={(value)=>setFieldValue("asset.purchaseDate", value)} disabled={fieldsReadOnly} />
                         </div>
                     </div>
                   </>
                 )
               }
-
 
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 my-3.75 gap-4">
                 <div className="sm:col-span-2 xl:col-span-3">
@@ -538,212 +660,18 @@ const CabinetView = () => {
                     autoComplete="off"
                     className="p-5 placeholder:text-accent-foreground/20"
                     readOnly={fieldsReadOnly}
-                    value={assetInformation.notes}
-                    onChange={(e)=> setAssetInformation(prev=> ({
-                      ...prev,
-                      notes: e.target.value
-                    }))}
+                    value={values.asset.notes}
+                    name="asset.notes"
+                    onChange={handleChange}
                   />
                 </div>
               </div>
             </div>
-            {assetType === "defibrillator" && 
-              <>
-                {/* Battery Information */}
-                <div className="mt-5">
-                  <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75">
-                    <span className="w-0 grow">Pads Information</span>
-                    <InfoIcon size={20} />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 my-3.75 gap-4">
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">1st set pads for<span className="text-error">*</span></Label>
-                      <Select value={assetInformation.padsInformation.firstSetPads.for}
-                        onValueChange={(value: "adult" | "adult+children" | "children") =>
-                          setAssetInformation((prev) => ({
-                            ...prev,
-                            padsInformation: {
-                              ...prev.padsInformation,
-                              firstSetPads: {
-                                ...prev.padsInformation.firstSetPads,
-                                for: value,
-                              },
-                            },
-                          }))
-                        } disabled={fieldsReadOnly}>
-                        <SelectTrigger className="w-full !h-12.5">
-                          <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-                            <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Adult + Child" /></span>
-                          </div>
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="adult+children">Adult + Child</SelectItem>
-                          <SelectItem value="adult">Adult Only</SelectItem>
-                          <SelectItem value="children">Children</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">1st set pads expiration date<span className="text-error">*</span></Label>
-                      <DatePicker value={assetInformation.padsInformation.firstSetPads.expiration} onChange={(value) =>
-                          setAssetInformation((prev) => ({
-                            ...prev,
-                            padsInformation: {
-                              ...prev.padsInformation,
-                              firstSetPads: {
-                                ...prev.padsInformation.firstSetPads,
-                                expiration: value,
-                              },
-                            },
-                          }))
-                        } disabled={fieldsReadOnly} className="!bg-white text-xs pl-5 pr-4" />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">1st set pads Iot number</Label>
-                      <Input
-                        placeholder="e.g. 14454"
-                        autoComplete="off"
-                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                        readOnly={fieldsReadOnly}
-                        value={assetInformation.padsInformation.firstSetPads.IotNumber}
-                        onChange={(e)=> setAssetInformation((prev) => ({
-                            ...prev,
-                            padsInformation: {
-                              ...prev.padsInformation,
-                              firstSetPads: {
-                                ...prev.padsInformation.firstSetPads,
-                                IotNumber: e.target.value,
-                              },
-                            },
-                          })
-                        )}
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">2nd set pads for</Label>
-                      <Select value={assetInformation.padsInformation.secondSetPads.for}
-                        onValueChange={(value: "adult" | "adult+children" | "children") =>
-                          setAssetInformation((prev) => ({
-                            ...prev,
-                            padsInformation: {
-                              ...prev.padsInformation,
-                              secondSetPads: {
-                                ...prev.padsInformation.secondSetPads,
-                                for: value,
-                              },
-                            },
-                          }))
-                        } disabled={fieldsReadOnly}>
-                        <SelectTrigger className="w-full !h-12.5">
-                          <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-                            <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Adult + Child" /></span>
-                          </div>
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="adult+children">Adult + Child</SelectItem>
-                          <SelectItem value="adult">Adult Only</SelectItem>
-                          <SelectItem value="children">Children</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">2nd set pads expiration date</Label>
-                      <DatePicker value={assetInformation.padsInformation.secondSetPads.expiration} onChange={(value) =>
-                          setAssetInformation((prev) => ({
-                            ...prev,
-                            padsInformation: {
-                              ...prev.padsInformation,
-                              secondSetPads: {
-                                ...prev.padsInformation.secondSetPads,
-                                expiration: value,
-                              },
-                            },
-                          }))
-                        } disabled={fieldsReadOnly} className="!bg-white text-xs pl-5 pr-4" />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">2nd set pads Iot number</Label>
-                      <Input
-                        placeholder="e.g. 14454"
-                        autoComplete="off"
-                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                        readOnly={fieldsReadOnly}
-                        value={assetInformation.padsInformation.secondSetPads.IotNumber}
-                        onChange={(e)=> setAssetInformation((prev) => ({
-                            ...prev,
-                            padsInformation: {
-                              ...prev.padsInformation,
-                              secondSetPads: {
-                                ...prev.padsInformation.secondSetPads,
-                                IotNumber: e.target.value,
-                              },
-                            },
-                          })
-                        )}
-                      />
-                    </div>
-                  </div>
-                </div>
-                {/* Pads Information */}
-                <div className="mt-5">
-                  <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75">
-                    <span className="w-0 grow">Battery Information</span>
-                    <InfoIcon size={20} />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 my-3.75 gap-4">
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery expiration date<span className="text-error">*</span></Label>
-                      <DatePicker value={assetInformation.batteryInformation.batteryExpiration} onChange={(value) =>
-                          setAssetInformation((prev) => ({
-                            ...prev,
-                            batteryInformation: {
-                              ...prev.batteryInformation,
-                              batteryExpiration: value
-                            },
-                          }))
-                        }
-                        disabled={fieldsReadOnly} className="!bg-white text-xs pl-5 pr-4" />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery serial number</Label>
-                      <Input
-                        placeholder="e.g. SN928492819"
-                        autoComplete="off"
-                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                        readOnly={fieldsReadOnly}
-                        value={assetInformation.batteryInformation.batterySerial}
-                        onChange={(e)=> setAssetInformation((prev) => ({
-                            ...prev,
-                            batteryInformation: {
-                              ...prev.batteryInformation,
-                              batterySerial: e.target.value
-                            },
-                          })
-                        )}
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery Iot number</Label>
-                      <Input
-                        placeholder="e.g. B-98765"
-                        autoComplete="off"
-                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                        readOnly={fieldsReadOnly}
-                        value={assetInformation.batteryInformation.batteryIotNumber}
-                        onChange={(e)=> setAssetInformation((prev) => ({
-                            ...prev,
-                            batteryInformation: {
-                              ...prev.batteryInformation,
-                              batteryIotNumber: e.target.value
-                            },
-                          })
-                        )}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </>
-            }
+            {values.asset.id === "1" && (
+              componentTypes?.map((componentType:{id:string, name:string})=> (
+                  <ComponentVariant componentType={componentType} key={componentType.id} formik={formik} fieldsReadOnly={fieldsReadOnly} />
+                ))
+            )}
           </div>
         )
       default: 
@@ -764,11 +692,12 @@ const CabinetView = () => {
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
                       readOnly={fieldsReadOnly}
-                      value={basicInformation.name}
-                      onChange={(e)=> setBasicInformation(prev => ({
-                        ...prev,
-                        name: e.target.value
-                      }))}
+                      name="name"
+                      value={values.name}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      errors={touched.name ? errors.name : ''}
+                      
                     />
                   </div>
                   <div className="mb-3">
@@ -778,11 +707,10 @@ const CabinetView = () => {
                       autoComplete="off"
                       className="px-5 pt-5 placeholder:text-accent-foreground/20"
                       readOnly={fieldsReadOnly}
-                      value={basicInformation.description}
-                      onChange={(e)=> setBasicInformation(prev => ({
-                        ...prev,
-                        description: e.target.value
-                      }))}
+                      name="description"
+                      value={values.description}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                     />
                   </div>
                 </div>
@@ -802,11 +730,11 @@ const CabinetView = () => {
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
                       readOnly={fieldsReadOnly}
-                      value={basicInformation.addressLine1}
-                      onChange={(e)=> setBasicInformation(prev => ({
-                        ...prev,
-                        addressLine1: e.target.value
-                      }))}
+                      name="addressLine1"
+                      value={values.addressLine1}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      errors={touched.addressLine1 ? errors.addressLine1 : ''}
                     />
                   </div>
                   <div>
@@ -816,11 +744,10 @@ const CabinetView = () => {
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
                       readOnly={fieldsReadOnly}
-                      value={basicInformation.addressLine2}
-                      onChange={(e)=> setBasicInformation(prev => ({
-                        ...prev,
-                        addressLine2: e.target.value
-                      }))}
+                      name="addressLine2"
+                      value={values.addressLine2}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                     />
                   </div>
                 </div>
@@ -832,11 +759,11 @@ const CabinetView = () => {
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
                       readOnly={fieldsReadOnly}
-                      value={basicInformation.zip}
-                      onChange={(e)=> setBasicInformation(prev => ({
-                        ...prev,
-                        zip: e.target.value
-                      }))}
+                      name="zipCode"
+                      value={values.zipCode}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      errors={touched.zipCode ? errors.zipCode : ''}
                     />
                   </div>
                   <div>
@@ -846,55 +773,73 @@ const CabinetView = () => {
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
                       readOnly={fieldsReadOnly}
-                      value={basicInformation.city}
-                      onChange={(e)=> setBasicInformation(prev => ({
-                        ...prev,
-                        city: e.target.value
-                      }))}
+                      name="city"
+                      value={values.city}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      errors={touched.city ? errors.city : ''}
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Country <span className="text-error">*</span></Label>
-                    <Input
-                      placeholder="Enter country"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                      readOnly={fieldsReadOnly}
-                      value={basicInformation.country}
-                      onChange={(e)=> setBasicInformation(prev => ({
-                        ...prev,
-                        country: e.target.value
-                      }))}
-                    />
-                  </div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Country <span className="text-error">*</span></Label>
+                      <Select
+                        value={values.country || ""}
+                        onValueChange={(value) => setFieldValue("country", value)}
+                        disabled={fieldsReadOnly}
+                      >
+                        <SelectTrigger className="w-full !h-12.5">
+                          <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
+                            <span className="line-clamp-1 w-0 grow text-left">
+                              <SelectValue placeholder="Select country" />
+                            </span>
+                          </div>
+                        </SelectTrigger>
+  
+                        <SelectContent>
+                          {COUNTRY_OPTIONS.map((country) => (
+                            <SelectItem key={country.iso2} value={country.iso2}>
+                              <div className="flex items-center justify-between w-full gap-2">
+                                <span>{country.name}</span>
+                                <span className="text-muted-foreground text-xs">({country.iso2})</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                 </div>
               </div>
 
               {/* Situation Pictures */}
-              <div>
-                <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75">
-                  <span className="w-0 grow">Situation Pictures</span>
-                  <InfoIcon size={20} />
+              {!fieldsReadOnly && (!values.picture1 && !values.picture2 && !values.picture3) && (
+                <div>
+                  <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75">
+                    <span className="w-0 grow">Situation Pictures</span>
+                    <InfoIcon size={20} />
+                  </div>
+                  <Label className="text-xs text-accent-foreground font-medium block mb-3">Pictures <span className="text-foreground">(max. 3)</span></Label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <SingleImageUploader
+                      value={values.picture1}
+                      onChange={(file) => handleImageChange("picture1", file)}
+                      onRemove={() => setFieldValue("picture1", null)}
+                      readOnly={fieldsReadOnly}
+                    />
+                    <SingleImageUploader
+                      value={values.picture2}
+                      onChange={(file) => handleImageChange("picture2", file)}
+                      onRemove={() => setFieldValue("picture2", null)}
+                      readOnly={fieldsReadOnly}
+                    />
+                    <SingleImageUploader
+                      value={values.picture3}
+                      onChange={(file) => handleImageChange("picture3", file)}
+                      onRemove={() => setFieldValue("picture3", null)}
+                      readOnly={fieldsReadOnly}
+                    />
+                  </div>
                 </div>
-                {!fieldsReadOnly && <Label className="text-xs text-accent-foreground font-medium block mb-3">Pictures <span className="text-foreground">(max. 3)</span></Label>}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <SingleImageUploader
-                    value={images.picture1}
-                    onChange={(file) => handleImageChange("picture1", file)}
-                    readOnly={fieldsReadOnly}
-                  />
-                  <SingleImageUploader
-                    value={images.picture2}
-                    onChange={(file) => handleImageChange("picture2", file)}
-                    readOnly={fieldsReadOnly}
-                  />
-                  <SingleImageUploader
-                    value={images.picture3}
-                    onChange={(file) => handleImageChange("picture3", file)}
-                    readOnly={fieldsReadOnly}
-                  />
-                </div>
-              </div>
+              )}
             </div>
         )
     }
@@ -978,7 +923,16 @@ const CabinetView = () => {
           </div>
 
         </div>
-        <ConfirmationModal open={confirmModalOpen} setOpen={setConfirmModalOpen} />
+        <ConfirmationModal {
+            ...{
+              open:confirmModalOpen,
+              setOpen: setConfirmModalOpen,
+              successModalOpen,
+              setSuccessModalOpen,
+              values,
+              handleSubmit: formik.handleSubmit
+            }
+        } />
       </main>
     </>
   );

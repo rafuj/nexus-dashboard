@@ -586,18 +586,22 @@ export default function AddCabinets() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 my-3.75 gap-4">
                       <div>
                           <Label className="text-xs text-accent-foreground font-medium block mb-3">Asset Expiration Date</Label>
-                          <DatePicker value={assetExpiration} onChange={setAssetExpiration} className="!bg-white text-xs pl-5 pr-4" />
+                          <DatePicker className="!bg-white text-xs pl-5 pr-4"
+                            dateType="future"
+                            value={values.asset.expiresAt}
+                            onChange={(value)=>setFieldValue("asset.expiresAt", value)} />
                         </div>
                         <div>
                           <Label className="text-xs text-accent-foreground font-medium block mb-3">Check-Up Date</Label>
                           <DatePicker className="!bg-white text-xs pl-5 pr-4" 
                             dateType="future"
                             value={values.asset.checkupDate} 
-                            onChange={(value)=>setFieldValue("asset.checkupDate", value)}/>
+                            onChange={(value)=>setFieldValue("asset.checkupDate", value)} />
                         </div>
                         <div>
                           <Label className="text-xs text-accent-foreground font-medium block mb-3">Date of Purchase</Label>
-                          <DatePicker className="!bg-white text-xs pl-5 pr-4" dateType="past"
+                          <DatePicker className="!bg-white text-xs pl-5 pr-4" 
+                            dateType="past"
                             value={values.asset.purchaseDate} 
                             onChange={(value)=>setFieldValue("asset.purchaseDate", value)} />
                         </div>
@@ -617,11 +621,9 @@ export default function AddCabinets() {
                 </div>
             </div>
             {values.asset.id === "1" && (
-              <>
-                {componentTypes?.map((componentType:{id:string, name:string})=> (
+              componentTypes?.map((componentType:{id:string, name:string})=> (
                   <ComponentVariant componentType={componentType} key={componentType.id} formik={formik} />
-                ))}
-              </>
+                ))
             )}
           </div>
         )

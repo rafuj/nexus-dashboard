@@ -10,9 +10,10 @@ import type { CreateCabinetFormValues } from "../api/cabinet.api";
 
 interface ComponentVariantProps {
     componentType: ComponentTypesAED,
-    formik: FormikProps<CreateCabinetFormValues>
+    formik: FormikProps<CreateCabinetFormValues>,
+    fieldsReadOnly?: boolean
 }
-export default function ComponentVariant({ componentType, formik }: ComponentVariantProps) {
+export default function ComponentVariant({ componentType, formik, fieldsReadOnly = false }: ComponentVariantProps) {
     const { data: componentTypeDataVariants } = useComponentTypesVariants(componentType.id)
 
     const { values, touched, errors, setFieldValue, handleChange } = formik;
@@ -78,6 +79,7 @@ export default function ComponentVariant({ componentType, formik }: ComponentVar
                                 setFieldValue(`asset.components[${firstSetIdx}].componentVariantId`, variantId)
                                 setFieldValue(`asset.components[${firstSetIdx}].componentVariantName`, selectedVariant?.name)
                             }}
+                            disabled={fieldsReadOnly}
                         >
                         <SelectTrigger className="w-full !h-12.5">
                             <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
@@ -110,6 +112,7 @@ export default function ComponentVariant({ componentType, formik }: ComponentVar
                             onChange={(val) => setFieldValue(`asset.components[${firstSetIdx}].expiresAt`, val)}
                             className="!bg-white text-xs pl-5 pr-4"
                             dateType="future"
+                            disabled={fieldsReadOnly}
                         />
                         {renderError(
                             touched?.asset,
@@ -129,6 +132,7 @@ export default function ComponentVariant({ componentType, formik }: ComponentVar
                             name={`asset.components[${firstSetIdx}].lotNumber`}
                             value={components[firstSetIdx]?.lotNumber || ""}
                             onChange={handleChange}
+                            readOnly={fieldsReadOnly}
                         />
                     </div>
                     </>
@@ -143,14 +147,15 @@ export default function ComponentVariant({ componentType, formik }: ComponentVar
                         2nd set pads for
                         </Label>
                         <Select
-                        value={components[secondSetIdx]?.componentVariantId || ""}
-                        onValueChange={(variantId) => {
-                            // Find the full variant object from your options list
-                            const selectedVariant = componentTypeDataVariants?.find((v) => v.id === variantId);
-                            // Set both the ID and Name in Formik state
-                            setFieldValue(`asset.components[${secondSetIdx}].componentVariantId`, variantId)
-                            setFieldValue(`asset.components[${secondSetIdx}].componentVariantName`, selectedVariant?.name)
-                        }}
+                            value={components[secondSetIdx]?.componentVariantId || ""}
+                            onValueChange={(variantId) => {
+                                // Find the full variant object from your options list
+                                const selectedVariant = componentTypeDataVariants?.find((v) => v.id === variantId);
+                                // Set both the ID and Name in Formik state
+                                setFieldValue(`asset.components[${secondSetIdx}].componentVariantId`, variantId)
+                                setFieldValue(`asset.components[${secondSetIdx}].componentVariantName`, selectedVariant?.name)
+                            }}
+                            disabled={fieldsReadOnly}
                         >
                             <SelectTrigger className="w-full !h-12.5">
                                 <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
@@ -179,6 +184,7 @@ export default function ComponentVariant({ componentType, formik }: ComponentVar
                             onChange={(val) => setFieldValue(`asset.components[${secondSetIdx}].expiresAt`, val)}
                             className="!bg-white text-xs pl-5 pr-4"
                             dateType="future"
+                            disabled={fieldsReadOnly}
                         />
                     </div>
 
@@ -188,12 +194,13 @@ export default function ComponentVariant({ componentType, formik }: ComponentVar
                         2nd set pads Lot number
                         </Label>
                         <Input
-                        placeholder="e.g. 14454"
-                        autoComplete="off"
-                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                        name={`asset.components[${secondSetIdx}].lotNumber`}
-                        value={components[secondSetIdx]?.lotNumber || ""}
-                        onChange={handleChange}
+                            placeholder="e.g. 14454"
+                            autoComplete="off"
+                            className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                            name={`asset.components[${secondSetIdx}].lotNumber`}
+                            value={components[secondSetIdx]?.lotNumber || ""}
+                            onChange={handleChange}
+                            readOnly={fieldsReadOnly}
                         />
                     </div>
                     </>
@@ -228,6 +235,7 @@ export default function ComponentVariant({ componentType, formik }: ComponentVar
                     onChange={(val) => setFieldValue(`asset.components[${batteryIdx}].expiresAt`, val)}
                     className="!bg-white text-xs pl-5 pr-4"
                     dateType="future"
+                    disabled={fieldsReadOnly}
                 />
                 {renderError(
                     touched?.asset,
@@ -247,6 +255,7 @@ export default function ComponentVariant({ componentType, formik }: ComponentVar
                     name={`asset.components[${batteryIdx}].serialNumber`}
                     value={components[batteryIdx]?.serialNumber || ""}
                     onChange={handleChange}
+                    readOnly={fieldsReadOnly}
                 />
                 </div>
 
@@ -262,6 +271,7 @@ export default function ComponentVariant({ componentType, formik }: ComponentVar
                     name={`asset.components[${batteryIdx}].lotNumber`}
                     value={components[batteryIdx]?.lotNumber || ""}
                     onChange={handleChange}
+                    readOnly={fieldsReadOnly}
                 />
                 </div>
             </div>
