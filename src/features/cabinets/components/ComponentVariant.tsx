@@ -80,7 +80,7 @@ export default function ComponentVariant({ componentType, assetFormik }: Compone
                 <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">2nd set pads for</Label>
                     <Select value={values.padsInformation?.secondSetPads.for}
-                        onValueChange={(value)=> setFieldValue("values.padsInformation?.secondSetPads.for", value)}
+                        onValueChange={(value)=> setFieldValue("padsInformation.secondSetPads.for", value)}
                     >
                         <SelectTrigger className="w-full !h-12.5">
                             <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">

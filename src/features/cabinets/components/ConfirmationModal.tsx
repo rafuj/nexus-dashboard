@@ -9,13 +9,16 @@ import {
 } from "@/shared/components/ui/dialog"
 import { useState, type Dispatch, type SetStateAction } from "react"
 import { SuccessModal } from "./SuccessModal"
+import type { AssetFormValues } from "../api/assets.api"
+import { formatDateSlash } from "@/lib/utils"
 interface ModalProps {
   open: boolean,
-  setOpen: Dispatch<SetStateAction<boolean>>
+  setOpen: Dispatch<SetStateAction<boolean>>,
+  values: AssetFormValues
 }
 
-export const ConfirmationModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
-
+export const ConfirmationModal: React.FC<ModalProps>  = ({ open, setOpen, values }) => {
+console.log("asset form values",values)
       const [successModalOpen, setSuccessModalOpen] = useState<boolean>(false)
   return (
     <>
@@ -37,11 +40,11 @@ export const ConfirmationModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
                     <ul className="py-1">
                         <li className="grid grid-cols-2 px-2.5 py-1.5">
                             <span className="font-medium">Type of asset</span>
-                            <span className="font-semibold text-accent-foreground">AED</span>
+                            <span className="font-semibold text-accent-foreground">{values.assetType.name}</span>
                         </li>
                         <li className="grid grid-cols-2 px-2.5 py-1.5">
                             <span className="font-medium">AED set suitable for</span>
-                            <span className="font-semibold text-accent-foreground">Both adult and children</span>
+                            <span className="font-semibold text-accent-foreground">{values.padsInformation.firstSetPads.for}</span>
                         </li>
                     </ul>
                 </div>
@@ -54,28 +57,28 @@ export const ConfirmationModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
                     <ul className="py-1">
                         <li className="grid grid-cols-2 px-2.5 py-1.5">
                             <span className="font-medium">1st set pads for</span>
-                            <span className="font-semibold text-accent-foreground">Adult + Child</span>
+                            <span className="font-semibold text-accent-foreground">{values.padsInformation.firstSetPads.for}</span>
                         </li>
                         <li className="grid grid-cols-2 px-2.5 py-1.5">
                             <span className="font-medium">1st set pads expiration date</span>
-                            <span className="font-semibold text-accent-foreground">17/08/2027</span>
+                            <span className="font-semibold text-accent-foreground">{values.padsInformation.firstSetPads.for ? formatDateSlash(values.padsInformation.firstSetPads.for):""}</span>
                         </li>
                         <li className="grid grid-cols-2 px-2.5 py-1.5">
                             <span className="font-medium">1st set pads LOT number</span>
-                            <span className="font-semibold text-accent-foreground">28392</span>
+                            <span className="font-semibold text-accent-foreground">{values.padsInformation.firstSetPads.IotNumber}</span>
                         </li>
                         <li className="border-t border-border mx-2.5 my-1.5"></li>
                         <li className="grid grid-cols-2 px-2.5 py-1.5">
                             <span className="font-medium">2nd set pads for</span>
-                            <span className="font-semibold text-accent-foreground">Adult + Child</span>
+                            <span className="font-semibold text-accent-foreground">{values.padsInformation.secondSetPads.for}</span>
                         </li>
                         <li className="grid grid-cols-2 px-2.5 py-1.5">
                             <span className="font-medium">2nd set pads expiration date</span>
-                            <span className="font-semibold text-accent-foreground">17/08/2027</span>
+                            <span className="font-semibold text-accent-foreground">{values.padsInformation.secondSetPads.for ? formatDateSlash(values.padsInformation.secondSetPads.for):""}</span>
                         </li>
                         <li className="grid grid-cols-2 px-2.5 py-1.5">
                             <span className="font-medium">2nd set pads LOT number</span>
-                            <span className="font-semibold text-accent-foreground">28392</span>
+                            <span className="font-semibold text-accent-foreground">{values.padsInformation.secondSetPads.IotNumber}</span>
                         </li>
                     </ul>
                 </div>
@@ -88,15 +91,15 @@ export const ConfirmationModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
                     <ul className="py-1">
                         <li className="grid grid-cols-2 px-2.5 py-1.5">
                             <span className="font-medium">Battery serial number</span>
-                            <span className="font-semibold text-accent-foreground">SN02934729</span>
+                            <span className="font-semibold text-accent-foreground">{values.batteryInformation.batterySerial}</span>
                         </li>
                         <li className="grid grid-cols-2 px-2.5 py-1.5">
                             <span className="font-medium">Battery expiration date</span>
-                            <span className="font-semibold text-accent-foreground">30/01/2029</span>
+                            <span className="font-semibold text-accent-foreground">{values.batteryInformation.batteryExpiration ? formatDateSlash(values.batteryInformation.batteryExpiration):''}</span>
                         </li>
                         <li className="grid grid-cols-2 px-2.5 py-1.5">
                             <span className="font-medium">Battery LOT number</span>
-                            <span className="font-semibold text-accent-foreground">B-82734</span>
+                            <span className="font-semibold text-accent-foreground">{values.batteryInformation.batteryIotNumber}</span>
                         </li>
                     </ul>
                 </div>

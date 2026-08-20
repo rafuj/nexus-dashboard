@@ -34,6 +34,7 @@ import { useComponentTypes } from "../hooks/useComponentTypes";
 import { useAssetTypesBrands } from "../hooks/useAssetTypesBrands";
 import ComponentVariant from "../components/ComponentVariant";
 import { mockBrandsList } from "../mock/mockBrands";
+import type { AssetFormValues } from "../api/assets.api";
 
 
 export interface BrandInfo {
@@ -80,8 +81,7 @@ const initialValues: CreateCabinetFormValues = {
   picture2: null,
   picture3: null,
 }
-
-const assetFormikInitialValues = {
+const assetFormikInitialValues: AssetFormValues = {
   assetType: {
     id: "",
     name: ""
@@ -930,7 +930,7 @@ export default function AddCabinets() {
             </div>
           </div>
         </div>
-        <ConfirmationModal open={confirmModalOpen} setOpen={setConfirmModalOpen} />
+        <ConfirmationModal open={confirmModalOpen} setOpen={setConfirmModalOpen} values={assetFormik.values} />
       </main>
     </>
   );
