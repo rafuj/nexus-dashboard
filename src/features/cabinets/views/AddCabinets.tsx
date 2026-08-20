@@ -80,42 +80,6 @@ const initialValues: CreateCabinetFormValues = {
   picture2: null,
   picture3: null,
 }
-export interface AssetFormValues {
-  assetType: {
-    id: string;
-    name: string;
-  };
-
-  brandInfo: {
-    name: string;
-    model: string;
-  };
-
-  serialNumber: string;
-  dateOfPurchase: Date | null;
-  nextCheckUp: Date | null;
-
-  padsInformation: {
-    firstSetPads: {
-      for: string;
-      expiration: string | Date | null;
-      IotNumber: string;
-    };
-    secondSetPads: {
-      for: string;
-      expiration: string | Date | null;
-      IotNumber: string;
-    };
-  };
-
-  batteryInformation: {
-    batterySerial: string;
-    batteryExpiration: string | Date | null;
-    batteryIotNumber: string;
-  };
-
-  notes: string;
-}
 
 const assetFormikInitialValues = {
   assetType: {
