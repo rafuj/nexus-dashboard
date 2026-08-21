@@ -10,6 +10,7 @@ export interface CreateCabinetFormValues  {
   asset: {
     id: string // id is for error handling not for apies
     brand: string // brand is for error handling not for apies
+    cabinetId?: string // cabinetId is for error handling not for apies
     assetModelId?: string
     checkupDate?: Date | undefined
     components?: {
@@ -99,37 +100,50 @@ export const createCabinet = async (
     }
 
     // Components
-    values.asset.components?.forEach((component, index) => {
-      formData.append(
-        `asset[components][${index}][componentTypeId]`,
-        component.componentTypeId,
-      )
+    let validIndex = 0
 
-      if (component.componentVariantId) {
+    values.asset.components?.forEach((component) => {
+      const hasData =
+        component.componentVariantId ||
+        component.expiresAt ||
+        component.lotNumber ||
+        component.serialNumber
+
+      if (hasData) {
         formData.append(
-          `asset[components][${index}][componentVariantId]`,
-          component.componentVariantId,
+          `asset[components][${validIndex}][componentTypeId]`,
+          component.componentTypeId,
         )
-      }
-  
 
-      if (component.expiresAt) {
-        formData.append(`asset[components][${index}][expiresAt]`, formatDateDDMMYYYY(component.expiresAt));
-      }
-      
+        if (component.componentVariantId) {
+          formData.append(
+            `asset[components][${validIndex}][componentVariantId]`,
+            component.componentVariantId,
+          )
+        }
 
-      if (component.lotNumber) {
-        formData.append(
-          `asset[components][${index}][lotNumber]`,
-          component.lotNumber,
-        )
-      }
+        if (component.expiresAt) {
+          formData.append(
+            `asset[components][${validIndex}][expiresAt]`,
+            formatDateDDMMYYYY(component.expiresAt),
+          )
+        }
 
-      if (component.serialNumber) {
-        formData.append(
-          `asset[components][${index}][serialNumber]`,
-          component.serialNumber,
-        )
+        if (component.lotNumber) {
+          formData.append(
+            `asset[components][${validIndex}][lotNumber]`,
+            component.lotNumber,
+          )
+        }
+
+        if (component.serialNumber) {
+          formData.append(
+            `asset[components][${validIndex}][serialNumber]`,
+            component.serialNumber,
+          )
+        }
+
+        validIndex++
       }
     })
   }

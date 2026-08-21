@@ -15,10 +15,10 @@ import { SingleImageUploader } from "@/shared/components/image-uploader/single-i
 import { CustomRadioGroup } from "@/shared/components/CustomRadioGroup";
 import { DatePicker } from "@/shared/components/ui/date-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
-import { cn } from "@/lib/utils";
+import { cn, convertDDMMYYYY } from "@/lib/utils";
 import SchedulePicker from "../components/SchedulePicker";
-import { cabinetInitialValues, cabinetValidationSchema, type AccessTypeI, type AvailabilityType, type BrightnessType, type ColorType, type DayConfig, type StepType, type VolumeType } from "../types/addCabinet";
-import { assetTypeList, availabilityTypeList, brightnessList, colorList, dayList, STEPS, volumeList } from "../mock/addCabinetData";
+import { cabinetInitialValues, type AvailabilityType, type BrightnessType, type ColorType, type DayConfig, type StepType, type VolumeType } from "../types/addCabinet";
+import { availabilityTypeList, brightnessList, colorList, dayList, STEPS, volumeList } from "../mock/addCabinetData";
 import { ConfirmationModal } from "../components/ConfirmationModal";
 import { AVAILABLE_CREDITS, MANAGE_CABINETS } from "@/features/dashboard/mock/mockDashboardStats";
 import { can, type Role } from "@/lib/permissions";
@@ -40,16 +40,10 @@ import { useComponentTypes } from "../hooks/useComponentTypes";
 import ComponentVariant from "../components/ComponentVariant";
 import { useCabinetsView } from "../hooks/useCabinetsView";
 import { useAssetView } from "../hooks/useAssetView";
+import { useUpdateCabinet } from "../hooks/useUpdateCabinet";
+import { cabinetAssetUpdateSchema, cabinetUpdateSchema } from "../types/validationSchema";
+import { useUpdateAsset } from "../hooks/useUpdateAsset";
 
-interface BasicInformation {
-  name: string;
-  description: string;
-  addressLine1: string;
-  addressLine2: string;
-  zip: string;
-  city: string;
-  country: string;
-}
 interface CabinetDetails {
   serialNumber: string;
   moduleCode: string;
@@ -84,107 +78,90 @@ const CabinetView = () => {
   })
   const { id } = useParams()
   const { data, isSuccess } = useCabinetsView(id ?? '')
-  const { data: assetViewData, isSuccess: isAssetViewSuccess } = useAssetView(data?.id || "")
+  const updateCabinetMutation = useUpdateCabinet(id ?? '')
+  
+  const { data: assetViewData, isSuccess: isAssetViewSuccess } = useAssetView(id || "")
+  const updateAssetMutation = useUpdateAsset(assetViewData?.id ?? '')
+  
+  console.log("assetViewData", assetViewData)
 
   useEffect(() => {
-    if (isSuccess && isAssetViewSuccess) {
+    if (isSuccess && isAssetViewSuccess && data && assetViewData) {
+      // 2. Separate pads and battery from the reversed array
+      const padsComponents = [...(assetViewData?.components || [])].filter(
+        (c: any) => c.componentTypeId === "1"
+      );
+
+      const batteryComponent = [...(assetViewData?.components || [])].find(
+        (c: any) => c.componentTypeId === "2"
+      );
       formik.resetForm({
         values: cabinetInitialValues({
-        accessType: data.accessType,
-        name: data.name,
-        description: data.description,
+          ...data,
+          asset: {
+            assetModelId: assetViewData?.assetModelId,
+            checkupDate: convertDDMMYYYY(assetViewData?.checkupDate),
+            expiresAt: convertDDMMYYYY(assetViewData?.expiresAt),
+            purchaseDate: convertDDMMYYYY(assetViewData?.purchaseDate),
+            name: assetViewData?.name,
+            notes: assetViewData?.notes,
+            serialNumber: assetViewData?.serialNumber,
+            brand: assetViewData?.assetModel?.brand,
+            id: assetViewData?.assetModel?.assetTypeId,
+            cabinetId: id,
 
-        addressLine1: data.addressLine1,
-        addressLine2: data.addressLine2,
-        zipCode: data.zipCode,
-        city: data.city,
-        country: data.country,
-
-        serialNumber: data.serialNumber,
-        lockCode: data.lockCode,
-
-        picture1: data.picture1,
-        picture2: data.picture2,
-        picture3: data.picture3,
-
-        asset: {
-            assetModelId: assetViewData.assetModelId,
-            checkupDate: new Date(assetViewData.checkupDate),
-            components: [{
-              componentTypeId: assetViewData.components[0].componentTypeId,
-              componentVariantId: assetViewData.components[0].componentVariantId || "",
-              expiresAt: new Date(assetViewData.components[0].expiresAt),
-              lotNumber: assetViewData.components[0].lotNumber,
-              serialNumber: assetViewData.components[0].serialNumber,
-              componentVariantName: assetViewData.components[0]?.componentVariant?.name,
-            },
-            {
-              componentTypeId: assetViewData.components[1].componentTypeId,
-              componentVariantId: assetViewData.components[1].componentVariantId || "",
-              expiresAt: new Date(assetViewData.components[1].expiresAt),
-              lotNumber: assetViewData.components[1].lotNumber,
-              serialNumber: assetViewData.components[1].serialNumber,
-              componentVariantName: assetViewData.components[1]?.componentVariant?.name,
-            },
-            {
-              componentTypeId: assetViewData.components[2].componentTypeId,
-              componentVariantId: assetViewData.components[2].componentVariantId || "",
-              expiresAt: new Date(assetViewData.components[2].expiresAt),
-              lotNumber: assetViewData.components[2].lotNumber,
-              serialNumber: assetViewData.components[2].serialNumber,
-              componentVariantName: assetViewData.components[2]?.componentVariant?.name,
-            },
+            components: [
+              // Slot 0: 1st Set Pads
+              {
+                componentTypeId: "1",
+                componentVariantId: padsComponents[0]?.componentVariantId || "",
+                expiresAt: convertDDMMYYYY(padsComponents[0]?.expiresAt),
+                lotNumber: padsComponents[0]?.lotNumber || "",
+                serialNumber: padsComponents[0]?.serialNumber || "",
+                componentVariantName: padsComponents[0]?.componentVariant?.name || "",
+              },
+              // Slot 1: 2nd Set Pads
+              {
+                componentTypeId: "1",
+                componentVariantId: padsComponents[1]?.componentVariantId || "",
+                expiresAt: convertDDMMYYYY(padsComponents[1]?.expiresAt),
+                lotNumber: padsComponents[1]?.lotNumber || "",
+                serialNumber: padsComponents[1]?.serialNumber || "",
+                componentVariantName: padsComponents[1]?.componentVariant?.name || "",
+              },
+              // Slot 2: Battery
+              {
+                componentTypeId: "2",
+                componentVariantId: batteryComponent?.componentVariantId || "",
+                expiresAt: convertDDMMYYYY(batteryComponent?.expiresAt),
+                lotNumber: batteryComponent?.lotNumber || "",
+                serialNumber: batteryComponent?.serialNumber || "",
+                componentVariantName: batteryComponent?.componentVariant?.name || "",
+              },
             ],
-            name: assetViewData.name,
-            notes: assetViewData.notes,
-            expiresAt: new Date(assetViewData.expiresAt),
-            purchaseDate: new Date(assetViewData.purchaseDate),
-            serialNumber: assetViewData.serialNumber,
-
-            // states for validations
-            brand: assetViewData.assetModel.brand,
-            id: assetViewData.id,
-        }
-        })
+          },
+        }),
       });
     }
-  }, [isSuccess, isAssetViewSuccess]);
+  }, [isSuccess, isAssetViewSuccess, data, assetViewData]);
 
-  
+
   const formik = useFormik({
     initialValues: cabinetInitialValues(),
-    validationSchema:cabinetValidationSchema,
+    validationSchema: step === "asset-information" ? cabinetAssetUpdateSchema : cabinetUpdateSchema,
     onSubmit: async (values) => {
       try {
-        const cleanedComponents = values.asset?.components?.filter((comp, index) => {
-          // Index 1 is 2nd set pads
-          if (index === 1 && comp.componentTypeId === "1") {
-            const hasValue =
-              comp.componentVariantId ||
-              comp.expiresAt ||
-              comp.lotNumber ||
-              comp.serialNumber;
+        if(step === "asset-information"){
+          updateAssetMutation.mutateAsync(values)
+          setConfirmModalOpen(false)
+          setSuccessModalOpen(true)
+        } else {
+          await updateCabinetMutation.mutateAsync(values)
+        }
 
-            // Drop 2nd set pads if user entered nothing
-            return Boolean(hasValue);
-          }
-          return true; // Keep 1st set pads and Battery
-        });
-
-        const payload = {
-          ...values,
-          asset: {
-            ...values.asset,
-            components: cleanedComponents,
-          },
-        };
-
-        // console.log("Cleaned API Payload:", payload);
-        // await createCabinetMutation.mutateAsync(values)
         successToast("Updated")
-        setStep("basic-information")
-        setConfirmModalOpen(false)
-        setSuccessModalOpen(true)
+        // setStep("basic-information")
+        setIsEditing("")
         formik.resetForm()
       } catch (error) {
         errorToast(
@@ -195,7 +172,19 @@ const CabinetView = () => {
       }
     },
   });
+
+  // const handleSave =() =>{
+  //   if(step === "asset-information") {
+  //     setConfirmModalOpen(true)
+  //   } else {
+  //     formik.handleSubmit()
+  //   }
+  // }
+
   const {values, setFieldValue, errors, touched, handleChange, handleBlur} = formik
+
+  console.log("values", values)
+  console.log("errors", errors)
   
   const { data: assetTypes, isLoading } = useAssetTypes()
     const { data: brandsList } = useAssetTypesBrands(values.asset.id)
@@ -219,9 +208,6 @@ const CabinetView = () => {
     setFieldValue(key, URL.createObjectURL(file))
   };
 
-  const handleSaveChanges = () => {
-    setIsEditing("")
-  }
 
   const switchContent = () => {
     switch (step) {
@@ -890,7 +876,7 @@ const CabinetView = () => {
                         </button>
                         <button type="button" 
                           className="flex items-center justify-center bg-primary text-white py-2 sm:py-3 px-5 rounded-full text-sm gap-1.25 sm:w-full max-w-[140px]"
-                          onClick={handleSaveChanges}
+                          onClick={()=>formik.handleSubmit()}
                         >
                           Save Changes
                         </button>
@@ -910,7 +896,7 @@ const CabinetView = () => {
           </div>
 
         </div>
-        <ConfirmationModal {
+        {/* <ConfirmationModal {
             ...{
               open:confirmModalOpen,
               setOpen: setConfirmModalOpen,
@@ -919,7 +905,7 @@ const CabinetView = () => {
               values,
               handleSubmit: formik.handleSubmit
             }
-        } />
+        } /> */}
       </main>
     </>
   );

@@ -7,7 +7,7 @@ import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Icons } from "@/app/icons/icons";
 import {  useNavigate } from "react-router";
 import { CabinetsStepper } from "../components/CabinetsStepper";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Input } from "@/shared/components/ui/input"
 import { Label } from "@/shared/components/ui/label";
 import { Textarea } from "@/shared/components/ui/textarea";
@@ -17,7 +17,7 @@ import { DatePicker } from "@/shared/components/ui/date-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { cn, formatDateSlash } from "@/lib/utils";
 import SchedulePicker from "../components/SchedulePicker";
-import type { AccessTypeI, AvailabilityType, BrightnessType, ColorType, DayConfig, StepType, VolumeType } from "../types/addCabinet";
+import type { AvailabilityType, BrightnessType, ColorType, DayConfig, StepType, VolumeType } from "../types/addCabinet";
 import { availabilityTypeList, brightnessList, colorList, dayList, STEPS, volumeList } from "../mock/addCabinetData";
 import { ConfirmationModal } from "../components/ConfirmationModal";
 import { AVAILABLE_CREDITS } from "@/features/dashboard/mock/mockDashboardStats";
@@ -33,7 +33,8 @@ import { useAssetTypesBrands } from "../hooks/useAssetTypesBrands";
 import ComponentVariant from "../components/ComponentVariant";
 import { mockBrandsList } from "../mock/mockBrands";
 import { COUNTRY_OPTIONS } from "@/lib/country-helper";
-import { cabinetInitialValues, cabinetValidationSchema } from "../types/addCabinet";
+import { cabinetInitialValues } from "../types/addCabinet";
+import { cabinetValidationSchema } from "../types/validationSchema";
 
 export interface BrandInfo {
   name: string;
@@ -71,30 +72,6 @@ export default function AddCabinets() {
     validationSchema: cabinetValidationSchema,
     onSubmit: async (values) => {
       try {
-        const cleanedComponents = values.asset?.components?.filter((comp, index) => {
-          // Index 1 is 2nd set pads
-          if (index === 1 && comp.componentTypeId === "1") {
-            const hasValue =
-              comp.componentVariantId ||
-              comp.expiresAt ||
-              comp.lotNumber ||
-              comp.serialNumber;
-
-            // Drop 2nd set pads if user entered nothing
-            return Boolean(hasValue);
-          }
-          return true; // Keep 1st set pads and Battery
-        });
-
-        const payload = {
-          ...values,
-          asset: {
-            ...values.asset,
-            components: cleanedComponents,
-          },
-        };
-
-        console.log("Cleaned API Payload:", payload);
         await createCabinetMutation.mutateAsync(values)
         successToast("Cabinet created successfully")
         setStep("basic-information")
@@ -112,10 +89,6 @@ export default function AddCabinets() {
   });
 
   const {values, setFieldValue, errors, touched, handleChange, handleBlur} = formik
-
-  console.log("values",values)
-  console.log("errors",errors)
-  console.log("touched",touched)
   
   const { data: assetTypes, isLoading } = useAssetTypes()
   const { data: brandsList } = useAssetTypesBrands(values.asset.id)
