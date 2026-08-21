@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { InfoIcon } from "lucide-react";
 import type { ComponentTypesAED } from "../api/componentTypes.api";
 import { useComponentTypesVariants } from "../hooks/useComponentTypesVariants";
-import type { FormikProps } from "formik";
+import type { FormikErrors, FormikProps } from "formik";
 import type { CreateCabinetFormValues } from "../api/cabinet.api";
 
 interface ComponentVariantProps {
@@ -97,8 +97,8 @@ export default function ComponentVariant({ componentType, formik, fieldsReadOnly
                         </SelectContent>
                         </Select>
                         {renderError(
-                            touched?.asset,
-                            errors?.asset?.components?.[0]?.componentVariantId
+                            !!touched?.asset,
+                            (errors?.asset?.components?.[0] as FormikErrors<{ expiresAt?: string }> | undefined)?.expiresAt
                         )}
                     </div>
 
@@ -108,15 +108,15 @@ export default function ComponentVariant({ componentType, formik, fieldsReadOnly
                         1st set pads expiration date<span className="text-error">*</span>
                         </Label>
                         <DatePicker
-                            value={components[firstSetIdx]?.expiresAt || ""}
+                            value={components[firstSetIdx]?.expiresAt || undefined}
                             onChange={(val) => setFieldValue(`asset.components[${firstSetIdx}].expiresAt`, val)}
                             className="!bg-white text-xs pl-5 pr-4"
                             dateType="future"
                             disabled={fieldsReadOnly}
                         />
                         {renderError(
-                            touched?.asset,
-                            errors?.asset?.components?.[0]?.expiresAt
+                            !!touched?.asset,
+                            (errors?.asset?.components?.[0] as FormikErrors<{ expiresAt?: string }> | undefined)?.expiresAt
                         )}
                     </div>
 
@@ -180,7 +180,7 @@ export default function ComponentVariant({ componentType, formik, fieldsReadOnly
                         2nd set pads expiration date
                         </Label>
                         <DatePicker
-                            value={components[secondSetIdx]?.expiresAt || ""}
+                            value={components[secondSetIdx]?.expiresAt || undefined}
                             onChange={(val) => setFieldValue(`asset.components[${secondSetIdx}].expiresAt`, val)}
                             className="!bg-white text-xs pl-5 pr-4"
                             dateType="future"
@@ -231,15 +231,15 @@ export default function ComponentVariant({ componentType, formik, fieldsReadOnly
                     Battery expiration date<span className="text-error">*</span>
                 </Label>
                 <DatePicker
-                    value={components[batteryIdx]?.expiresAt || ""}
+                    value={components[batteryIdx]?.expiresAt || undefined}
                     onChange={(val) => setFieldValue(`asset.components[${batteryIdx}].expiresAt`, val)}
                     className="!bg-white text-xs pl-5 pr-4"
                     dateType="future"
                     disabled={fieldsReadOnly}
                 />
                 {renderError(
-                    touched?.asset,
-                    errors?.asset?.components?.[2]?.expiresAt
+                    !!touched?.asset,
+                    (errors?.asset?.components?.[2] as FormikErrors<{ expiresAt?: string }> | undefined)?.expiresAt
                 )}
                 </div>
 

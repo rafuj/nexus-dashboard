@@ -38,7 +38,7 @@ export const getFormChanges = <T extends Record<string, any>>(
         });
 
         // If any element inside array changed, include the array
-        const hasArrayChanged = arrayChanges.some((change, idx) => {
+        const hasArrayChanged = arrayChanges.some((change) => {
           if (typeof change === "object" && change !== null) {
             return Object.keys(change).length > 0;
           }

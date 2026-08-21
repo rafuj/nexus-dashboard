@@ -147,7 +147,7 @@ export const cabinetsActivityTableColumns = (tabValue: string) => [
         }
 
         return (
-          <EndActivityAction row={row} />
+          <EndActivityAction row={row.original} />
         )
       },
     })

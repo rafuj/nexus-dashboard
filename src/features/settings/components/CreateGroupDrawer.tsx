@@ -16,7 +16,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Textarea } from "@/shared/components/ui/textarea"
 import { Icons } from "@/app/icons/icons"
 import { cn } from "@/lib/utils"
-import { groupIcons, selectedGroupIcon } from "../mock/group-icons"
+import { groupIcons } from "../mock/group-icons"
 import { cabinetStatusSoftBadgeClass } from "@/features/cabinets/lib/cabinetListDisplay"
 
 interface CreateDrawerProps {

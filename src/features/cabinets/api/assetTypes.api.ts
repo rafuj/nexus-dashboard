@@ -6,7 +6,7 @@ export interface AEDData {
   name: string
 }
 
-export const getAssetTypes = async (): Promise<AEDData> => {
+export const getAssetTypes = async (): Promise<AEDData[]> => {
   const { data } = await api.get(API_ROUTES.ASSET_TYPES)
 
   return data

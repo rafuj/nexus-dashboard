@@ -8,7 +8,7 @@ import {
   type PaginationState,
   type SortingState,
 } from "@tanstack/react-table";
-import { ChevronRight, Loader, Loader2, PlusCircle } from "lucide-react";
+import { ChevronRight, Loader2, PlusCircle } from "lucide-react";
 
 import { CabinetsListToolbar } from "../components/CabinetsListToolbar";
 import { cabinetListColumns } from "../components/cabinetsTableColumns";
@@ -53,9 +53,9 @@ export default function CabinetsListView() {
   const debouncedSearch = useDebounce(search, 400)
   const {
     data: pageResult,
-    isPending,
+    // isPending,
     isFetching,
-    isError,
+    // isError,
     refetch,
   } = useCabinetsList({
     search: debouncedSearch,
@@ -184,7 +184,7 @@ console.log("pageResult",pageResult)
                 "bg-white border rounded-[10px] border-border py-5 px-4",
               )}
             >
-              <h4 className="text-sm font-semibold mb-4">{pageResult?.totalCount ?? 0} Cabinets</h4>
+              <h4 className="text-sm font-semibold mb-4">{pageResult?.length ?? 0} Cabinets</h4>
               <DataTable
                 table={table}
                 emptyMessage="No cabinets match your filters."

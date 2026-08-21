@@ -39,6 +39,8 @@ export default function CabinetsMonitor() {
   const [status, setStatus] = useQueryState("status", parseAsStringLiteral(filterStatuses).withDefault(STATUS_FILTER_ALL))
   const [cabinetId, setCabinetId] = useQueryState("id", { defaultValue: "" })
 
+  console.log("setCabinetId",setCabinetId)
+  
   const [sorting, setSorting] = useState<SortingState>([
     { id: "cabinet", desc: false },
   ]);

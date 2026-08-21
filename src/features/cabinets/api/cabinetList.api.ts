@@ -21,7 +21,7 @@ export const staleTime = 20 * 1000 /* 20s */
 
 export const getCabinetsList = async (
   params: CabinetsListQuery
-): Promise<CabinetsListResponse> => {
+): Promise<Cabinet[]> => {
   const { data } = await api.get(API_ROUTES.CABINETS, {
     params,
   })

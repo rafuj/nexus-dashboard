@@ -1,6 +1,5 @@
 import { useAuth } from "@/app/hooks/useAuth";
 import { cn } from "@/lib/utils";
-import type { User } from "@/features/auth/types/auth";
 import { Button } from "@/shared/components/ui/button";
 import {
   FieldDescription,
@@ -38,17 +37,12 @@ export default function ForgotPassword({
       setHavingProblem(false);
 
       try {
-        const user: User | null = await login(values.email, "");
+        await login(values.email, "");
 
-        if (user) {
-          successToast("Please verify OTP to Login");
-
-          navigate("/login?tab=verify-otp", {
-            replace: true,
-          });
-        } else {
-          errorToast("Invalid Email or Password");
-        }
+        successToast("Please verify OTP to Login");
+        navigate("/login?tab=verify-otp", {
+          replace: true,
+        });
       } catch (error) {
         errorToast(
           error instanceof Error

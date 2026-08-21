@@ -90,6 +90,7 @@ export function DateRangePicker({
           onSelect={handleSelect}
           defaultMonth={value?.from}
           numberOfMonths={2}
+          className=""
         />
       </PopoverContent>
     </Popover>

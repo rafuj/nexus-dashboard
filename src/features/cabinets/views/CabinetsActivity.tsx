@@ -21,7 +21,6 @@ import { queryCabinetsActivityPage } from "../server/queryCabinetsActivityPage";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
 import { mockCabinetActivities } from "../mock/mockCabinetsActivity";
 import { AddActivityModal } from "./AddActivityModal";
-import { EndActivityModal } from "./EndActivityModal";
 const CABINET_FILTER_ALL = "all";
 const ACTIVITY_FILTER_ALL = "all";
 const PAGE_SIZE = 8;

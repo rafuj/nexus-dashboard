@@ -8,6 +8,7 @@ import { EditGroupDrawer } from "./EditGroupDrawer"
 export function ListRowActions({ row }: { row: SettingsGroupRow }) {
   const [open, setOpen] = useState<boolean>(false)
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false)
+  console.log("row",row)
   return (
     <>
       <div className="flex items-center gap-4 justify-center">

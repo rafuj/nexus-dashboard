@@ -1,23 +1,22 @@
-import { User } from 'lucide-react';
 import { Icons } from '@/app/icons/icons';
 import connectedCabinetsBg from "@/assets/connected-cabinets-bg.png"
-import { HAS_CONNECTED_CABINETS, recentActivityData, responders, systemHealthData } from "../mock/mockDashboardStats";
+import { HAS_CONNECTED_CABINETS, recentActivityData, systemHealthData } from "../mock/mockDashboardStats";
 import { Link } from 'react-router';
 import type { ActivityDefination, SystemHelthDefination } from '../types/dashboardStats';
 
 export default function ConnectedCabinets() {
-    const renderRoleIcon = (type: string) => {
-        switch (type) {
-            case 'viewer':
-                return <Icons.eye />;
-            case 'editor':
-                return <Icons.edit />;
-            case 'admin':
-                return <Icons.sheild />;
-            default:
-                return null;
-        }
-    };
+    // const renderRoleIcon = (type: string) => {
+    //     switch (type) {
+    //         case 'viewer':
+    //             return <Icons.eye />;
+    //         case 'editor':
+    //             return <Icons.edit />;
+    //         case 'admin':
+    //             return <Icons.sheild />;
+    //         default:
+    //             return null;
+    //     }
+    // };
     return (
         <div className="p-5 relative border rounded-[15px] bg-white">
             <div className="mb-4">

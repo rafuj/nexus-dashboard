@@ -19,7 +19,6 @@ import { cn, convertDDMMYYYY } from "@/lib/utils";
 import SchedulePicker from "../components/SchedulePicker";
 import { cabinetInitialValues, type AvailabilityType, type BrightnessType, type ColorType, type DayConfig, type StepType, type VolumeType } from "../types/addCabinet";
 import { availabilityTypeList, brightnessList, colorList, dayList, STEPS, volumeList } from "../mock/addCabinetData";
-import { ConfirmationModal } from "../components/ConfirmationModal";
 import { AVAILABLE_CREDITS, MANAGE_CABINETS } from "@/features/dashboard/mock/mockDashboardStats";
 import { can, type Role } from "@/lib/permissions";
 import { useAuth } from "@/app/hooks/useAuth";
@@ -43,6 +42,7 @@ import { useAssetView } from "../hooks/useAssetView";
 import { useUpdateCabinet } from "../hooks/useUpdateCabinet";
 import { cabinetAssetUpdateSchema, cabinetUpdateSchema } from "../types/validationSchema";
 import { useUpdateAsset } from "../hooks/useUpdateAsset";
+import type { ComponentTypesAED } from "../api/componentTypes.api";
 
 interface CabinetDetails {
   serialNumber: string;
@@ -62,8 +62,8 @@ const CabinetView = () => {
   const [availability, setAvailability] = useState<AvailabilityType>('custom-days-and-types')
   const [schedule, setSchedule] = useState<DayConfig[]>(dayList)
 
-  const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false)
-  const [successModalOpen, setSuccessModalOpen] = useState<boolean>(false)
+  // const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false)
+  // const [successModalOpen, setSuccessModalOpen] = useState<boolean>(false)
   
   const [cabinetDetails, setCabinetDetails] = useState<CabinetDetails>({
     serialNumber:"",
@@ -153,8 +153,8 @@ const CabinetView = () => {
       try {
         if(step === "asset-information"){
           updateAssetMutation.mutateAsync(values)
-          setConfirmModalOpen(false)
-          setSuccessModalOpen(true)
+          // setConfirmModalOpen(false)
+          // setSuccessModalOpen(true)
         } else {
           await updateCabinetMutation.mutateAsync(values)
         }
@@ -394,7 +394,7 @@ const CabinetView = () => {
                   </div>
                   <div className="sm:col-span-2">
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Volume</Label>
-                    <CustomRadioGroup value={volume} setValue={setVolume} list={volumeList} readOnly={fieldsReadOnly} />
+                    <CustomRadioGroup<VolumeType> value={volume} setValue={setVolume} list={volumeList} readOnly={fieldsReadOnly} />
                   </div>
                 </div>
               </div>
@@ -407,11 +407,11 @@ const CabinetView = () => {
                 <div className="grid grid-cols-1 gap-4">
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Colour</Label>
-                    <CustomRadioGroup value={color} setValue={setColor} list={colorList} readOnly={fieldsReadOnly} />
+                    <CustomRadioGroup<ColorType> value={color} setValue={setColor} list={colorList} readOnly={fieldsReadOnly} />
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Brightness</Label>
-                    <CustomRadioGroup value={brightness} setValue={setBrightness} list={brightnessList} readOnly={fieldsReadOnly} />
+                    <CustomRadioGroup<BrightnessType> value={brightness} setValue={setBrightness} list={brightnessList} readOnly={fieldsReadOnly} />
                   </div>
                 </div>
               </div>
@@ -461,7 +461,7 @@ const CabinetView = () => {
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Public availability</Label>
-                    <CustomRadioGroup value={availability} setValue={setAvailability} list={availabilityTypeList} readOnly={fieldsReadOnly} />
+                    <CustomRadioGroup<AvailabilityType> value={availability} setValue={setAvailability} list={availabilityTypeList} readOnly={fieldsReadOnly} />
                   </div>
                   {availability === 'custom-days-and-types' && (
                     <SchedulePicker schedule={schedule} onScheduleChange={setSchedule} readOnly={fieldsReadOnly} />
@@ -641,7 +641,7 @@ const CabinetView = () => {
               </div>
             </div>
             {values.asset.id === "1" && (
-              componentTypes?.map((componentType:{id:string, name:string})=> (
+              componentTypes?.map((componentType:ComponentTypesAED)=> (
                   <ComponentVariant componentType={componentType} key={componentType.id} formik={formik} fieldsReadOnly={fieldsReadOnly} />
                 ))
             )}

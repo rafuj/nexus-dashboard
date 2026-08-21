@@ -11,7 +11,7 @@ export interface AEDTypesModels {
   brand: string
 }
 
-export const getAssetTypesModels = async (id: string, params: AEDTypesModels): Promise<AEDData> => {
+export const getAssetTypesModels = async (id: string, params: AEDTypesModels): Promise<AEDData[]> => {
   const { data } = await api.get(`${API_ROUTES.ASSET_TYPES}/${id}/models`, {
     params
   })

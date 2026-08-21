@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { format } from "date-fns"
-import { CalendarIcon, ChevronDownIcon } from "lucide-react"
+import { CalendarIcon } from "lucide-react"
 
 import { Button } from "./button"
 import { Calendar } from "./calendar"

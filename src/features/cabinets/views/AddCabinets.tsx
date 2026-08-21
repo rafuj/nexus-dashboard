@@ -1,6 +1,6 @@
 "use client";
 import { Helmet } from "react-helmet-async";
-import {  ChevronDown, ChevronLeft, ChevronRight, CircleCheck, Info, InfoIcon, Settings, ShoppingCart } from "lucide-react";
+import {  ChevronDown, ChevronLeft, ChevronRight, CircleCheck, Info, InfoIcon } from "lucide-react";
 
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
@@ -291,7 +291,7 @@ export default function AddCabinets() {
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Public availability</Label>
-                    <CustomRadioGroup value={availability} setValue={setAvailability} list={availabilityTypeList} />
+                    <CustomRadioGroup<AvailabilityType> value={availability} setValue={setAvailability} list={availabilityTypeList} />
                   </div>
                   {availability === 'custom-days-and-types' && (
                     <SchedulePicker schedule={schedule} onScheduleChange={setSchedule} />
@@ -405,7 +405,7 @@ export default function AddCabinets() {
                   </div>
                   <div className="sm:col-span-2">
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Volume</Label>
-                    <CustomRadioGroup value={volume} setValue={setVolume} list={volumeList} />
+                    <CustomRadioGroup<VolumeType> value={volume} setValue={setVolume} list={volumeList} />
                   </div>
                 </div>
               </div>
@@ -418,11 +418,11 @@ export default function AddCabinets() {
                 <div className="grid grid-cols-1 gap-4">
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Colour</Label>
-                    <CustomRadioGroup value={color} setValue={setColor} list={colorList} />
+                    <CustomRadioGroup<ColorType> value={color} setValue={setColor} list={colorList} />
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Brightness</Label>
-                    <CustomRadioGroup value={brightness} setValue={setBrightness} list={brightnessList} />
+                    <CustomRadioGroup<BrightnessType> value={brightness} setValue={setBrightness} list={brightnessList} />
                   </div>
                 </div>
               </div>

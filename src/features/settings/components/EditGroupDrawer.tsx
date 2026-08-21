@@ -1,6 +1,6 @@
 import { useState, type Dispatch, type SetStateAction } from "react"
 "use client"
-import { InfoIcon, LucideSearch, PlusCircle, Trash, Trash2, XCircle } from "lucide-react"
+import { InfoIcon, LucideSearch, PlusCircle, Trash2, XCircle } from "lucide-react"
 import {
   Drawer,
   DrawerContent,

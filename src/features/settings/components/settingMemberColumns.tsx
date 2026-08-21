@@ -170,6 +170,6 @@ export const settingMemberColumns = [
       headerClassName: "text-center w-[10%]",
       cellClassName: "text-center align-middle",
     },
-    cell: ({ row }) => <MemberListRowActions row={row.original} />,
+    cell: () => <MemberListRowActions />,
   }),
 ]
