@@ -5,9 +5,9 @@ import { ChevronDown, ChevronLeft, ChevronRight, CircleCheck, Info, InfoIcon } f
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Icons } from "@/app/icons/icons";
-import {  useNavigate } from "react-router";
+import {  useNavigate, useParams } from "react-router";
 import { CabinetsStepper } from "../components/CabinetsStepper";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/shared/components/ui/input"
 import { Label } from "@/shared/components/ui/label";
 import { Textarea } from "@/shared/components/ui/textarea";
@@ -38,6 +38,8 @@ import { useAssetTypesBrands } from "../hooks/useAssetTypesBrands";
 import { useAssetTypesModels } from "../hooks/useAssetTypesModels";
 import { useComponentTypes } from "../hooks/useComponentTypes";
 import ComponentVariant from "../components/ComponentVariant";
+import { useCabinetsView } from "../hooks/useCabinetsView";
+import { useAssetView } from "../hooks/useAssetView";
 
 interface BasicInformation {
   name: string;
@@ -60,37 +62,15 @@ const CabinetView = () => {
   const navigate = useNavigate();
 
   const [step, setStep] = useState<StepType>('basic-information')
-  const [assetType, setAssetType] = useState<string>(assetTypeList[0].value)
   const [volume, setVolume] = useState<VolumeType>('0%')
   const [brightness, setBrightness] = useState<BrightnessType>('0%')
   const [color, setColor] = useState<ColorType>('white')
   const [availability, setAvailability] = useState<AvailabilityType>('custom-days-and-types')
-  const [accessType, setAccessType] = useState<AccessTypeI>('public')
   const [schedule, setSchedule] = useState<DayConfig[]>(dayList)
-
-  const [warrantyExpiration, setWarrantyExpiration] = useState<Date | undefined>(new Date())
-
-  const [assetExpiration, setAssetExpiration] = useState<Date | undefined>(new Date("Tue Jul 07 2026 10:20:38 GMT+0600"))
-  const [checkupDate, setCheckupDate] = useState<Date | undefined>(new Date("Tue Jul 07 2026 14:20:38 GMT+0600"))
 
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false)
   const [successModalOpen, setSuccessModalOpen] = useState<boolean>(false)
   
-  const [images, setImages] = useState({
-    picture1: "https://images.pexels.com/photos/4089662/pexels-photo-4089662.jpeg?_gl=1*1pmmgo6*_ga*MjUxOTAzMDY5LjE3ODE5MjE5NjQ.*_ga_8JE65Q40S6*czE3ODM0MDgyNzMkbzIkZzEkdDE3ODM0MDgzMDYkajI3JGwwJGgw",
-    picture2: "",
-    picture3: "",
-  });
-
-  const [basicInformation, setBasicInformation] = useState<BasicInformation>({
-    name: "Amsterdam Central - Platform 5",
-    description: "Hangs next to the kiosk",
-    addressLine1: "Stationsplein 15",
-    addressLine2: "",
-    zip: "1012 AB",
-    city: "Amsterdam",
-    country: "Netherlands"
-  })
   const [cabinetDetails, setCabinetDetails] = useState<CabinetDetails>({
     serialNumber:"",
     moduleCode: "NEXUSMODULEXC43",
@@ -102,66 +82,77 @@ const CabinetView = () => {
     name: "",
     model: "",
   })
-  
-  const formik = useFormik({
-    initialValues: cabinetInitialValues(
-      {
-        accessType: "public",
-        name: "AMS-028",
-        description: "lorem ipsum dolor set amet",
+  const { id } = useParams()
+  const { data, isSuccess } = useCabinetsView(id ?? '')
+  const { data: assetViewData, isSuccess: isAssetViewSuccess } = useAssetView(data?.id || "")
 
-        addressLine1: "1011/AA Amsterdam",
-        addressLine2: "",
-        zipCode: "1011",
-        city: "Amsterdam",
-        country: "NL",
+  useEffect(() => {
+    if (isSuccess && isAssetViewSuccess) {
+      formik.resetForm({
+        values: cabinetInitialValues({
+        accessType: data.accessType,
+        name: data.name,
+        description: data.description,
 
-        serialNumber: "",
-        lockCode: "",
+        addressLine1: data.addressLine1,
+        addressLine2: data.addressLine2,
+        zipCode: data.zipCode,
+        city: data.city,
+        country: data.country,
 
-        picture1: null,
-        picture2: null,
-        picture3: null,
+        serialNumber: data.serialNumber,
+        lockCode: data.lockCode,
+
+        picture1: data.picture1,
+        picture2: data.picture2,
+        picture3: data.picture3,
 
         asset: {
-            assetModelId: "51",
-            checkupDate: new Date("10-10-2026"),
+            assetModelId: assetViewData.assetModelId,
+            checkupDate: new Date(assetViewData.checkupDate),
             components: [{
-              componentTypeId: "1",
-              componentVariantId: "1",
-              expiresAt: new Date("10-10-2026"),
-              lotNumber: "BG-323",
-              serialNumber: "SN-567832",
-              componentVariantName: "",
-            }, // Index 0: 1st Set Pads
+              componentTypeId: assetViewData.components[0].componentTypeId,
+              componentVariantId: assetViewData.components[0].componentVariantId || "",
+              expiresAt: new Date(assetViewData.components[0].expiresAt),
+              lotNumber: assetViewData.components[0].lotNumber,
+              serialNumber: assetViewData.components[0].serialNumber,
+              componentVariantName: assetViewData.components[0].componentVariant.name,
+            },
             {
-              componentTypeId: "1",
-              componentVariantId: "",
-              expiresAt: undefined,
-              lotNumber: "",
-              serialNumber: "",
-              componentVariantName: "",
-            }, // Index 1: 2nd Set Pads
+              componentTypeId: assetViewData.components[1].componentTypeId,
+              componentVariantId: assetViewData.components[1].componentVariantId || "",
+              expiresAt: new Date(assetViewData.components[1].expiresAt),
+              lotNumber: assetViewData.components[1].lotNumber,
+              serialNumber: assetViewData.components[1].serialNumber,
+              componentVariantName: assetViewData.components[1].componentVariant.name,
+            },
             {
-              componentTypeId: "2",
-              componentVariantId: "",
-              expiresAt: new Date("10-10-2026"),
-              lotNumber: "L-239823",
-              serialNumber: "SN-278323",
-            }, // Index 2: Battery
+              componentTypeId: assetViewData.components[2].componentTypeId,
+              componentVariantId: assetViewData.components[2].componentVariantId || "",
+              expiresAt: new Date(assetViewData.components[2].expiresAt),
+              lotNumber: assetViewData.components[2].lotNumber,
+              serialNumber: assetViewData.components[2].serialNumber,
+              componentVariantName: assetViewData.components[2].componentVariant.name,
+            },
             ],
-            name: "AED",
-            notes: "",
-            expiresAt: new Date("10-10-2026"),
-            purchaseDate: new Date("10-10-2026"),
-            serialNumber: "SN456238998",
+            name: assetViewData.name,
+            notes: assetViewData.notes,
+            expiresAt: new Date(assetViewData.expiresAt),
+            purchaseDate: new Date(assetViewData.purchaseDate),
+            serialNumber: assetViewData.serialNumber,
 
             // states for validations
-            brand: "Bexen Cardio",
-            id: "1",
+            brand: assetViewData.assetModel.brand,
+            id: assetViewData.id,
         }
-      }
-    ),
+        })
+      });
+    }
+  }, [isSuccess, isAssetViewSuccess]);
+
+  
+  const formik = useFormik({
+    initialValues: cabinetInitialValues(),
     validationSchema:cabinetValidationSchema,
     onSubmit: async (values) => {
       try {
@@ -225,11 +216,7 @@ const CabinetView = () => {
     file: File | null
   ) => {
     if (!file) return;
-
-    setImages((prev) => ({
-      ...prev,
-      [key]: URL.createObjectURL(file),
-    }));
+    setFieldValue(key, URL.createObjectURL(file))
   };
 
   const handleSaveChanges = () => {
@@ -600,8 +587,8 @@ const CabinetView = () => {
                         placeholder="Enter serial number"
                         autoComplete="off"
                         className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                        name="serialNumber"
-                        value={values.serialNumber}
+                        name="asset.serialNumber"
+                        value={values.asset.serialNumber}
                         onChange={formik.handleChange}
                         errors={touched.asset ? errors.asset?.serialNumber : ''}
                         readOnly={fieldsReadOnly}

@@ -58,8 +58,6 @@ export default function AddCabinets() {
     model: ""
   })
 
-  const [assetExpiration, setAssetExpiration] = useState<Date | undefined>(new Date())
-
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false)
   const [successModalOpen, setSuccessModalOpen] = useState<boolean>(false)
 
@@ -559,8 +557,8 @@ export default function AddCabinets() {
                           placeholder="Enter serial number"
                           autoComplete="off"
                           className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                          name="serialNumber"
-                          value={values.serialNumber}
+                          name="asset.serialNumber"
+                          value={values.asset.serialNumber}
                           onChange={formik.handleChange}
                           errors={touched.asset ? errors.asset?.serialNumber : ''}
                         />
