@@ -12,7 +12,7 @@ import { FactoryOverviewToolbar } from "../components/FactoryOverviewToolbar";
 import type { DateRange } from "react-day-picker";
 import TagIcon from "@/assets/icons/tag.svg?react";
 import LinkIcon from "@/assets/icons/link.svg?react";
-import { useGeneratedList } from "../hooks/useGeneratedList";
+import { useGeneratedSerialList } from "../hooks/useGeneratedSerialList";
 
 const PAGE_SIZE = 12
 
@@ -36,7 +36,7 @@ export default function FactoryOverview() {
 
   const columns = useMemo(() => factoryOverviewColumns(), []);
 
-  const { data } = useGeneratedList()
+  const { data } = useGeneratedSerialList()
 
 
   const resetPage = () =>

@@ -10,7 +10,7 @@ import type { FactoryRow } from "../types/factoryType"
 const columnHelper = createColumnHelper<FactoryRow>()
 
 export const factoryColumns = () => [
-  columnHelper.accessor("serial", {
+  columnHelper.accessor("serialNumber", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Cabinet Serial Number" />
     ),
@@ -18,7 +18,7 @@ export const factoryColumns = () => [
       headerClassName: "",
       cellClassName: "align-middle whitespace-nowrap",
     },
-    cell: ({ row }) => row.original.serial,
+    cell: ({ row }) => row.original.serialNumber,
   }),
 
   columnHelper.accessor("imei", {
@@ -32,7 +32,7 @@ export const factoryColumns = () => [
     cell: ({ row }) => row.original.imei,
   }),
 
-  columnHelper.accessor("linkedOn", {
+  columnHelper.accessor("assignedAt", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Linked On" />
     ),
@@ -40,7 +40,7 @@ export const factoryColumns = () => [
       headerClassName: "",
       cellClassName: "align-middle whitespace-nowrap",
     },
-    cell: ({ row }) => formatISODate(row.original.linkedOn),
+    cell: ({ row }) => formatISODate(row.original.assignedAt),
   }),
 
   columnHelper.accessor("status", {

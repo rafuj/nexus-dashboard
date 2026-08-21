@@ -11,6 +11,7 @@ export type FactoryImeiLinkingQuery = {
   pageIndex: number
   pageSize: number
   sorting: SortingState
+  data: FactoryRow[]
 }
 
 export type CabinetsListPageResult = {
@@ -29,7 +30,7 @@ function filterFactoryRows(
   return rows.filter((row) => {
     return (
       row.id.toLowerCase().includes(q) ||
-      row.serial.toLowerCase().includes(q) ||
+      row.serialNumber.toLowerCase().includes(q) ||
       row.imei.toLowerCase().includes(q)
     )
   })
@@ -45,15 +46,15 @@ function compareRows(
       return a.id.localeCompare(b.id)
 
     case "serial":
-      return a.serial.localeCompare(b.serial)
+      return a.serialNumber.localeCompare(b.serialNumber)
 
     case "imei":
       return a.imei.localeCompare(b.imei)
 
     case "linkedOn":
       return (
-        new Date(a.linkedOn).getTime() -
-        new Date(b.linkedOn).getTime()
+        new Date(a.assignedAt).getTime() -
+        new Date(b.assignedAt).getTime()
       )
 
     case "status":
@@ -69,7 +70,7 @@ function compareRows(
  */
 export function queryImeiLinkingPage(query: FactoryImeiLinkingQuery): CabinetsListPageResult {
   const filtered = filterFactoryRows(
-    mockFactoryList,
+    query.data,
     query.search,
   )
 

@@ -14,8 +14,9 @@ import { useMemo, useState } from "react";
 import { getCoreRowModel, useReactTable, type PaginationState, type SortingState } from "@tanstack/react-table";
 import { factoryColumns } from "../components/factoryColumns";
 import { queryImeiLinkingPage } from "../server/queryImeiLinkingPage";
+import { useGeneratedSerialList } from "../hooks/useGeneratedSerialList";
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 10;
 
 export default function ImeiLinking() {
   const [search, setSearch] = useState<string>("");
@@ -30,6 +31,7 @@ export default function ImeiLinking() {
   
   const columns = useMemo(() => factoryColumns(), []);
 
+  const { data } = useGeneratedSerialList()
 
   const resetPage = () =>
     setPagination((p) => ({
@@ -44,12 +46,14 @@ export default function ImeiLinking() {
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
         sorting,
+        data: data || []
       }),
     [
       search,
       pagination.pageIndex,
       pagination.pageSize,
       sorting,
+      data
     ],
   );
 
