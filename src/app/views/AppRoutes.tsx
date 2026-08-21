@@ -31,7 +31,7 @@ export default function AppRoutes() {
 
   const routesByRole = () => {
     switch(user?.role) {
-      case "factory":
+      case "super":
         return <>
           <Route path="/" element={<ImeiLinking />} />
           <Route path="/generate-serial-number" element={<GenerateSerialNumber />} />

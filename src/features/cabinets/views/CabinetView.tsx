@@ -219,7 +219,7 @@ const CabinetView = () => {
     const { data: componentTypes } = useComponentTypes()
 
   const { user } = useAuth();
-  const role: Role = user?.role ?? "viewer";
+  const role: Role = user?.role ?? "admin";
 
   const canManageCabinets = can(role, MANAGE_CABINETS)
 

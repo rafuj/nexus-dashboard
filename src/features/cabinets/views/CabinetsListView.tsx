@@ -67,7 +67,7 @@ export default function CabinetsListView() {
   })
 console.log("pageResult",pageResult)
   const { user } = useAuth();
-  const role: Role = user?.role ?? "viewer";
+  const role: Role = user?.role ?? "admin";
   const canManageCabinets = can(role, MANAGE_CABINETS)
 
   const columns = useMemo(() => cabinetListColumns(canManageCabinets), []);

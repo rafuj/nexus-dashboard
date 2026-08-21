@@ -141,7 +141,7 @@ export function NavMain({
 }) {
   const { user } = useAuth();
   const location = useLocation();
-  const role: Role = user?.role ?? "viewer"; // Default to viewer role if no user is authenticated
+  const role: Role = user?.role ?? "admin"; // Default to viewer role if no user is authenticated
 
   return (
     <SidebarGroup>

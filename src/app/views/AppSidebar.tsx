@@ -138,7 +138,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
     const sidebarMainMenu = () => {
       switch(user?.role) {
-        case "factory":
+        case "super":
           return factoryNavMain
         default :
           return navMain
@@ -147,7 +147,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
     const sidebarBottomMenu = () => {
       switch(user?.role) {
-        case "factory":
+        case "super":
           return factoryNavMenuBottom
         default :
           return navMenuBottom
