@@ -116,7 +116,7 @@ const CabinetView = () => {
               expiresAt: new Date(assetViewData.components[0].expiresAt),
               lotNumber: assetViewData.components[0].lotNumber,
               serialNumber: assetViewData.components[0].serialNumber,
-              componentVariantName: assetViewData.components[0].componentVariant.name,
+              componentVariantName: assetViewData.components[0]?.componentVariant?.name,
             },
             {
               componentTypeId: assetViewData.components[1].componentTypeId,
@@ -124,7 +124,7 @@ const CabinetView = () => {
               expiresAt: new Date(assetViewData.components[1].expiresAt),
               lotNumber: assetViewData.components[1].lotNumber,
               serialNumber: assetViewData.components[1].serialNumber,
-              componentVariantName: assetViewData.components[1].componentVariant.name,
+              componentVariantName: assetViewData.components[1]?.componentVariant?.name,
             },
             {
               componentTypeId: assetViewData.components[2].componentTypeId,
@@ -132,7 +132,7 @@ const CabinetView = () => {
               expiresAt: new Date(assetViewData.components[2].expiresAt),
               lotNumber: assetViewData.components[2].lotNumber,
               serialNumber: assetViewData.components[2].serialNumber,
-              componentVariantName: assetViewData.components[2].componentVariant.name,
+              componentVariantName: assetViewData.components[2]?.componentVariant?.name,
             },
             ],
             name: assetViewData.name,
