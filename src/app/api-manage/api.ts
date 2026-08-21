@@ -23,3 +23,30 @@ export const api = axios.create({
     "Content-Type": "application/json",
   },
 })
+
+
+const deleteCookie = (name: string, path = "/", domain?: string) => {
+  let cookieString = `${name}=; Max-Age=0; path=${path}; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+  if (domain) {
+    cookieString += `; domain=${domain}`;
+  }
+  document.cookie = cookieString;
+};
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // 1. Remove sessionToken from Cookies
+      deleteCookie("sessionToken");
+
+      // 2. Remove permissions from LocalStorage
+      localStorage.removeItem("updaid-permissions");
+
+      // 3. Force redirect to login page
+      window.location.href = "/login";
+    }
+
+    return Promise.reject(error);
+  }
+);
