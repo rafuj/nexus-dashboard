@@ -12,7 +12,7 @@ import CheckIcon from "@/assets/icons/check.svg?react"
 const columnHelper = createColumnHelper<FactoryRow>()
 
 export const factoryOverviewColumns = () => [
-  columnHelper.accessor("serial", {
+  columnHelper.accessor("serialNumber", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Serial Number" />
     ),
@@ -20,10 +20,10 @@ export const factoryOverviewColumns = () => [
       headerClassName: "",
       cellClassName: "align-middle whitespace-nowrap",
     },
-    cell: ({ row }) => row.original.serial,
+    cell: ({ row }) => row.original.serialNumber,
   }),
 
-  columnHelper.accessor("prefix", {
+  columnHelper.accessor("id", { // accessor is set id cause prefix is static - NEX
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Prefix" />
     ),
@@ -31,10 +31,11 @@ export const factoryOverviewColumns = () => [
       headerClassName: "",
       cellClassName: "align-middle whitespace-nowrap",
     },
-    cell: ({ row }) => row.original.prefix,
+    // cell: ({ row }) => row.original.prefix,
+    cell: ({ }) => "NEX",
   }),
 
-  columnHelper.accessor("generatedOn", {
+  columnHelper.accessor("createdAt", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Generated On" />
     ),
@@ -42,11 +43,11 @@ export const factoryOverviewColumns = () => [
       headerClassName: "",
       cellClassName: "align-middle whitespace-nowrap",
     },
-    cell: ({ row }) => formatISODate(row.original.generatedOn),
+    cell: ({ row }) => formatISODate(row.original.createdAt),
   }),
 
 
-  columnHelper.accessor("status", {
+  columnHelper.accessor("deviceLinked", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Linked Status" />
     ),
@@ -57,7 +58,7 @@ export const factoryOverviewColumns = () => [
     cell: ({ row }) => (
       <span className="flex items-center gap-1 capitalize">
         <span className={cn("flex gap-1.5")}>
-          {row.original.status === 'linked' ? <>
+          {row.original.deviceLinked ? <>
             <CheckIcon className="size-4 text-success2" />
             Linked
           </> : <>

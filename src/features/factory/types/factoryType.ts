@@ -1,14 +1,16 @@
 import type { DateRange } from "react-day-picker"
 
 export type FactoryRow = {
+  assignedAt: string
+  createdAt: string
+  deviceLinked: boolean
   id: string
-  serial: string
-  status: 'linked' | 'unlinked'
   imei: string
-  linkedOn: string
-  generatedOn: string
-  prefix: "NEX" | "UPD"
+  serialNumber: string
+  status: string
+  tenantId: string
 }
+
 export type FactoryOverviewToolbarProps = {
   search: string
   setSearch: (value: string) => void

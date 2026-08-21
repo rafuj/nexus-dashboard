@@ -13,6 +13,7 @@ export type FactoryOverviewQuery = {
   sorting: SortingState
   prefix: string
   linked: string
+  data: FactoryRow[]
 }
 
 export type CabinetsListPageResult = {
@@ -31,8 +32,7 @@ function filterFactoryRows(
   return rows.filter((row) => {
     return (
       row.id.toLowerCase().includes(q) ||
-      row.serial.toLowerCase().includes(q) ||
-      row.imei.toLowerCase().includes(q)
+      row.serialNumber.toLowerCase().includes(q)
     )
   })
 }
@@ -47,24 +47,18 @@ function compareRows(
       return a.id.localeCompare(b.id)
 
     case "serial":
-      return a.serial.localeCompare(b.serial)
-
-    case "imei":
-      return a.imei.localeCompare(b.imei)
-
-    case "prefix":
-      return a.prefix.localeCompare(b.prefix)
+      return a.serialNumber.localeCompare(b.serialNumber)
 
     case "linkedOn":
       return (
-        new Date(a.linkedOn).getTime() -
-        new Date(b.linkedOn).getTime()
+        new Date(a.assignedAt).getTime() -
+        new Date(b.assignedAt).getTime()
       )
 
     case "generatedOn":
       return (
-        new Date(a.generatedOn).getTime() -
-        new Date(b.generatedOn).getTime()
+        new Date(a.createdAt).getTime() -
+        new Date(b.createdAt).getTime()
       )
 
     case "status":
@@ -80,7 +74,7 @@ function compareRows(
  */
 export function queryFactoryOverviewPage(query: FactoryOverviewQuery): CabinetsListPageResult {
   const filtered = filterFactoryRows(
-    mockFactoryList,
+    query.data,
     query.search,
   )
 

@@ -17,5 +17,6 @@ export const API_ROUTES = {
     ASSET_TYPES: `${API_VERSION}/asset-types`,
     ASSETS: `${API_VERSION}/assets`,
     COMPONENT_TYPES: `${API_VERSION}/component-types`,
+    CABINETS_INVENTORY: `${API_VERSION}/cabinets/inventory`,
     
 }
