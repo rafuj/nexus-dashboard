@@ -35,6 +35,7 @@ import { mockBrandsList } from "../mock/mockBrands";
 import { COUNTRY_OPTIONS } from "@/lib/country-helper";
 import { cabinetInitialValues } from "../types/addCabinet";
 import { cabinetValidationSchema } from "../types/validationSchema";
+import { getApiErrorMessage } from "@/app/api-manage/api";
 
 export interface BrandInfo {
   name: string;
@@ -79,11 +80,7 @@ export default function AddCabinets() {
         setSuccessModalOpen(true)
         formik.resetForm()
       } catch (error) {
-        errorToast(
-          error instanceof Error
-            ? error.message
-            : "Something went wrong",
-        );
+          errorToast(getApiErrorMessage(error));
       }
     },
   });
@@ -287,6 +284,10 @@ export default function AddCabinets() {
                       placeholder="Enter 4-8 digit lock code"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      name="lockCode"
+                      value={values.lockCode}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                     />
                   </div>
                   <div>

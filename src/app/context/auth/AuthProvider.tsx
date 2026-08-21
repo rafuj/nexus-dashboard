@@ -17,6 +17,7 @@ import { errorToast } from "@/lib/toast"
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(() => readStoredUser())
   // const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
+  const [tempEmail, setTempEmail] = useState<string>("")
 
   /**
    * LOGIN
@@ -33,6 +34,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       email: email.trim().toLowerCase(),
       password,
     })
+    setTempEmail(email)
   }
 
   /**
@@ -49,8 +51,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     await api.post(API_ROUTES.VERIFY_OTP, {
       otpCode: otpCode
     })
-    setUser({ id: 1, name: "Owner User", email: "owner@nexus.com", role: "owner" }) // As User Info Endpoint is not Available User is being Set Static
-    persistUser({ id: 1, name: "Owner User", email: "owner@nexus.com", role: "owner" }) // As User Info Endpoint is not Available User is being Set Static   
+     // As User Info Endpoint is not Available User is being Set Static
+    if(tempEmail === 'doihecrummuja-7049@yopmail.com') {
+      setUser({ id: 4, name: "Super User", email: tempEmail, role: "super" })
+      persistUser({ id: 4, name: "Super User", email: tempEmail, role: "super" })
+    } else {
+      setUser({ id: 1, name: "Owner User", email: tempEmail, role: "owner" })
+      persistUser({ id: 1, name: "Owner User", email: tempEmail, role: "owner" })
+    }
   }
 
   /**
@@ -92,7 +100,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   /**
    * LOGOUT
    */
-  const logout = async () => {
+  const logout = async () => {``
     try {
       await api.post(API_ROUTES.LOGOUT)
     } finally {

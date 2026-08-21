@@ -36,13 +36,19 @@ const deleteCookie = (name: string, path = "/", domain?: string) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    const message =
+      error.response?.data?.error?.message ||
+      error.message ||
+      "Something went wrong";
+
+    error.message = message;
+
     if (error.response?.status === 401) {
       // 1. Remove sessionToken from Cookies
       deleteCookie("sessionToken");
 
       // 2. Remove permissions from LocalStorage
       localStorage.removeItem("updaid-permissions");
-
       // 3. Force redirect to login page
       window.location.href = "/login";
     }
@@ -50,3 +56,14 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export const getApiErrorMessage = (
+  error: unknown,
+  fallback = "Something went wrong",
+) => {
+  if (axios.isAxiosError(error)) {
+    return error.response?.data?.error?.message || error.message || fallback;
+  }
+
+  return error instanceof Error ? error.message : fallback;
+};

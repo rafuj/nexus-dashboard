@@ -44,6 +44,7 @@ import { cabinetAssetUpdateSchema, cabinetUpdateSchema } from "../types/validati
 import type { ComponentTypesAED } from "../api/componentTypes.api";
 import { getFormChanges } from "@/lib/getFormChanges";
 import type { CreateCabinetFormValues } from "../api/cabinet.api";
+import { getApiErrorMessage } from "@/app/api-manage/api";
 
 interface CabinetDetails {
   serialNumber: string;
@@ -191,11 +192,7 @@ const CabinetView = () => {
         formik.resetForm({values})
         // setStep("basic-information")
       } catch (error) {
-        errorToast(
-          error instanceof Error
-            ? error.message
-            : "Something went wrong",
-        );
+        errorToast(getApiErrorMessage(error));
       }
     },
   });
@@ -255,11 +252,10 @@ const CabinetView = () => {
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
                       readOnly={fieldsReadOnly}
-                      value={cabinetDetails.serialNumber}
-                      onChange={(e)=> setCabinetDetails(prev => ({
-                        ...prev,
-                        serialNumber: e.target.value
-                      }))}
+                      name="serialNumber"
+                      value={values.serialNumber}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                     />
                     <div className="text-xs mt-2">If the serial number is recognised the brand, model and module code (if applicable) will be filled in automatically.</div>
                     <div className="flex items-center text-sm text-accent-foreground my-5 gap-3">
@@ -314,6 +310,58 @@ const CabinetView = () => {
                     </div>
                   </div>
                 </div>                
+              </div>
+              {/* Access Details */}
+              <div>
+                <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75 mt-5">
+                  <span className="w-0 grow">Access Details</span>
+                  <InfoIcon size={20} />
+                </div>
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Access Type <span className="text-error">*</span></Label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <button type="button" className={cn("flex items-center gap-3.75 text-left p-4 border border-border rounded-[10px]", {
+                        "bg-primary/7 border-primary/20": 'public' === formik.values.accessType
+                      })} onClick={()=> setFieldValue("accessType", 'public')} disabled={fieldsReadOnly}>
+                        <Icons.team />
+                        <div className="w-0 grow">
+                          <h6 className="font-semibold text-xs">Public</h6>
+                          <div className="text-xs">Accessible to everyone</div>
+                        </div>
+                      </button>
+                      <button type="button" className={cn("flex items-center gap-3.75 text-left p-4 border border-border rounded-[10px]", {
+                        "bg-primary/7 border-primary/20": 'private' === formik.values.accessType
+                      })} onClick={()=> setFieldValue("accessType", 'private')} disabled={fieldsReadOnly}>
+                        <Icons.lock2 />
+                        <div className="w-0 grow">
+                          <h6 className="font-semibold text-xs">Private</h6>
+                          <div className="text-xs">Restricted to authorized users</div>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Lock code (optional)</Label>
+                    <Input
+                      placeholder="Enter 4-8 digit lock code"
+                      autoComplete="off"
+                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      readOnly={fieldsReadOnly}
+                      name="lockCode"
+                      value={values.lockCode}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Public availability</Label>
+                    <CustomRadioGroup<AvailabilityType> value={availability} setValue={setAvailability} list={availabilityTypeList} readOnly={fieldsReadOnly} />
+                  </div>
+                  {availability === 'custom-days-and-types' && (
+                    <SchedulePicker schedule={schedule} onScheduleChange={setSchedule} readOnly={fieldsReadOnly} />
+                  )}
+                </div>
               </div>
               {/* Updaid Connection */}
               <div>
@@ -440,59 +488,6 @@ const CabinetView = () => {
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Brightness</Label>
                     <CustomRadioGroup<BrightnessType> value={brightness} setValue={setBrightness} list={brightnessList} readOnly={fieldsReadOnly} />
                   </div>
-                </div>
-              </div>
-              {/* Access Details */}
-              <div>
-                <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75 mt-5">
-                  <span className="w-0 grow">Access Details</span>
-                  <InfoIcon size={20} />
-                </div>
-                <div className="grid grid-cols-1 gap-4">
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Access Type <span className="text-error">*</span></Label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <button type="button" className={cn("flex items-center gap-3.75 text-left p-4 border border-border rounded-[10px]", {
-                        "bg-primary/7 border-primary/20": 'public' === formik.values.accessType
-                      })} onClick={()=> setFieldValue("accessType", 'public')} disabled={fieldsReadOnly}>
-                        <Icons.team />
-                        <div className="w-0 grow">
-                          <h6 className="font-semibold text-xs">Public</h6>
-                          <div className="text-xs">Accessible to everyone</div>
-                        </div>
-                      </button>
-                      <button type="button" className={cn("flex items-center gap-3.75 text-left p-4 border border-border rounded-[10px]", {
-                        "bg-primary/7 border-primary/20": 'private' === formik.values.accessType
-                      })} onClick={()=> setFieldValue("accessType", 'private')} disabled={fieldsReadOnly}>
-                        <Icons.lock2 />
-                        <div className="w-0 grow">
-                          <h6 className="font-semibold text-xs">Private</h6>
-                          <div className="text-xs">Restricted to authorized users</div>
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Lock code (optional)</Label>
-                    <Input
-                      placeholder="Enter 4-8 digit lock code"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                      readOnly={fieldsReadOnly}
-                      value={cabinetDetails.lockCode}
-                      onChange={(e)=> setCabinetDetails(prev => ({
-                        ...prev,
-                        lockCode: e.target.value
-                      }))}
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Public availability</Label>
-                    <CustomRadioGroup<AvailabilityType> value={availability} setValue={setAvailability} list={availabilityTypeList} readOnly={fieldsReadOnly} />
-                  </div>
-                  {availability === 'custom-days-and-types' && (
-                    <SchedulePicker schedule={schedule} onScheduleChange={setSchedule} readOnly={fieldsReadOnly} />
-                  )}
                 </div>
               </div>
             </div>
