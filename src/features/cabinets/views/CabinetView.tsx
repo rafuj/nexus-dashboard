@@ -41,8 +41,9 @@ import { useCabinetsView } from "../hooks/useCabinetsView";
 import { useAssetView } from "../hooks/useAssetView";
 import { useUpdateCabinet } from "../hooks/useUpdateCabinet";
 import { cabinetAssetUpdateSchema, cabinetUpdateSchema } from "../types/validationSchema";
-import { useUpdateAsset } from "../hooks/useUpdateAsset";
 import type { ComponentTypesAED } from "../api/componentTypes.api";
+import { getFormChanges } from "@/lib/getFormChanges";
+import type { CreateCabinetFormValues } from "../api/cabinet.api";
 
 interface CabinetDetails {
   serialNumber: string;
@@ -81,7 +82,7 @@ const CabinetView = () => {
   const updateCabinetMutation = useUpdateCabinet(id ?? '')
   
   const { data: assetViewData, isSuccess: isAssetViewSuccess } = useAssetView(id || "")
-  const updateAssetMutation = useUpdateAsset(assetViewData?.id ?? '')
+  // const updateAssetMutation = useUpdateAsset(assetViewData?.id ?? '')
   
   console.log("assetViewData", assetViewData)
 
@@ -145,24 +146,50 @@ const CabinetView = () => {
     }
   }, [isSuccess, isAssetViewSuccess, data, assetViewData]);
 
-
   const formik = useFormik({
     initialValues: cabinetInitialValues(),
     validationSchema: step === "asset-information" ? cabinetAssetUpdateSchema : cabinetUpdateSchema,
-    onSubmit: async (values) => {
-      try {
-        if(step === "asset-information"){
-          updateAssetMutation.mutateAsync(values)
-          // setConfirmModalOpen(false)
-          // setSuccessModalOpen(true)
-        } else {
-          await updateCabinetMutation.mutateAsync(values)
-        }
+    onSubmit: async () => {
 
-        successToast("Updated")
-        // setStep("basic-information")
+      try {
+
+        // await updateCabinetMutation.mutateAsync(values);
+        const changes = getFormChanges(formik.initialValues, values) as CreateCabinetFormValues;
+
+        // Extract asset changes cleanly; default to empty object to prevent runtime errors
+        const { asset: assetChanges, ...otherChanges } = changes;
+        const { components: componentChanges, ...restAsset } = assetChanges || {};
+
+        const { components: components2, ...rest } = values.asset
+
+        const hasRestAsset = Object.keys(restAsset).length > 0;
+        const hasComponentChanges = Boolean(componentChanges);
+
+        const payload = {
+          ...otherChanges,
+          name: values.name,
+          accessType: values.accessType,
+          addressLine1: values.addressLine1,
+          zipCode: values.zipCode,
+          city: values.city,
+          country: values.country,
+          ...((hasRestAsset || hasComponentChanges) && {
+            asset: {
+              ...(hasRestAsset && {...rest}),
+              ...(hasComponentChanges && { 
+                  components: values.asset.components, 
+                  name: rest.name,
+                  id: rest.id, 
+                }),
+              },
+          }),
+        };
+
+        await updateCabinetMutation.mutateAsync(payload as CreateCabinetFormValues)
+        successToast("Updated successfully")
         setIsEditing("")
-        formik.resetForm()
+        formik.resetForm({values})
+        // setStep("basic-information")
       } catch (error) {
         errorToast(
           error instanceof Error
@@ -526,7 +553,8 @@ const CabinetView = () => {
                     <Select value={values.asset.brand} onValueChange={(value)=> {
                         setFieldValue("asset.brand", value)
                         setFieldValue("asset.assetModelId", "")
-                      }} disabled={!brandsList || fieldsReadOnly}>
+                      // }} disabled={!brandsList || fieldsReadOnly}>
+                      }} disabled={true}>
                       <SelectTrigger className={cn("w-full !h-12.5")}>
                         <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                           <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Brand" /></span>
@@ -548,7 +576,8 @@ const CabinetView = () => {
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Model<span className="text-error">*</span></Label>
                     <Select value={values.asset.assetModelId} onValueChange={(value)=> {
                         setFieldValue("asset.assetModelId", value)
-                      }} disabled={!modelsList || fieldsReadOnly}>
+                      // }} disabled={!modelsList || fieldsReadOnly}>
+                      }} disabled={true}>
                       <SelectTrigger className={cn("w-full !h-12.5")}>
                         <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                           <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Model" /></span>

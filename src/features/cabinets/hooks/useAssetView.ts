@@ -8,6 +8,5 @@ export const useAssetView = (id: string) => {
     queryFn: () => getAssetView(id),
     placeholderData: (previousData) => previousData,
     enabled: !!id,
-    staleTime: 15 * 1000, // 15s
   })
 }

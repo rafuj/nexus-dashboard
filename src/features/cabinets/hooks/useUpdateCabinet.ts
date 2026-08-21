@@ -11,7 +11,7 @@ export const useUpdateCabinet = (id: string) => {
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["cabinets", id],
+        queryKey: ["assets", id],
       })
     },
   })

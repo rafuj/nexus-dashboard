@@ -58,14 +58,7 @@ export const cabinetInitialValues = (
       assetModelId: data?.asset?.assetModelId || "",
       checkupDate: data?.asset?.checkupDate || undefined,
       components: [
-        {
-          componentTypeId: data?.asset?.components?.[0]?.componentTypeId || "1",
-          componentVariantId: data?.asset?.components?.[0]?.componentVariantId || "",
-          expiresAt: data?.asset?.components?.[0]?.expiresAt || undefined,
-          lotNumber: data?.asset?.components?.[0]?.lotNumber || "",
-          serialNumber: data?.asset?.components?.[0]?.serialNumber || "",
-          componentVariantName: data?.asset?.components?.[0]?.componentVariantName || "",
-        }, // Index 0: 1st Set Pads
+        // Index 0: 1st Set Pads
         {
           componentTypeId: data?.asset?.components?.[1]?.componentTypeId || "1",
           componentVariantId: data?.asset?.components?.[1]?.componentVariantId || "",
@@ -74,6 +67,14 @@ export const cabinetInitialValues = (
           serialNumber: data?.asset?.components?.[1]?.serialNumber || "",
           componentVariantName: data?.asset?.components?.[1]?.componentVariantName || "",
         }, // Index 1: 2nd Set Pads
+        {
+          componentTypeId: data?.asset?.components?.[0]?.componentTypeId || "1",
+          componentVariantId: data?.asset?.components?.[0]?.componentVariantId || "",
+          expiresAt: data?.asset?.components?.[0]?.expiresAt || undefined,
+          lotNumber: data?.asset?.components?.[0]?.lotNumber || "",
+          serialNumber: data?.asset?.components?.[0]?.serialNumber || "",
+          componentVariantName: data?.asset?.components?.[0]?.componentVariantName || "",
+        }, 
         {
           componentTypeId: data?.asset?.components?.[2]?.componentTypeId || "2",
           componentVariantId: data?.asset?.components?.[2]?.componentVariantId || "",
@@ -89,10 +90,9 @@ export const cabinetInitialValues = (
       purchaseDate: data?.asset?.purchaseDate || undefined,
       serialNumber: data?.asset?.serialNumber || "",
 
-      // states for validations
+      // states for validations skip this for api
       brand: data?.asset?.brand || "",
       id: data?.asset?.id || "",
-      cabinetId: data?.asset?.cabinetId || "" ,
     },
   };
 };
