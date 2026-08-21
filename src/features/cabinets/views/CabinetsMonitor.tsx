@@ -20,6 +20,8 @@ import { queryCabinetsMonitorPage} from "../server/queryCabinetsMonitorPage";
 import { Icons } from "@/app/icons/icons";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
 import type { CabinetStatus } from "../types/cabinetList";
+import { useSmartCabinetsList } from "../hooks/useSmartCabinetsList";
+import { useDebounce } from "@/app/hooks/use-debounce";
 
 
 const CITY_FILTER_ALL = "all";
@@ -40,7 +42,7 @@ export default function CabinetsMonitor() {
   const [cabinetId, setCabinetId] = useQueryState("id", { defaultValue: "" })
 
   console.log("setCabinetId",setCabinetId)
-  
+
   const [sorting, setSorting] = useState<SortingState>([
     { id: "cabinet", desc: false },
   ]);
@@ -49,7 +51,19 @@ export default function CabinetsMonitor() {
     pageIndex: 0,
     pageSize: PAGE_SIZE,
   });
-
+  const debouncedSearch = useDebounce(search, 400)
+  const {
+    data,
+    isFetching,
+    refetch
+  } = useSmartCabinetsList({
+    search: debouncedSearch,
+    status,
+    city,
+    page: pagination.pageIndex + 1,
+    limit: pagination.pageSize,
+    sorting,
+  })
   const pageResult = useMemo(
     () =>
       queryCabinetsMonitorPage({
@@ -89,9 +103,11 @@ export default function CabinetsMonitor() {
 
   // eslint-disable-next-line react-hooks/incompatible-library -- useReactTable
   const table = useReactTable({
-    data: pageResult.rows,
+    // data: pageResult.rows,
+    data: data || [],
     columns,
-    rowCount: pageResult.totalCount,
+    // rowCount: pageResult.totalCount,
+    // rowCount: pageResult.totalCount,
     manualPagination: true,
     manualSorting: true,
     autoResetPageIndex: false,
