@@ -133,6 +133,10 @@ export default function ImeiLinking() {
         imeis: scannedDevices.map((device) => device.imei),
         model: "NEXUS V4.4",
       };
+      setLastScan({
+        serialNumber: scannedDevices?.[0]?.serialNumber ?? "",
+        imei: scannedDevices?.[0]?.imei ?? ""
+      })
 
       const installationPayload = {
         installations: scannedDevices,
@@ -145,10 +149,6 @@ export default function ImeiLinking() {
       setLinkedSuccess(true)
 
       successToast("Devices installed successfully");
-      setLastScan({
-        serialNumber: scannedDevices?.[0]?.serialNumber ?? "",
-        imei: scannedDevices?.[0]?.imei ?? ""
-      })
 
     } catch (error) {
       errorToast(getApiErrorMessage(error));
@@ -275,6 +275,7 @@ export default function ImeiLinking() {
                       value={scannedDevices?.[0]?.serialNumber ?? ""}
                       onChange={(e) => handleChange(e, "serialNumber")}
                       placeholder="e.g. NEX-JLFTM-C2VK"
+                      disabled={deviceInstallations.isPending || createDevices.isPending}
                     />
                   </div>
                   {serialScanSuccess &&(<div className="text-xs font-semibold flex items-center justify-end text-success2 gap-1 mt-2.5">
@@ -302,10 +303,10 @@ export default function ImeiLinking() {
                     <input
                       type="text"
                       className="h-[70px] lg:h-[82px] w-full border card-success2 pl-17 pr-4 py-5 rounded-[10px] outline-0 text-xl lg:text-2xl text-accent-foreground font-semibold"
-                                          
                       value={scannedDevices?.[0]?.imei ?? ""}
                       onChange={(e) => handleChange(e, "imei")}
                       placeholder="e.g. 847394728949384"
+                      disabled={deviceInstallations.isPending || createDevices.isPending}
                     />
                   </div>
                   {imeiScanSuccess &&(
@@ -360,6 +361,7 @@ export default function ImeiLinking() {
                     </div>
                   </div>
                 }
+                {(deviceInstallations.isPending || createDevices.isPending) && <div className="md:col-span-2 text-center text-xl text-accent-foreground"> <span className="animate-spin"></span>Linking device ...</div> }
               </div>
             </div>
             <div
