@@ -108,7 +108,7 @@ export default function SignUp() {
   
   const [tabs, setTabs] = useQueryState("tabs",   parseAsStringLiteral(["signup", "verify-otp-reg"]).withDefault("signup"))
   // const [tabs, setTabs] = useState("signup")
-  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const { sendOtpReg, verifyOtpReg, signup } = useAuth();
   const navigate = useNavigate()
