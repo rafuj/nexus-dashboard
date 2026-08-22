@@ -268,7 +268,7 @@ export default function ImeiLinking() {
                     </Tooltip>
                   </div>
                   <div className="relative">
-                    <BoxIcons className="text-success2 absolute top-1/2 -translate-y-1/2 left-4.5" />
+                    <BoxIcons className="text-success2 absolute top-1/2 -translate-y-1/2 left-4.5 pointer-events-none" />
                     <input
                       type="text"
                       className="h-[70px] lg:h-[82px] w-full border card-success2 pl-17 pr-4 py-5 rounded-[10px] outline-0 text-xl lg:text-2xl text-accent-foreground font-semibold"
@@ -299,7 +299,7 @@ export default function ImeiLinking() {
                     </Tooltip>
                   </div>
                   <div className="relative">
-                    <BoxIcons className="text-success2 absolute top-1/2 -translate-y-1/2 left-4.5" />
+                    <BoxIcons className="text-success2 absolute top-1/2 -translate-y-1/2 left-4.5 pointer-events-none" />
                     <input
                       type="text"
                       className="h-[70px] lg:h-[82px] w-full border card-success2 pl-17 pr-4 py-5 rounded-[10px] outline-0 text-xl lg:text-2xl text-accent-foreground font-semibold"
