@@ -14,6 +14,7 @@ import { useState } from "react";
 import { useGenerateSerial } from "../hooks/useGenerateSerial";
 import { errorToast, successToast } from "@/lib/toast";
 import { getApiErrorMessage } from "@/app/api-manage/api";
+import { LoaderButton } from "@/app/components/loader-button";
 
 type ExportTo = "Excel" | "Csv";
 
@@ -138,7 +139,7 @@ export default function GenerateSerialNumber() {
                       <Input className="h-12.5" placeholder="e.g. 2026" />
                     </div>
                   </div>
-                  <Button className="rounded-full px-5 xl:px-8 h-12.5 mt-5" onClick={handleGenerate}>Generate Serial Numbers</Button>
+                  <LoaderButton loading={generateSerialMutation.isPending} className="rounded-full px-5 xl:px-8 h-12.5 mt-5" onClick={handleGenerate}>Generate Serial Numbers</LoaderButton>
                 </div>
                 <div className="bg-background rounded-[10px] border text-base p-4 text-xs">
                   <div className="flex items-center gap-3.75">

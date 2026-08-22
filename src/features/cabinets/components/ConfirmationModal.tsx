@@ -11,6 +11,7 @@ import { type Dispatch, type SetStateAction } from "react"
 import { SuccessModal } from "./SuccessModal"
 import { formatDateSlash } from "@/lib/utils"
 import type { CreateCabinetFormValues } from "../api/cabinet.api"
+import { LoaderButton } from "@/app/components/loader-button"
 interface ModalProps {
   open: boolean,
   setOpen: Dispatch<SetStateAction<boolean>>,
@@ -18,9 +19,10 @@ interface ModalProps {
   setSuccessModalOpen: Dispatch<SetStateAction<boolean>>,
   values: CreateCabinetFormValues,
   handleSubmit: () => void
+  apiInstance: any
 }
 
-export const ConfirmationModal: React.FC<ModalProps>  = ({ open, setOpen, successModalOpen, setSuccessModalOpen, values, handleSubmit }) => {
+export const ConfirmationModal: React.FC<ModalProps>  = ({ open, setOpen, successModalOpen, setSuccessModalOpen, values, handleSubmit, apiInstance }) => {
 
 
     return (
@@ -149,7 +151,7 @@ export const ConfirmationModal: React.FC<ModalProps>  = ({ open, setOpen, succes
                     <DialogClose asChild>
                         <button type="reset" className="flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 w-full max-w-[140px] md:h-12.5 md:max-w-[180px]">Back to Edit</button>
                     </DialogClose>
-                        <button type="submit" className="flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 w-full max-w-[140px] md:h-12.5 md:max-w-[180px]" onClick={handleSubmit}>Confirm & Add</button>
+                        <LoaderButton loading={apiInstance?.isPending} type="submit" className="flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 w-full max-w-[140px] md:h-12.5 md:max-w-[180px]" onClick={handleSubmit}>Confirm & Add</LoaderButton>
                 </DialogFooter>
                 </DialogContent>
             </Dialog>

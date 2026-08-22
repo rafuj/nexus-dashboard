@@ -815,7 +815,8 @@ export default function AddCabinets() {
               successModalOpen,
               setSuccessModalOpen,
               values,
-              handleSubmit: formik.handleSubmit
+              handleSubmit: formik.handleSubmit,
+              apiInstance:createCabinetMutation
             }
           }
         />

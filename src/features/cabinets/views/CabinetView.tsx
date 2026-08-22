@@ -45,6 +45,7 @@ import type { ComponentTypesAED } from "../api/componentTypes.api";
 import { getFormChanges } from "@/lib/getFormChanges";
 import type { CreateCabinetFormValues } from "../api/cabinet.api";
 import { getApiErrorMessage } from "@/app/api-manage/api";
+import { LoaderButton } from "@/app/components/loader-button";
 
 interface CabinetDetails {
   serialNumber: string;
@@ -898,12 +899,13 @@ const CabinetView = () => {
                         >
                           Cancel
                         </button>
-                        <button type="button" 
-                          className="flex items-center justify-center bg-primary text-white py-2 sm:py-3 px-5 rounded-full text-sm gap-1.25 sm:w-full max-w-[140px]"
+                        <LoaderButton type="button" 
+                          className="flex items-center justify-center bg-primary text-white py-2 sm:py-3 px-5 rounded-full text-sm gap-1.25 sm:w-full max-w-[140px] min-h-11"
                           onClick={()=>formik.handleSubmit()}
+                          loading={updateCabinetMutation.isPending}
                         >
                           Save Changes
-                        </button>
+                        </LoaderButton>
                       </>
                     ) : (
                       <button type="button" 
