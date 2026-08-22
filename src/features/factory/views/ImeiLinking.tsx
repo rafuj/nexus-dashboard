@@ -15,29 +15,31 @@ import { getCoreRowModel, useReactTable, type PaginationState, type SortingState
 import { factoryColumns } from "../components/factoryColumns";
 import { queryImeiLinkingPage } from "../server/queryImeiLinkingPage";
 import { useGeneratedSerialList } from "../hooks/useGeneratedSerialList";
+import { useCreateDevices } from "../hooks/useCreateDevices";
+import { useDeviceInstallations } from "../hooks/useDeviceInstallations";
+import { getApiErrorMessage } from "@/app/api-manage/api";
+import { errorToast, successToast } from "@/lib/toast";
 
 const PAGE_SIZE = 10;
 
 export default function ImeiLinking() {
   const [search, setSearch] = useState<string>("");
-  const [sorting, setSorting] = useState<SortingState>([
-      { id: "serialNumber", desc: false },
-    ]);
-  
+  const [sorting, setSorting] = useState<SortingState>([]);
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: PAGE_SIZE,
   });
-  
+
   const columns = useMemo(() => factoryColumns(), []);
 
   const { data } = useGeneratedSerialList()
 
   const resetPage = () =>
-    setPagination((p) => ({
-      ...p,
-      pageIndex: 0,
-    }));
+  setPagination((p) => ({
+    ...p,
+    pageIndex: 0,
+  }));
 
   const pageResult = useMemo(
     () =>
@@ -58,24 +60,94 @@ export default function ImeiLinking() {
   );
 
   const table = useReactTable({
-      data: pageResult.rows,
-      columns,
-      rowCount: pageResult.totalCount,
-      manualPagination: true,
-      manualSorting: true,
-      autoResetPageIndex: false,
-      getRowId: (row) => row.id,
-      getCoreRowModel: getCoreRowModel(),
-      onPaginationChange: setPagination,
-      onSortingChange: (updater) => {
-        setSorting(updater);
-        resetPage();
-      },
-      state: {
-        pagination,
-        sorting,
-      },
-    });
+    data: pageResult.rows,
+    columns,
+    rowCount: pageResult.totalCount,
+    manualPagination: true,
+    manualSorting: true,
+    autoResetPageIndex: false,
+    getRowId: (row) => row.id,
+    getCoreRowModel: getCoreRowModel(),
+    onPaginationChange: setPagination,
+    onSortingChange: (updater) => {
+      setSorting(updater);
+      resetPage();
+    },
+    state: {
+      pagination,
+      sorting,
+    },
+  });
+
+
+  const [model, setModel] = useState<string>("ZOLL")
+  const [scanCount, setScanCount] = useState(0);
+
+  const [scannedDevices, setScannedDevices] = useState<
+    {
+      imei: string;
+      serialNumber: string;
+    }[]
+  >([]);
+
+  // // As create and installation both api will be called on every scan
+  // setModel(model)
+
+  const handleScanSuccess = ({
+    imei,
+    serialNumber,
+  }: {
+    imei: string;
+    serialNumber: string;
+  }) => {
+    // Prevent duplicate scan
+    const alreadyScanned = scannedDevices.some(
+      (device) =>
+        device.imei === imei ||
+        device.serialNumber === serialNumber
+    );
+
+    if (alreadyScanned) {
+      errorToast("This device has already been scanned");
+      return;
+    }
+
+    setScannedDevices((prev) => [
+      ...prev,
+      { imei, serialNumber },
+    ]);
+
+    setScanCount((prev) => prev + 1);
+  };
+
+  const createDevices = useCreateDevices();
+  const deviceInstallations = useDeviceInstallations();
+
+  const handleDeviceInstallations = async () => {
+    if (!scannedDevices.length) return;
+
+    try {
+      const devicePayload = {
+        imeis: scannedDevices.map((device) => device.imei),
+        model,
+      };
+
+      const installationPayload = {
+        installations: scannedDevices,
+      };
+
+      await createDevices.mutateAsync(devicePayload);
+
+      await deviceInstallations.mutateAsync(installationPayload);
+
+      successToast("Devices installed successfully");
+    } catch (error) {
+      errorToast(getApiErrorMessage(error));
+    }
+  };
+  
+
+
 
   return (
     <>
@@ -101,7 +173,7 @@ export default function ImeiLinking() {
             </div>
           </div>
         </header>
-
+<button type="button" className="px-10 py-2 border rounded bg-white text-black" onClick={handleDeviceInstallations}>Install device</button>
         <div className="p-5">
           <div className="space-y-5">
             {/* Cabinet Serial Number */}
@@ -184,7 +256,7 @@ export default function ImeiLinking() {
                   </div>
                   <div className="mt-3.75 flex flex-wrap gap-2.5">
                     <div className="grow border border-border rounded-[10px] text-base px-5 py-3 text-accent-foreground">
-                      Counter: <span className="font-semibold">128</span>
+                      Counter: <span className="font-semibold">{scanCount}</span>
                     </div>
                     <button type="button" className="flex items-center gap-1.25 text-accent-foreground text-sm bg-chip h-12.5 px-5 xl:px-6 rounded-full">
                       <RotateCcw size={16} />

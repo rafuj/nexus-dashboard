@@ -20,6 +20,6 @@ export const API_ROUTES = {
     COMPONENT_TYPES: `${API_VERSION}/component-types`,
     CABINETS_INVENTORY: `${API_VERSION}/cabinets/inventory`,
     DEVICES: `${API_VERSION}/devices`,
-    DEVICE_INSTALLATION: `${API_VERSION}/device/installations`,
+    DEVICE_INSTALLATION: `${API_VERSION}/device-installations`,
     
 }
