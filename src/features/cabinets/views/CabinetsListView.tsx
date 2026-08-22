@@ -8,11 +8,11 @@ import {
   type PaginationState,
   type SortingState,
 } from "@tanstack/react-table";
-import { ChevronRight, PlusCircle } from "lucide-react";
+import { ChevronRight, Loader2, PlusCircle } from "lucide-react";
 
 import { CabinetsListToolbar } from "../components/CabinetsListToolbar";
 import { cabinetListColumns } from "../components/cabinetsTableColumns";
-import { queryCabinetsListPage } from "../server/queryCabinetsListPage";
+// import { queryCabinetsListPage } from "../server/queryCabinetsListPage";
 import { DataTable, DataTablePagination } from "@/shared/components/data-table";
 import { cn } from "@/lib/utils";
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
@@ -23,6 +23,8 @@ import { can, type Role } from "@/lib/permissions";
 import { MANAGE_CABINETS } from "@/features/dashboard/mock/mockDashboardStats";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
 import type { FilterStatus } from "../types/cabinetList";
+import { useCabinetsList } from "../hooks/useCabinetsList";
+import { useDebounce } from "@/app/hooks/use-debounce";
 
 
 const STATUS_FILTER_ALL = "all";
@@ -48,28 +50,24 @@ export default function CabinetsListView() {
     pageSize: PAGE_SIZE,
   });
 
-  const pageResult = useMemo(
-    () =>
-      queryCabinetsListPage({
-        search,
-        statusFilter,
-        pageIndex: pagination.pageIndex,
-        pageSize: pagination.pageSize,
-        sorting,
-        city
-      }),
-    [
-      search,
-      statusFilter,
-      pagination.pageIndex,
-      pagination.pageSize,
-      sorting,
-      city
-    ],
-  );
-
+  const debouncedSearch = useDebounce(search, 400)
+  const {
+    data: pageResult,
+    // isPending,
+    isFetching,
+    // isError,
+    refetch,
+  } = useCabinetsList({
+    search: debouncedSearch,
+    status: statusFilter,
+    city,
+    page: pagination.pageIndex + 1,
+    limit: pagination.pageSize,
+    sorting,
+  })
+console.log("pageResult",pageResult)
   const { user } = useAuth();
-  const role: Role = user?.role ?? "viewer";
+  const role: Role = user?.role ?? "admin";
   const canManageCabinets = can(role, MANAGE_CABINETS)
 
   const columns = useMemo(() => cabinetListColumns(canManageCabinets), []);
@@ -86,29 +84,38 @@ export default function CabinetsListView() {
       pageIndex: 0,
     }))
   }
-
+  
   // eslint-disable-next-line react-hooks/incompatible-library -- useReactTable
   const table = useReactTable({
-    data: pageResult.rows,
+    data: pageResult || [],
     columns,
-    rowCount: pageResult.totalCount,
+    rowCount: pageResult?.length ?? 0, // here totalCount will be shown
+
     manualPagination: true,
     manualSorting: true,
+
     autoResetPageIndex: false,
+
     getRowId: (row) => row.id,
+
     getCoreRowModel: getCoreRowModel(),
+
     onPaginationChange: setPagination,
+
     onSortingChange: (updater) => {
-      setSorting(updater);
-      resetPagination();
+      setSorting(updater)
+      resetPagination()
     },
+
     state: {
       pagination,
       sorting,
     },
-  });
+  })
 
-  const onRefresh = () => {}
+  const onRefresh = () => {
+    refetch()
+  }
 
   return (
     <>
@@ -169,6 +176,7 @@ export default function CabinetsListView() {
                 }}
                 resetPage={resetPage}
                 onRefresh={onRefresh}
+                isFetching={isFetching}
               />
             </div>
             <div
@@ -176,11 +184,16 @@ export default function CabinetsListView() {
                 "bg-white border rounded-[10px] border-border py-5 px-4",
               )}
             >
-              <h4 className="text-sm font-semibold mb-4">248 Cabinets</h4>
+              <h4 className="text-sm font-semibold mb-4">{pageResult?.length ?? 0} Cabinets</h4>
               <DataTable
                 table={table}
                 emptyMessage="No cabinets match your filters."
               />
+              {isFetching && (
+                <div className="flex justify-center my-5">
+                  <Loader2 size={40} className="animate-spin" />
+                </div>
+              )}
               <div className="border-border border-t px-4 py-3">
                 <DataTablePagination
                   table={table}

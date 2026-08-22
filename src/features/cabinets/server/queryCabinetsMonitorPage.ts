@@ -1,7 +1,6 @@
 import type { SortingState } from "@tanstack/react-table"
 import type { FilterStatus } from "../types/cabinetMonitor"
-import type { Cabinet } from "../types/cabinetList"
-import { mockCabinetsList } from "../mock/mockCabinetsList"
+import type { SmartCabinet } from "../types/cabinetList"
 
 export type CabinetsQuery = {
   search: string
@@ -11,21 +10,22 @@ export type CabinetsQuery = {
   status: FilterStatus
   id: string,
   city: string
+  data: SmartCabinet[]
 }
 
 export type CabinetsPageResult = {
-  rows: Cabinet[]
+  rows: SmartCabinet[]
   totalCount: number,
   status?: string | 'all'
 }
 
 export function filterCabinets(
-  rows: readonly Cabinet[],
+  rows: readonly SmartCabinet[],
   search: string,
   status: string,
   id: string,
   city: string
-): Cabinet[] {
+): SmartCabinet[] {
   const q = search.trim().toLowerCase();
   const selectedStatus = status.trim().toLowerCase();
   const selectedId = id.trim();
@@ -54,9 +54,7 @@ export function filterCabinets(
       [
         row.name,
         row.city,
-        row.assetHealth,
-        row.assetPresence,
-        row.doorStatus,
+        // row.assetHealth,
         row.status,
       ].some((field) => field?.toLowerCase().includes(q));
 
@@ -64,20 +62,16 @@ export function filterCabinets(
     return matchesStatus && matchesId && matchesCity && matchesSearch;
   });
 }
-function compareRows(a: Cabinet, b: Cabinet, columnId: string): number {
+function compareRows(a: SmartCabinet, b: SmartCabinet, columnId: string): number {
   switch (columnId) {
     case "name":
       return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" })
     case "city":
       return a.city.localeCompare(b.city, undefined, { sensitivity: "base" })
-    case "assetHealth":
-      return a.assetHealth.localeCompare(b.assetHealth)
-    case "assetPresence":
-      return a.assetPresence.localeCompare(b.assetPresence)
-    case "doorStatus":
-      return a.doorStatus.localeCompare(b.doorStatus)
-    case "lastActivityAt":
-      return a.lastActivityAt.localeCompare(b.lastActivityAt)
+    // case "assetHealth":
+    //   return a.assetHealth.localeCompare(b.assetHealth)
+    case "deviceState.lastSeenAt":
+      return a.deviceState.lastSeenAt.localeCompare(b.deviceState.lastSeenAt)
     default:
       return 0
   }
@@ -88,7 +82,7 @@ function compareRows(a: Cabinet, b: Cabinet, columnId: string): number {
  */
 export function queryCabinetsMonitorPage(query: CabinetsQuery): CabinetsPageResult {
   const filtered = filterCabinets(
-    mockCabinetsList,
+    query.data,
     query.search,
     query.status,
     query.id,

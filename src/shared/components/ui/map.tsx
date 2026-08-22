@@ -1463,8 +1463,8 @@ function useLeaflet() {
 
             const L_object = leaflet.default
             if (L_object.Control && !L_object.Control.FullScreen) {
-                L_object.Control.FullScreen =
-                    leafletFullscreen.default || leafletFullscreen
+                L_object.Control.FullScreen = 
+                    (leafletFullscreen.default || leafletFullscreen) as any;
             }
 
             setLeafletDraw(leafletDraw)

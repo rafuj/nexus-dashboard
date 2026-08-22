@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { format } from "date-fns"
-import { CalendarIcon, ChevronDownIcon } from "lucide-react"
+import { CalendarIcon } from "lucide-react"
 
 import { Button } from "./button"
 import { Calendar } from "./calendar"
@@ -18,6 +18,7 @@ type DatePickerProps = {
   onChange?: (date?: Date) => void
   disabled?: boolean
   className?: string
+  dateType?: "future" | "past"
 }
 
 export function DatePicker({
@@ -25,6 +26,7 @@ export function DatePicker({
   onChange,
   disabled = false,
   className = "",
+  dateType
 }: DatePickerProps) {
   const [open, setOpen] = React.useState(false)
 
@@ -43,7 +45,7 @@ export function DatePicker({
             "!bg-[#BDBDBD]/15 !border-border cursor-auto !opacity-100" : disabled
           })}
         >
-          {value ? format(value, "dd/MM/yyyy") : format(new Date(), "dd/MM/yyyy")}
+          {value ? format(value, "dd/MM/yyyy") : "Select date"}
           {!disabled && (<CalendarIcon />)}
         </Button>
       </PopoverTrigger>
@@ -54,6 +56,13 @@ export function DatePicker({
           selected={value}
           onSelect={handleSelect}
           defaultMonth={value}
+          disabled={
+            dateType === "future"
+              ? { before: new Date() }
+              : dateType === "past"
+                ? { after: new Date() }
+                : undefined
+          }
         />
       </PopoverContent>
     </Popover>

@@ -6,6 +6,7 @@ import { useState } from "react"
 export function EndActivityAction({ row }: { row: CabinetActivityRow }) {
   
   const [openEndActivity, setOpenEndActivity] = useState<boolean>(false)
+  console.log("row", row)
   
   return (
     <>

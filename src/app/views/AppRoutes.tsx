@@ -5,7 +5,6 @@ import { Helmet, HelmetProvider } from "react-helmet-async";
 import PageLayout from "@/app/layouts/PageLayout";
 import AuthLayout from "@/app/layouts/AuthLayout";
 import LoginForm from "@/features/auth/views/LoginForm";
-import SignupForm from "@/features/auth/views/SignupForm";
 import CabinetView from "@/features/cabinets/views/CabinetView";
 import CabinetsListView from "@/features/cabinets/views/CabinetsListView";
 import DashboardView from "@/features/dashboard/views/DashboardView";
@@ -22,6 +21,7 @@ import { useAuth } from "../hooks/useAuth";
 import ImeiLinking from "@/features/factory/views/ImeiLinking";
 import GenerateSerialNumber from "@/features/factory/views/GenerateSerialNumber";
 import FactoryOverview from "@/features/factory/views/FactoryOverview";
+import SignUp from "@/features/auth/views/SignUp";
 
 const helmetContext = {};
 
@@ -31,7 +31,7 @@ export default function AppRoutes() {
 
   const routesByRole = () => {
     switch(user?.role) {
-      case "factory":
+      case "super":
         return <>
           <Route path="/" element={<ImeiLinking />} />
           <Route path="/generate-serial-number" element={<GenerateSerialNumber />} />
@@ -55,9 +55,10 @@ export default function AppRoutes() {
           <Routes>
             <Route element={<AuthLayout />}>
               <Route path="/login" element={<LoginForm />} />
+
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/signup" element={<SignupForm />} />
+              <Route path="/signup" element={<SignUp />} />
             </Route>
 
             <Route element={<PageLayout />}>

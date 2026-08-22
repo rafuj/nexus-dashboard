@@ -1,13 +1,14 @@
-export type Role = "owner" | "admin" | "viewer" | "super" | "factory"
+export type Role = "owner" | "admin" | "super"
+
 export type RoleFilter = Role | "all";
 
 export const rolePermissions: Record<Role, string[]> = {
     owner: ["manage_users", "manage_cabinets", "manage_assets", "view_all","view_logs"],
     admin: ["manage_cabinets", "manage_assets", "view_all", "view_logs"],
-    viewer: ["view_all", "view_logs"],
+    // viewer: ["view_all", "view_logs"],
     super: ["*"],
     // 
-    factory: ["manage_cabinets", "manage_assets", "view_all", "view_logs"],
+    // factory: ["manage_cabinets", "manage_assets", "view_all", "view_logs"],
 }
 
 

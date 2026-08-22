@@ -13,10 +13,9 @@ import {
 import { Input } from "@/shared/components/ui/input"
 import { PasswordInput } from "@/features/auth/components/PasswordInput";
 import avatar from '@/assets/avatar-placeholder.png'
-import { useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { BriefcaseBusiness, Pen, User2, UserLock } from "lucide-react";
-import { CustomRadioGroup, type RadioOption } from "@/shared/components/CustomRadioGroup";
-import { accountTypeList, type AccountType } from "@/features/auth/views/SignupForm";
+import { CustomRadioGroup } from "@/shared/components/CustomRadioGroup";
 import {
   Select,
   SelectContent,
@@ -24,7 +23,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/components/ui/select"
-import { countries } from "@/features/settings/mock/mockCountries";
+import { COUNTRY_OPTIONS, getCitiesByCountry } from "@/lib/country-helper";
+import { tenantTypeList, type TenantType } from "@/features/auth/views/SignUp";
 
 interface FormState {
     firstName: string;
@@ -40,7 +40,7 @@ interface FormState {
     zipCode: string;
     city: string;
     country: string;
-    accountType: AccountType
+    tenantType: TenantType
 }
 
 
@@ -60,8 +60,8 @@ export default function MyAccount() {
       houseNumber: "14",
       zipCode: "1023",
       city: "Amsterdam",
-      country: "Netherlands",
-      accountType: "personal"
+      country: "NL",
+      tenantType: "personal"
   }); 
 
   // 1. Manage the image preview state (defaults to your initial avatar)
@@ -85,6 +85,11 @@ export default function MyAccount() {
             console.log('Selected file:', file);
         }
     };
+
+
+    const availableCities = useMemo(() => {
+      return getCitiesByCountry(formState.country);
+    }, [formState.country]);
 
   return (
     <>
@@ -133,7 +138,7 @@ export default function MyAccount() {
                       <div className="text-center">
                         <div className="font-medium text-base mt-3 text-accent-foreground">Admin User</div>
                         <div className="text-xs mt-1">Senior Safety Officer</div>
-                        {formState.accountType === 'company' && <div className="text-error text-xs font-semibold mt-3">
+                        {formState.tenantType === 'business' && <div className="text-error text-xs font-semibold mt-3">
                           Company account
                         </div>}
                       </div>
@@ -203,14 +208,14 @@ export default function MyAccount() {
                     <Field className="mb-3">
                         <div>
                             <FieldLabel className="font-medium text-accent-foreground mb-2.5">Account Type <span className="text-error">*</span> </FieldLabel>
-                            <CustomRadioGroup value={formState.accountType} setValue={(e)=> setFormState(prev => ({
+                            <CustomRadioGroup value={formState.tenantType} setValue={(e)=> setFormState(prev => ({
                                 ...prev,
                                 accountType: e
-                              }))} list={accountTypeList} />
+                              }))} list={tenantTypeList} />
                         </div>
                     </Field>
                     {
-                      formState.accountType === 'company' &&
+                      formState.tenantType === 'business' &&
                         <>
                           <h3 className="flex items-center gap-2 font-semibold mb-2 text-lg">
                             <BriefcaseBusiness className="text-primary" size={25} /> <span>Professional Information</span>
@@ -322,7 +327,7 @@ export default function MyAccount() {
                                 </div>
                             </Field>
                             <div>
-                                <FieldLabel className="font-medium text-accent-foreground mb-2.5">Country</FieldLabel>
+                              <FieldLabel className="font-medium text-accent-foreground mb-2.5">Country</FieldLabel>
                               <Select value={formState.country} onValueChange={(value)=> setFormState(prev => ({
                                   ...prev,
                                   country: value,
@@ -332,7 +337,7 @@ export default function MyAccount() {
                                     <SelectValue placeholder="Select Country" />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    {countries.map(country => <SelectItem value={country.name} key={country.name}>{country.name}</SelectItem>)}
+                                    {COUNTRY_OPTIONS.map(country => <SelectItem value={country.name} key={country.name}>{country.name}</SelectItem>)}
                                   </SelectContent>
                                 </Select>
                             </div>
@@ -346,7 +351,7 @@ export default function MyAccount() {
                                     <SelectValue placeholder="Select City" />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    {countries.find(item => item.name === formState.country)?.cities?.map((item)=> <SelectItem value={item} key={item}>{item}</SelectItem> )}
+                                    {availableCities?.map((item)=> <SelectItem value={item.name} key={item.name}>{item.name}</SelectItem> )}
                                   </SelectContent>
                                 </Select>
                             </div>

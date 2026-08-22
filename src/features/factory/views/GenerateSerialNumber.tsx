@@ -6,16 +6,37 @@ import { ChevronDown, InfoIcon, Settings } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/components/ui/tooltip"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { Input } from "@/shared/components/ui/input";
-import { Button } from "@/shared/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
 import { SidebarMenuButton } from "@/shared/components/ui/sidebar";
 import { Icons } from "@/app/icons/icons";
 import { useState } from "react";
+import { useGenerateSerial } from "../hooks/useGenerateSerial";
+import { errorToast, successToast } from "@/lib/toast";
+import { getApiErrorMessage } from "@/app/api-manage/api";
+import { LoaderButton } from "@/app/components/loader-button";
 
 type ExportTo = "Excel" | "Csv";
 
 export default function GenerateSerialNumber() {
   const [exportTo, setExportTo] = useState<ExportTo>("Excel")
+
+  const [quantity, setQuantity] = useState<number|''>('')
+  
+  const generateSerialMutation = useGenerateSerial()
+
+  const handleGenerate = async () =>{
+    if(quantity) {
+      try {
+        await generateSerialMutation.mutateAsync({quantity})
+        successToast(`Generated ${quantity} New Serial Number successfully`)
+        setQuantity("")
+      } catch (error) {
+          errorToast(getApiErrorMessage(error));
+      }
+    } else {
+      errorToast("Quantity is a required field")
+    }
+  }
 
   return (
     <>
@@ -70,7 +91,7 @@ export default function GenerateSerialNumber() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="NEX">NEX</SelectItem>
-                          <SelectItem value="UPD">UPD</SelectItem>
+                          {/* <SelectItem value="UPD">UPD</SelectItem> */}
                         </SelectContent>
                       </Select>
                     </div>
@@ -88,7 +109,17 @@ export default function GenerateSerialNumber() {
                           </TooltipContent>
                         </Tooltip>
                       </div>
-                      <Input type="number" className="h-12.5" />
+                      <Input type="number" className="h-12.5" value={quantity} 
+                          onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === "") {
+                                setQuantity("");
+                                return;
+                              }
+                              setQuantity(Math.min(Number(value), 500));
+                          }}
+                        placeholder="e.g. 10"
+                      />
                     </div>
                     <div>
                       <div className="text-xs font-medium flex items-center gap-1 text-accent-foreground mb-3.5">
@@ -107,7 +138,7 @@ export default function GenerateSerialNumber() {
                       <Input className="h-12.5" placeholder="e.g. 2026" />
                     </div>
                   </div>
-                  <Button className="rounded-full px-5 xl:px-8 h-12.5 mt-5">Generate Serial Numbers</Button>
+                  <LoaderButton loading={generateSerialMutation.isPending} className="rounded-full px-5 xl:px-8 h-12.5 mt-5" onClick={handleGenerate}>Generate Serial Numbers</LoaderButton>
                 </div>
                 <div className="bg-background rounded-[10px] border text-base p-4 text-xs">
                   <div className="flex items-center gap-3.75">

@@ -130,7 +130,7 @@ export default function CabinetsMapView() {
                         <div className="flex items-start flex-wrap justify-between mb-5 gap-2">
                           <div className="flex items-center gap-1.75">
                             <div className="h-6 w-6 shrink-0 flex items-center justify-center">
-                              <MapPin className={cn("text-primary", config.pin)} size={20} />
+                              <MapPin className={cn("text-primary size-5", config.pin)} />
                             </div>
                             <Link to={`/cabinets/monitor?id=${cabinet.id}`}>
                                 <h3 className="text-sm font-semibold line-clamp-1 underline">
@@ -160,7 +160,7 @@ export default function CabinetsMapView() {
                           <div className="flex justify-between items-baseline">
                             <span>City / Street</span>
                             <span className="font-semibold text-right truncate">
-                              {cabinet.city}, {cabinet.street} {cabinet.hNo}
+                              {cabinet.city}, {cabinet.addressLine1} {cabinet.houseNumber}
                             </span>
                           </div>
 

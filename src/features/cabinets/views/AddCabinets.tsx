@@ -1,6 +1,6 @@
 "use client";
 import { Helmet } from "react-helmet-async";
-import {  ChevronDown, ChevronLeft, ChevronRight, CircleCheck, Info, InfoIcon, Settings, ShoppingCart } from "lucide-react";
+import {  ChevronDown, ChevronLeft, ChevronRight, CircleCheck, Info, InfoIcon } from "lucide-react";
 
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
@@ -17,51 +17,42 @@ import { DatePicker } from "@/shared/components/ui/date-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { cn, formatDateSlash } from "@/lib/utils";
 import SchedulePicker from "../components/SchedulePicker";
-import type { AccessTypeI, AvailabilityType, BrightnessType, ColorType, DayConfig, StepType, VolumeType } from "../types/addCabinet";
-import { assetTypeList, availabilityTypeList, brightnessList, colorList, dayList, STEPS, volumeList } from "../mock/addCabinetData";
+import type { AvailabilityType, BrightnessType, ColorType, DayConfig, StepType, VolumeType } from "../types/addCabinet";
+import { availabilityTypeList, brightnessList, colorList, dayList, STEPS, volumeList } from "../mock/addCabinetData";
 import { ConfirmationModal } from "../components/ConfirmationModal";
 import { AVAILABLE_CREDITS } from "@/features/dashboard/mock/mockDashboardStats";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
 import { SidebarMenuButton } from "@/shared/components/ui/sidebar";
-import { brandsList } from "../mock/mockBrands";
+import { useFormik } from "formik";
+import { errorToast, successToast } from "@/lib/toast";
+import { useCreateCabinet } from "../hooks/useCreateCabinet";
+import { useAssetTypes } from "../hooks/useAssetTypes";
+import { useAssetTypesModels } from "../hooks/useAssetTypesModels";
+import { useComponentTypes } from "../hooks/useComponentTypes";
+import { useAssetTypesBrands } from "../hooks/useAssetTypesBrands";
+import ComponentVariant from "../components/ComponentVariant";
+import { mockBrandsList } from "../mock/mockBrands";
+import { COUNTRY_OPTIONS } from "@/lib/country-helper";
+import { cabinetInitialValues } from "../types/addCabinet";
+import { cabinetValidationSchema } from "../types/validationSchema";
+import { getApiErrorMessage } from "@/app/api-manage/api";
 
 export interface BrandInfo {
   name: string;
   model: string;
 }
 
-export interface AssetInformation {
-  padsInformation: {
-    firstSetPads: {
-      for: "adult" | "adult+children" | "children",
-      expiration: Date | undefined,
-      IotNumber: string
-    },
-    secondSetPads: {
-      for: "adult" | "adult+children" | "children",
-      expiration: Date | undefined,
-      IotNumber: string
-    },
-  },
-  batteryInformation: {
-    batterySerial: string,
-    batteryExpiration: Date | undefined,
-    batteryIotNumber: string
-  }
-  notes: string,
-  brandInfo: BrandInfo
-}
 
 export default function AddCabinets() {
   const navigate = useNavigate();
 
   const [step, setStep] = useState<StepType>('basic-information')
-  const [assetType, setAssetType] = useState<string>(assetTypeList[0].value)
+  
   const [volume, setVolume] = useState<VolumeType>('0%')
   const [brightness, setBrightness] = useState<BrightnessType>('0%')
   const [color, setColor] = useState<ColorType>('white')
   const [availability, setAvailability] = useState<AvailabilityType>('24/7')
-  const [accessType, setAccessType] = useState<AccessTypeI>('public')
+  
   const [schedule, setSchedule] = useState<DayConfig[]>(dayList)
 
   const [brandInfo, setBrandInfo] = useState<BrandInfo>({
@@ -69,68 +60,87 @@ export default function AddCabinets() {
     model: ""
   })
 
-  const [warrantyExpiration, setWarrantyExpiration] = useState<Date | undefined>(new Date())
-
-  const [assetExpiration, setAssetExpiration] = useState<Date | undefined>(new Date())
-  const [checkupDate, setCheckupDate] = useState<Date | undefined>(new Date())
-
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false)
+  const [successModalOpen, setSuccessModalOpen] = useState<boolean>(false)
 
   const [assignCredits, setAssignCredits] = useState<number|''>(0)
-  
-  const [images, setImages] = useState({
-    picture1: "",
-    picture2: "",
-    picture3: "",
+
+  const createCabinetMutation = useCreateCabinet()
+
+  // Basic Information
+  const formik = useFormik({
+    initialValues: cabinetInitialValues(),
+    validationSchema: cabinetValidationSchema,
+    onSubmit: async (values) => {
+      try {
+        await createCabinetMutation.mutateAsync(values)
+        successToast("Cabinet created successfully")
+        setStep("basic-information")
+        setConfirmModalOpen(false)
+        setSuccessModalOpen(true)
+        formik.resetForm()
+      } catch (error) {
+          errorToast(getApiErrorMessage(error));
+      }
+    },
   });
 
-  const [assetInformation, setAssetInformation] = useState<AssetInformation>({
-      padsInformation: {
-        firstSetPads: {
-          for: "adult+children",
-          expiration: new Date(),
-          IotNumber: ""
-        },
-        secondSetPads: {
-          for: "adult",
-          expiration: new Date(),
-          IotNumber: ""
-        },
-      },
-      batteryInformation: {
-        batterySerial: "",
-        batteryExpiration: new Date(),
-        batteryIotNumber: ""
-      },
-      notes: "",
-      brandInfo: {
-        name: "",
-        model: "",
-      }
-    })
-
+  const {values, setFieldValue, errors, touched, handleChange, handleBlur} = formik
+  
+  const { data: assetTypes, isLoading } = useAssetTypes()
+  const { data: brandsList } = useAssetTypesBrands(values.asset.id)
+  const { data: modelsList } = useAssetTypesModels(values.asset.id, {brand: values.asset.brand })
+  const { data: componentTypes } = useComponentTypes()
+  
   const handleImageChange = (
     key: "picture1" | "picture2" | "picture3",
     file: File | null
   ) => {
     if (!file) return;
-
-    setImages((prev) => ({
-      ...prev,
-      [key]: URL.createObjectURL(file),
-    }));
+    setFieldValue(key, URL.createObjectURL(file))
   };
 
-  const handleNext = () => {
-    // Find the index of the current active step
-    const currentIndex = STEPS.findIndex((s) => s.id === step);
+  const handleNext = async () => {
 
-    // Check if there is a subsequent step in the array
-    if (currentIndex !== -1 && currentIndex < STEPS.length - 1) {
-      const nextStep = STEPS[currentIndex + 1].id;
-      setStep(nextStep);
-    } else {
-      setConfirmModalOpen(true)
+    const errors = await formik.validateForm();
+
+    if(Object.keys(errors).length !== 0){
+      formik.setTouched(
+        Object.keys(errors).reduce(
+          (acc, key) => {
+            acc[key] = true;
+            return acc;
+          },
+          {} as Record<string, boolean>
+        )
+      );
+    }
+
+    if (step === "basic-information") {
+      if(errors.name || errors.addressLine1 || errors.zipCode || errors.city || errors.country) {
+        return
+      } else {
+        formik.setErrors({})
+        formik.setTouched({})
+        setStep("cabinet-details")
+      }
+    }
+    if (step === "cabinet-details") {
+      if(errors.accessType) {
+        return
+      } else {
+        formik.setErrors({})
+        formik.setTouched({})
+        setStep("asset-information")
+      }
+    }
+
+    if (step === "asset-information") {
+      if(Object.keys(errors).length !== 0){
+        errorToast("Please fill all required fields")
+      }else {
+        setConfirmModalOpen(true)
+      }
     }
   };
 
@@ -179,6 +189,10 @@ export default function AddCabinets() {
                       placeholder="e.g. SN1234567890"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      name="serialNumber"
+                      value={values.serialNumber}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                     />
                     <div className="text-xs mt-2">If the serial number is recognised the brand, model and module code (if applicable) will be filled in automatically.</div>
                     <div className="flex items-center text-sm text-accent-foreground my-5 gap-3">
@@ -201,7 +215,7 @@ export default function AddCabinets() {
                       </SelectTrigger>
                       <SelectContent>
                       {
-                        brandsList.map((item)=> <SelectItem value={item.brand} key={item.brand}>{item.brand}</SelectItem> )
+                        mockBrandsList.map((item)=> <SelectItem value={item.brand} key={item.brand+"mock-model"}>{item.brand}</SelectItem> )
                       }
                       </SelectContent>
                     </Select>
@@ -219,7 +233,7 @@ export default function AddCabinets() {
                       </SelectTrigger>
                       <SelectContent>
                       {
-                        brandsList.find(item => item.brand === brandInfo.name)?.models?.map((item)=> <SelectItem value={item} key={item}>{item}</SelectItem> )
+                        mockBrandsList.find(item => item.brand === brandInfo.name)?.models?.map((item)=> <SelectItem value={item} key={item+'mock-model'}>{item}</SelectItem> )
                       }
                       </SelectContent>
                     </Select>
@@ -245,8 +259,8 @@ export default function AddCabinets() {
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Access Type <span className="text-error">*</span></Label>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <button type="button" className={cn("flex items-center gap-3.75 text-left p-4 border border-border rounded-[10px]", {
-                        "bg-primary/7 border-primary/20": 'public' === accessType
-                      })} onClick={()=> setAccessType('public')}>
+                        "bg-primary/7 border-primary/20": 'public' === formik.values.accessType
+                      })} onClick={()=> setFieldValue("accessType", 'public')}>
                         <Icons.team />
                         <div className="w-0 grow">
                           <h6 className="font-semibold text-xs">Public</h6>
@@ -254,8 +268,8 @@ export default function AddCabinets() {
                         </div>
                       </button>
                       <button type="button" className={cn("flex items-center gap-3.75 text-left p-4 border border-border rounded-[10px]", {
-                        "bg-primary/7 border-primary/20": 'private' === accessType
-                      })} onClick={()=> setAccessType('private')}>
+                        "bg-primary/7 border-primary/20": 'private' === formik.values.accessType
+                      })} onClick={()=> setFieldValue("accessType", 'private')}>
                         <Icons.lock2 />
                         <div className="w-0 grow">
                           <h6 className="font-semibold text-xs">Private</h6>
@@ -270,11 +284,15 @@ export default function AddCabinets() {
                       placeholder="Enter 4-8 digit lock code"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      name="lockCode"
+                      value={values.lockCode}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                     />
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Public availability</Label>
-                    <CustomRadioGroup value={availability} setValue={setAvailability} list={availabilityTypeList} />
+                    <CustomRadioGroup<AvailabilityType> value={availability} setValue={setAvailability} list={availabilityTypeList} />
                   </div>
                   {availability === 'custom-days-and-types' && (
                     <SchedulePicker schedule={schedule} onScheduleChange={setSchedule} />
@@ -388,7 +406,7 @@ export default function AddCabinets() {
                   </div>
                   <div className="sm:col-span-2">
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Volume</Label>
-                    <CustomRadioGroup value={volume} setValue={setVolume} list={volumeList} />
+                    <CustomRadioGroup<VolumeType> value={volume} setValue={setVolume} list={volumeList} />
                   </div>
                 </div>
               </div>
@@ -401,11 +419,11 @@ export default function AddCabinets() {
                 <div className="grid grid-cols-1 gap-4">
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Colour</Label>
-                    <CustomRadioGroup value={color} setValue={setColor} list={colorList} />
+                    <CustomRadioGroup<ColorType> value={color} setValue={setColor} list={colorList} />
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Brightness</Label>
-                    <CustomRadioGroup value={brightness} setValue={setBrightness} list={brightnessList} />
+                    <CustomRadioGroup<BrightnessType> value={brightness} setValue={setBrightness} list={brightnessList} />
                   </div>
                 </div>
               </div>
@@ -428,7 +446,7 @@ export default function AddCabinets() {
                       size="lg"
                       className={cn("data-[state=open]:text-sidebar-accent-foreground cursor-pointer rounded-none !bg-white !ring-0 border border-border h-12.5 rounded-[10px] font-semibold !text-accent-foreground !px-5 text-xs")}
                     >
-                      {assetTypeList.find(i => i.value === assetType)?.label}
+                      {values.asset.name || "Select Asset Type"}
                       <ChevronDown className="ml-auto size-4" />
                     </SidebarMenuButton>
                   </DropdownMenuTrigger>
@@ -439,29 +457,34 @@ export default function AddCabinets() {
                     sideOffset={4}
                   >
                     <DropdownMenuGroup>
-                      {assetTypeList.map((option) => (
-                        <DropdownMenuItem className="text-accent-foreground font-semibold text-xs h-10 py-2 px-2.5 hover:!bg-chip" onClick={()=> setAssetType(option.value)}>
-                          {option.label}
+                      {!isLoading && assetTypes?.map((option) => (
+                        <DropdownMenuItem className="text-accent-foreground font-semibold text-xs h-10 py-2 px-2.5 hover:!bg-chip" 
+                          onClick={()=> {
+                            setFieldValue("asset.id", option.id)
+                            setFieldValue("asset.name", option.name)
+                          }} key={option.id}>
+                          {option.name}
                         </DropdownMenuItem>
                       ))}
                     </DropdownMenuGroup>
                   </DropdownMenuContent>
                 </DropdownMenu>
+                {touched.asset && errors?.asset?.name && (
+                    <p className="mt-1 text-xs text-error">
+                      {errors.asset.name}
+                    </p>
+                  )}
               </div>
               
               
-                {assetType === "defibrillator" ? (
+                {values.asset.id === "1" ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 my-3.75 gap-4">
                     <div>
                       <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand<span className="text-error">*</span></Label>
-                      <Select value={assetInformation.brandInfo.name} onValueChange={(value)=> setAssetInformation(prev => ({
-                        ...prev,
-                        brandInfo:{
-                          ...prev.brandInfo,
-                          name: value,
-                          model: ""
-                        }
-                      }))}>
+                      <Select value={values.asset.brand} onValueChange={(value)=> {
+                          setFieldValue("asset.brand", value)
+                          setFieldValue("asset.assetModelId", "")
+                        }} disabled={!brandsList}>
                         <SelectTrigger className={cn("w-full !h-12.5")}>
                           <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                             <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Brand" /></span>
@@ -469,20 +492,21 @@ export default function AddCabinets() {
                         </SelectTrigger>
                         <SelectContent>
                           {
-                            brandsList.map((item)=> <SelectItem value={item.brand} key={item.brand}>{item.brand}</SelectItem> )
+                            brandsList?.map((item)=> <SelectItem value={item} key={item+"brand"}>{item}</SelectItem> )
                           }
                         </SelectContent>
                       </Select>
+                      {touched.asset && errors.asset?.brand && (
+                          <p className="mt-1 text-xs text-error">
+                            {errors.asset?.brand}
+                          </p>
+                        )}
                     </div>
                     <div>
                       <Label className="text-xs text-accent-foreground font-medium block mb-3">Model<span className="text-error">*</span></Label>
-                      <Select value={assetInformation.brandInfo.model} onValueChange={(value)=> setAssetInformation(prev => ({
-                        ...prev,
-                        brandInfo: {
-                          ...prev.brandInfo,
-                          model: value
-                        }
-                      }))}>
+                      <Select value={values.asset.assetModelId} onValueChange={(value)=> {
+                          setFieldValue("asset.assetModelId", value)
+                        }} disabled={!modelsList}>
                         <SelectTrigger className={cn("w-full !h-12.5")}>
                           <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                             <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select Model" /></span>
@@ -490,10 +514,15 @@ export default function AddCabinets() {
                         </SelectTrigger>
                         <SelectContent>
                           {
-                            brandsList.find(item => item.brand === assetInformation.brandInfo.name)?.models?.map((item)=> <SelectItem value={item} key={item}>{item}</SelectItem> )
+                            modelsList?.map((item)=> <SelectItem value={item.id} key={item+"model"}>{item.modelName}</SelectItem> )
                           }
                         </SelectContent>
                       </Select>
+                      {touched.asset && errors.asset?.assetModelId && (
+                        <p className="mt-1 text-xs text-error">
+                          {errors.asset?.assetModelId}
+                        </p>
+                      )}
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 my-3.75 gap-4 sm:col-span-2">
                       <div>
@@ -502,15 +531,25 @@ export default function AddCabinets() {
                           placeholder="Enter serial number"
                           autoComplete="off"
                           className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                          name="asset.serialNumber"
+                          value={values.asset.serialNumber}
+                          onChange={formik.handleChange}
+                          errors={touched.asset ? errors.asset?.serialNumber : ''}
                         />
                       </div>
                       <div>
                         <Label className="text-xs text-accent-foreground font-medium block mb-3">Date of purchase</Label>
-                        <DatePicker value={assetExpiration} onChange={setAssetExpiration} className="!bg-white text-xs pl-5 pr-4" />
+                        <DatePicker className="!bg-white text-xs pl-5 pr-4"
+                          dateType="past"
+                          value={values.asset.purchaseDate}
+                          onChange={(value)=>setFieldValue("asset.purchaseDate", value)} />
                       </div>
                       <div>
                         <Label className="text-xs text-accent-foreground font-medium block mb-3">Next check-up</Label>
-                        <DatePicker value={checkupDate} onChange={setCheckupDate} className="!bg-white text-xs pl-5 pr-4" />
+                        <DatePicker className="!bg-white text-xs pl-5 pr-4"
+                          dateType="future"
+                          value={values.asset.checkupDate} 
+                          onChange={(value)=>setFieldValue("asset.checkupDate", value)} />
                       </div>
                     </div>
                   </div>
@@ -519,15 +558,24 @@ export default function AddCabinets() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 my-3.75 gap-4">
                       <div>
                           <Label className="text-xs text-accent-foreground font-medium block mb-3">Asset Expiration Date</Label>
-                          <DatePicker value={assetExpiration} onChange={setAssetExpiration} className="!bg-white text-xs pl-5 pr-4" />
+                          <DatePicker className="!bg-white text-xs pl-5 pr-4"
+                            dateType="future"
+                            value={values.asset.expiresAt}
+                            onChange={(value)=>setFieldValue("asset.expiresAt", value)} />
                         </div>
                         <div>
                           <Label className="text-xs text-accent-foreground font-medium block mb-3">Check-Up Date</Label>
-                          <DatePicker value={checkupDate} onChange={setCheckupDate} className="!bg-white text-xs pl-5 pr-4" />
+                          <DatePicker className="!bg-white text-xs pl-5 pr-4" 
+                            dateType="future"
+                            value={values.asset.checkupDate} 
+                            onChange={(value)=>setFieldValue("asset.checkupDate", value)} />
                         </div>
                         <div>
                           <Label className="text-xs text-accent-foreground font-medium block mb-3">Date of Purchase</Label>
-                          <DatePicker value={warrantyExpiration} onChange={setWarrantyExpiration} className="!bg-white text-xs pl-5 pr-4" />
+                          <DatePicker className="!bg-white text-xs pl-5 pr-4" 
+                            dateType="past"
+                            value={values.asset.purchaseDate} 
+                            onChange={(value)=>setFieldValue("asset.purchaseDate", value)} />
                         </div>
                     </div>
                   </>
@@ -538,207 +586,17 @@ export default function AddCabinets() {
                     placeholder="Add any additional notes..."
                     autoComplete="off"
                     className="p-5 placeholder:text-accent-foreground/20"
-                    value={assetInformation.notes}
-                    onChange={(e)=> setAssetInformation(prev=> ({
-                      ...prev,
-                      notes: e.target.value
-                    }))}
+                    value={values.asset.notes}
+                    name="asset.notes"
+                    onChange={handleChange}
                   />
                 </div>
             </div>
-            {assetType === "defibrillator" && 
-              <>
-                {/* Battery Information */}
-                <div className="mt-5">
-                  <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75">
-                    <span className="w-0 grow">Pads Information</span>
-                    <InfoIcon size={20} />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 my-3.75 gap-4">
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">1st set pads for<span className="text-error">*</span></Label>
-                      <Select value={assetInformation.padsInformation.firstSetPads.for}
-                        onValueChange={(value: "adult" | "adult+children" | "children") =>
-                          setAssetInformation((prev) => ({
-                            ...prev,
-                            padsInformation: {
-                              ...prev.padsInformation,
-                              firstSetPads: {
-                                ...prev.padsInformation.firstSetPads,
-                                for: value,
-                              },
-                            },
-                          }))
-                        }>
-                        <SelectTrigger className="w-full !h-12.5">
-                          <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-                            <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Adult + Child" /></span>
-                          </div>
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="adult+children">Adult + Child</SelectItem>
-                          <SelectItem value="adult">Adult Only</SelectItem>
-                          <SelectItem value="children">Children</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">1st set pads expiration date<span className="text-error">*</span></Label>
-                      <DatePicker value={assetInformation.padsInformation.firstSetPads.expiration} onChange={(value) =>
-                          setAssetInformation((prev) => ({
-                            ...prev,
-                            padsInformation: {
-                              ...prev.padsInformation,
-                              firstSetPads: {
-                                ...prev.padsInformation.firstSetPads,
-                                expiration: value,
-                              },
-                            },
-                          }))
-                        } className="!bg-white text-xs pl-5 pr-4" />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">1st set pads Iot number</Label>
-                      <Input
-                        placeholder="e.g. 14454"
-                        autoComplete="off"
-                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                        value={assetInformation.padsInformation.firstSetPads.IotNumber}
-                        onChange={(e)=> setAssetInformation((prev) => ({
-                            ...prev,
-                            padsInformation: {
-                              ...prev.padsInformation,
-                              firstSetPads: {
-                                ...prev.padsInformation.firstSetPads,
-                                IotNumber: e.target.value,
-                              },
-                            },
-                          })
-                        )}
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">2nd set pads for</Label>
-                      <Select value={assetInformation.padsInformation.secondSetPads.for}
-                        onValueChange={(value: "adult" | "adult+children" | "children") =>
-                          setAssetInformation((prev) => ({
-                            ...prev,
-                            padsInformation: {
-                              ...prev.padsInformation,
-                              secondSetPads: {
-                                ...prev.padsInformation.secondSetPads,
-                                for: value,
-                              },
-                            },
-                          }))
-                        }>
-                        <SelectTrigger className="w-full !h-12.5">
-                          <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-                            <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Adult + Child" /></span>
-                          </div>
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="adult+children">Adult + Child</SelectItem>
-                          <SelectItem value="adult">Adult Only</SelectItem>
-                          <SelectItem value="children">Children</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">2nd set pads expiration date</Label>
-                      <DatePicker value={assetInformation.padsInformation.secondSetPads.expiration} onChange={(value) =>
-                          setAssetInformation((prev) => ({
-                            ...prev,
-                            padsInformation: {
-                              ...prev.padsInformation,
-                              secondSetPads: {
-                                ...prev.padsInformation.secondSetPads,
-                                expiration: value,
-                              },
-                            },
-                          }))
-                        } className="!bg-white text-xs pl-5 pr-4" />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">2nd set pads Iot number</Label>
-                      <Input
-                        placeholder="e.g. 14454"
-                        autoComplete="off"
-                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                        value={assetInformation.padsInformation.secondSetPads.IotNumber}
-                        onChange={(e)=> setAssetInformation((prev) => ({
-                            ...prev,
-                            padsInformation: {
-                              ...prev.padsInformation,
-                              secondSetPads: {
-                                ...prev.padsInformation.secondSetPads,
-                                IotNumber: e.target.value,
-                              },
-                            },
-                          })
-                        )}
-                      />
-                    </div>
-                  </div>
-                </div>
-                {/* Pads Information */}
-                <div className="mt-5">
-                  <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75">
-                    <span className="w-0 grow">Battery Information</span>
-                    <InfoIcon size={20} />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 my-3.75 gap-4">
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery expiration date<span className="text-error">*</span></Label>
-                      <DatePicker value={assetInformation.batteryInformation.batteryExpiration} onChange={(value) =>
-                          setAssetInformation((prev) => ({
-                            ...prev,
-                            batteryInformation: {
-                              ...prev.batteryInformation,
-                              batteryExpiration: value
-                            },
-                          }))
-                        }
-                        className="!bg-white text-xs pl-5 pr-4" />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery serial number</Label>
-                      <Input
-                        placeholder="e.g. SN928492819"
-                        autoComplete="off"
-                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                        value={assetInformation.batteryInformation.batterySerial}
-                        onChange={(e)=> setAssetInformation((prev) => ({
-                            ...prev,
-                            batteryInformation: {
-                              ...prev.batteryInformation,
-                              batterySerial: e.target.value
-                            },
-                          })
-                        )}
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-3">Battery lot number</Label>
-                      <Input
-                        placeholder="e.g. B-98765"
-                        autoComplete="off"
-                        className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                        value={assetInformation.batteryInformation.batteryIotNumber}
-                        onChange={(e)=> setAssetInformation((prev) => ({
-                            ...prev,
-                            batteryInformation: {
-                              ...prev.batteryInformation,
-                              batteryIotNumber: e.target.value
-                            },
-                          })
-                        )}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </>
-            }
+            {values.asset.id === "1" && (
+              componentTypes?.map((componentType:{id:string, name:string})=> (
+                  <ComponentVariant componentType={componentType} key={componentType.id} formik={formik} />
+                ))
+            )}
           </div>
         )
       default: 
@@ -757,6 +615,11 @@ export default function AddCabinets() {
                       placeholder="e.g. Amsterdam Central - Platform 5"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      name="name"
+                      value={values.name}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      errors={touched.name ? errors.name : ''}
                     />
                   </div>
                   <div className="mb-3">
@@ -765,6 +628,10 @@ export default function AddCabinets() {
                       placeholder="Describe the location or any important details..."
                       autoComplete="off"
                       className="p-5 placeholder:text-accent-foreground/20"
+                      name="description"
+                      value={values.description}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                     />
                   </div>
                 </div>
@@ -780,17 +647,26 @@ export default function AddCabinets() {
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Address Line 1 <span className="text-error">*</span></Label>
                     <Input
-                      placeholder="Enter address 1"
+                      placeholder="addressLine1"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      name="addressLine1"
+                      value={values.addressLine1}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      errors={touched.addressLine1 ? errors.addressLine1 : ''}
                     />
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Address Line 2</Label>
                     <Input
-                      placeholder="Enter zip code"
+                      placeholder="e.g. building"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      name="addressLine2"
+                      value={values.addressLine2}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
                     />
                   </div>
                 </div>
@@ -798,26 +674,54 @@ export default function AddCabinets() {
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Zip code <span className="text-error">*</span></Label>
                     <Input
-                      placeholder="city"
+                      placeholder="Enter zip code"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      name="zipCode"
+                      value={values.zipCode}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      errors={touched.zipCode ? errors.zipCode : ''}
                     />
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">City <span className="text-error">*</span></Label>
                     <Input
-                      placeholder="Enter address 2"
+                      placeholder="Enter city"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      name="city"
+                      value={values.city}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      errors={touched.city ? errors.city : ''}
                     />
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Country <span className="text-error">*</span></Label>
-                    <Input
-                      placeholder="Enter country"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                    />
+                    <Select
+                      value={values.country || ""}
+                      onValueChange={(value) => setFieldValue("country", value)}
+                    >
+                      <SelectTrigger className="w-full !h-12.5">
+                        <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
+                          <span className="line-clamp-1 w-0 grow text-left">
+                            <SelectValue placeholder="Select country" />
+                          </span>
+                        </div>
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        {COUNTRY_OPTIONS.map((country) => (
+                          <SelectItem key={country.iso2} value={country.iso2}>
+                            <div className="flex items-center justify-between w-full gap-2">
+                              <span>{country.name}</span>
+                              <span className="text-muted-foreground text-xs">({country.iso2})</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
@@ -831,16 +735,19 @@ export default function AddCabinets() {
                 <Label className="text-xs text-accent-foreground font-medium block mb-3">Pictures <span className="text-foreground">(max. 3)</span></Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <SingleImageUploader
-                    value={images.picture1}
+                    value={values.picture1}
                     onChange={(file) => handleImageChange("picture1", file)}
+                    onRemove={() => setFieldValue("picture1", null)}
                   />
                   <SingleImageUploader
-                    value={images.picture2}
+                    value={values.picture2}
                     onChange={(file) => handleImageChange("picture2", file)}
+                    onRemove={() => setFieldValue("picture2", null)}
                   />
                   <SingleImageUploader
-                    value={images.picture3}
+                    value={values.picture3}
                     onChange={(file) => handleImageChange("picture3", file)}
+                    onRemove={() => setFieldValue("picture3", null)}
                   />
                 </div>
               </div>
@@ -901,7 +808,18 @@ export default function AddCabinets() {
             </div>
           </div>
         </div>
-        <ConfirmationModal open={confirmModalOpen} setOpen={setConfirmModalOpen} />
+        <ConfirmationModal {
+            ...{
+              open:confirmModalOpen,
+              setOpen: setConfirmModalOpen,
+              successModalOpen,
+              setSuccessModalOpen,
+              values,
+              handleSubmit: formik.handleSubmit,
+              apiInstance:createCabinetMutation
+            }
+          }
+        />
       </main>
     </>
   );

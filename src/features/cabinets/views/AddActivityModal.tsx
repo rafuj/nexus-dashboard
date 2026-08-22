@@ -59,7 +59,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
                           </div>
                           <div className="w-0 grow">
                             <h5 className="text-xs font-medium">{selectedCabinet.name}</h5>
-                            <div className="text-xs text-[#717893]">{selectedCabinet.street} {selectedCabinet.city}</div>
+                            <div className="text-xs text-[#717893]">{selectedCabinet.addressLine1} {selectedCabinet.city}</div>
                           </div>
                           <button type="button" className="text-[#A72822] font-medium text-xs select-none" onClick={()=> {
                             setSelectedCabinet(null);
@@ -98,7 +98,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
                               >
                                 <div>
                                   <h5 className="font-medium text-xs">{item.name}</h5>
-                                  <span className="text-xs text-[#717893]">{item.street} {item.city}</span>
+                                  <span className="text-xs text-[#717893]">{item.addressLine1} {item.city}</span>
                                 </div>
                               </ComboboxItem>
                             )}

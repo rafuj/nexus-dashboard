@@ -1,12 +1,12 @@
 "use client"
 import { Pencil, Trash2 } from "lucide-react"
-import type { SettingsGroupRow } from "../types/settingsList"
+// import type { SettingsGroupRow } from "../types/settingsList"
 import { useState } from "react"
 import { MemberDeleteConfirmation } from "./MemberDeleteConfirmation"
 
 import { EditMemberDrawer } from "./EditMemberDrawer"
 
-export function MemberListRowActions({ row }: { row: SettingsGroupRow }) {
+export function MemberListRowActions() {
   const [open, setOpen] = useState<boolean>(false)
   const [openDrawer, setOpenDrawer] = useState<boolean>(false)
   return (

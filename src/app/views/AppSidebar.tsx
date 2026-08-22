@@ -132,13 +132,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const { user } = useAuth();
   const sidebarUser = user
-  ? { name: user.name, email: user.email }
+  ? { name: user.firstName+ " "+ user.lastName, email: user.email }
   : { name: "", email: "" };
   
 
     const sidebarMainMenu = () => {
       switch(user?.role) {
-        case "factory":
+        case "super":
           return factoryNavMain
         default :
           return navMain
@@ -147,7 +147,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
     const sidebarBottomMenu = () => {
       switch(user?.role) {
-        case "factory":
+        case "super":
           return factoryNavMenuBottom
         default :
           return navMenuBottom

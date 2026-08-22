@@ -12,6 +12,7 @@ import { FactoryOverviewToolbar } from "../components/FactoryOverviewToolbar";
 import type { DateRange } from "react-day-picker";
 import TagIcon from "@/assets/icons/tag.svg?react";
 import LinkIcon from "@/assets/icons/link.svg?react";
+import { useGeneratedSerialList } from "../hooks/useGeneratedSerialList";
 
 const PAGE_SIZE = 12
 
@@ -35,6 +36,8 @@ export default function FactoryOverview() {
 
   const columns = useMemo(() => factoryOverviewColumns(), []);
 
+  const { data } = useGeneratedSerialList()
+
 
   const resetPage = () =>
     setPagination((p) => ({
@@ -45,6 +48,7 @@ export default function FactoryOverview() {
   const pageResult = useMemo(
     () =>
       queryFactoryOverviewPage({
+        data: data || [],
         search,
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
@@ -58,12 +62,14 @@ export default function FactoryOverview() {
       pagination.pageSize,
       sorting,
       prefix,
-      linked
+      linked,
+      data
     ],
   );
 
   const table = useReactTable({
       data: pageResult.rows,
+      // data: data ?? [],
       columns,
       rowCount: pageResult.totalCount,
       manualPagination: true,

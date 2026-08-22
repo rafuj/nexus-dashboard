@@ -42,7 +42,7 @@ export const cabinetListColumns = (canManageCabinets: boolean) => [
     },
     cell: ({ row }) => row.original.city
   }),
-  columnHelper.accessor("zip", {
+  columnHelper.accessor("zipCode", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Zip Code" />
     ),
@@ -50,9 +50,9 @@ export const cabinetListColumns = (canManageCabinets: boolean) => [
       headerClassName: "",
       cellClassName: "tabular-nums",
     },
-    cell: ({ row }) => row.original.zip
+    cell: ({ row }) => row.original.zipCode
   }),
-  columnHelper.accessor("street", {
+  columnHelper.accessor("addressLine1", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Street" />
     ),
@@ -60,7 +60,7 @@ export const cabinetListColumns = (canManageCabinets: boolean) => [
       headerClassName: "",
       cellClassName: "tabular-nums",
     },
-    cell: ({ row }) => row.original.street
+    cell: ({ row }) => row.original.addressLine1
   }),
   columnHelper.accessor("houseNumber", {
     header: ({ column }) => (

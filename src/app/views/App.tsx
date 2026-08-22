@@ -1,6 +1,7 @@
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
 import { AuthProvider } from "../context/auth/AuthProvider";
 import AppRoutes from "./AppRoutes";
+import { Toaster } from "react-hot-toast";
 
 export function App() {
     return (
@@ -8,6 +9,7 @@ export function App() {
         <AuthProvider>
             <TooltipProvider>
                 <AppRoutes />
+                <Toaster position="top-right" />
             </TooltipProvider>
         </AuthProvider>
     )

@@ -1,9 +1,9 @@
 "use client"
 import { Pencil, Trash2 } from "lucide-react"
-import type { CabinetListRow } from "../types/cabinetList"
+import type { Cabinet } from "../types/cabinetList"
 import { Link } from "react-router"
 
-export function CabinetRowActions({ row }: { row: CabinetListRow }) {
+export function CabinetRowActions({ row }: { row: Cabinet }) {
   
   return (
     <div className="flex items-center gap-4 justify-center">

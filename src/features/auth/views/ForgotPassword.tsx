@@ -1,51 +1,59 @@
 import { useAuth } from "@/app/hooks/useAuth";
 import { cn } from "@/lib/utils";
-import type { User } from "@/features/auth/types/auth";
 import { Button } from "@/shared/components/ui/button";
 import {
-  Field,
   FieldDescription,
-  FieldGroup,
   FieldLabel,
 } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { errorToast, successToast } from "@/lib/toast";
 
 export default function ForgotPassword({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const { login } = useAuth(); 
+  
+  const { login } = useAuth();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<{ email: string }>(
-    { email: ""}, 
-  );
-  const [error, setError] = useState<string | null>(null); 
-  const [isLoading, setIsLoading] = useState<boolean>(false); 
-  const [havingProblem, setHavingProblem] = useState<boolean>(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsLoading(true);
-    void login(formData.email, "") 
-      .then((user: User | null) => {
-        if (user) {
-          navigate("/", { replace: true });
-        } else { 
-          setError("Invalid email or password"); 
-        }
-      })
-      .catch((error: Error) => { 
-        setError(error.message); 
+  const [havingProblem, setHavingProblem] = useState(false);
 
-        // this state
-        setHavingProblem(true)
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+    },
+
+    validationSchema: Yup.object({
+      email: Yup.string()
+        .email("Please enter a valid email address")
+        .required("Email is required"),
+    }),
+
+    onSubmit: async (values) => {
+      setHavingProblem(false);
+
+      try {
+        await login(values.email, "");
+
+        successToast("Please verify OTP to Login");
+        navigate("/login?tab=verify-otp", {
+          replace: true,
+        });
+      } catch (error) {
+        errorToast(
+          error instanceof Error
+            ? error.message
+            : "Something went wrong",
+        );
+
+        setHavingProblem(true);
+      }
+    },
+  });
   return (
       <div className={cn("", className)} {...props}>
         <div>
@@ -61,50 +69,76 @@ export default function ForgotPassword({
             <p className="mb-7 text-sm md:text-base">
               Enter your email so that we can send reset link
             </p>
-            {error && <p className="text-destructive">{error}</p>}
           </div>
           <div>
-            <form onSubmit={handleSubmit}>
-              <FieldGroup>
-                <Field>
-                  <div>
-                    <FieldLabel className="font-medium text-accent-foreground mb-2.5">Email</FieldLabel>
-                    <Input
-                      type="email"
-                      placeholder="eg. johnfrans@gmail.com"
-                      required
-                      value={formData.email}
-                      onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                      }
-                      className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                    />
-                  </div>
-                </Field>
-                <Field>
-                  <Button
-                    type="submit"
-                    disabled={!formData.email || isLoading}
-                    className="h-10 lg:h-14 rounded-full lg:text-base"
+            <form onSubmit={formik.handleSubmit}>
+              <div>
+                <FieldLabel className="font-medium text-accent-foreground mb-2.5">
+                  Email
+                </FieldLabel>
+
+                <Input
+                  type="email"
+                  name="email"
+                  placeholder="eg. johnfrans@gmail.com"
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
+                />
+
+                {formik.touched.email && formik.errors.email && (
+                  <p className="mt-1 text-sm text-destructive">
+                    {formik.errors.email}
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-4">
+                <Button
+                  type="submit"
+                  disabled={
+                    !formik.values.email ||
+                    !formik.isValid ||
+                    formik.isSubmitting
+                  }
+                  className="h-10 lg:h-14 rounded-full lg:text-base w-full"
+                >
+                  Send Email
+                </Button>
+
+                <FieldDescription className="text-center text-accent-foreground lg:text-base pt-2">
+                  Didn't receive email?{" "}
+                  <button
+                    type="button"
+                    className="font-semibold"
+                    onClick={() => formik.submitForm()}
+                    disabled={formik.isSubmitting}
                   >
-                    Send Email
-                  </Button>
-                  <FieldDescription className="text-center text-accent-foreground lg:text-base pt-2">
-                    Didn't? receive email? <button type="button" className="font-semibold">Resend Now</button>
-                  </FieldDescription>
-                </Field>
-              </FieldGroup>
+                    Resend Now
+                  </button>
+                </FieldDescription>
+              </div>
+
               {havingProblem && (
                 <>
                   <div className="flex items-center gap-2.5 max-w-[240px] mx-auto my-3">
-                    <div className="h-px grow w-0 bg-accent-foreground"></div>
-                    <div className="size-1.25 rounded-full bg-accent-foreground"></div>
-                    <div className="h-px grow w-0 bg-accent-foreground"></div>
+                    <div className="h-px grow w-0 bg-accent-foreground" />
+                    <div className="size-1.25 rounded-full bg-accent-foreground" />
+                    <div className="h-px grow w-0 bg-accent-foreground" />
                   </div>
+
                   <div className="text-center text-accent-foreground lg:text-base">
                     <div>Having an issue?</div>
+
                     <div>
-                      Contact us at <Link to="mailto:" className="font-semibold">help@updaid.com</Link>
+                      Contact us at{" "}
+                      <Link
+                        to="mailto:help@updaid.com"
+                        className="font-semibold"
+                      >
+                        help@updaid.com
+                      </Link>
                     </div>
                   </div>
                 </>

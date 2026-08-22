@@ -1,10 +1,15 @@
 import type { Role } from "@/lib/permissions"
 
-export type User = {
-    id: number
-    name: string
-    email: string
-    password?: string
-    /** Role of the user */
-    role?: Role | null
+export interface User {
+    createdAt: string,
+    email: string,
+    firstName: string,
+    id: string
+    lastName: string
+    role: Role
+    tenant: {
+        id: string
+        name: string
+        type: string
+    }
 }

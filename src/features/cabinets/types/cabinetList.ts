@@ -17,8 +17,8 @@ export interface Cabinet {
   id: string;
   name: string;
   city: string;
-  zip: string;
-  street: string;
+  zipCode: string;
+  addressLine1: string;
   houseNumber: string;
   cabinetCode: string;
   updaidCode: string;
@@ -41,6 +41,39 @@ export interface Cabinet {
   temperatureOutOfRangeSince: Date | string | null;
 }
 
+export interface SmartCabinet {
+  id: string;
+  name: string;
+  accessType: string;
+  addressLine1: string;
+  city: string;
+  country: string;
+  zipCode: string;
+
+  serialNumber: string;
+  lockCode: string;
+
+  assignedAt: string;
+  createdAt: string;
+  description: string;
+
+  smart: boolean;
+  status: string;
+  tenantId: string;
+
+  deviceState: {
+    assetPresent: boolean;
+    assetStateChangedAt: string;
+    createdAt: string;
+    deviceInstallationId: string;
+    doorOpen: boolean;
+    doorStateChangedAt: string;
+    lastSeenAt: string;
+    rssi: number;
+    temperature: number;
+  };
+}
+
 export type CabinetsListToolbarProps = {
   search: string
   onSearchChange: (value: string) => void
@@ -50,6 +83,7 @@ export type CabinetsListToolbarProps = {
   onCityChange: (value: string) => void
   resetPage: () => void
   onRefresh: () => void
+  isFetching?: boolean
 }
 
 export const cabinetConfig = {
