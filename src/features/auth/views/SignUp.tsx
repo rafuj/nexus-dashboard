@@ -2,7 +2,6 @@ import { parseAsStringLiteral, useQueryState } from "nuqs";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 
-import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -15,6 +14,7 @@ import { CustomRadioGroup, type RadioOption } from "@/shared/components/CustomRa
 import React, { useMemo, useState } from "react";
 import OtpInput from 'react-otp-input';
 import { COUNTRY_OPTIONS, getCitiesByCountry } from "@/lib/country-helper";
+import { LoaderButton } from "@/app/components/loader-button";
 
 export type TenantType = "personal" | "business";
 
@@ -108,6 +108,7 @@ export default function SignUp() {
   
   const [tabs, setTabs] = useQueryState("tabs",   parseAsStringLiteral(["signup", "verify-otp-reg"]).withDefault("signup"))
   // const [tabs, setTabs] = useState("signup")
+  const [isLoading, setIsLoading] = useState<boolean>(true)
 
   const { sendOtpReg, verifyOtpReg, signup } = useAuth();
   const navigate = useNavigate()
@@ -137,17 +138,20 @@ export default function SignUp() {
     validationSchema,
 
     onSubmit: async (values) => {
+      setIsLoading(true)
 
       try {
         await sendOtpReg(values.email)
         successToast("OTP sent successfully. Please verify your email.")
         setTabs("verify-otp-reg")
+        setIsLoading(false)
       } catch (error) {
         errorToast(
           error instanceof Error
             ? error.message
             : "Something went wrong",
         );
+        setIsLoading(false)
       }
 
     },
@@ -160,6 +164,7 @@ export default function SignUp() {
     if (!formik.values.email || otp.length !== OTP_LENGTH) {
       return
     }
+    setIsLoading(true)
 
     try {
       await verifyOtpReg({
@@ -178,6 +183,7 @@ export default function SignUp() {
 
       await signup(signupValues)
 
+      setIsLoading(false)
       successToast("Account created successfully")
       navigate("/login")
     } catch (error) {
@@ -186,6 +192,7 @@ export default function SignUp() {
           ? error.message
           : "Something went wrong",
       )
+      setIsLoading(false)
     }
   }
 
@@ -225,13 +232,14 @@ export default function SignUp() {
                       </div>
 
                       <div className="mt-4">
-                        <Button
+                        <LoaderButton
                           type="submit"
                           disabled={!formik.values.email || otp.length !== OTP_LENGTH}
                           className="h-10 lg:h-14 rounded-full lg:text-base w-full"
+                          loading={isLoading}
                         >
                           Verify OTP
-                        </Button>
+                        </LoaderButton>
                       </div>
 
                     </form>
@@ -552,7 +560,7 @@ export default function SignUp() {
 
                     {/* Submit */}
                     <div className="pt-2">
-                      <Button
+                      <LoaderButton
                         className="h-10 lg:h-14 rounded-full w-full"
                         type="submit"
                         disabled={
@@ -560,9 +568,10 @@ export default function SignUp() {
                           !formik.dirty ||
                           formik.isSubmitting
                         }
+                        loading={isLoading}
                       >
                         Create Account
-                      </Button>
+                      </LoaderButton>
 
                       <p className="px-6 text-center text-accent-foreground lg:text-base mt-2">
                         Already have an account?{" "}

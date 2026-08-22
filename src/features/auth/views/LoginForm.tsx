@@ -1,6 +1,5 @@
 import { useAuth } from "@/app/hooks/useAuth";
 import { cn } from "@/lib/utils";
-import { Button } from "@/shared/components/ui/button";
 import {
   FieldDescription,
   FieldLabel,
@@ -13,6 +12,7 @@ import { PasswordInput } from "../components/PasswordInput";
 import { errorToast, successToast } from "@/lib/toast";
 import { useState } from "react";
 import OTPInput from "react-otp-input";
+import { LoaderButton } from "@/app/components/loader-button";
 
 export default function LoginForm({
   className,
@@ -21,8 +21,9 @@ export default function LoginForm({
   
   const [otp, setOtp] = useState<string>("")
   const OTP_LENGTH = 6
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const { login, verifyOtp, getUserRolePermission } = useAuth();
+  const { login, verifyOtp, getUserRolePermission, getUser } = useAuth();
   const navigate = useNavigate();
 
   const [tabs, setTabs] = useState("login")
@@ -44,14 +45,17 @@ export default function LoginForm({
 
     onSubmit: async (values) => {
       try {
+        setIsLoading(true)
         await login(
           values.email,
           values.password,
         );
         successToast("Please verify OTP to Login")
         setTabs("verify-otp");
+        setIsLoading(false)
       } catch (error) {
           errorToast("Invalid Email or Password")
+          setIsLoading(false)
       }
     },
   });
@@ -64,10 +68,13 @@ export default function LoginForm({
     if (otp.length !== OTP_LENGTH) {
       return
     }
+    setIsLoading(true)
 
     try {
       await verifyOtp(otp)
       await getUserRolePermission();
+      await getUser();
+      setIsLoading(false)
       successToast("OTP verified successfully")
       navigate("/")
     } catch (error) {
@@ -76,6 +83,7 @@ export default function LoginForm({
           ? error.message
           : "Something went wrong",
       )
+      setIsLoading(false)
     }
   }
 
@@ -109,13 +117,14 @@ export default function LoginForm({
                 </div>
 
                 <div className="mt-4">
-                  <Button
+                  <LoaderButton
                     type="submit"
                     disabled={otp.length !== OTP_LENGTH}
                     className="h-10 lg:h-14 rounded-full lg:text-base w-full"
+                    loading={isLoading}
                   >
                     Verify OTP
-                  </Button>
+                  </LoaderButton>
                 </div>
 
               </form>
@@ -185,7 +194,7 @@ export default function LoginForm({
                       </div>
                     </div>
                     
-                    <Button
+                    <LoaderButton
                       type="submit"
                       disabled={
                         !formik.isValid ||
@@ -193,9 +202,10 @@ export default function LoginForm({
                         formik.isSubmitting
                       }
                       className="h-10 lg:h-14 rounded-full lg:text-base"
+                      loading={isLoading}
                     >
                       Sign In
-                    </Button>
+                    </LoaderButton>
     
                     <FieldDescription className="text-center text-accent-foreground lg:text-base">
                       Don&apos;t have an account?{" "}

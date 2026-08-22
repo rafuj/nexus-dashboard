@@ -16,9 +16,7 @@ import { errorToast } from "@/lib/toast"
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(() => readStoredUser())
-  // const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
-  const [tempEmail, setTempEmail] = useState<string>("")
-
+  
   /**
    * LOGIN
    *
@@ -34,7 +32,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       email: email.trim().toLowerCase(),
       password,
     })
-    setTempEmail(email)
   }
 
   /**
@@ -52,14 +49,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       otpCode: otpCode
     })
      // As User Info Endpoint is not Available User is being Set Static
-    if(tempEmail === 'doihecrummuja-7049@yopmail.com') {
-      setUser({ id: 4, name: "Super User", email: tempEmail, role: "super" })
-      persistUser({ id: 4, name: "Super User", email: tempEmail, role: "super" })
-    } else {
-      setUser({ id: 1, name: "Owner User", email: tempEmail, role: "owner" })
-      persistUser({ id: 1, name: "Owner User", email: tempEmail, role: "owner" })
-    }
   }
+
+  /**
+   * GET USER INFO RIGHT AFTER LOGIN AND VERIFICATION SUCCEED
+   * STORE THEM TO LOCALSTORAGE
+  */
+
+  const getUser = async (): Promise<void> => {
+    const { data } = await api.get<User>(API_ROUTES.USERS_ME);
+    setUser(data);
+    persistUser(data);
+  };
 
   /**
    * SEND REGISTRATION OTP
@@ -142,6 +143,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         login,
         verifyOtp,
+        getUser,
 
         sendOtpReg,
         verifyOtpReg,
