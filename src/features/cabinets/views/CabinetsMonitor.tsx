@@ -73,7 +73,8 @@ export default function CabinetsMonitor() {
         sorting,
         status,
         id: cabinetId,
-        city
+        city,
+        data: data || []
       }),
     [
       search,
@@ -82,7 +83,8 @@ export default function CabinetsMonitor() {
       sorting,
       city,
       status,
-      cabinetId
+      cabinetId,
+      data
     ],
   );
 
@@ -103,11 +105,10 @@ export default function CabinetsMonitor() {
 
   // eslint-disable-next-line react-hooks/incompatible-library -- useReactTable
   const table = useReactTable({
-    // data: pageResult.rows,
-    data: data || [],
+    data: pageResult.rows,
+    // data: data || [],
     columns,
-    // rowCount: pageResult.totalCount,
-    // rowCount: pageResult.totalCount,
+    rowCount: pageResult.totalCount,
     manualPagination: true,
     manualSorting: true,
     autoResetPageIndex: false,

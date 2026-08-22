@@ -7,10 +7,10 @@ import { DataTableColumnHeader } from "@/shared/components/data-table"
 import { cn, formatDateTime } from "@/lib/utils" // Adjusted path to use your CabinetData model
 import { Link } from "react-router"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/components/ui/tooltip"
-import type { Cabinet } from "../types/cabinetList"
+import type { SmartCabinet } from "../types/cabinetList"
 import { getDoorBadgeClass, getDoorStatus, getDoorStatusTooltip, getDoorStatusTooltipClass, getHealthBadgeClass, getHealthBadgeTooltipColor, getHealthTooltip, getPresenceBadgeClass, getPresenceStatus, getPresenceTooltip, getPresenceTooltipClass, getTemperatureBadgeClass, getTemperatureStatus, getTemperatureTooltip, getTemperatureTooltipClass, type TemperatureState } from "../lib/cabinetListDisplay"
 
-const columnHelper = createColumnHelper<Cabinet>()
+const columnHelper = createColumnHelper<SmartCabinet>()
 
 export const getTemperatureChip = (
   data: TemperatureState,
@@ -68,19 +68,20 @@ export const cabinetsMonitorTableColumns = [
       cellClassName: "align-middle",
     },
     cell: ({ row }) => {
-      const health = row.original.assetHealth
-      const assetTakenAt = row.original.assetTakenAt
-      const doorStatus = row.original.doorStatus
-      const temperature = row.original.temperature
-      const temperatureOutOfRangeSince = row.original.temperatureOutOfRangeSince
+      // const health = "Ok" // data is not available now
+      const assetTakenAt = row.original.deviceState?.assetStateChangedAt
+      const doorOpen = row.original.deviceState?.doorOpen
+      const temperature = row.original.deviceState?.temperature
+      const temperatureOutOfRangeSince = row.original.deviceState?.lastSeenAt // data is not available now
       const status = row.original.status
 
       const getCabinetStatusColor = () => {
-        if (health === "Urgent" || getPresenceStatus(assetTakenAt) === "Urgent" || doorStatus === "Open" || getTemperatureStatus({current:temperature, temperatureOutOfRangeSince}) === "Urgent") {
+        if (getPresenceStatus(assetTakenAt) === "Urgent" || doorOpen || getTemperatureStatus({current:temperature, temperatureOutOfRangeSince}) === "Urgent") {
           return getHealthBadgeClass("Urgent") // Urgent Chip
-        } else if (health === "Warning" || getTemperatureStatus({current:temperature, temperatureOutOfRangeSince}) === "Warning" || getPresenceStatus(assetTakenAt) === "Warning" || getPresenceStatus(assetTakenAt) === "Taken") {
+        // } else if (health === "Warning" || getTemperatureStatus({current:temperature, temperatureOutOfRangeSince}) === "Warning" || getPresenceStatus(assetTakenAt) === "Warning" || getPresenceStatus(assetTakenAt) === "Taken") {
+        } else if (getTemperatureStatus({current:temperature, temperatureOutOfRangeSince}) === "Warning" || getPresenceStatus(assetTakenAt) === "Warning" || getPresenceStatus(assetTakenAt) === "Taken") {
           return getHealthBadgeClass("Warning") // Warning Chip
-        } else if (health === "Paused" || status === "paused") {
+        } else if (status === "paused") {
           return getHealthBadgeClass("Paused") // Paused Chip
         } else {
           return getHealthBadgeClass("Ok") // Success Chip
@@ -108,7 +109,7 @@ export const cabinetsMonitorTableColumns = [
   }),
 
   // 3. Asset Health Column (With dynamic tooltip implementation)
-  columnHelper.accessor("assetHealth", {
+  columnHelper.accessor("id", {
     id: "assetHealth",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Asset Health" />
@@ -118,7 +119,7 @@ export const cabinetsMonitorTableColumns = [
       cellClassName: "align-middle relative group",
     },
     cell: ({ row }) => {
-      const health = row.original.assetHealth
+      const health = "Ok"
 
       return (
         <div className="inline-flex items-center gap-1.5 relative">
@@ -156,7 +157,7 @@ export const cabinetsMonitorTableColumns = [
   }),
 
   // 4. Asset Presence Column
-  columnHelper.accessor("assetPresence", {
+  columnHelper.accessor("deviceState.assetPresent", {
     id: "assetPresence",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Asset Presence" />
@@ -166,7 +167,7 @@ export const cabinetsMonitorTableColumns = [
       cellClassName: "align-middle",
     },
     cell: ({ row }) => {
-      const assetTakenAt = row.original.assetTakenAt
+      const assetTakenAt = row.original.deviceState?.assetStateChangedAt
       return (
         <div className="inline-flex items-center gap-1.5 relative">
           <Tooltip>
@@ -181,14 +182,25 @@ export const cabinetsMonitorTableColumns = [
                     Paused
                   </span>
                 ) : (
-                  <span
+                  row.original.deviceState?.assetPresent ? (
+                    <span
                     className={cn(
                       "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all",
-                      getPresenceBadgeClass(assetTakenAt)
+                      getPresenceBadgeClass()
                     )}
                   >
-                    {getPresenceStatus(assetTakenAt)}
+                    {getPresenceStatus()}
                   </span>
+                  ) : (
+                      <span
+                      className={cn(
+                        "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all",
+                        getPresenceBadgeClass(assetTakenAt)
+                      )}
+                    >
+                      {getPresenceStatus(assetTakenAt)}
+                    </span>
+                  )
                 )
               }
             </TooltipTrigger>
@@ -204,7 +216,7 @@ export const cabinetsMonitorTableColumns = [
   }),
 
   // 5. Door Status Column
-  columnHelper.accessor("doorStatus", {
+  columnHelper.accessor("deviceState.doorOpen", {
     id: "doorStatus",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Door Status" />
@@ -214,7 +226,7 @@ export const cabinetsMonitorTableColumns = [
       cellClassName: "align-middle",
     },
     cell: ({ row }) => {
-      const doorOpenedAt = row.original.doorOpenedAt
+      const doorOpenedAt = row.original.deviceState?.doorStateChangedAt
       return (
 
         <div className="inline-flex items-center gap-1.5 relative">
@@ -230,14 +242,25 @@ export const cabinetsMonitorTableColumns = [
                     Paused
                   </span>
                 ) : (
-                  <span
-                    className={cn(
-                      "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all",
-                      getDoorBadgeClass(doorOpenedAt)
-                    )}
-                  >
-                    {getDoorStatus(doorOpenedAt)}
-                  </span>
+                  row.original.deviceState?.doorOpen ? (
+                    <span
+                      className={cn(
+                        "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all",
+                        getDoorBadgeClass()
+                      )}
+                    >
+                      {getDoorStatus()}
+                    </span>
+                    ) : (
+                      <span
+                        className={cn(
+                          "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all",
+                          getDoorBadgeClass(doorOpenedAt)
+                        )}
+                      >
+                        {getDoorStatus(doorOpenedAt)}
+                      </span>
+                  )
                 )
               }
             </TooltipTrigger>
@@ -253,7 +276,7 @@ export const cabinetsMonitorTableColumns = [
   }),
 
   // 6. Temperature Column
-  columnHelper.accessor("temperature", {
+  columnHelper.accessor("deviceState.temperature", {
     id: "temperature",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Temperature" />
@@ -264,8 +287,8 @@ export const cabinetsMonitorTableColumns = [
     },
     cell: ({ row }) => {
       const temp = {
-            current: row.original.temperature,
-            temperatureOutOfRangeSince: row.original.temperatureOutOfRangeSince
+            current: row.original.deviceState?.temperature,
+            temperatureOutOfRangeSince: row.original.deviceState?.lastSeenAt //
           }
       return (
         <div className="flex">
@@ -297,7 +320,7 @@ export const cabinetsMonitorTableColumns = [
   }),
 
   // 7. Last Update Column
-  columnHelper.accessor("lastActivityAt", {
+  columnHelper.accessor("deviceState.assetStateChangedAt", {
     id: "lastActivityAt",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Last Update" />
@@ -306,6 +329,6 @@ export const cabinetsMonitorTableColumns = [
       headerClassName: "",
       cellClassName: "align-middle whitespace-nowrap",
     },
-    cell: ({ row }) => formatDateTime(row.original.lastActivityAt),
+    cell: ({ row }) => formatDateTime(row.original.deviceState?.assetStateChangedAt),
   }),
 ]

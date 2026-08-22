@@ -41,6 +41,39 @@ export interface Cabinet {
   temperatureOutOfRangeSince: Date | string | null;
 }
 
+export interface SmartCabinet {
+  id: string;
+  name: string;
+  accessType: string;
+  addressLine1: string;
+  city: string;
+  country: string;
+  zipCode: string;
+
+  serialNumber: string;
+  lockCode: string;
+
+  assignedAt: string;
+  createdAt: string;
+  description: string;
+
+  smart: boolean;
+  status: string;
+  tenantId: string;
+
+  deviceState: {
+    assetPresent: boolean;
+    assetStateChangedAt: string;
+    createdAt: string;
+    deviceInstallationId: string;
+    doorOpen: boolean;
+    doorStateChangedAt: string;
+    lastSeenAt: string;
+    rssi: number;
+    temperature: number;
+  };
+}
+
 export type CabinetsListToolbarProps = {
   search: string
   onSearchChange: (value: string) => void

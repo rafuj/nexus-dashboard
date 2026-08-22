@@ -1,5 +1,5 @@
 import type { SortingState } from "@tanstack/react-table"
-import type { Cabinet } from "../types/cabinetList"
+import type { SmartCabinet } from "../types/cabinetList"
 import { api } from "@/app/api-manage/api"
 import { API_ROUTES } from "@/app/api-manage/api-routes"
 
@@ -13,7 +13,7 @@ export type CabinetsListQuery = {
 }
 
 export type CabinetsListResponse = {
-  rows: Cabinet[]
+  rows: SmartCabinet[]
   totalCount: number
 }
 
@@ -21,7 +21,7 @@ export const staleTime = 20 * 1000 /* 20s */
 
 export const getSmartCabinetList = async (
   params: CabinetsListQuery
-): Promise<Cabinet[]> => {
+): Promise<SmartCabinet[]> => {
   const { data } = await api.get(API_ROUTES.SMART_CABINETS, {
     params,
   })
