@@ -173,7 +173,7 @@ export default function ImeiLinking() {
             </div>
           </div>
         </header>
-<button type="button" className="px-10 py-2 border rounded bg-white text-black" onClick={handleDeviceInstallations}>Install device</button>
+{/* <button type="button" className="px-10 py-2 border rounded bg-white text-black" onClick={handleDeviceInstallations}>Install device</button> */}
         <div className="p-5">
           <div className="space-y-5">
             {/* Cabinet Serial Number */}
@@ -198,6 +198,7 @@ export default function ImeiLinking() {
                     <div className="flex items-center gap-4.25 text-xl lg:text-2xl font-semibold">
                       <BoxIcons className="text-success2" />
                       <span className="text-accent-foreground">NEX - 00125</span>
+                      {/* <span className="text-accent-foreground">{scannedDevices?.[0]?.serialNumber ?? ""}</span> */}
                     </div>
                   </div>
                   <div className="text-xs font-semibold flex items-center justify-end text-success2 gap-1 mt-2.5">
@@ -224,6 +225,7 @@ export default function ImeiLinking() {
                     <div className="flex items-center gap-4.25 text-xl lg:text-2xl font-semibold">
                       <BoxIcons className="text-success2" />
                       <span className="text-accent-foreground">847394728949384</span>
+                      {/* <span className="text-accent-foreground">{scannedDevices?.[0]?.imei ?? ""}</span> */}
                     </div>
                   </div>
                   <div className="text-xs font-semibold flex items-center justify-end text-success2 gap-1 mt-2.5">
