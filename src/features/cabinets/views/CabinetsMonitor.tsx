@@ -53,9 +53,7 @@ export default function CabinetsMonitor() {
   });
   const debouncedSearch = useDebounce(search, 400)
   const {
-    data,
-    isFetching,
-    refetch
+    data
   } = useSmartCabinetsList({
     search: debouncedSearch,
     status,

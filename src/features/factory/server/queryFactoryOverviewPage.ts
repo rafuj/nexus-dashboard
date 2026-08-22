@@ -4,7 +4,6 @@
  */
 import type { SortingState } from "@tanstack/react-table"
 import type { FactoryRow } from "../types/factoryType"
-import { mockFactoryList } from "../mock/mockFactoryStats"
 
 export type FactoryOverviewQuery = {
   search: string

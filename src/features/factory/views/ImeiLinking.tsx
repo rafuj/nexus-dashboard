@@ -95,33 +95,6 @@ export default function ImeiLinking() {
   const [linkedSuccess, setLinkedSuccess] = useState<boolean>(false)
   const [lastScan, setLastScan] = useState<{serialNumber?:string,imei?:string}>({})
 
-  const handleScanSuccess = ({
-    imei,
-    serialNumber,
-  }: {
-    imei: string;
-    serialNumber: string;
-  }) => {
-    // Prevent duplicate scan
-    const alreadyScanned = scannedDevices.some(
-      (device) =>
-        device.imei === imei ||
-        device.serialNumber === serialNumber
-    );
-
-    if (alreadyScanned) {
-      errorToast("This device has already been scanned");
-      return;
-    }
-
-    setScannedDevices((prev) => [
-      ...prev,
-      { imei, serialNumber },
-    ]);
-
-    setScanCount((prev) => prev + 1);
-  };
-
   const createDevices = useCreateDevices();
   const deviceInstallations = useDeviceInstallations();
 
@@ -147,8 +120,8 @@ export default function ImeiLinking() {
       await deviceInstallations.mutateAsync(installationPayload);
 
       setLinkedSuccess(true)
-
       successToast("Devices installed successfully");
+      setScanCount((prev) => prev + 1);
 
     } catch (error) {
       errorToast(getApiErrorMessage(error));
