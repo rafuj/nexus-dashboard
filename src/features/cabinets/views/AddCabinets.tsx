@@ -540,7 +540,7 @@ export default function AddCabinets() {
                       <SelectTrigger className="w-full !h-12.5">
                         <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                           <span className="line-clamp-1 w-0 grow text-left">
-                            <SelectValue placeholder="Select country" />
+                            <SelectValue placeholder="Select city" />
                           </span>
                         </div>
                       </SelectTrigger>
