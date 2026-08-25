@@ -84,6 +84,8 @@ export default function LoginForm({
           : "Something went wrong",
       )
       setIsLoading(false)
+      setTabs("login")
+      setOtp("")
     }
   }
 
@@ -94,18 +96,18 @@ export default function LoginForm({
           <div>
             <div>
               <h1 className="font-medium text-2xl md:text-[28px] mb-2">
-                Verify Signup OTP
+                Confirm Verification Code
               </h1>
 
               <p className="mb-7 text-sm md:text-base">
-                We've sent an OTP to {formik.values.email}, enter verify to register
+                We've sent a verification code to {formik.values.email}
               </p>
             </div>
             <div>
               <form onSubmit={handleOtpVerify}>
                 <div className="mb-8">
                   <label className="font-medium text-accent-foreground mb-2.5 block">
-                    Enter OTP
+                    Enter Code
                   </label>
                   <OTPInput
                     value={otp}
@@ -123,7 +125,7 @@ export default function LoginForm({
                     className="h-10 lg:h-14 rounded-full lg:text-base w-full"
                     loading={isLoading}
                   >
-                    Verify OTP
+                    Confirm Login
                   </LoaderButton>
                 </div>
 

@@ -47,10 +47,23 @@ api.interceptors.response.use(
       // 1. Remove sessionToken from Cookies
       deleteCookie("sessionToken");
 
-      // 2. Remove permissions from LocalStorage
+      // 2. Remove permissions and user from LocalStorage
       localStorage.removeItem("updaid-permissions");
+      localStorage.removeItem("updaid-auth-user");
       // 3. Force redirect to login page
-      window.location.href = "/login";
+        const authPages = [
+          "/login",
+          "/signup",
+          "/verify-otp",
+          "/forgot-password",
+          "/reset-password",
+        ];
+
+        const currentPath = window.location.pathname;
+
+        if (!authPages.includes(currentPath)) {
+          window.location.href = "/login";
+        }
     }
 
     return Promise.reject(error);

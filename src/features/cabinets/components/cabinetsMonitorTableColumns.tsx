@@ -246,19 +246,19 @@ export const cabinetsMonitorTableColumns = [
                     <span
                       className={cn(
                         "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all",
-                        getDoorBadgeClass()
+                        getDoorBadgeClass(doorOpenedAt)
                       )}
                     >
-                      {getDoorStatus()}
+                      {getDoorStatus(doorOpenedAt)}
                     </span>
                     ) : (
                       <span
                         className={cn(
                           "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all",
-                          getDoorBadgeClass(doorOpenedAt)
+                          getDoorBadgeClass()
                         )}
                       >
-                        {getDoorStatus(doorOpenedAt)}
+                        {getDoorStatus()}
                       </span>
                   )
                 )

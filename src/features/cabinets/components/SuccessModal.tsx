@@ -8,14 +8,22 @@ import {
   DialogTitle,
 } from "@/shared/components/ui/dialog"
 import type { Dispatch, SetStateAction } from "react"
+import { useNavigate } from "react-router"
 interface ModalProps {
-  open: boolean,
+  open: boolean
   setOpen: Dispatch<SetStateAction<boolean>>
+  cabinetId?: string 
 }
 
-export const SuccessModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
+export const SuccessModal: React.FC<ModalProps>  = ({ open, setOpen, cabinetId }) => {
+  const navigate = useNavigate()
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={()=> {
+        if(!open){
+          setOpen(open);
+        }
+      }
+    }>
       <form>
         <DialogContent className="sm:max-w-[346px]" showCloseButton={false}>
           <DialogHeader className="text-center">
@@ -30,12 +38,13 @@ export const SuccessModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="!justify-center !items-center !flex-col gap-2 !border-0 !pt-2">
-            <DialogClose asChild>
-                <button type="submit" className="flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 w-full md:h-12.5">OK</button>
-            </DialogClose>
-            <DialogClose asChild>
-                <button type="submit" className="w-full underline text-sm font-semibold text-accent-foreground">Add another cabinet</button>
-            </DialogClose>
+            <button type="button" className="flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 w-full md:h-12.5" onClick={()=> {
+              setOpen(false)
+              navigate('/cabinets/list/'+cabinetId)
+            }}>OK</button>
+            <button type="button" className="w-full underline text-sm font-semibold text-accent-foreground" onClick={()=> {
+              setOpen(false)
+            }}>Add another cabinet</button>
           </DialogFooter>
         </DialogContent>
       </form>

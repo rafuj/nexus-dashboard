@@ -14,7 +14,7 @@ function Calendar({
   className,
   classNames,
   showOutsideDays = true,
-  captionLayout = "label",
+  captionLayout = "dropdown",
   buttonVariant = "ghost",
   locale,
   formatters,
@@ -24,6 +24,7 @@ function Calendar({
   buttonVariant?: React.ComponentProps<typeof Button>["variant"]
 }) {
   const defaultClassNames = getDefaultClassNames()
+  const currentYear = new Date().getFullYear()
 
   return (
     <DayPicker
@@ -130,6 +131,8 @@ function Calendar({
         hidden: cn("invisible", defaultClassNames.hidden),
         ...classNames,
       }}
+      startMonth={new Date(currentYear - 100, 0)}
+      endMonth={new Date(currentYear + 20, 11)}
       components={{
         Root: ({ className, rootRef, ...props }) => {
           return (
