@@ -406,7 +406,7 @@ export default function SignUp() {
                                 formik.setFieldTouched("organization.city", false)
                             }}
                             >
-                              <SelectTrigger className="w-full text-sm md:!h-14 bg-transparent" onBlur={() => formik.setFieldTouched("organization.country", true)}>
+                              <SelectTrigger className="w-full text-sm md:!h-14 bg-background/40" onBlur={() => formik.setFieldTouched("organization.country", true)}>
                                 <span className="line-clamp-1 w-0 grow text-left">
                                   <SelectValue placeholder="Select country" />
                                 </span>
@@ -434,7 +434,7 @@ export default function SignUp() {
                         <div>
                             <label className="font-medium text-accent-foreground mb-2.5 block">City <span className="text-error">*</span></label>
                             <Select value={formik.values.organization.city} onValueChange={(value)=> formik.setFieldValue("organization.city", value)}>
-                              <SelectTrigger className="w-full text-sm md:!h-14 bg-transparent" onBlur={() => formik.setFieldTouched("organization.city", true)}>
+                              <SelectTrigger className="w-full text-sm md:!h-14 bg-background/40" onBlur={() => formik.setFieldTouched("organization.city", true)}>
                                 <SelectValue placeholder="Select City" />
                               </SelectTrigger>
                               <SelectContent>

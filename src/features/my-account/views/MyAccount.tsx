@@ -219,9 +219,11 @@ export default function MyAccount() {
       },
   });
 
-    const availableCities = useMemo(() => {
-      return getCitiesByCountry(values.organization.country);
-    }, [values.organization.country]);
+  const availableCities = useMemo(() => {
+    return getCitiesByCountry(values.organization.country);
+  }, [values.organization.country]);
+
+  console.log("isLoading", isLoading)
 
   return (
     <>
@@ -429,7 +431,7 @@ export default function MyAccount() {
                                         type="text"
                                         placeholder="e.g. 12"
                                         className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                                        value={values.organization.houseNumber}
+                                        // value={values.organization.houseNumber}
                                         name="organization.houseNumber"
                                         onChange={handleChange}
                                     />

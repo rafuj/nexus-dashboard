@@ -1,13 +1,13 @@
 "use client";
 import { Helmet } from "react-helmet-async";
-import {  ChevronDown, ChevronLeft, ChevronRight, CircleCheck, Info, InfoIcon } from "lucide-react";
+import {  ChevronDown, ChevronLeft, ChevronRight, Info, InfoIcon } from "lucide-react";
 
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Icons } from "@/app/icons/icons";
 import {  useNavigate } from "react-router";
 import { CabinetsStepper } from "../components/CabinetsStepper";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Input } from "@/shared/components/ui/input"
 import { Label } from "@/shared/components/ui/label";
 import { Textarea } from "@/shared/components/ui/textarea";
@@ -15,12 +15,11 @@ import { SingleImageUploader } from "@/shared/components/image-uploader/single-i
 import { CustomRadioGroup } from "@/shared/components/CustomRadioGroup";
 import { DatePicker } from "@/shared/components/ui/date-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
-import { cn, formatDateSlash } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import SchedulePicker from "../components/SchedulePicker";
-import type { AvailabilityType, BrightnessType, ColorType, DayConfig, StepType, VolumeType } from "../types/addCabinet";
-import { availabilityTypeList, brightnessList, colorList, dayList, STEPS, volumeList } from "../mock/addCabinetData";
+import type { AvailabilityType, DayConfig, StepType } from "../types/addCabinet";
+import { availabilityTypeList, dayList, STEPS } from "../mock/addCabinetData";
 import { ConfirmationModal } from "../components/ConfirmationModal";
-import { AVAILABLE_CREDITS } from "@/features/dashboard/mock/mockDashboardStats";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
 import { SidebarMenuButton } from "@/shared/components/ui/sidebar";
 import { useFormik } from "formik";
@@ -32,10 +31,10 @@ import { useComponentTypes } from "../hooks/useComponentTypes";
 import { useAssetTypesBrands } from "../hooks/useAssetTypesBrands";
 import ComponentVariant from "../components/ComponentVariant";
 import { mockBrandsList } from "../mock/mockBrands";
-import { COUNTRY_OPTIONS, getCitiesByCountry } from "@/lib/country-helper";
 import { cabinetInitialValues } from "../types/addCabinet";
 import { cabinetValidationSchema } from "../types/validationSchema";
 import { getApiErrorMessage } from "@/app/api-manage/api";
+import { PlacesAutocomplete } from "@/shared/components/places-autocomplete";
 
 export interface BrandInfo {
   name: string;
@@ -138,10 +137,6 @@ export default function AddCabinets() {
       }
     }
   };
-
-  const availableCities = useMemo(() => {
-    return getCitiesByCountry(formik.values.country);
-  }, [formik.values.country]);
 
   const switchContent = () => {
     switch (step) {
@@ -491,17 +486,26 @@ export default function AddCabinets() {
                 <div className="pb-3 grid sm:grid-cols-2 gap-3">
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Address Line 1 <span className="text-error">*</span></Label>
-                    <Input
-                      placeholder="addressLine1"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                      name="addressLine1"
+                    <PlacesAutocomplete
+                      placeholder="Search for an address"
                       value={values.addressLine1}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      errors={touched.addressLine1 ? errors.addressLine1 : ''}
-                      maxLength={50}
+                      onValueChange={(value)=> setFieldValue("addressLine1", value)}
+                      onPlaceSelect={(place) => {
+                        const {postalCode, lat, lng, country, city, address} = place
+                        setFieldValue("addressLine1", address)
+                        setFieldValue("country", country)
+                        setFieldValue("city", city)
+                        setFieldValue("zipCode", postalCode)
+                        console.log(lat, lng)
+                        if(errors.zipCode){
+                          formik.handleBlur("addressLine1")
+                          formik.handleBlur("country")
+                          formik.handleBlur("city")
+                          formik.handleBlur("zipCode")
+                        }
+                      }}
                     />
+                    {touched.addressLine1 && errors.addressLine1 && <p className="mt-1 text-error text-xs">{errors.addressLine1}</p> }
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Address Line 2</Label>
@@ -522,16 +526,30 @@ export default function AddCabinets() {
                     <Input
                       placeholder="Enter zip code"
                       autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      className="h-12.5 px-5 placeholder:text-accent-foreground/20 !bg-transparent"
                       name="zipCode"
                       value={values.zipCode}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      errors={touched.zipCode ? errors.zipCode : ''}
-                      maxLength={10}
+                      // onChange={handleChange}
+                      // onBlur={handleBlur}
+                      // errors={touched.zipCode ? errors.zipCode : ''}
+                      // maxLength={10}
+                      errors={touched.zipCode && errors.zipCode ? errors.zipCode : ''}
+                      readOnly
                     />
                   </div>
                   <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">City <span className="text-error">*</span></Label>
+                    <Input
+                      placeholder="Select city"
+                      autoComplete="off"
+                      className="h-12.5 px-5 placeholder:text-accent-foreground/20 !bg-transparent"
+                      name="city"
+                      value={values.city}
+                      errors={touched.city && errors.city ? errors.city : ''}
+                      readOnly
+                    />
+                  </div>
+                  {/* <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">City <span className="text-error">*</span></Label>
                     <Select
                       value={values.city || ""}
@@ -549,11 +567,19 @@ export default function AddCabinets() {
                           {availableCities?.map((item)=> <SelectItem value={item.name} key={item.name}>{item.name}</SelectItem> )}
                       </SelectContent>
                     </Select>
-                    {touched.city && errors.city && <p className="mt-1 terxt-error">{errors.city}</p> }
-                  </div>
+                  </div> */}
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Country <span className="text-error">*</span></Label>
-                    <Select
+                    <Input
+                      placeholder="Select country"
+                      autoComplete="off"
+                      className="h-12.5 px-5 placeholder:text-accent-foreground/20 !bg-transparent"
+                      name="country"
+                      value={values.country}
+                      errors={touched.country && errors.country ? errors.country : ''}
+                      readOnly
+                    />
+                    {/* <Select
                       value={values.country || ""}
                       onValueChange={(value) => {
                         setFieldValue("country", value)
@@ -578,8 +604,8 @@ export default function AddCabinets() {
                           </SelectItem>
                         ))}
                       </SelectContent>
-                    </Select>
-                    {touched.country && errors.country && <p className="mt-1 terxt-error">{errors.country}</p> }
+                    </Select> */}
+                    {/* {touched.country && errors.country && <p className="mt-1 text-error text-xs">{errors.country}</p> } */}
                   </div>
                 </div>
               </div>

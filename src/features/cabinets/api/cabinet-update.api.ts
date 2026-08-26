@@ -3,6 +3,7 @@ import { api } from "@/app/api-manage/api"
 import { API_ROUTES } from "@/app/api-manage/api-routes"
 import type { CreateCabinetFormValues } from "./cabinet.api"
 import { formatDateDDMMYYYY } from "@/lib/utils"
+import { getCountryCodeByCountryName } from "@/lib/country-helper"
 
 export const updateCabinet = async (
   id: string,
@@ -30,7 +31,7 @@ export const updateCabinet = async (
     formData.append("city", values.city)
   }
   if(values.country) {
-    formData.append("country", values.country)
+    formData.append("country", getCountryCodeByCountryName(values.country))
   }
   if(values.serialNumber) {
     formData.append("serialNumber", values.serialNumber)

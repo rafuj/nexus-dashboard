@@ -51,19 +51,19 @@ api.interceptors.response.use(
       localStorage.removeItem("updaid-permissions");
       localStorage.removeItem("updaid-auth-user");
       // 3. Force redirect to login page
-        const authPages = [
-          "/login",
-          "/signup",
-          "/verify-otp",
-          "/forgot-password",
-          "/reset-password",
-        ];
+      const authPages = [
+        "/login",
+        "/signup",
+        "/verify-otp",
+        "/forgot-password",
+        "/reset-password",
+      ];
 
-        const currentPath = window.location.pathname;
+      const currentPath = window.location.pathname;
 
-        if (!authPages.includes(currentPath)) {
-          window.location.href = "/login";
-        }
+      if (!authPages.includes(currentPath)) {
+        window.location.href = "/login";
+      }
     }
 
     return Promise.reject(error);

@@ -7,7 +7,7 @@ import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Icons } from "@/app/icons/icons";
 import {  useNavigate, useParams } from "react-router";
 import { CabinetsStepper } from "../components/CabinetsStepper";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/shared/components/ui/input"
 import { Label } from "@/shared/components/ui/label";
 import { Textarea } from "@/shared/components/ui/textarea";
@@ -31,7 +31,6 @@ import { mockBrandsList } from "../mock/mockBrands";
 import { MaintenanceMode } from "../components/MaintenanceMode";
 import { useFormik } from "formik";
 import { errorToast, successToast } from "@/lib/toast";
-import { COUNTRY_OPTIONS, getCitiesByCountry } from "@/lib/country-helper";
 import { useAssetTypes } from "../hooks/useAssetTypes";
 import { useAssetTypesBrands } from "../hooks/useAssetTypesBrands";
 import { useAssetTypesModels } from "../hooks/useAssetTypesModels";
@@ -46,6 +45,9 @@ import { getFormChanges } from "@/lib/getFormChanges";
 import type { CreateCabinetFormValues } from "../api/cabinet.api";
 import { getApiErrorMessage } from "@/app/api-manage/api";
 import { LoaderButton } from "@/app/components/loader-button";
+import { PlacesAutocomplete } from "@/shared/components/places-autocomplete";
+import { Skeleton } from "@/shared/components/ui/skeleton";
+import { getCountryNameByCountryCode } from "@/lib/country-helper";
 
 
 const CabinetView = () => {
@@ -94,15 +96,6 @@ const CabinetView = () => {
             cabinetId: id,
 
             components: [
-              // Slot 0: 1st Set Pads
-              {
-                componentTypeId: "1",
-                componentVariantId: padsComponents[0]?.componentVariantId || "",
-                expiresAt: convertDDMMYYYY(padsComponents[0]?.expiresAt),
-                lotNumber: padsComponents[0]?.lotNumber || "",
-                serialNumber: padsComponents[0]?.serialNumber || "",
-                componentVariantName: padsComponents[0]?.componentVariant?.name || "",
-              },
               // Slot 1: 2nd Set Pads
               {
                 componentTypeId: "1",
@@ -111,6 +104,15 @@ const CabinetView = () => {
                 lotNumber: padsComponents[1]?.lotNumber || "",
                 serialNumber: padsComponents[1]?.serialNumber || "",
                 componentVariantName: padsComponents[1]?.componentVariant?.name || "",
+              },
+              // Slot 0: 1st Set Pads
+              {
+                componentTypeId: "1",
+                componentVariantId: padsComponents[0]?.componentVariantId || "",
+                expiresAt: convertDDMMYYYY(padsComponents[0]?.expiresAt),
+                lotNumber: padsComponents[0]?.lotNumber || "",
+                serialNumber: padsComponents[0]?.serialNumber || "",
+                componentVariantName: padsComponents[0]?.componentVariant?.name || "",
               },
               // Slot 2: Battery
               {
@@ -201,10 +203,6 @@ const CabinetView = () => {
     if (!file) return;
     setFieldValue(key, URL.createObjectURL(file))
   };
-
-  const availableCities = useMemo(() => {
-    return getCitiesByCountry(values.country);
-  }, [values.country]);
 
   const switchContent = () => {
     switch (step) {
@@ -568,17 +566,19 @@ const CabinetView = () => {
                 <div className="pb-3 grid sm:grid-cols-2 gap-3">
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Address Line 1 <span className="text-error">*</span></Label>
-                    <Input
-                      placeholder="Enter address 1"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                      readOnly={fieldsReadOnly}
-                      name="addressLine1"
-                      value={values.addressLine1}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      errors={touched.addressLine1 ? errors.addressLine1 : ''}
-                    />
+                    <PlacesAutocomplete
+                        placeholder="Search for an address"
+                        value={values.addressLine1}
+                        onValueChange={(value)=> setFieldValue("addressLine1", value)}
+                        onPlaceSelect={(place) => {
+                          const {postalCode, lat, lng, country, city, address} = place
+                          setFieldValue("addressLine1", address ?? "");
+                          setFieldValue("country", country ?? "");
+                          setFieldValue("city", city ?? "");
+                          setFieldValue("zipCode", postalCode ?? "");
+                          console.log(lat, lng)
+                        }}
+                      />
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Address Line 2</Label>
@@ -601,17 +601,26 @@ const CabinetView = () => {
                       placeholder="Zip Code"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                      readOnly={fieldsReadOnly}
+                      readOnly
                       name="zipCode"
                       value={values.zipCode}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
+                      // onChange={handleChange}
+                      // onBlur={handleBlur}
                       errors={touched.zipCode ? errors.zipCode : ''}
                     />
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">City <span className="text-error">*</span></Label>
-                    <Select
+                    <Input
+                        placeholder="Select city"
+                        autoComplete="off"
+                        className="h-12.5 px-5 placeholder:text-accent-foreground/20 !bg-transparent"
+                        name="city"
+                        value={values.city}
+                        errors={touched.city && errors.city ? errors.city : ''}
+                        readOnly
+                      />
+                    {/* <Select
                         value={values.city || ""}
                         onValueChange={(value) => setFieldValue("city", value)}
                       >
@@ -626,12 +635,21 @@ const CabinetView = () => {
                       <SelectContent>
                           {availableCities?.map((item)=> <SelectItem value={item.name} key={item.name}>{item.name}</SelectItem> )}
                       </SelectContent>
-                    </Select>
+                    </Select> */}
                     {touched.city && errors.city && <p className="mt-1 terxt-error">{errors.city}</p> }
                   </div>
                   <div>
                       <Label className="text-xs text-accent-foreground font-medium block mb-3">Country <span className="text-error">*</span></Label>
-                      <Select
+                      <Input
+                          placeholder="Select country"
+                          autoComplete="off"
+                          className="h-12.5 px-5 placeholder:text-accent-foreground/20 !bg-transparent"
+                          name="country"
+                          value={getCountryNameByCountryCode(values.country)}
+                          errors={touched.country && errors.country ? errors.country : ''}
+                          readOnly
+                        />
+                      {/* <Select
                         value={values.country || ""}
                         onValueChange={(value) => {
                           setFieldValue("country", value)
@@ -657,7 +675,7 @@ const CabinetView = () => {
                             </SelectItem>
                           ))}
                         </SelectContent>
-                      </Select>
+                      </Select> */}
                     </div>
                 </div>
               </div>
@@ -732,49 +750,76 @@ const CabinetView = () => {
               <span>Cabinet Details</span>
             </button>
           </div>
-          <div className="rounded-[15px] mt-6 md:pl-5">
-            <div className="flex flex-wrap gap-10">
-              <div className="w-full max-w-[180px] xl:max-w-[280px]">
-                <div className="flex flex-col gap-10 md:sticky md:top-36">
-                  <CabinetsStepper step={step} setStep={setStep} stepList={STEPS} hideLine />
+          
+          {isSuccess ? (
+            <div className="rounded-[15px] mt-6 md:pl-5">
+              <div className="flex flex-wrap gap-10">
+                <div className="w-full max-w-[180px] xl:max-w-[280px]">
+                  <div className="flex flex-col gap-10 md:sticky md:top-36">
+                    <CabinetsStepper step={step} setStep={setStep} stepList={STEPS} hideLine />
+                  </div>
+                </div>
+                <div className="w-full md:w-0 grow">
+                  {switchContent()}
+                  {canManageCabinets && (
+                    <div className="flex flex-wrap gap-3 sm:gap-5 justify-end py-3.75 bg-background sticky bottom-0 mt-10 w-full">
+                      {/* If want to remove sticky */}
+                      {/* <div className="flex flex-wrap gap-3 sm:gap-5 justify-end py-3.75 bg-background mt-10 w-full"> */}
+                      {isEditing ? (
+                        <>
+                          <button type="button" 
+                            className="flex items-center justify-center bg-chip text-accent-foreground py-2 sm:py-3 px-5 rounded-full text-sm gap-1.25 sm:w-full max-w-[140px]"
+                            onClick={()=> setIsEditing("")}
+                          >
+                            Cancel
+                          </button>
+                          <LoaderButton type="button" 
+                            className="flex items-center justify-center bg-primary text-white py-2 sm:py-3 px-5 rounded-full text-sm gap-1.25 sm:w-full max-w-[140px] min-h-11"
+                            onClick={()=>formik.handleSubmit()}
+                            loading={updateCabinetMutation.isPending}
+                          >
+                            Save Changes
+                          </LoaderButton>
+                        </>
+                      ) : (
+                        <button type="button" 
+                          className="flex items-center justify-center bg-primary text-white py-2 sm:py-3 px-5 rounded-full text-sm gap-1.25 min-w-[83px] ml-auto"
+                          onClick={()=> setIsEditing("true")}
+                        >
+                          Edit
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
-              <div className="w-full md:w-0 grow">
-                {switchContent()}
-                {canManageCabinets && (
-                  <div className="flex flex-wrap gap-3 sm:gap-5 justify-end py-3.75 bg-background sticky bottom-0 mt-10 w-full">
-                    {/* If want to remove sticky */}
-                    {/* <div className="flex flex-wrap gap-3 sm:gap-5 justify-end py-3.75 bg-background mt-10 w-full"> */}
-                    {isEditing ? (
-                      <>
-                        <button type="button" 
-                          className="flex items-center justify-center bg-chip text-accent-foreground py-2 sm:py-3 px-5 rounded-full text-sm gap-1.25 sm:w-full max-w-[140px]"
-                          onClick={()=> setIsEditing("")}
-                        >
-                          Cancel
-                        </button>
-                        <LoaderButton type="button" 
-                          className="flex items-center justify-center bg-primary text-white py-2 sm:py-3 px-5 rounded-full text-sm gap-1.25 sm:w-full max-w-[140px] min-h-11"
-                          onClick={()=>formik.handleSubmit()}
-                          loading={updateCabinetMutation.isPending}
-                        >
-                          Save Changes
-                        </LoaderButton>
-                      </>
-                    ) : (
-                      <button type="button" 
-                        className="flex items-center justify-center bg-primary text-white py-2 sm:py-3 px-5 rounded-full text-sm gap-1.25 min-w-[83px] ml-auto"
-                        onClick={()=> setIsEditing("true")}
-                      >
-                        Edit
-                      </button>
-                    )}
+            </div> 
+            ) : (
+              <div className="p-7 bg-white mt-6 h-[calc(100vh-280px)]">
+                <div className="flex flex-wrap gap-24">
+                  <div className="flex flex-col gap-3 w-full md:w-[200px]">
+                    <Skeleton className="h-[20px] rounded" />
+                    <Skeleton className="h-[20px] rounded" />
+                    <Skeleton className="h-[20px] rounded" />
                   </div>
-                )}
+                  <div className="w-0 grow">
+                    <div className="flex flex-col gap-4">
+                      <div className="grid grid-cols-5 gap-5">
+                        <Skeleton className="h-16 rounded" />
+                        <Skeleton className="h-16 rounded" />
+                        <Skeleton className="h-16 rounded" />
+                        <Skeleton className="h-16 rounded" />
+                        <Skeleton className="h-16 rounded" />
+                      </div>
+                      <Skeleton className="h-[50px] rounded" />
+                      <Skeleton className="h-[50px] rounded" />
+                      <Skeleton className="h-[150px] rounded" />
+                      <Skeleton className="h-[50px] rounded" />
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-
+            )}
         </div>
       </main>
     </>

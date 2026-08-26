@@ -12,7 +12,7 @@ import {
 import { getDoorBadgeClass, getDoorStatus, getDoorStatusTooltip, getDoorStatusTooltipClass, getHealthBadgeClass, getHealthBadgeTooltipColor, getHealthTooltip, getPresenceBadgeClass, getPresenceStatus, getPresenceTooltip, getPresenceTooltipClass, getTemperatureBadgeClass, getTemperatureTooltip, getTemperatureTooltipClass } from "../lib/cabinetListDisplay";
 import type { SmartCabinet } from "../types/cabinetList";
 
-export const CabinetStatistics = ({ data } : SmartCabinet) => {
+export const CabinetStatistics = ({ data } : { data : SmartCabinet }) => {
 
   const doorOpenedAt = data?.deviceState?.doorStateChangedAt
   const assetTakenAt = data?.deviceState?.assetStateChangedAt
@@ -74,7 +74,8 @@ export const CabinetStatistics = ({ data } : SmartCabinet) => {
                       getHealthBadgeClass(data?.deviceState?.assetHealth)
                     )}
                   >
-                    {data?.deviceState?.assetHealth}
+                    {/* {data?.deviceState?.assetHealth} */}
+                    Ok
                   </span>
               </TooltipTrigger>
               <TooltipContent side="right" className={cn(getHealthBadgeTooltipColor(data?.deviceState?.assetHealth))}>
@@ -98,19 +99,18 @@ export const CabinetStatistics = ({ data } : SmartCabinet) => {
     {
       title: "Connectivity",
       Icon: ConnectivityIcon,
-      badgeClass: data.status === "assigned" && data?.deviceState
+      badgeClass: data?.deviceState
           ? "bg-card-success text-success"
           : "bg-card-error text-error",
       value: <div
             className={cn(
               "px-3 py-1 rounded-[4px] text-xs w-full text-center inline-block transition-all",
-              data.status === "assigned" && data?.deviceState === "connected"
+              data?.deviceState
                 ? "bg-card-success text-success"
                 : "bg-card-error text-error"
             )}
           >
-            {/* {cabinet.type === "connected" */}
-            {data.status === "assigned" && data?.deviceState
+            {data?.deviceState
               ? "Connected"
               : "Not Connected"}
           </div>

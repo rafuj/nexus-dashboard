@@ -71,6 +71,9 @@ export interface SmartCabinet {
     lastSeenAt: string;
     rssi: number;
     temperature: number;
+
+    // not available in api
+    assetHealth: string
   };
 }
 
