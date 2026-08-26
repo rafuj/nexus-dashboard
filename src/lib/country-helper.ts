@@ -1,13 +1,15 @@
-import { Country, City } from "country-state-city";
+import { City } from "country-state-city";
 
-export type CountryOption = {
-  iso2: string; // ISO 3166-1 alpha-2 code ("NL", "US", "GB")
-  name: string; // "Netherlands", "United States"
-};
-
+export interface CountryOption {
+    country: string
+    iso: string
+    format: string
+    regex: RegExp
+}
 export type CityOption = {
   name: string;
 };
+
 export const ALLOWED_COUNTRIES = [
   "AT",
   "BE",
@@ -39,44 +41,233 @@ export const ALLOWED_COUNTRIES = [
   "GB",
 ] as const;
 
-// Get all ISO countries
-export const COUNTRY_OPTIONS: CountryOption[] = Country.getAllCountries()
-  .filter((country) => ALLOWED_COUNTRIES.includes(country.isoCode as typeof ALLOWED_COUNTRIES[number]))
-  .map((country) => ({
-    iso2: country.isoCode,
-    name: country.name,
-  }));
+// EU AND UK COUNTRIES
+export const COUNTRY_OPTIONS:CountryOption[] = [
+  {
+    country: "Austria",
+    iso: "AT",
+    format: "NNNN",
+    regex: /^\d{4}$/,
+  },
+  {
+    country: "Belgium",
+    iso: "BE",
+    format: "NNNN",
+    regex: /^\d{4}$/,
+  },
+  {
+    country: "Bulgaria",
+    iso: "BG",
+    format: "NNNN",
+    regex: /^\d{4}$/,
+  },
+  {
+    country: "Croatia",
+    iso: "HR",
+    format: "NNNNN",
+    regex: /^\d{5}$/,
+  },
+  {
+    country: "Cyprus",
+    iso: "CY",
+    format: "NNNN",
+    regex: /^\d{4}$/,
+  },
+  {
+    country: "Czech Republic",
+    iso: "CZ",
+    format: "NNNNN (NNN NN)",
+    regex: /^\d{5}\s\(\d{3}\s\d{2}\)$/,
+  },
+  {
+    country: "Denmark",
+    iso: "DK",
+    format: "NNNN",
+    regex: /^\d{4}$/,
+  },
+  {
+    country: "Estonia",
+    iso: "EE",
+    format: "NNNNN",
+    regex: /^\d{5}$/,
+  },
+  {
+    country: "Finland",
+    iso: "FI",
+    format: "NNNNN",
+    regex: /^\d{5}$/,
+  },
+  {
+    country: "France",
+    iso: "FR",
+    format: "NNNNN",
+    regex: /^\d{5}$/,
+  },
+  {
+    country: "Germany",
+    iso: "DE",
+    format: "NNNNN",
+    regex: /^\d{5}$/,
+  },
+  {
+    country: "Greece",
+    iso: "GR",
+    format: "NNN NN",
+    regex: /^\d{3}\s?\d{2}$/,
+  },
+  {
+    country: "Hungary",
+    iso: "HU",
+    format: "NNNN",
+    regex: /^\d{4}$/,
+  },
+  {
+    country: "Ireland",
+    iso: "IE",
+    format: "Eircode",
+    regex: /^[A-Z]\d{2}\s?[A-Z0-9]{4}$/i,
+  },
+  {
+    country: "Italy",
+    iso: "IT",
+    format: "NNNNN",
+    regex: /^\d{5}$/,
+  },
+  {
+    country: "Latvia",
+    iso: "LV",
+    format: "LV-NNNN",
+    regex: /^[Ll][Vv][- ]?\d{4}$/,
+  },
+  {
+    country: "Lithuania",
+    iso: "LT",
+    format: "LT-NNNNN",
+    regex: /^[Ll][Tt][- ]?\d{5}$/,
+  },
+  {
+    country: "Luxembourg",
+    iso: "LU",
+    format: "NNNN",
+    regex: /^\d{4}$/,
+  },
+  {
+    country: "Malta",
+    iso: "MT",
+    format: "AAANNNN",
+    regex: /^[A-Za-z]{3}\s?\d{4}$/,
+  },
+  {
+    country: "Netherlands",
+    iso: "NL",
+    format: "NNNN AA",
+    regex: /^\d{4}\s?[A-Za-z]{2}$/,
+  },
+  {
+    country: "Poland",
+    iso: "PL",
+    format: "NN-NNN",
+    regex: /^\d{2}[- ]?\d{3}$/,
+  },
+  {
+    country: "Portugal",
+    iso: "PT",
+    format: "NNNN-NNN",
+    regex: /^\d{4}[- ]?\d{3}$/,
+  },
+  {
+    country: "Romania",
+    iso: "RO",
+    format: "NNNNNN",
+    regex: /^\d{6}$/,
+  },
+  {
+    country: "Slovakia",
+    iso: "SK",
+    format: "NNNNN",
+    regex: /^\d{5}$/,
+  },
+  {
+    country: "Slovenia",
+    iso: "SI",
+    format: "NNNN",
+    regex: /^([Ss][Ii][- ]?)?\d{4}$/,
+  },
+  {
+    country: "Spain",
+    iso: "ES",
+    format: "NNNNN",
+    regex: /^\d{5}$/,
+  },
+  {
+    country: "Sweden",
+    iso: "SE",
+    format: "NNN NN",
+    regex: /^\d{3}\s?\d{2}$/,
+  },
+  {
+    country: "United Kingdom",
+    iso: "GB",
+    format: "A(A)N(A/N)NAA",
+    regex: /^[A-Z]{1,2}[0-9R][0-9A-Z]?\s*[0-9][A-Z-[CIKMOV]]{2}$/i,
+  },
+];
 
-// Get cities for a specific country ISO code
+// Get Cties for a specific country ISO code
 export const getCitiesByCountry = (countryIso2: string|''): CityOption[] => {
   if (!countryIso2) return [];
   return City.getCitiesOfCountry(countryIso2) || [];
 };
-// Get CountryCode by Country Name
-// Get Country Code by Country Name
-export const getCountryCodeByCountryName = (
-  countryName: string,
-): string => {
-  if (!countryName) return "";
 
-  return (
-    COUNTRY_OPTIONS.find(
-      (item) =>
-        item.name.toLowerCase() ===
-        countryName.toLowerCase(),
-    )?.iso2 ?? countryName
+export const formatPostalCode = (value: string, countryIso: string): string => {
+  const rule = COUNTRY_OPTIONS.find(
+    (item) => item.iso === countryIso
   );
-};
-export const getCountryNameByCountryCode = (
-  isoCode: string,
-): string => {
-  if (!isoCode) return "";
 
-  return (
-    COUNTRY_OPTIONS.find(
-      (item) =>
-        item.iso2.toLowerCase() ===
-        isoCode.toLowerCase(),
-    )?.name ?? isoCode
-  );
+  if (!rule || !value) return value;
+
+  // Remove existing spaces/hyphens
+  const cleanValue = value
+    .toUpperCase()
+    .replace(/[\s-]/g, "");
+
+  // UK has a variable postcode structure
+  if (countryIso === "GB") {
+    if (cleanValue.length <= 3) {
+      return cleanValue;
+    }
+
+    return `${cleanValue.slice(0, -3)} ${cleanValue.slice(-3)}`;
+  }
+
+  // Determine where the separator should be based on the format
+  const format = rule.format;
+
+  const separatorIndex = format.search(/[- ]/);
+
+  if (separatorIndex === -1) {
+    return cleanValue;
+  }
+
+  const separator = format[separatorIndex];
+
+  // Count characters before the separator
+  const prefix = format
+    .slice(0, separatorIndex)
+    .replace(/[^NA]/gi, "");
+
+  const splitIndex = prefix.length;
+
+  if (cleanValue.length <= splitIndex) {
+    return cleanValue;
+  }
+
+  return `${cleanValue.slice(0, splitIndex)}${separator}${cleanValue.slice(
+    splitIndex
+  )}`;
 };
+
+export const POSTAL_CODE_RULES: Record<string, RegExp> =
+  Object.fromEntries(
+    COUNTRY_OPTIONS.map(({ iso, regex }) => [iso, regex])
+  );

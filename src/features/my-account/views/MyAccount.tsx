@@ -460,7 +460,7 @@ export default function MyAccount() {
                                     <SelectValue placeholder="Select Country" />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    {COUNTRY_OPTIONS.map(country => <SelectItem value={country.name} key={country.name}>{country.name}</SelectItem>)}
+                                    {COUNTRY_OPTIONS.map(country => <SelectItem value={country.iso} key={country.iso}>{country.country}</SelectItem>)}
                                   </SelectContent>
                                 </Select>
                             </div>

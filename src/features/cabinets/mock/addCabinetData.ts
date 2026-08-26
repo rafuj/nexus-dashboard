@@ -3,8 +3,7 @@ import type { AssetType, AvailabilityType, BrightnessType, ColorType, DayConfig,
 
 // Stepper
 export const STEPS: StepConfig[] = [
-  { id: 'basic-information', label: 'Basic Information' },
-  { id: 'cabinet-details', label: 'Cabinet Details' },
+  { id: 'basic-information', label: 'Cabinet Information' },
   { id: 'asset-information', label: 'Asset Information' },
 ];
 

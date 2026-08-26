@@ -757,7 +757,7 @@ export function PlacesAutocomplete({
   return (
     <div
       className={cn(
-        "relative w-full max-w-xl",
+        "relative w-full",
         className,
       )}
     >

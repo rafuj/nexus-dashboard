@@ -7,7 +7,7 @@ import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Icons } from "@/app/icons/icons";
 import {  useNavigate } from "react-router";
 import { CabinetsStepper } from "../components/CabinetsStepper";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Input } from "@/shared/components/ui/input"
 import { Label } from "@/shared/components/ui/label";
 import { Textarea } from "@/shared/components/ui/textarea";
@@ -35,6 +35,7 @@ import { cabinetInitialValues } from "../types/addCabinet";
 import { cabinetValidationSchema } from "../types/validationSchema";
 import { getApiErrorMessage } from "@/app/api-manage/api";
 import { PlacesAutocomplete } from "@/shared/components/places-autocomplete";
+import { COUNTRY_OPTIONS, formatPostalCode, getCitiesByCountry } from "@/lib/country-helper";
 
 export interface BrandInfo {
   name: string;
@@ -79,7 +80,7 @@ export default function AddCabinets() {
     },
   });
 
-  const {values, setFieldValue, errors, touched, handleChange, handleBlur} = formik
+  const {values, setValues, setFieldValue, errors, touched, handleChange, handleBlur} = formik
   
   const { data: assetTypes, isLoading } = useAssetTypes()
   const { data: brandsList } = useAssetTypesBrands(values.asset.id)
@@ -111,16 +112,7 @@ export default function AddCabinets() {
     }
 
     if (step === "basic-information") {
-      if(errors.name || errors.addressLine1 || errors.zipCode || errors.city || errors.country) {
-        return
-      } else {
-        formik.setErrors({})
-        formik.setTouched({})
-        setStep("cabinet-details")
-      }
-    }
-    if (step === "cabinet-details") {
-      if(errors.accessType) {
+      if(errors.name || errors.addressLine1 || errors.zipCode || errors.city || errors.country || errors.accessType) {
         return
       } else {
         formik.setErrors({})
@@ -138,136 +130,17 @@ export default function AddCabinets() {
     }
   };
 
+  const availableCities = useMemo(() => {
+    if (values.country) {
+      return getCitiesByCountry(values.country);
+    }
+
+    return [];
+  }, [values.country]);
+
+
   const switchContent = () => {
     switch (step) {
-      case 'cabinet-details':
-        return (
-            <div>
-              {/* Brand Details */}
-              <div>
-                <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75">
-                  <span className="w-0 grow">Brand Details</span>
-                  <InfoIcon size={20} />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 my-3.75 gap-4">
-                  <div className="sm:col-span-2">
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Serial number (optional)</Label>
-                    <Input
-                      placeholder="e.g. SN1234567890"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                      name="serialNumber"
-                      value={values.serialNumber}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                    <div className="text-xs mt-2">If the serial number is recognised the brand, model and module code (if applicable) will be filled in automatically.</div>
-                    <div className="flex items-center text-sm text-accent-foreground my-5 gap-3">
-                      <span className="h-px grow bg-accent-foreground"></span>
-                      <span>Or enter cabinet details manually</span>
-                      <span className="h-px grow bg-accent-foreground"></span>
-                    </div>
-                  </div>
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand<span className="text-error">*</span></Label>
-                    <Select value={brandInfo.name} onValueChange={(value)=> setBrandInfo(prev => ({
-                      ...prev,
-                      name: value,
-                      model: ""
-                    }))}>
-                      <SelectTrigger className={cn("w-full !h-12.5")}>
-                        <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-                          <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder={"Select Brand"} /></span>
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                      {
-                        mockBrandsList.map((item)=> <SelectItem value={item.brand} key={item.brand+"mock-model"}>{item.brand}</SelectItem> )
-                      }
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Model<span className="text-error">*</span></Label>
-                    <Select value={brandInfo.model} onValueChange={(value)=> setBrandInfo(prev => ({
-                      ...prev,
-                      model: value
-                    }))}>
-                      <SelectTrigger className={cn("w-full !h-12.5")}>
-                        <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-                          <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder={"Select Model"} /></span>
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                      {
-                        mockBrandsList.find(item => item.brand === brandInfo.name)?.models?.map((item)=> <SelectItem value={item} key={item+'mock-model'}>{item}</SelectItem> )
-                      }
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="col-span-2">
-                    <div className="bg-card-info rounded-md px-2.5 py-3 text-accent-foreground text-xs flex gap-2.5">
-                      <Info size={18} />
-                      <div className="w-0 grow self-center">
-                        Not all cabinets have a serial code. You can always enter the cabinet details manually.
-                      </div>
-                    </div>
-                  </div>
-                </div>                
-              </div>
-              {/* Access Details */}
-              <div>
-                <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75 mt-5">
-                  <span className="w-0 grow">Access Details</span>
-                  <InfoIcon size={20} />
-                </div>
-                <div className="grid grid-cols-1 gap-4">
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Access Type <span className="text-error">*</span></Label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <button type="button" className={cn("flex items-center gap-3.75 text-left p-4 border border-border rounded-[10px]", {
-                        "bg-primary/7 border-primary/20": 'public' === formik.values.accessType
-                      })} onClick={()=> setFieldValue("accessType", 'public')}>
-                        <Icons.team />
-                        <div className="w-0 grow">
-                          <h6 className="font-semibold text-xs">Public</h6>
-                          <div className="text-xs">Accessible to everyone</div>
-                        </div>
-                      </button>
-                      <button type="button" className={cn("flex items-center gap-3.75 text-left p-4 border border-border rounded-[10px]", {
-                        "bg-primary/7 border-primary/20": 'private' === formik.values.accessType
-                      })} onClick={()=> setFieldValue("accessType", 'private')}>
-                        <Icons.lock2 />
-                        <div className="w-0 grow">
-                          <h6 className="font-semibold text-xs">Private</h6>
-                          <div className="text-xs">Restricted to authorized users</div>
-                        </div>
-                      </button>
-                    </div>
-                  </div>
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Lock code (optional)</Label>
-                    <Input
-                      placeholder="Enter 4-8 digit lock code"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                      name="lockCode"
-                      value={values.lockCode}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Public availability</Label>
-                    <CustomRadioGroup<AvailabilityType> value={availability} setValue={setAvailability} list={availabilityTypeList} />
-                  </div>
-                  {availability === 'custom-days-and-types' && (
-                    <SchedulePicker schedule={schedule} onScheduleChange={setSchedule} />
-                  )}
-                </div>
-              </div>
-            </div>
-        )
       case 'asset-information':
         return (
           <div>
@@ -491,18 +364,16 @@ export default function AddCabinets() {
                       value={values.addressLine1}
                       onValueChange={(value)=> setFieldValue("addressLine1", value)}
                       onPlaceSelect={(place) => {
-                        const {postalCode, lat, lng, country, city, address} = place
-                        setFieldValue("addressLine1", address)
-                        setFieldValue("country", country)
-                        setFieldValue("city", city)
-                        setFieldValue("zipCode", postalCode)
-                        console.log(lat, lng)
-                        if(errors.zipCode){
-                          formik.handleBlur("addressLine1")
-                          formik.handleBlur("country")
-                          formik.handleBlur("city")
-                          formik.handleBlur("zipCode")
-                        }
+                        const { postalCode, countryCode, city, address } = place
+                          const country = countryCode?.toUpperCase() ?? '';
+                          setValues({
+                            ...values,
+                            addressLine1: address,
+                            country: country,
+                            city: city ?? '',
+                            zipCode: formatPostalCode(postalCode || '', country),
+                          });
+                          handleBlur("zipCode")
                       }}
                     />
                     {touched.addressLine1 && errors.addressLine1 && <p className="mt-1 text-error text-xs">{errors.addressLine1}</p> }
@@ -529,27 +400,13 @@ export default function AddCabinets() {
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20 !bg-transparent"
                       name="zipCode"
                       value={values.zipCode}
-                      // onChange={handleChange}
-                      // onBlur={handleBlur}
-                      // errors={touched.zipCode ? errors.zipCode : ''}
-                      // maxLength={10}
-                      errors={touched.zipCode && errors.zipCode ? errors.zipCode : ''}
-                      readOnly
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      errors={touched.zipCode ? errors.zipCode : ''}
+                      maxLength={12}
                     />
                   </div>
                   <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">City <span className="text-error">*</span></Label>
-                    <Input
-                      placeholder="Select city"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20 !bg-transparent"
-                      name="city"
-                      value={values.city}
-                      errors={touched.city && errors.city ? errors.city : ''}
-                      readOnly
-                    />
-                  </div>
-                  {/* <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">City <span className="text-error">*</span></Label>
                     <Select
                       value={values.city || ""}
@@ -565,21 +422,20 @@ export default function AddCabinets() {
 
                       <SelectContent>
                           {availableCities?.map((item)=> <SelectItem value={item.name} key={item.name}>{item.name}</SelectItem> )}
+                          {values.city &&
+                          !availableCities?.some(
+                            (item) => item.name.toLowerCase() === values.city.toLowerCase()
+                          ) && (
+                            <SelectItem value={values.city} key={values.city}>
+                              {values.city}
+                            </SelectItem>
+                          )}
                       </SelectContent>
                     </Select>
-                  </div> */}
+                  </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Country <span className="text-error">*</span></Label>
-                    <Input
-                      placeholder="Select country"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20 !bg-transparent"
-                      name="country"
-                      value={values.country}
-                      errors={touched.country && errors.country ? errors.country : ''}
-                      readOnly
-                    />
-                    {/* <Select
+                    <Select
                       value={values.country || ""}
                       onValueChange={(value) => {
                         setFieldValue("country", value)
@@ -596,23 +452,145 @@ export default function AddCabinets() {
 
                       <SelectContent>
                         {COUNTRY_OPTIONS.map((country) => (
-                          <SelectItem key={country.iso2} value={country.iso2}>
+                          <SelectItem key={country.iso} value={country.iso}>
                             <div className="flex items-center justify-between w-full gap-2">
-                              <span>{country.name}</span>
-                              <span className="text-muted-foreground text-xs">({country.iso2})</span>
+                              <span>{country.country}</span>
+                              <span className="text-muted-foreground text-xs">({country.iso})</span>
                             </div>
                           </SelectItem>
                         ))}
                       </SelectContent>
-                    </Select> */}
-                    {/* {touched.country && errors.country && <p className="mt-1 text-error text-xs">{errors.country}</p> } */}
+                    </Select>
+                    {touched.country && errors.country && <p className="mt-1 text-error text-xs">{errors.country}</p> }
                   </div>
+                </div>
+              </div>
+
+              {/* Brand Details */}
+              <div>
+                <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75">
+                  <span className="w-0 grow">Brand Details</span>
+                  <InfoIcon size={20} />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 my-3.75 gap-4">
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand<span className="text-error">*</span></Label>
+                    <Select value={brandInfo.name} onValueChange={(value)=> setBrandInfo(prev => ({
+                      ...prev,
+                      name: value,
+                      model: ""
+                    }))}>
+                      <SelectTrigger className={cn("w-full !h-12.5")}>
+                        <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
+                          <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder={"Select Brand"} /></span>
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                      {
+                        mockBrandsList.map((item)=> <SelectItem value={item.brand} key={item.brand+"mock-model"}>{item.brand}</SelectItem> )
+                      }
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Model<span className="text-error">*</span></Label>
+                    <Select value={brandInfo.model} onValueChange={(value)=> setBrandInfo(prev => ({
+                      ...prev,
+                      model: value
+                    }))}>
+                      <SelectTrigger className={cn("w-full !h-12.5")}>
+                        <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
+                          <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder={"Select Model"} /></span>
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                      {
+                        mockBrandsList.find(item => item.brand === brandInfo.name)?.models?.map((item)=> <SelectItem value={item} key={item+'mock-model'}>{item}</SelectItem> )
+                      }
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="sm:col-span-2">
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Serial number (optional)</Label>
+                    <Input
+                      placeholder="e.g. SN1234567890"
+                      autoComplete="off"
+                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      name="serialNumber"
+                      value={values.serialNumber}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    <div className="text-xs mt-2">
+                      Select the brand and model first. Serial Number of the Nexus brand will automatically be recognised and the remaining compatible cabinet details will be filled in automatically
+                    </div>
+                  </div>
+                  {/* <div className="col-span-2">
+                    <div className="bg-card-info rounded-md px-2.5 py-3 text-accent-foreground text-xs flex gap-2.5">
+                      <Info size={18} />
+                      <div className="w-0 grow self-center">
+                        Not all cabinets have a serial code. You can always enter the cabinet details manually.
+                      </div>
+                    </div>
+                  </div> */}
+                </div>                
+              </div>
+              
+              {/* Access Details */}
+              <div>
+                <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75 mt-5">
+                  <span className="w-0 grow">Access Details</span>
+                  <InfoIcon size={20} />
+                </div>
+                <div className="grid grid-cols-1 gap-4">
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Access Type <span className="text-error">*</span></Label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <button type="button" className={cn("flex items-center gap-3.75 text-left p-4 border border-border rounded-[10px]", {
+                        "bg-primary/7 border-primary/20": 'public' === formik.values.accessType
+                      })} onClick={()=> setFieldValue("accessType", 'public')}>
+                        <Icons.team />
+                        <div className="w-0 grow">
+                          <h6 className="font-semibold text-xs">Public</h6>
+                          <div className="text-xs">Accessible to everyone</div>
+                        </div>
+                      </button>
+                      <button type="button" className={cn("flex items-center gap-3.75 text-left p-4 border border-border rounded-[10px]", {
+                        "bg-primary/7 border-primary/20": 'private' === formik.values.accessType
+                      })} onClick={()=> setFieldValue("accessType", 'private')}>
+                        <Icons.lock2 />
+                        <div className="w-0 grow">
+                          <h6 className="font-semibold text-xs">Private</h6>
+                          <div className="text-xs">Restricted to authorized users</div>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Lock code (optional)</Label>
+                    <Input
+                      placeholder="Enter 4-8 digit lock code"
+                      autoComplete="off"
+                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      name="lockCode"
+                      value={values.lockCode}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Public availability</Label>
+                    <CustomRadioGroup<AvailabilityType> value={availability} setValue={setAvailability} list={availabilityTypeList} />
+                  </div>
+                  {availability === 'custom-days-and-types' && (
+                    <SchedulePicker schedule={schedule} onScheduleChange={setSchedule} />
+                  )}
                 </div>
               </div>
 
               {/* Situation Pictures */}
               <div>
-                <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75">
+                <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75 mt-5">
                   <span className="w-0 grow">Situation Pictures</span>
                   <InfoIcon size={20} />
                 </div>

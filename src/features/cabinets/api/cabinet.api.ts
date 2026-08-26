@@ -1,7 +1,6 @@
 
 import { api } from "@/app/api-manage/api"
 import { API_ROUTES } from "@/app/api-manage/api-routes"
-import { getCountryCodeByCountryName } from "@/lib/country-helper"
 import { formatDateDDMMYYYY } from "@/lib/utils"
 
 
@@ -53,7 +52,7 @@ export const createCabinet = async (
   // formData.append("addressLine2", values.addressLine2)
   formData.append("zipCode", values.zipCode)
   formData.append("city", values.city)
-  formData.append("country", getCountryCodeByCountryName(values.country))
+  formData.append("country", values.country)
 
   if (values.addressLine2) {
     formData.append("addressLine2", values.addressLine2)
