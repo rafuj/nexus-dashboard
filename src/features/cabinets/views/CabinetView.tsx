@@ -1,6 +1,6 @@
 "use client";
 import { Helmet } from "react-helmet-async";
-import { ChevronDown, ChevronLeft, ChevronRight, CircleCheck, Info, InfoIcon } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, Info, InfoIcon } from "lucide-react";
 
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
@@ -17,9 +17,9 @@ import { DatePicker } from "@/shared/components/ui/date-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { cn, convertDDMMYYYY } from "@/lib/utils";
 import SchedulePicker from "../components/SchedulePicker";
-import { cabinetInitialValues, type AvailabilityType, type BrightnessType, type ColorType, type DayConfig, type StepType, type VolumeType } from "../types/addCabinet";
-import { availabilityTypeList, brightnessList, colorList, dayList, STEPS, volumeList } from "../mock/addCabinetData";
-import { AVAILABLE_CREDITS, MANAGE_CABINETS } from "@/features/dashboard/mock/mockDashboardStats";
+import { cabinetInitialValues, type AvailabilityType, type DayConfig, type StepType } from "../types/addCabinet";
+import { availabilityTypeList, dayList, STEPS } from "../mock/addCabinetData";
+import { MANAGE_CABINETS } from "@/features/dashboard/mock/mockDashboardStats";
 import { can, type Role } from "@/lib/permissions";
 import { useAuth } from "@/app/hooks/useAuth";
 import { useQueryState } from "nuqs";
@@ -31,7 +31,6 @@ import { mockBrandsList } from "../mock/mockBrands";
 import { MaintenanceMode } from "../components/MaintenanceMode";
 import { useFormik } from "formik";
 import { errorToast, successToast } from "@/lib/toast";
-import { COUNTRY_OPTIONS } from "@/lib/country-helper";
 import { useAssetTypes } from "../hooks/useAssetTypes";
 import { useAssetTypesBrands } from "../hooks/useAssetTypesBrands";
 import { useAssetTypesModels } from "../hooks/useAssetTypesModels";
@@ -46,34 +45,19 @@ import { getFormChanges } from "@/lib/getFormChanges";
 import type { CreateCabinetFormValues } from "../api/cabinet.api";
 import { getApiErrorMessage } from "@/app/api-manage/api";
 import { LoaderButton } from "@/app/components/loader-button";
+import { PlacesAutocomplete } from "@/shared/components/places-autocomplete";
+import { Skeleton } from "@/shared/components/ui/skeleton";
+import { getCountryNameByCountryCode } from "@/lib/country-helper";
 
-interface CabinetDetails {
-  serialNumber: string;
-  moduleCode: string;
-  assignCredits: string;
-  lockCode: string;
-}
 
 const CabinetView = () => {
 
   const navigate = useNavigate();
 
   const [step, setStep] = useState<StepType>('basic-information')
-  const [volume, setVolume] = useState<VolumeType>('0%')
-  const [brightness, setBrightness] = useState<BrightnessType>('0%')
-  const [color, setColor] = useState<ColorType>('white')
+  
   const [availability, setAvailability] = useState<AvailabilityType>('custom-days-and-types')
   const [schedule, setSchedule] = useState<DayConfig[]>(dayList)
-
-  // const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false)
-  // const [successModalOpen, setSuccessModalOpen] = useState<boolean>(false)
-  
-  const [cabinetDetails, setCabinetDetails] = useState<CabinetDetails>({
-    serialNumber:"",
-    moduleCode: "NEXUSMODULEXC43",
-    assignCredits: "1",
-    lockCode: "UDWKSNDMS"
-  })
   
   const [brandInfo, setBrandInfo] = useState<BrandInfo>({
     name: "",
@@ -84,9 +68,7 @@ const CabinetView = () => {
   const updateCabinetMutation = useUpdateCabinet(id ?? '')
   
   const { data: assetViewData, isSuccess: isAssetViewSuccess } = useAssetView(id || "")
-  // const updateAssetMutation = useUpdateAsset(assetViewData?.id ?? '')
   
-  console.log("assetViewData", assetViewData)
 
   useEffect(() => {
     if (isSuccess && isAssetViewSuccess && data && assetViewData) {
@@ -114,15 +96,6 @@ const CabinetView = () => {
             cabinetId: id,
 
             components: [
-              // Slot 0: 1st Set Pads
-              {
-                componentTypeId: "1",
-                componentVariantId: padsComponents[0]?.componentVariantId || "",
-                expiresAt: convertDDMMYYYY(padsComponents[0]?.expiresAt),
-                lotNumber: padsComponents[0]?.lotNumber || "",
-                serialNumber: padsComponents[0]?.serialNumber || "",
-                componentVariantName: padsComponents[0]?.componentVariant?.name || "",
-              },
               // Slot 1: 2nd Set Pads
               {
                 componentTypeId: "1",
@@ -131,6 +104,15 @@ const CabinetView = () => {
                 lotNumber: padsComponents[1]?.lotNumber || "",
                 serialNumber: padsComponents[1]?.serialNumber || "",
                 componentVariantName: padsComponents[1]?.componentVariant?.name || "",
+              },
+              // Slot 0: 1st Set Pads
+              {
+                componentTypeId: "1",
+                componentVariantId: padsComponents[0]?.componentVariantId || "",
+                expiresAt: convertDDMMYYYY(padsComponents[0]?.expiresAt),
+                lotNumber: padsComponents[0]?.lotNumber || "",
+                serialNumber: padsComponents[0]?.serialNumber || "",
+                componentVariantName: padsComponents[0]?.componentVariant?.name || "",
               },
               // Slot 2: Battery
               {
@@ -198,18 +180,7 @@ const CabinetView = () => {
     },
   });
 
-  // const handleSave =() =>{
-  //   if(step === "asset-information") {
-  //     setConfirmModalOpen(true)
-  //   } else {
-  //     formik.handleSubmit()
-  //   }
-  // }
-
   const {values, setFieldValue, errors, touched, handleChange, handleBlur} = formik
-
-  console.log("values", values)
-  console.log("errors", errors)
   
   const { data: assetTypes, isLoading } = useAssetTypes()
     const { data: brandsList } = useAssetTypesBrands(values.asset.id)
@@ -232,7 +203,6 @@ const CabinetView = () => {
     if (!file) return;
     setFieldValue(key, URL.createObjectURL(file))
   };
-
 
   const switchContent = () => {
     switch (step) {
@@ -362,133 +332,6 @@ const CabinetView = () => {
                   {availability === 'custom-days-and-types' && (
                     <SchedulePicker schedule={schedule} onScheduleChange={setSchedule} readOnly={fieldsReadOnly} />
                   )}
-                </div>
-              </div>
-              {/* Updaid Connection */}
-              <div>
-                <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75 mt-5">
-                  <span className="w-0 grow">Updaid Connection</span>
-                  <InfoIcon size={20} />
-                </div>
-                <div className="grid grid-cols-1 my-3.75 gap-4">
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Module Code<span className="text-error">*</span></Label>
-                    <div className="relative">
-                      <Input
-                        placeholder="Enter module code"
-                        autoComplete="off"
-                        className="h-12.5 px-5 placeholder:text-accent-foreground/20 pr-10"
-                        readOnly={fieldsReadOnly}
-                        value={cabinetDetails.moduleCode}
-                        onChange={(e)=> setCabinetDetails(prev => ({
-                          ...prev,
-                          moduleCode: e.target.value
-                        }))}
-                      />
-                      {/* if code recognised */}
-                      <CircleCheck size={20} className="absolute top-1/2 right-3 -translate-y-1/2 text-[#11BE48]" />
-                      {/* else this close icon is hidden for now */}
-                      {/* <XCircle size={20} className="absolute top-1/2 right-3 -translate-y-1/2 text-error" /> */}
-                    </div>
-                    <div className="text-xs font-semibold flex items-center gap-2 text-[#11BE48] mt-2">
-                      <CircleCheck size={18} />
-                      <span>Module code recognised</span>
-                    </div>
-                  </div>
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium flex justify-between items-center mb-3">
-                      <span>Assign credits<span className="text-error">*</span></span>
-                      <span>Available credits: <span className={cn("text-[#11BE48]", {
-                        "text-error":AVAILABLE_CREDITS === 0
-                      })}>{AVAILABLE_CREDITS}</span></span>
-                    </Label>
-                    <Input
-                      placeholder="Enter module count"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                      type="number"
-                      min="0"
-                      readOnly={fieldsReadOnly}
-                      value={cabinetDetails.assignCredits}
-                      onChange={(e)=> setCabinetDetails(prev => ({
-                        ...prev,
-                        assignCredits: e.target.value
-                      }))}
-                    />
-                    {AVAILABLE_CREDITS == 0 && (
-                      <div className="bg-card-error rounded-md px-2.5 py-3 text-accent-foreground text-xs flex gap-2.5 mt-2">
-                        <Info size={18} />
-                        <div className="w-0 grow self-center">
-                          <div>No sufficient amount of credits. You can buy more.</div>
-                        </div>
-                      </div>
-                    )}
-                    <div className="text-xs mt-2">1 credit = 1 year of connectivity</div>
-                  </div>
-                </div>
-              </div>
-              {/* Sound Settings */}
-              <div>
-                <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75 mt-5">
-                  <span className="w-0 grow">Sound Settings</span>
-                  <InfoIcon size={20} />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 my-3.75 gap-4">
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">
-                      Primary Language or Buzzer
-                      <span className="text-error">*</span>
-                    </Label>
-                    <Select disabled={fieldsReadOnly}>
-                      <SelectTrigger className="w-full !h-12.5">
-                        <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-                          <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="English" /></span>
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="english">English</SelectItem>
-                        <SelectItem value="spanish">Spanish</SelectItem>
-                        <SelectItem value="frennch">French</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Secondary Language (optional)</Label>
-                    <Select disabled={fieldsReadOnly}>
-                      <SelectTrigger className="w-full !h-12.5">
-                        <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-                          <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="None" /></span>
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">None</SelectItem>
-                        <SelectItem value="english">English</SelectItem>
-                        <SelectItem value="spanish">Spanish</SelectItem>
-                        <SelectItem value="frennch">French</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="sm:col-span-2">
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Volume</Label>
-                    <CustomRadioGroup<VolumeType> value={volume} setValue={setVolume} list={volumeList} readOnly={fieldsReadOnly} />
-                  </div>
-                </div>
-              </div>
-              {/* LED Settings */}
-              <div>
-                <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75 mt-5">
-                  <span className="w-0 grow">LED Settings</span>
-                  <InfoIcon size={20} />
-                </div>
-                <div className="grid grid-cols-1 gap-4">
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Colour</Label>
-                    <CustomRadioGroup<ColorType> value={color} setValue={setColor} list={colorList} readOnly={fieldsReadOnly} />
-                  </div>
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Brightness</Label>
-                    <CustomRadioGroup<BrightnessType> value={brightness} setValue={setBrightness} list={brightnessList} readOnly={fieldsReadOnly} />
-                  </div>
                 </div>
               </div>
             </div>
@@ -676,7 +519,7 @@ const CabinetView = () => {
         return (
             <div>
                 <MaintenanceMode />
-                <CabinetStatistics />
+                <CabinetStatistics data={data} />
               <div>
                 <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75">
                   <span className="w-0 grow">Name & Description</span>
@@ -723,17 +566,19 @@ const CabinetView = () => {
                 <div className="pb-3 grid sm:grid-cols-2 gap-3">
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Address Line 1 <span className="text-error">*</span></Label>
-                    <Input
-                      placeholder="Enter address 1"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                      readOnly={fieldsReadOnly}
-                      name="addressLine1"
-                      value={values.addressLine1}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      errors={touched.addressLine1 ? errors.addressLine1 : ''}
-                    />
+                    <PlacesAutocomplete
+                        placeholder="Search for an address"
+                        value={values.addressLine1}
+                        onValueChange={(value)=> setFieldValue("addressLine1", value)}
+                        onPlaceSelect={(place) => {
+                          const {postalCode, lat, lng, country, city, address} = place
+                          setFieldValue("addressLine1", address ?? "");
+                          setFieldValue("country", country ?? "");
+                          setFieldValue("city", city ?? "");
+                          setFieldValue("zipCode", postalCode ?? "");
+                          console.log(lat, lng)
+                        }}
+                      />
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Address Line 2</Label>
@@ -753,36 +598,63 @@ const CabinetView = () => {
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Zip code <span className="text-error">*</span></Label>
                     <Input
-                      placeholder="city"
+                      placeholder="Zip Code"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                      readOnly={fieldsReadOnly}
+                      readOnly
                       name="zipCode"
                       value={values.zipCode}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
+                      // onChange={handleChange}
+                      // onBlur={handleBlur}
                       errors={touched.zipCode ? errors.zipCode : ''}
                     />
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">City <span className="text-error">*</span></Label>
                     <Input
-                      placeholder="Enter City"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                      readOnly={fieldsReadOnly}
-                      name="city"
-                      value={values.city}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      errors={touched.city ? errors.city : ''}
-                    />
+                        placeholder="Select city"
+                        autoComplete="off"
+                        className="h-12.5 px-5 placeholder:text-accent-foreground/20 !bg-transparent"
+                        name="city"
+                        value={values.city}
+                        errors={touched.city && errors.city ? errors.city : ''}
+                        readOnly
+                      />
+                    {/* <Select
+                        value={values.city || ""}
+                        onValueChange={(value) => setFieldValue("city", value)}
+                      >
+                      <SelectTrigger className="w-full !h-12.5">
+                        <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
+                          <span className="line-clamp-1 w-0 grow text-left">
+                            <SelectValue placeholder="Select city" />
+                          </span>
+                        </div>
+                      </SelectTrigger>
+
+                      <SelectContent>
+                          {availableCities?.map((item)=> <SelectItem value={item.name} key={item.name}>{item.name}</SelectItem> )}
+                      </SelectContent>
+                    </Select> */}
+                    {touched.city && errors.city && <p className="mt-1 terxt-error">{errors.city}</p> }
                   </div>
                   <div>
                       <Label className="text-xs text-accent-foreground font-medium block mb-3">Country <span className="text-error">*</span></Label>
-                      <Select
+                      <Input
+                          placeholder="Select country"
+                          autoComplete="off"
+                          className="h-12.5 px-5 placeholder:text-accent-foreground/20 !bg-transparent"
+                          name="country"
+                          value={getCountryNameByCountryCode(values.country)}
+                          errors={touched.country && errors.country ? errors.country : ''}
+                          readOnly
+                        />
+                      {/* <Select
                         value={values.country || ""}
-                        onValueChange={(value) => setFieldValue("country", value)}
+                        onValueChange={(value) => {
+                          setFieldValue("country", value)
+                          setFieldValue("city", "")
+                        }}
                         disabled={fieldsReadOnly}
                       >
                         <SelectTrigger className="w-full !h-12.5">
@@ -803,7 +675,7 @@ const CabinetView = () => {
                             </SelectItem>
                           ))}
                         </SelectContent>
-                      </Select>
+                      </Select> */}
                     </div>
                 </div>
               </div>
@@ -878,60 +750,77 @@ const CabinetView = () => {
               <span>Cabinet Details</span>
             </button>
           </div>
-          <div className="rounded-[15px] mt-6 md:pl-5">
-            <div className="flex flex-wrap gap-10">
-              <div className="w-full max-w-[180px] xl:max-w-[280px]">
-                <div className="flex flex-col gap-10 md:sticky md:top-36">
-                  <CabinetsStepper step={step} setStep={setStep} stepList={STEPS} hideLine />
+          
+          {isSuccess ? (
+            <div className="rounded-[15px] mt-6 md:pl-5">
+              <div className="flex flex-wrap gap-10">
+                <div className="w-full max-w-[180px] xl:max-w-[280px]">
+                  <div className="flex flex-col gap-10 md:sticky md:top-36">
+                    <CabinetsStepper step={step} setStep={setStep} stepList={STEPS} hideLine />
+                  </div>
+                </div>
+                <div className="w-full md:w-0 grow">
+                  {switchContent()}
+                  {canManageCabinets && (
+                    <div className="flex flex-wrap gap-3 sm:gap-5 justify-end py-3.75 bg-background sticky bottom-0 mt-10 w-full">
+                      {/* If want to remove sticky */}
+                      {/* <div className="flex flex-wrap gap-3 sm:gap-5 justify-end py-3.75 bg-background mt-10 w-full"> */}
+                      {isEditing ? (
+                        <>
+                          <button type="button" 
+                            className="flex items-center justify-center bg-chip text-accent-foreground py-2 sm:py-3 px-5 rounded-full text-sm gap-1.25 sm:w-full max-w-[140px]"
+                            onClick={()=> setIsEditing("")}
+                          >
+                            Cancel
+                          </button>
+                          <LoaderButton type="button" 
+                            className="flex items-center justify-center bg-primary text-white py-2 sm:py-3 px-5 rounded-full text-sm gap-1.25 sm:w-full max-w-[140px] min-h-11"
+                            onClick={()=>formik.handleSubmit()}
+                            loading={updateCabinetMutation.isPending}
+                          >
+                            Save Changes
+                          </LoaderButton>
+                        </>
+                      ) : (
+                        <button type="button" 
+                          className="flex items-center justify-center bg-primary text-white py-2 sm:py-3 px-5 rounded-full text-sm gap-1.25 min-w-[83px] ml-auto"
+                          onClick={()=> setIsEditing("true")}
+                        >
+                          Edit
+                        </button>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
-              <div className="w-full md:w-0 grow">
-                {switchContent()}
-                {canManageCabinets && (
-                  <div className="flex flex-wrap gap-3 sm:gap-5 justify-end py-3.75 bg-background sticky bottom-0 mt-10 w-full">
-                    {/* If want to remove sticky */}
-                    {/* <div className="flex flex-wrap gap-3 sm:gap-5 justify-end py-3.75 bg-background mt-10 w-full"> */}
-                    {isEditing ? (
-                      <>
-                        <button type="button" 
-                          className="flex items-center justify-center bg-chip text-accent-foreground py-2 sm:py-3 px-5 rounded-full text-sm gap-1.25 sm:w-full max-w-[140px]"
-                          onClick={()=> setIsEditing("")}
-                        >
-                          Cancel
-                        </button>
-                        <LoaderButton type="button" 
-                          className="flex items-center justify-center bg-primary text-white py-2 sm:py-3 px-5 rounded-full text-sm gap-1.25 sm:w-full max-w-[140px] min-h-11"
-                          onClick={()=>formik.handleSubmit()}
-                          loading={updateCabinetMutation.isPending}
-                        >
-                          Save Changes
-                        </LoaderButton>
-                      </>
-                    ) : (
-                      <button type="button" 
-                        className="flex items-center justify-center bg-primary text-white py-2 sm:py-3 px-5 rounded-full text-sm gap-1.25 min-w-[83px] ml-auto"
-                        onClick={()=> setIsEditing("true")}
-                      >
-                        Edit
-                      </button>
-                    )}
+            </div> 
+            ) : (
+              <div className="p-7 bg-white mt-6 h-[calc(100vh-280px)]">
+                <div className="flex flex-wrap gap-24">
+                  <div className="flex flex-col gap-3 w-full md:w-[200px]">
+                    <Skeleton className="h-[20px] rounded" />
+                    <Skeleton className="h-[20px] rounded" />
+                    <Skeleton className="h-[20px] rounded" />
                   </div>
-                )}
+                  <div className="w-0 grow">
+                    <div className="flex flex-col gap-4">
+                      <div className="grid grid-cols-5 gap-5">
+                        <Skeleton className="h-16 rounded" />
+                        <Skeleton className="h-16 rounded" />
+                        <Skeleton className="h-16 rounded" />
+                        <Skeleton className="h-16 rounded" />
+                        <Skeleton className="h-16 rounded" />
+                      </div>
+                      <Skeleton className="h-[50px] rounded" />
+                      <Skeleton className="h-[50px] rounded" />
+                      <Skeleton className="h-[150px] rounded" />
+                      <Skeleton className="h-[50px] rounded" />
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-
+            )}
         </div>
-        {/* <ConfirmationModal {
-            ...{
-              open:confirmModalOpen,
-              setOpen: setConfirmModalOpen,
-              successModalOpen,
-              setSuccessModalOpen,
-              values,
-              handleSubmit: formik.handleSubmit
-            }
-        } /> */}
       </main>
     </>
   );

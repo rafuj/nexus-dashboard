@@ -1,6 +1,7 @@
 
 import { api } from "@/app/api-manage/api"
 import { API_ROUTES } from "@/app/api-manage/api-routes"
+import { getCountryCodeByCountryName } from "@/lib/country-helper"
 import { formatDateDDMMYYYY } from "@/lib/utils"
 
 
@@ -52,10 +53,17 @@ export const createCabinet = async (
   // formData.append("addressLine2", values.addressLine2)
   formData.append("zipCode", values.zipCode)
   formData.append("city", values.city)
-  formData.append("country", values.country)
-  formData.append("serialNumber", values.serialNumber)
-  formData.append("lockCode", values.lockCode)
+  formData.append("country", getCountryCodeByCountryName(values.country))
 
+  if (values.addressLine2) {
+    formData.append("addressLine2", values.addressLine2)
+  }
+  if (values.serialNumber) {
+    formData.append("serialNumber", values.serialNumber)
+  }
+  if (values.lockCode) {
+    formData.append("lockCode", values.lockCode)
+  }
   if (values.description) {
     formData.append("description", values.description)
   }

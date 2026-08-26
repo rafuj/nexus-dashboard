@@ -52,6 +52,9 @@ const validationSchema = Yup.object({
   password: Yup.string()
     .min(8, "Password must be at least 8 characters")
     .required("Password is required"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password")], "Passwords must match")
+    .required("Confirm password is required"),
   phone: Yup.string()
   .trim()
   .matches(/^[0-9+\-\s()]+$/, "Please enter a valid phone number")
@@ -123,6 +126,7 @@ export default function SignUp() {
       firstName: "",
       lastName: "",
       password: "",
+      confirmPassword: "",
       tenantName: "",
       organization: {
         city: "",
@@ -174,12 +178,15 @@ export default function SignUp() {
 
       const values = removeEmptyValues(formik.values)
 
-      const { organization, ...rest } = values
+      const { organization, confirmPassword, ...rest } = values;
 
       const signupValues =
         values.tenantType === "personal"
-          ? rest
-          : values
+          ? {
+            ...rest,
+            tenantName: values.firstName + " " + values.lastName
+          }
+          : { ...rest, organization }
 
       await signup(signupValues)
 
@@ -209,18 +216,18 @@ export default function SignUp() {
                 <div>
                   <div>
                     <h1 className="font-medium text-2xl md:text-[28px] mb-2">
-                      Verify Signup OTP
+                      Verify Signup Verification Code
                     </h1>
 
                     <p className="mb-7 text-sm md:text-base">
-                      We've sent an OTP to {formik.values.email}, enter verify to register
+                      We've sent a verification code to {formik.values.email}, enter your verification code to register
                     </p>
                   </div>
                   <div>
                     <form onSubmit={handleOtpVerify}>
                       <div className="mb-8">
                         <label className="font-medium text-accent-foreground mb-2.5 block">
-                          Enter OTP
+                          Enter Verification Code
                         </label>
                         <OtpInput
                           value={otp}
@@ -238,7 +245,7 @@ export default function SignUp() {
                           className="h-10 lg:h-14 rounded-full lg:text-base w-full"
                           loading={isLoading}
                         >
-                          Verify OTP
+                          Verify Code
                         </LoaderButton>
                       </div>
 
@@ -287,7 +294,7 @@ export default function SignUp() {
                     </div>
 
                     {/* Company Name */}
-                    {/* {formik.values.tenantType === "business" && ( */}
+                    {formik.values.tenantType === "business" && (
                       <div className="mb-3">
                         <label className="font-medium text-accent-foreground mb-2.5 block">
                           Company Name{" "}
@@ -313,7 +320,7 @@ export default function SignUp() {
                             </p>
                           )}
                       </div>
-                    {/* )} */}
+                    )}
 
                     {/* First & Last Name */}
                     <div className="grid grid-cols-2 gap-x-4 gap-y-3">
@@ -399,7 +406,7 @@ export default function SignUp() {
                                 formik.setFieldTouched("organization.city", false)
                             }}
                             >
-                              <SelectTrigger className="w-full text-sm md:!h-14 bg-transparent" onBlur={() => formik.setFieldTouched("organization.country", true)}>
+                              <SelectTrigger className="w-full text-sm md:!h-14 bg-background/40" onBlur={() => formik.setFieldTouched("organization.country", true)}>
                                 <span className="line-clamp-1 w-0 grow text-left">
                                   <SelectValue placeholder="Select country" />
                                 </span>
@@ -427,7 +434,7 @@ export default function SignUp() {
                         <div>
                             <label className="font-medium text-accent-foreground mb-2.5 block">City <span className="text-error">*</span></label>
                             <Select value={formik.values.organization.city} onValueChange={(value)=> formik.setFieldValue("organization.city", value)}>
-                              <SelectTrigger className="w-full text-sm md:!h-14 bg-transparent" onBlur={() => formik.setFieldTouched("organization.city", true)}>
+                              <SelectTrigger className="w-full text-sm md:!h-14 bg-background/40" onBlur={() => formik.setFieldTouched("organization.city", true)}>
                                 <SelectValue placeholder="Select City" />
                               </SelectTrigger>
                               <SelectContent>
@@ -554,6 +561,27 @@ export default function SignUp() {
                         formik.errors.password && (
                           <p className="mt-1 text-sm text-error">
                             {formik.errors.password}
+                          </p>
+                        )}
+                    </div>
+                    {/* Confirm Password */}
+                    <div>
+                      <label className="font-medium text-accent-foreground mb-2.5 block">
+                        Confirm Password <span className="text-error">*</span>
+                      </label>
+
+                      <PasswordInput
+                        name="confirmPassword"
+                        value={formik.values.confirmPassword}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        placeholder="Please Re-enter the password"
+                      />
+
+                      {formik.touched.confirmPassword &&
+                        formik.errors.confirmPassword && (
+                          <p className="mt-1 text-sm text-error">
+                            {formik.errors.confirmPassword}
                           </p>
                         )}
                     </div>

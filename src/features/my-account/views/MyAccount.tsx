@@ -13,7 +13,7 @@ import {
 import { Input } from "@/shared/components/ui/input"
 import { PasswordInput } from "@/features/auth/components/PasswordInput";
 import avatar from '@/assets/avatar-placeholder.png'
-import { useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { BriefcaseBusiness, Pen, User2, UserLock } from "lucide-react";
 import { CustomRadioGroup } from "@/shared/components/CustomRadioGroup";
 import {
@@ -25,44 +25,154 @@ import {
 } from "@/shared/components/ui/select"
 import { COUNTRY_OPTIONS, getCitiesByCountry } from "@/lib/country-helper";
 import { tenantTypeList, type TenantType } from "@/features/auth/views/SignUp";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { errorToast, successToast } from "@/lib/toast";
+import { useAuth } from "@/app/hooks/useAuth";
 
-interface FormState {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-    companyName: string;
-    jobTitle: string;
-    chamberOfCommerceNumber: string;
-    vatNumber: string;
-    street: string;
-    houseNumber: string;
-    zipCode: string;
-    city: string;
-    country: string;
-    tenantType: TenantType
-}
+const validationSchema = Yup.object({
+  tenantType: Yup.string()
+    .oneOf(["personal", "business"])
+    .required("Tenant type is required"),
 
+  email: Yup.string()
+    .trim()
+    .email("Please enter a valid email address")
+    .required("Email is required"),
 
+  firstName: Yup.string()
+    .trim()
+    .required("First name is required"),
 
+  lastName: Yup.string()
+    .trim()
+    .required("Last name is required"),
+
+  // password: Yup.string()
+  //   .min(8, "Password must be at least 8 characters")
+  //   .required("Password is required"),
+  phone: Yup.string()
+  .trim()
+  .matches(/^[0-9+\-\s()]+$/, "Please enter a valid phone number")
+  .notRequired(),
+
+  tenantName: Yup.string()
+    .trim()
+    .when("tenantType", {
+      is: "business",
+      then: (schema) => schema.required("Tenant name is required"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+
+  organization: Yup.object({
+    city: Yup.string().trim(),
+    country: Yup.string().trim(),
+    legalName: Yup.string().trim(),
+    postalCode: Yup.string().trim(),
+    street: Yup.string().trim(),
+    vatNumber: Yup.string().trim(),
+  }).when("tenantType", {
+    is: "business",
+    then: (schema) =>
+      schema.shape({
+        city: Yup.string()
+          .trim()
+          .required("City is required"),
+
+        country: Yup.string()
+          .trim()
+          .required("Country is required"),
+
+        legalName: Yup.string()
+          .trim()
+          .required("Legal name is required"),
+
+        postalCode: Yup.string()
+          .trim()
+          .required("Postal code is required"),
+
+        street: Yup.string()
+          .trim()
+          .required("Street is required"),
+
+        vatNumber: Yup.string()
+          .trim()
+          .required("VAT number is required"),
+      }),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+});
 export default function MyAccount() {
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  
+  const { updateProfile, getUser, user } = useAuth();
 
-  const [formState, setFormState] = useState<FormState>({
-      firstName: "Admin",
-      lastName: "User",
-      email: "johnsmith@xyz.com",
-      phone: "+88018392829282",
-      companyName: "Global Rescue",
-      jobTitle: "Senior Safety Officer",
-      chamberOfCommerceNumber: "029472826",
-      vatNumber: "CBHSKJSLYYUK73298KD7",
-      street: "12",
-      houseNumber: "14",
-      zipCode: "1023",
-      city: "Amsterdam",
-      country: "NL",
-      tenantType: "personal"
-  }); 
+    const formik = useFormik({
+      initialValues: {
+        tenantType: "personal" as TenantType,
+        email: "",
+        firstName: "",
+        lastName: "",
+        // password: "",
+        tenantName: "",
+        organization: {
+          city: "",
+          country: "",
+          legalName: "",
+          postalCode: "",
+          street: "",
+          vatNumber: "",
+        },
+        phone: "",
+        jobTitle: ""
+      },
+  
+      validationSchema,
+  
+      onSubmit: async (values) => {
+        setIsLoading(true)
+  
+        try {
+          // need to update the changes
+          await updateProfile(values)
+          await getUser()
+          successToast("Profile Updated")
+          setIsLoading(false)
+        } catch (error) {
+          errorToast(
+            error instanceof Error
+              ? error.message
+              : "Something went wrong",
+          );
+          setIsLoading(false)
+        }
+  
+      },
+    });
+
+    useEffect(()=>{
+      formik.resetForm({
+        values: {
+          tenantType: user?.tenant?.type as TenantType,
+          email: user?.email ?? '',
+          firstName: user?.firstName ?? '',
+          lastName: user?.lastName ?? '',
+          tenantName: user?.tenant?.name ?? '',
+          organization: {
+            city: "",
+            country: "",
+            legalName: "",
+            postalCode: "",
+            street: "",
+            vatNumber: "",
+          },
+          phone: "",
+          jobTitle: ""
+        }
+      })
+    }, [user])
+
+    const { values, setFieldValue, handleChange, handleBlur } = formik
 
   // 1. Manage the image preview state (defaults to your initial avatar)
     const [previewSrc, setPreviewSrc] = useState<string>(avatar); 
@@ -87,9 +197,33 @@ export default function MyAccount() {
     };
 
 
-    const availableCities = useMemo(() => {
-      return getCitiesByCountry(formState.country);
-    }, [formState.country]);
+    const changePasswordFormik = useFormik({
+      initialValues: {
+        currentPassword: "",
+        newPassword: "",
+        confirmNewPassword: "",
+      },
+      validationSchema: Yup.object({
+        currentPassword: Yup.string().required("Current password is required"),
+
+        newPassword: Yup.string()
+          .min(8, "Password must be at least 8 characters")
+          .required("New password is required"),
+
+        confirmNewPassword: Yup.string()
+          .oneOf([Yup.ref("newPassword")], "Passwords must match")
+          .required("Confirm new password is required"),
+      }),
+      onSubmit: async (values) => {
+        console.log(values);
+      },
+  });
+
+  const availableCities = useMemo(() => {
+    return getCitiesByCountry(values.organization.country);
+  }, [values.organization.country]);
+
+  console.log("isLoading", isLoading)
 
   return (
     <>
@@ -138,7 +272,7 @@ export default function MyAccount() {
                       <div className="text-center">
                         <div className="font-medium text-base mt-3 text-accent-foreground">Admin User</div>
                         <div className="text-xs mt-1">Senior Safety Officer</div>
-                        {formState.tenantType === 'business' && <div className="text-error text-xs font-semibold mt-3">
+                        {values.tenantType === 'business' && <div className="text-error text-xs font-semibold mt-3">
                           Company account
                         </div>}
                       </div>
@@ -158,7 +292,7 @@ export default function MyAccount() {
                                       type="text" 
                                       placeholder="eg. John" 
                                       className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5" 
-                                      value={formState.firstName}
+                                      value={values.firstName}
                                       readOnly
                                   />
                               </div>
@@ -170,7 +304,7 @@ export default function MyAccount() {
                                       type="text" 
                                       placeholder="eg. Smith" 
                                       className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5" 
-                                      value={formState.lastName}
+                                      value={values.lastName}
                                       readOnly
                                   />
                               </div>
@@ -182,7 +316,7 @@ export default function MyAccount() {
                                       type="email"
                                       placeholder="e.g. johnsmith@xyz.com"
                                       className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                                      value={formState.email}
+                                      value={values.email}
                                       readOnly
                                   />
                               </div>
@@ -194,11 +328,9 @@ export default function MyAccount() {
                                       type="text"
                                       placeholder="e.g. Global Rescue"
                                       className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                                      value={formState.phone}
-                                      onChange={(e)=> setFormState(prev => ({
-                                        ...prev,
-                                        phone: e.target.value
-                                      }))}
+                                      name="phone"
+                                      value={values.phone}
+                                      onChange={handleChange}
                                   />
                               </div>
                           </Field>
@@ -208,14 +340,11 @@ export default function MyAccount() {
                     <Field className="mb-3">
                         <div>
                             <FieldLabel className="font-medium text-accent-foreground mb-2.5">Account Type <span className="text-error">*</span> </FieldLabel>
-                            <CustomRadioGroup value={formState.tenantType} setValue={(e)=> setFormState(prev => ({
-                                ...prev,
-                                accountType: e
-                              }))} list={tenantTypeList} />
+                            <CustomRadioGroup value={values.tenantType} setValue={(e)=> setFieldValue("tenantType", e)} list={tenantTypeList} />
                         </div>
                     </Field>
                     {
-                      formState.tenantType === 'business' &&
+                      values.tenantType === 'business' &&
                         <>
                           <h3 className="flex items-center gap-2 font-semibold mb-2 text-lg">
                             <BriefcaseBusiness className="text-primary" size={25} /> <span>Professional Information</span>
@@ -228,11 +357,21 @@ export default function MyAccount() {
                                         type="text"
                                         placeholder="e.g. Global Rescue"
                                         className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                                        value={formState.companyName}
-                                        onChange={(e)=> setFormState(prev => ({
-                                          ...prev,
-                                          companyName: e.target.value
-                                        }))}
+                                        value={values.tenantName}
+                                        onChange={(e)=> setFieldValue("tenantName", e.target.value)}
+                                    />
+                                </div>
+                            </Field>
+                            <Field>
+                                <div>
+                                    <FieldLabel className="font-medium text-accent-foreground mb-2.5">Legal Name</FieldLabel>
+                                    <Input
+                                        type="text"
+                                        placeholder="e.g. Global Resources"
+                                        className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
+                                        value={values.organization.legalName}
+                                        onChange={handleChange}
+                                        name="organization.legalName"
                                     />
                                 </div>
                             </Field>
@@ -243,11 +382,9 @@ export default function MyAccount() {
                                         type="text"
                                         placeholder="e.g. Safety Officer"
                                         className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                                        value={formState.jobTitle}
-                                        onChange={(e)=> setFormState(prev => ({
-                                          ...prev,
-                                          jobTitle: e.target.value
-                                        }))}
+                                        value={values?.jobTitle}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
                                     />
                                 </div>
                             </Field>
@@ -258,11 +395,6 @@ export default function MyAccount() {
                                         type="text"
                                         placeholder="e.g. 029472826"
                                         className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                                        value={formState.chamberOfCommerceNumber}
-                                        onChange={(e)=> setFormState(prev => ({
-                                          ...prev,
-                                          chamberOfCommerceNumber: e.target.value
-                                        }))}
                                     />
                                 </div>
                             </Field>
@@ -273,11 +405,9 @@ export default function MyAccount() {
                                         type="text"
                                         placeholder="e.g. CBHSKJSLYYUK73298KD7"
                                         className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                                        value={formState.vatNumber}
-                                        onChange={(e)=> setFormState(prev => ({
-                                          ...prev,
-                                          vatNumber: e.target.value
-                                        }))}
+                                        value={values.organization.vatNumber}
+                                        name="organization.vatNumber"
+                                        onChange={handleChange}
                                     />
                                 </div>
                             </Field>
@@ -288,11 +418,9 @@ export default function MyAccount() {
                                         type="text"
                                         placeholder="e.g. 12"
                                         className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                                        value={formState.street}
-                                        onChange={(e)=> setFormState(prev => ({
-                                          ...prev,
-                                          street: e.target.value
-                                        }))}
+                                        value={values.organization.street}
+                                        name="organization.street"
+                                        onChange={handleChange}
                                     />
                                 </div>
                             </Field>
@@ -303,11 +431,9 @@ export default function MyAccount() {
                                         type="text"
                                         placeholder="e.g. 12"
                                         className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                                        value={formState.houseNumber}
-                                        onChange={(e)=> setFormState(prev => ({
-                                          ...prev,
-                                          houseNumber: e.target.value
-                                        }))}
+                                        // value={values.organization.houseNumber}
+                                        name="organization.houseNumber"
+                                        onChange={handleChange}
                                     />
                                 </div>
                             </Field>
@@ -318,21 +444,18 @@ export default function MyAccount() {
                                         type="text"
                                         placeholder="e.g. 12"
                                         className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                                        value={formState.zipCode}
-                                        onChange={(e)=> setFormState(prev => ({
-                                          ...prev,
-                                          zipCode: e.target.value
-                                        }))}
+                                        value={values.organization.postalCode}
+                                        name="organization.postalCode"
+                                        onChange={handleChange}
                                     />
                                 </div>
                             </Field>
                             <div>
                               <FieldLabel className="font-medium text-accent-foreground mb-2.5">Country</FieldLabel>
-                              <Select value={formState.country} onValueChange={(value)=> setFormState(prev => ({
-                                  ...prev,
-                                  country: value,
-                                  city: ""
-                                }))}>
+                              <Select value={values.organization.country} onValueChange={(value)=> {
+                                setFieldValue("organization.country", value);
+                                setFieldValue("organization.city", '');
+                              }}>
                                   <SelectTrigger className="w-full text-sm md:!h-14">
                                     <SelectValue placeholder="Select Country" />
                                   </SelectTrigger>
@@ -343,10 +466,7 @@ export default function MyAccount() {
                             </div>
                             <div>
                                 <FieldLabel className="font-medium text-accent-foreground mb-2.5">City</FieldLabel>
-                                <Select value={formState.city} onValueChange={(value)=> setFormState(prev => ({
-                                  ...prev,
-                                  city: value
-                                }))}>
+                                <Select value={values.organization.city} onValueChange={(value)=> setFieldValue("organization.city", value)}>
                                   <SelectTrigger className="w-full text-sm md:!h-14">
                                     <SelectValue placeholder="Select City" />
                                   </SelectTrigger>
@@ -383,25 +503,44 @@ export default function MyAccount() {
                       <Field>
                           <div>
                               <FieldLabel className="font-medium text-accent-foreground mb-2.5">Current Password</FieldLabel>
-                              <PasswordInput placeholder="Current password" />
+                              <PasswordInput 
+                                placeholder="Current password"
+                                name="currentPassword"
+                                type="password"
+                                value={changePasswordFormik.values.currentPassword}
+                                onChange={changePasswordFormik.handleChange}
+                                onBlur={changePasswordFormik.handleBlur}
+                               />
                           </div>
                       </Field>
                       <Field>
                           <div>
                               <FieldLabel className="font-medium text-accent-foreground mb-2.5">New Password</FieldLabel>
-                              <PasswordInput placeholder="Choose a strong password" />
+                              <PasswordInput placeholder="Choose a strong password"
+                                name="newPassword"
+                                type="password"
+                                value={changePasswordFormik.values.newPassword}
+                                onChange={changePasswordFormik.handleChange}
+                                onBlur={changePasswordFormik.handleBlur}
+                               />
                           </div>
                       </Field>
                       <Field>
                           <div>
                               <FieldLabel className="font-medium text-accent-foreground mb-2.5">Confirm Password</FieldLabel>
-                              <PasswordInput placeholder="Re-enter new password" />
+                              <PasswordInput placeholder="Re-enter new password"
+                                name="confirmNewPassword"
+                                type="password"
+                                value={changePasswordFormik.values.confirmNewPassword}
+                                onChange={changePasswordFormik.handleChange}
+                                onBlur={changePasswordFormik.handleBlur}
+                               />
                           </div>
                       </Field>
                     </div>
                     <div>
                       <FieldLabel className="font-medium text-accent-foreground mb-2.5 hidden md:block">&nbsp;</FieldLabel>
-                      <button className="h-10 lg:h-14 rounded-full flex items-center justify-center bg-accent-foreground text-white py-2 sm:py-3 px-5 text-sm gap-1.25 sm:w-full max-w-[180px]" type="submit">Update Password</button>
+                      <button className="h-10 lg:h-14 rounded-full flex items-center justify-center bg-accent-foreground text-white py-2 sm:py-3 px-5 text-sm gap-1.25 sm:w-full max-w-[180px]" type="button" onClick={()=> changePasswordFormik.handleSubmit()}>Update Password</button>
                     </div>
                   </div>
               </FieldGroup>

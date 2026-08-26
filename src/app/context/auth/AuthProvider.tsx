@@ -99,6 +99,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   /**
+   * CREATE ACCOUNT
+   *
+   * POST /users
+   */
+  const updateProfile = async (data: object) => {
+    await api.put(API_ROUTES.USERS, data) // static
+  }
+
+  /**
    * LOGOUT
    */
   const logout = async () => {``
@@ -140,6 +149,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         role,
         permissions,
         getUserRolePermission,
+        updateProfile,
 
         login,
         verifyOtp,

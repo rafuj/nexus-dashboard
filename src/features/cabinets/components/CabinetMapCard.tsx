@@ -71,7 +71,7 @@ export default function CabinetMapCard({ cabinets, openCabinetId, setOpenCabinet
             </div>
         </div>
         <div className="min-h-[450px] h-full rounded-xl overflow-hidden relative">
-            <APIProvider apiKey="AIzaSyDMxlZXKWT-s7LzKSYMztoOUSnZyTEnsiw">
+            <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
                 <Map
                     defaultCenter={defaultCenter}
                     defaultZoom={12}
