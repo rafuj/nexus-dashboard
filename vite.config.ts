@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => {
           secure: true,
           rewrite: (p) => p.replace(/^\/api/, ""),
         },
-      },
+      }
     },
   }
 })

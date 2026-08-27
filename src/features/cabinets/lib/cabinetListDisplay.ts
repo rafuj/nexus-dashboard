@@ -115,9 +115,10 @@ type AssetPresenceStatus =
   | "Urgent";
 
 export const getPresenceStatus = (
+  assetPresent: boolean,
   takenAt?: string | Date | null
 ): AssetPresenceStatus => {
-  if (!takenAt) return "Present";
+  if (assetPresent) return "Present";
 
   const hoursTaken = dayjs().diff(dayjs(takenAt), "hour", true);
 
@@ -127,9 +128,10 @@ export const getPresenceStatus = (
 };
 
 export const getPresenceBadgeClass = (
+  assetPresent: boolean,
   takenAt?: string | Date | null
 ) => {
-  switch (getPresenceStatus(takenAt)) {
+  switch (getPresenceStatus(assetPresent, takenAt)) {
     case "Present":
       return "bg-card-success text-success";
 
@@ -143,9 +145,10 @@ export const getPresenceBadgeClass = (
 };
 
 export const getPresenceTooltip = (
+  assetPresent:boolean,
   takenAt?: string | Date | null
 ) => {
-  switch (getPresenceStatus(takenAt)) {
+  switch (getPresenceStatus(assetPresent, takenAt)) {
     case "Present":
       return "No attention needed";
 
@@ -161,9 +164,10 @@ export const getPresenceTooltip = (
 };
 
 export const getPresenceTooltipClass = (
+  assetPresent:boolean,
   takenAt?: string | Date | null
 ) => {
-  switch (getPresenceStatus(takenAt)) {
+  switch (getPresenceStatus(assetPresent, takenAt)) {
     case "Present":
       return "bg-success [&_.arrow]:bg-success [&_.arrow]:fill-success";
 
