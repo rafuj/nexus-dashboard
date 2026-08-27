@@ -12,14 +12,16 @@ import {
 import { getDoorBadgeClass, getDoorStatus, getDoorStatusTooltip, getDoorStatusTooltipClass, getHealthBadgeClass, getHealthBadgeTooltipColor, getHealthTooltip, getPresenceBadgeClass, getPresenceStatus, getPresenceTooltip, getPresenceTooltipClass, getTemperatureBadgeClass, getTemperatureTooltip, getTemperatureTooltipClass } from "../lib/cabinetListDisplay";
 import type { SmartCabinet } from "../types/cabinetList";
 
-export const CabinetStatistics = ({ data } : { data : SmartCabinet }) => {
+export const CabinetStatistics = ({ data } : { data : SmartCabinet }) => {  
 
-  const doorOpenedAt = data?.deviceState?.doorStateChangedAt
+  const doorOpenedAt = data?.deviceState?.doorOpen ? data?.deviceState?.doorStateChangedAt : ""
   const assetTakenAt = data?.deviceState?.assetStateChangedAt
+  const assetPresent = data?.deviceState?.assetPresent
+  const health = "Ok"
 
   if (!data?.smart) return null;
 
-  const isPaused = data.status === "paused";
+  const isPaused = !data.deviceState
 
   const cards = [
     {
@@ -34,7 +36,7 @@ export const CabinetStatistics = ({ data } : { data : SmartCabinet }) => {
                   getDoorBadgeClass(doorOpenedAt)
                 )}
               >
-                {getDoorStatus(doorOpenedAt)}
+                    {getDoorStatus(doorOpenedAt)}
               </span>
             </TooltipTrigger>
               <TooltipContent side="right" className={cn(getDoorStatusTooltipClass(doorOpenedAt))}>
@@ -45,41 +47,40 @@ export const CabinetStatistics = ({ data } : { data : SmartCabinet }) => {
     {
       title: "Asset Presence",
       Icon: AssetPresenceIcon,
-      badgeClass: getPresenceBadgeClass(assetTakenAt),
+      badgeClass: getPresenceBadgeClass(assetPresent, assetTakenAt),
       value: <Tooltip>
               <TooltipTrigger className="w-full">
                 <span
                   className={cn(
                     "px-3 py-1 rounded-[4px] text-xs w-full text-center inline-block transition-all",
-                    getPresenceBadgeClass(assetTakenAt)
+                    getPresenceBadgeClass(assetPresent, assetTakenAt)
                   )}
                 >
-                  {getPresenceStatus(assetTakenAt)}
+                  {getPresenceStatus(assetPresent, assetTakenAt)}
                 </span>
               </TooltipTrigger>
-              <TooltipContent side="right" className={cn(getPresenceTooltipClass(assetTakenAt))}>
-                {getPresenceTooltip(assetTakenAt)}
+              <TooltipContent side="right" className={cn(getPresenceTooltipClass(assetPresent, assetTakenAt))}>
+                {getPresenceTooltip(assetPresent, assetTakenAt)}
               </TooltipContent>
             </Tooltip>
     },
     { // static state
       title: "Asset Health",
       Icon: AssetHealthIcon,
-      badgeClass: getHealthBadgeClass(data?.deviceState?.assetHealth),
+      badgeClass: getHealthBadgeClass(health),
       value: <Tooltip>
               <TooltipTrigger className="w-full">
                 <span
                     className={cn(
                       "px-3 py-1 rounded-[4px] text-xs w-full text-center inline-block transition-all",
-                      getHealthBadgeClass(data?.deviceState?.assetHealth)
+                      getHealthBadgeClass(health)
                     )}
                   >
-                    {/* {data?.deviceState?.assetHealth} */}
-                    Ok
+                    {health}
                   </span>
               </TooltipTrigger>
-              <TooltipContent side="right" className={cn(getHealthBadgeTooltipColor(data?.deviceState?.assetHealth))}>
-                {getHealthTooltip(data?.deviceState?.assetHealth)}
+              <TooltipContent side="right" className={cn(getHealthBadgeTooltipColor(health))}>
+                {getHealthTooltip(health)}
               </TooltipContent>
             </Tooltip>
     },

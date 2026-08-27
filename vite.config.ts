@@ -36,6 +36,7 @@ export default defineConfig(({ mode }) => {
           rewrite: (p) => p.replace(/^\/api/, ""),
         },
       },
+      allowedHosts: ["guides-property-houses-tucson.trycloudflare.com"]
     },
   }
 })

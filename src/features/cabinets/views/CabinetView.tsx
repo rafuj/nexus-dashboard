@@ -399,8 +399,8 @@ const CabinetView = () => {
       default: 
         return (
             <div>
-                <MaintenanceMode />
-                <CabinetStatistics data={data} />
+              <MaintenanceMode />
+              <CabinetStatistics data={data} />
               <div>
                 <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75">
                   <span className="w-0 grow">Name & Description</span>
@@ -568,25 +568,6 @@ const CabinetView = () => {
                   <InfoIcon size={20} />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 my-3.75 gap-4">
-                  <div className="sm:col-span-2">
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Serial number (optional)</Label>
-                    <Input
-                      placeholder="e.g. SN1234567890"
-                      autoComplete="off"
-                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
-                      readOnly={fieldsReadOnly}
-                      name="serialNumber"
-                      value={values.serialNumber}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                    <div className="text-xs mt-2">If the serial number is recognised the brand, model and module code (if applicable) will be filled in automatically.</div>
-                    <div className="flex items-center text-sm text-accent-foreground my-5 gap-3">
-                      <span className="h-px grow bg-accent-foreground"></span>
-                      <span>Or enter cabinet details manually</span>
-                      <span className="h-px grow bg-accent-foreground"></span>
-                    </div>
-                  </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand<span className="text-error">*</span></Label>
                     <Select value={brandInfo.name} onValueChange={(value)=> setBrandInfo(prev => ({
@@ -624,12 +605,20 @@ const CabinetView = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="col-span-2">
-                    <div className="bg-card-info rounded-md px-2.5 py-3 text-accent-foreground text-xs flex gap-2.5">
-                      <Info size={18} />
-                      <div className="w-0 grow self-center">
-                        Not all cabinets have a serial code. You can always enter the cabinet details manually.
-                      </div>
+                  <div className="sm:col-span-2">
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Serial number (optional)</Label>
+                    <Input
+                      placeholder="e.g. SN1234567890"
+                      autoComplete="off"
+                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      readOnly={fieldsReadOnly}
+                      name="serialNumber"
+                      value={values.serialNumber}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                    />
+                    <div className="text-xs mt-2">
+                      Select the brand and model first. Serial Number of the Nexus brand will automatically be recognised and the remaining compatible cabinet details will be filled in automatically
                     </div>
                   </div>
                 </div>                

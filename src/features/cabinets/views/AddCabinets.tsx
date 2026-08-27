@@ -525,14 +525,6 @@ export default function AddCabinets() {
                       Select the brand and model first. Serial Number of the Nexus brand will automatically be recognised and the remaining compatible cabinet details will be filled in automatically
                     </div>
                   </div>
-                  {/* <div className="col-span-2">
-                    <div className="bg-card-info rounded-md px-2.5 py-3 text-accent-foreground text-xs flex gap-2.5">
-                      <Info size={18} />
-                      <div className="w-0 grow self-center">
-                        Not all cabinets have a serial code. You can always enter the cabinet details manually.
-                      </div>
-                    </div>
-                  </div> */}
                 </div>                
               </div>
               
