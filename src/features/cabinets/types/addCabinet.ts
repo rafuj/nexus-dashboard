@@ -94,5 +94,13 @@ export const cabinetInitialValues = (
       brand: data?.asset?.brand || "",
       id: data?.asset?.id || "",
     },
+
+    // Device Settings All Optional Fields
+    moduleCode: data?.moduleCode || "",
+    volume: data?.volume || "50%",
+    color: data?.color || "white",
+    brightness: data?.brightness || "50%",
+    primaryLanguage: data?.primaryLanguage || "",
+    secondaryLanguage: data?.secondaryLanguage || "",
   };
 };

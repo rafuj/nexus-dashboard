@@ -2,6 +2,7 @@
 import { api } from "@/app/api-manage/api"
 import { API_ROUTES } from "@/app/api-manage/api-routes"
 import { formatDateDDMMYYYY } from "@/lib/utils"
+import type { BrightnessType, ColorType, VolumeType } from "../types/addCabinet"
 
 
 export interface CreateCabinetFormValues  {
@@ -38,6 +39,14 @@ export interface CreateCabinetFormValues  {
   picture1: File | null
   picture2: File | null
   picture3: File | null
+  
+  // optional values for create cabinet
+  moduleCode: string
+  volume: VolumeType
+  color: ColorType
+  brightness: BrightnessType
+  primaryLanguage: string
+  secondaryLanguage: string
 }
 
 export const createCabinet = async (

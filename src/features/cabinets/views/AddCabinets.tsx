@@ -1,6 +1,6 @@
 "use client";
 import { Helmet } from "react-helmet-async";
-import {  ChevronDown, ChevronLeft, ChevronRight, Info, InfoIcon } from "lucide-react";
+import {  ChevronDown, ChevronLeft, ChevronRight, CircleCheck, Info, InfoIcon, XCircle } from "lucide-react";
 
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
@@ -15,10 +15,10 @@ import { SingleImageUploader } from "@/shared/components/image-uploader/single-i
 import { CustomRadioGroup } from "@/shared/components/CustomRadioGroup";
 import { DatePicker } from "@/shared/components/ui/date-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
-import { cn } from "@/lib/utils";
+import { cn, formatDateSlash } from "@/lib/utils";
 import SchedulePicker from "../components/SchedulePicker";
-import type { AvailabilityType, DayConfig, StepType } from "../types/addCabinet";
-import { availabilityTypeList, dayList, STEPS } from "../mock/addCabinetData";
+import type { AvailabilityType, BrightnessType, ColorType, DayConfig, StepType, VolumeType } from "../types/addCabinet";
+import { availabilityTypeList, brightnessList, colorList, dayList, STEPS, volumeList } from "../mock/addCabinetData";
 import { ConfirmationModal } from "../components/ConfirmationModal";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
 import { SidebarMenuButton } from "@/shared/components/ui/sidebar";
@@ -36,6 +36,7 @@ import { cabinetValidationSchema } from "../types/validationSchema";
 import { getApiErrorMessage } from "@/app/api-manage/api";
 import { PlacesAutocomplete } from "@/shared/components/places-autocomplete";
 import { COUNTRY_OPTIONS, formatPostalCode, getCitiesByCountry } from "@/lib/country-helper";
+import { AVAILABLE_CREDITS } from "@/features/dashboard/mock/mockDashboardStats";
 
 export interface BrandInfo {
   name: string;
@@ -56,6 +57,10 @@ export default function AddCabinets() {
     name: "",
     model: ""
   })
+
+
+  const [moduleCodeRecognized, setModuleCodeRecognized] = useState<boolean>(false)
+  const [assignCredits, setAssignCredits] = useState<number|''>(0)
 
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false)
   const [successModalOpen, setSuccessModalOpen] = useState<boolean>(false)
@@ -137,6 +142,33 @@ export default function AddCabinets() {
 
     return [];
   }, [values.country]);
+
+  const connectivityUntil = useMemo(() => {
+      if (typeof assignCredits !== "number" || assignCredits <= 0) {
+        return null;
+      }
+
+      const targetDate = new Date();
+      // Accurately adds N years (handles leap years correctly)
+      targetDate.setFullYear(targetDate.getFullYear() + assignCredits);
+      return targetDate;
+    }, [assignCredits]);
+
+  const handleAssignCreditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, "").replace(/^0+(?=\d)/, "");
+
+    if (value === "") {
+      setAssignCredits("");
+      return;
+    }
+
+    let numericValue = Number(value);
+    if (numericValue > AVAILABLE_CREDITS) {
+      numericValue = AVAILABLE_CREDITS;
+    }
+
+    setAssignCredits(numericValue);
+  };
 
 
   const switchContent = () => {
@@ -527,6 +559,151 @@ export default function AddCabinets() {
                   </div>
                 </div>                
               </div>
+
+              {/* Updaid Connection */}
+              <div>
+                <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75 mt-5">
+                  <span className="w-0 grow">Updaid Connection</span>
+                  <InfoIcon size={20} />
+                </div>
+                <div className="grid grid-cols-1 xl:grid-cols-2 my-3.75 gap-4">
+                  <div className="xl:col-span-2">
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Module Code<span className="text-error">*</span></Label>
+                    <div className="relative">
+                      <Input
+                        placeholder="Enter module code"
+                        autoComplete="off"
+                        className="h-12.5 px-5 placeholder:text-accent-foreground/20 pr-10"
+                        name="moduleCode"
+                        value={values.moduleCode}
+                        onChange={(e) => {
+                          handleChange(e)
+                          // Check if module code is recognized
+                          if(e.target.value === '12345678') {
+                            setModuleCodeRecognized(true)
+                          } else {
+                            setModuleCodeRecognized(false)
+                          }
+                        }}
+                        onBlur={handleBlur}
+                        maxLength={50}
+                      />
+                      {moduleCodeRecognized ? <CircleCheck size={20} className="absolute top-1/2 right-3 -translate-y-1/2 text-[#11BE48]" /> : values.moduleCode && <XCircle size={20} className="absolute top-1/2 right-3 -translate-y-1/2 text-error" /> }
+                    </div>
+                    {moduleCodeRecognized && (
+                      <div className="text-xs font-semibold flex items-center gap-2 text-[#11BE48] mt-2">
+                        <CircleCheck size={18} />
+                        <span>Module code recognised</span>
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium flex justify-between items-center mb-3">
+                      <span>Assign credits<span className="text-error">*</span></span>
+                      <span>Available credits: <span className={cn("text-[#11BE48]", {
+                        "text-error": AVAILABLE_CREDITS === 0
+                      })}>{AVAILABLE_CREDITS}</span></span>
+                    </Label>
+                    <Input
+                      placeholder="Enter module count"
+                      autoComplete="off"
+                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      type="number"
+                      min="0"
+                      max={AVAILABLE_CREDITS > 50 ? 50 : AVAILABLE_CREDITS}
+                      value={assignCredits === 0 ? "" : assignCredits}
+                      onChange={handleAssignCreditChange}
+                    />
+                    {AVAILABLE_CREDITS === 0 && (
+                      <div className="bg-card-error rounded-md px-2.5 py-3 text-accent-foreground text-xs flex gap-2.5 mt-2">
+                        <Info size={18} />
+                        <div className="w-0 grow self-center">
+                          <div>No sufficient amount of credits. You can buy more.</div>
+                        </div>
+                      </div>
+                    )}
+                    <div className="text-xs flex justify-between flex-wrap mt-2 gap-3">
+                      <div className="grow">
+                        {connectivityUntil && <div className="flex justify-between items-center border border-[#151C48] rounded px-2.5 py-1.25 bg-[#F8F9FB] text-accent-foreground">
+                          <div>
+                              Connectivity until:
+                          </div>
+                          <strong className="font-semibold">{formatDateSlash(connectivityUntil)}</strong>
+                        </div>}
+                      </div>
+                      <div className="text-xs mt-2">1 credit = 1 year of connectivity</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {moduleCodeRecognized && (
+                <>
+                  {/* Sound Settings */}
+                  <div>
+                    <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75 mt-5">
+                      <span className="w-0 grow">Sound Settings</span>
+                      <InfoIcon size={20} />
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 my-3.75 gap-4">
+                      <div>
+                        <Label className="text-xs text-accent-foreground font-medium block mb-3">
+                          Primary Language or Buzzer
+                          <span className="text-error">*</span>
+                        </Label>
+                        <Select value={values.primaryLanguage} onValueChange={(value) => setFieldValue("primaryLanguage", value)}>
+                          <SelectTrigger className="w-full !h-12.5">
+                            <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
+                              <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="English" /></span>
+                            </div>
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="english">English</SelectItem>
+                            <SelectItem value="spanish">Spanish</SelectItem>
+                            <SelectItem value="frennch">French</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label className="text-xs text-accent-foreground font-medium block mb-3">Secondary Language (optional)</Label>
+                        <Select value={values.secondaryLanguage} onValueChange={(value) => setFieldValue("secondaryLanguage", value)}>
+                          <SelectTrigger className="w-full !h-12.5">
+                            <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
+                              <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="None" /></span>
+                            </div>
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">None</SelectItem>
+                            <SelectItem value="english">English</SelectItem>
+                            <SelectItem value="spanish">Spanish</SelectItem>
+                            <SelectItem value="frennch">French</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="sm:col-span-2">
+                        <Label className="text-xs text-accent-foreground font-medium block mb-3">Volume</Label>
+                        <CustomRadioGroup<VolumeType> value={values.volume} setValue={(value) => setFieldValue("volume", value)} list={volumeList} />
+                      </div>
+                    </div>
+                  </div>
+                  {/* LED Settings */}
+                  <div>
+                    <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75 mt-5">
+                      <span className="w-0 grow">LED Settings</span>
+                      <InfoIcon size={20} />
+                    </div>
+                    <div className="grid grid-cols-1 gap-4">
+                      <div>
+                        <Label className="text-xs text-accent-foreground font-medium block mb-3">Colour</Label>
+                        <CustomRadioGroup<ColorType> value={values.color} setValue={(value) => setFieldValue("color", value)} list={colorList} />
+                      </div>
+                      <div>
+                        <Label className="text-xs text-accent-foreground font-medium block mb-3">Brightness</Label>
+                        <CustomRadioGroup<BrightnessType> value={values.brightness} setValue={(value) => setFieldValue("brightness", value)} list={brightnessList} />
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
               
               {/* Access Details */}
               <div>

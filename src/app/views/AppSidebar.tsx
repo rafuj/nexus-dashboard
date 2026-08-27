@@ -30,6 +30,7 @@ import ActivityIcon from "@/assets/icons/activity.svg?react"
 import SettingsIcon from "@/assets/icons/settings-icon.svg?react"
 import { SupportModal } from "../components/support-modal";
 import { FeedbackModal } from "../components/feedback-modal";
+import { AVAILABLE_CREDITS } from "@/features/dashboard/mock/mockDashboardStats";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
@@ -176,7 +177,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <div className="border bg-[#F7F9FC] border-[#E4E8F1] rounded-[12px] py-2 px-3 flex items-center">
             <div className="w-0 grow">
               <span className="text-[10px] block text-foreground">Credits</span>
-              <span className="font-semibold block text-[11px]">48 available</span>
+              <span className="font-semibold block text-[11px]">{AVAILABLE_CREDITS} available</span>
             </div>
             <button type="button" className="text-[#C22722] transition-all border border-[#C22722] text-[10px] font-semibold rounded-[10px] px-3 h-7.5 duration-200 hover:bg-white">Buy credits</button>
           </div>
