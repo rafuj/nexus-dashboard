@@ -350,10 +350,10 @@ export default function AddCabinets() {
                 </div>
               </div>
 
-              {/* Location */}
+              {/* Cabinet Location */}
               <div>
                 <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75">
-                  <span className="w-0 grow">Location</span>
+                  <span className="w-0 grow">Cabinet Location</span>
                   <InfoIcon size={20} />
                 </div>
                 <div className="pb-3 grid sm:grid-cols-2 gap-3">
