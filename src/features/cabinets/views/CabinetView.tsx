@@ -400,7 +400,7 @@ const CabinetView = () => {
         return (
             <div>
               <MaintenanceMode />
-              <CabinetStatistics data={data} />
+              {data?.smart && <CabinetStatistics />}
               <div>
                 <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75">
                   <span className="w-0 grow">Name & Description</span>

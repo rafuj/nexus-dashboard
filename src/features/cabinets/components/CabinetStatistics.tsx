@@ -10,18 +10,20 @@ import {
   getTemperatureChip
 } from "./cabinetsMonitorTableColumns";
 import { getDoorBadgeClass, getDoorStatus, getDoorStatusTooltip, getDoorStatusTooltipClass, getHealthBadgeClass, getHealthBadgeTooltipColor, getHealthTooltip, getPresenceBadgeClass, getPresenceStatus, getPresenceTooltip, getPresenceTooltipClass, getTemperatureBadgeClass, getTemperatureTooltip, getTemperatureTooltipClass } from "../lib/cabinetListDisplay";
-import type { SmartCabinet } from "../types/cabinetList";
+import { useDeviceState } from "../hooks/useDeviceState";
+import { useParams } from "react-router";
 
-export const CabinetStatistics = ({ data } : { data : SmartCabinet }) => {  
+export const CabinetStatistics = () => {  
 
-  const doorOpenedAt = data?.deviceState?.doorOpen ? data?.deviceState?.doorStateChangedAt : ""
-  const assetTakenAt = data?.deviceState?.assetStateChangedAt
-  const assetPresent = data?.deviceState?.assetPresent
+  const {id} = useParams()
+  const {data, isSuccess} = useDeviceState(id ?? '')
+
+  const doorOpenedAt = isSuccess && data?.doorOpen ? data?.doorStateChangedAt : ""
+  const assetTakenAt = isSuccess && data?.assetStateChangedAt
+  const assetPresent = isSuccess && data?.assetPresent
   const health = "Ok"
 
-  if (!data?.smart) return null;
-
-  const isPaused = !data.deviceState
+  const isPaused = !data
 
   const cards = [
     {
@@ -87,31 +89,31 @@ export const CabinetStatistics = ({ data } : { data : SmartCabinet }) => {
     {
       title: "Temperature",
       Icon: TemperatureIcon,
-      badgeClass: getTemperatureBadgeClass({current: data?.deviceState?.temperature, temperatureOutOfRangeSince: new Date()}), // static data
+      badgeClass: getTemperatureBadgeClass({current: data?.temperature, temperatureOutOfRangeSince: new Date()}), // static data
       value: <Tooltip>
               <TooltipTrigger className="w-full">
-                {getTemperatureChip({current: data?.deviceState?.temperature, temperatureOutOfRangeSince: new Date()}, "w-full")}
+                {getTemperatureChip({current: data?.temperature, temperatureOutOfRangeSince: new Date()}, "w-full")}
               </TooltipTrigger>
-                <TooltipContent side="right" className={cn(getTemperatureTooltipClass({current: data?.deviceState?.temperature, temperatureOutOfRangeSince: new Date()}))}>
-                  {getTemperatureTooltip({current: data?.deviceState?.temperature, temperatureOutOfRangeSince: new Date()})}
+                <TooltipContent side="right" className={cn(getTemperatureTooltipClass({current: data?.temperature, temperatureOutOfRangeSince: new Date()}))}>
+                  {getTemperatureTooltip({current: data?.temperature, temperatureOutOfRangeSince: new Date()})}
                 </TooltipContent>
             </Tooltip>
     },
     {
       title: "Connectivity",
       Icon: ConnectivityIcon,
-      badgeClass: data?.deviceState
+      badgeClass: data
           ? "bg-card-success text-success"
           : "bg-card-error text-error",
       value: <div
             className={cn(
               "px-3 py-1 rounded-[4px] text-xs w-full text-center inline-block transition-all",
-              data?.deviceState
+              data
                 ? "bg-card-success text-success"
                 : "bg-card-error text-error"
             )}
           >
-            {data?.deviceState
+            {data
               ? "Connected"
               : "Not Connected"}
           </div>
