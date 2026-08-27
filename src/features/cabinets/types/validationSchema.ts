@@ -130,7 +130,18 @@ export const cabinetUpdateSchema = Yup.object({
 
   zipCode: Yup.string()
     .trim()
-    .required("Zip code is required"),
+    .required("Zip code is required")
+    .test("postal-code-format", "Invalid postal code", function (value) {
+      const { country } = this.parent;
+
+      if (!value) return true;
+
+      const regex = POSTAL_CODE_RULES[country];
+
+      if (!regex) return true;
+
+      return regex.test(value);
+    }),
 
   city: Yup.string()
     .trim()

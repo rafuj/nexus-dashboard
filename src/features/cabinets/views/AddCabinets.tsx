@@ -398,12 +398,14 @@ export default function AddCabinets() {
                       onPlaceSelect={(place) => {
                         const { postalCode, countryCode, city, address } = place
                           const country = countryCode?.toUpperCase() ?? '';
+                          const tempCode = country === "LT" ? "LT"+postalCode : country === "LV" ? "LV"+postalCode : country === "EE" ? "EE"+postalCode : postalCode
+                          console.log("tempCode", tempCode)
                           setValues({
                             ...values,
                             addressLine1: address,
                             country: country,
                             city: city ?? '',
-                            zipCode: formatPostalCode(postalCode || '', country),
+                            zipCode: formatPostalCode(tempCode || '', country),
                           });
                           handleBlur("zipCode")
                       }}
@@ -432,7 +434,12 @@ export default function AddCabinets() {
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20 !bg-transparent"
                       name="zipCode"
                       value={values.zipCode}
-                      onChange={handleChange}
+                      onChange={(e)=> {
+                        const { value } = e.target;
+                        const country = values.country || "";
+                        const formatted = formatPostalCode(value, country);
+                        setFieldValue("zipCode", formatted);
+                      }}
                       onBlur={handleBlur}
                       errors={touched.zipCode ? errors.zipCode : ''}
                       maxLength={12}

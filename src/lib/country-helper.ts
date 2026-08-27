@@ -76,8 +76,8 @@ export const COUNTRY_OPTIONS:CountryOption[] = [
   {
     country: "Czech Republic",
     iso: "CZ",
-    format: "NNNNN (NNN NN)",
-    regex: /^\d{5}\s\(\d{3}\s\d{2}\)$/,
+    format: "NNN NN",
+    regex: /^\d{3} ?\d{2}$/,
   },
   {
     country: "Denmark",
@@ -124,8 +124,8 @@ export const COUNTRY_OPTIONS:CountryOption[] = [
   {
     country: "Ireland",
     iso: "IE",
-    format: "Eircode",
-    regex: /^[A-Z]\d{2}\s?[A-Z0-9]{4}$/i,
+    format: "AAA AAAA",
+    regex: /^[A-Z]\d{2} ?[A-Z0-9]{4}$/i,
   },
   {
     country: "Italy",
@@ -136,13 +136,13 @@ export const COUNTRY_OPTIONS:CountryOption[] = [
   {
     country: "Latvia",
     iso: "LV",
-    format: "LV-NNNN",
+    format: "LVNNNN",
     regex: /^[Ll][Vv][- ]?\d{4}$/,
   },
   {
     country: "Lithuania",
     iso: "LT",
-    format: "LT-NNNNN",
+    format: "LTNNNNN",
     regex: /^[Ll][Tt][- ]?\d{5}$/,
   },
   {
@@ -209,7 +209,7 @@ export const COUNTRY_OPTIONS:CountryOption[] = [
     country: "United Kingdom",
     iso: "GB",
     format: "A(A)N(A/N)NAA",
-    regex: /^[A-Z]{1,2}[0-9R][0-9A-Z]?\s*[0-9][A-Z-[CIKMOV]]{2}$/i,
+    regex: /^[A-Z]{1,2}[0-9R][0-9A-Z]?\s*[0-9][A-HJ-NP-UW-Z]{2}$/i,
   },
 ];
 
