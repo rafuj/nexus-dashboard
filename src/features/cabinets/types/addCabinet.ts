@@ -99,7 +99,7 @@ export const cabinetInitialValues = (
           lotNumber: padsComponents[0]?.lotNumber || '',
           serialNumber: padsComponents[0]?.serialNumber || '',
           componentVariantName: padsComponents[0]?.componentVariantName || '',
-          id: padsComponents[0]?.id
+          id: padsComponents[0]?.id || ''
         },
 
         // Index 1: 2nd Set Pads
@@ -110,7 +110,7 @@ export const cabinetInitialValues = (
           lotNumber: padsComponents[1]?.lotNumber || '',
           serialNumber: padsComponents[1]?.serialNumber || '',
           componentVariantName: padsComponents[1]?.componentVariantName || '',
-          id: padsComponents[1]?.id
+          id: padsComponents[1]?.id || ''
         },
         // Index 2: Battery
         {
@@ -120,7 +120,7 @@ export const cabinetInitialValues = (
           lotNumber: batteryComponent?.lotNumber || '',
           serialNumber: batteryComponent?.serialNumber || '',
           componentVariantName: batteryComponent?.componentVariantName || '',
-          id: batteryComponent?.id
+          id: batteryComponent?.id || ''
         },
       ],
 
