@@ -414,12 +414,7 @@ export default function SignUp() {
         
                               <SelectContent>
                                 {COUNTRY_OPTIONS.map((country) => (
-                                  <SelectItem key={country.iso} value={country.iso}>
-                                    <div className="flex items-center justify-between w-full gap-2">
-                                      <span>{country.country}</span>
-                                      <span className="text-muted-foreground text-xs">({country.iso})</span>
-                                    </div>
-                                  </SelectItem>
+                                  <SelectItem key={country.iso} value={country.iso}>{country.country}</SelectItem>
                                 ))}
                               </SelectContent>
                             </Select>
