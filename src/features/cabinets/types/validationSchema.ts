@@ -1,8 +1,8 @@
 import { POSTAL_CODE_RULES } from "@/lib/country-helper";
 import * as Yup from "yup";
+import { serialRegex } from "./addCabinet";
 
 export const cabinetValidationSchema = Yup.object({
-  // step 1 (basic information)
   name: Yup.string()
     .trim()
     .required("Cabinet name is required"),
@@ -39,11 +39,51 @@ export const cabinetValidationSchema = Yup.object({
   country: Yup.string()
     .trim()
     .required("Country is required"),
-  // step 2 (cabinet details)
   accessType: Yup.string()
   .trim()
   .required("Access type is required"),
-  // Step 3: Asset (Conditional Validation)
+
+  cabinetModelId: Yup.string()
+  .trim()
+  .required("Model is required"),
+
+  serialNumber: Yup.string()
+  .trim()
+  .when("brand", {
+    is: (brand: string) => brand !== "Nexus",
+    then: (schema) => schema.notRequired(),
+    otherwise: (schema) =>
+      schema
+        .required("Serial number is required")
+        .matches(
+          serialRegex,
+          "Nexus Brand Serial number format does not match"
+        ),
+  }),
+
+  serialNumberRecognition: Yup.boolean()
+  .when("brand", {
+    is: (brand: string) => brand !== "Nexus",
+    then: (schema) => schema.notRequired(),
+    otherwise: (schema) => schema.default(false).required("Serial number does not recognized"),
+  }),
+
+  imeiRecognition: Yup.boolean().when(
+    ["brand", "imei"],
+    {
+      is: (brand: string, imei: string) =>
+        brand !== "Nexus" && imei !== "",
+      then: (schema) =>
+        schema
+          .required("Module code does not recognized"),
+      otherwise: (schema) => schema.notRequired(),
+    }
+  ),
+
+  brand: Yup.string()
+  .trim()
+  .required("Brand is required"),
+  
   asset: Yup.lazy((assetValues) => {
     const isTypeOne = String(assetValues?.id ?? "") === "1";
 
@@ -113,7 +153,6 @@ export const cabinetValidationSchema = Yup.object({
 });
 
 export const cabinetUpdateSchema = Yup.object({
-  // step 1 (basic information)
   name: Yup.string()
     .trim()
     .required("Cabinet name is required"),
@@ -150,15 +189,57 @@ export const cabinetUpdateSchema = Yup.object({
   country: Yup.string()
     .trim()
     .required("Country is required"),
-  // step 2 (cabinet details)
   accessType: Yup.string()
   .trim()
-  .required("Access type is required")
+  .required("Access type is required"),
+
+  cabinetModelId: Yup.string()
+  .trim()
+  .required("Model is required"),
+
+  serialNumber: Yup.string()
+  .trim()
+  .when("brand", {
+    is: (brand: string) => brand !== "Nexus",
+    then: (schema) => schema.notRequired(),
+    otherwise: (schema) =>
+      schema
+        .required("Serial number is required")
+        .matches(
+          serialRegex,
+          "Nexus Brand Serial number format does not match"
+        ),
+  }),
+
+  serialNumberRecognition: Yup.boolean()
+  .when("brand", {
+    is: (brand: string) => brand !== "Nexus",
+    then: (schema) => schema.notRequired(),
+    otherwise: (schema) => schema.default(false).required("Serial number does not recognized"),
+  }),
+
+  imeiRecognition: Yup.boolean().when(
+    ["brand", "imei"],
+    {
+      is: (brand: string, imei: string) =>
+        brand !== "Nexus" && imei !== "",
+      then: (schema) =>
+        schema
+          .required("Module code does not recognized"),
+      otherwise: (schema) => schema.notRequired(),
+    }
+  ),
+
+  brand: Yup.string()
+  .trim()
+  .required("Brand is required"),
+  
 });
 
-export const cabinetAssetUpdateSchema = Yup.object({
+export const assetUpdateSchema = Yup.object({
   asset: Yup.lazy((assetValues) => {
     const isTypeOne = String(assetValues?.id ?? "") === "1";
+
     return Yup.object({
       id: Yup.string().notRequired(),
       name: Yup.string().trim().required("Asset name is required"),

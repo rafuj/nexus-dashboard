@@ -1,33 +1,12 @@
 
 import { api } from "@/app/api-manage/api"
 import { API_ROUTES } from "@/app/api-manage/api-routes"
-import { formatDateDDMMYYYY } from "@/lib/utils"
 import type { BrightnessType, ColorType, VolumeType } from "../types/addCabinet"
 
 
 export interface CreateCabinetFormValues  {
   accessType: "public" | "private"
   addressLine1: string
-  asset: {
-    id: string // id is for error handling not for apies
-    brand: string // brand is for error handling not for apies
-    cabinetId?: string // cabinetId is for error handling not for apies
-    assetModelId?: string
-    checkupDate?: Date | undefined
-    components?: {
-        componentTypeId: string
-        componentVariantId?: string
-        componentVariantName?: string // is set to visible in ui not for apies
-        expiresAt: Date | undefined
-        lotNumber?: string
-        serialNumber?: string
-    }[]
-    expiresAt?: Date | undefined
-    name: string
-    notes?: string
-    purchaseDate?: Date | undefined
-    serialNumber?: string
-  }
   name: string
   description?: string
   addressLine2: string
@@ -40,13 +19,49 @@ export interface CreateCabinetFormValues  {
   picture2: File | null
   picture3: File | null
   
+  // model
+  cabinetModelId: string
+  brand: string // only for ui
+  cabinetModel?: {
+    brand: string
+  }
+  serialNumberRecognition: boolean // for logic
+  imeiRecognition: boolean // only for ui
+  
   // optional values for create cabinet
-  moduleCode: string
+  imei: string
   volume: VolumeType
   color: ColorType
   brightness: BrightnessType
   primaryLanguage: string
   secondaryLanguage: string
+
+  // asset info
+  asset: {
+    id: string // id is for error handling not for apies
+    brand: string // brand is for error handling not for apies
+    cabinetId?: string // cabinetId is for error handling not for apies
+    assetModelId?: string
+    assetModel?: { // only for ui
+      brand: string
+      assetTypeId: string
+    }
+    checkupDate?: Date | undefined
+    components?: {
+        componentTypeId: string
+        componentVariantId?: string
+        componentVariantName?: string // is set to visible in ui not for apies
+        expiresAt: Date | undefined
+        lotNumber?: string
+        serialNumber?: string
+        id: string // for update api
+    }[]
+    expiresAt?: Date | undefined
+    name: string
+    notes?: string
+    purchaseDate?: Date | undefined
+    serialNumber?: string
+  }
 }
 
 export const createCabinet = async (
@@ -58,16 +73,23 @@ export const createCabinet = async (
   formData.append("name", values.name)
   formData.append("accessType", values.accessType)
   formData.append("addressLine1", values.addressLine1)
-  // formData.append("addressLine2", values.addressLine2)
   formData.append("zipCode", values.zipCode)
   formData.append("city", values.city)
   formData.append("country", values.country)
+  formData.append("cabinetModelId", values.cabinetModelId)
 
   if (values.addressLine2) {
     formData.append("addressLine2", values.addressLine2)
   }
-  if (values.serialNumber) {
+  if (values.brand === "Nexus") {
     formData.append("serialNumber", values.serialNumber)
+  } else {
+    if(values.imei){
+      formData.append("imei", values.imei)
+    }
+    if(values.serialNumber){
+      formData.append("customSerialNumber", values.serialNumber)
+    }
   }
   if (values.lockCode) {
     formData.append("lockCode", values.lockCode)
@@ -87,82 +109,6 @@ export const createCabinet = async (
     //   formData.append("picture3", values.picture3);
     // }
 
-  // Asset
-  if (values.asset) {
-    formData.append("asset[name]", values.asset.name)
-
-    if (values.asset.assetModelId) {
-      formData.append("asset[assetModelId]", values.asset.assetModelId)
-    }
-
-    if (values.asset?.checkupDate) {
-      formData.append("asset[checkupDate]", formatDateDDMMYYYY(values.asset.checkupDate))
-    }
-
-    if (values.asset?.expiresAt) {
-      formData.append("asset[expiresAt]", formatDateDDMMYYYY(values.asset.expiresAt))
-    }
-
-    if (values.asset.notes) {
-      formData.append("asset[notes]", values.asset.notes)
-    }
-
-    if (values.asset?.purchaseDate) {
-      formData.append("asset[purchaseDate]", formatDateDDMMYYYY(values.asset.purchaseDate))
-    }
-
-    if (values.asset.serialNumber) {
-      formData.append("asset[serialNumber]", values.asset.serialNumber)
-    }
-
-    // Components
-    let validIndex = 0
-
-    values.asset.components?.forEach((component) => {
-      const hasData =
-        component.componentVariantId ||
-        component.expiresAt ||
-        component.lotNumber ||
-        component.serialNumber
-
-      if (hasData) {
-        formData.append(
-          `asset[components][${validIndex}][componentTypeId]`,
-          component.componentTypeId,
-        )
-
-        if (component.componentVariantId) {
-          formData.append(
-            `asset[components][${validIndex}][componentVariantId]`,
-            component.componentVariantId,
-          )
-        }
-
-        if (component.expiresAt) {
-          formData.append(
-            `asset[components][${validIndex}][expiresAt]`,
-            formatDateDDMMYYYY(component.expiresAt),
-          )
-        }
-
-        if (component.lotNumber) {
-          formData.append(
-            `asset[components][${validIndex}][lotNumber]`,
-            component.lotNumber,
-          )
-        }
-
-        if (component.serialNumber) {
-          formData.append(
-            `asset[components][${validIndex}][serialNumber]`,
-            component.serialNumber,
-          )
-        }
-
-        validIndex++
-      }
-    })
-  }
 
   const { data } = await api.post(API_ROUTES.CABINETS, formData)
 
