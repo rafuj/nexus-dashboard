@@ -1,7 +1,7 @@
 
 import { api } from "@/app/api-manage/api"
 import { API_ROUTES } from "@/app/api-manage/api-routes"
-import type { BrightnessType, ColorType, VolumeType } from "../types/addCabinet"
+import type { BrightnessType, ColorType, VolumeType } from "../types/cabinet"
 
 
 export interface CreateCabinetFormValues  {
@@ -14,7 +14,7 @@ export interface CreateCabinetFormValues  {
   city: string
   country: string
   serialNumber: string
-  customSerialNumber: string // only for ui
+  customSerialNumber?: string // only for ui
   lockCode: string
   picture1: File | null
   picture2: File | null

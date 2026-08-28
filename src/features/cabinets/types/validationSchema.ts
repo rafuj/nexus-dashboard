@@ -1,6 +1,6 @@
 import { POSTAL_CODE_RULES } from "@/lib/country-helper";
 import * as Yup from "yup";
-import { serialRegex } from "./addCabinet";
+import { serialRegex } from "./cabinet";
 
 export const cabinetValidationSchema = Yup.object({
   name: Yup.string()
