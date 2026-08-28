@@ -63,7 +63,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
 
   const [step, setStep] = useQueryState(
     'step',
-    parseAsStringEnum(STEPS.map(step => step.id)).withDefault('asset-information')
+    parseAsStringEnum(STEPS.map(step => step.id)).withDefault('basic-information')
   )
   
   const [id, setId] = useQueryState(

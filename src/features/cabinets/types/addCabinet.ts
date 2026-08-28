@@ -58,7 +58,7 @@ export const cabinetInitialValues = (
     city: data?.city || "",
     country: data?.country || "",
 
-    serialNumber: data?.serialNumber || "",
+    serialNumber: data?.serialNumber || data?.customSerialNumber || "",
     lockCode: data?.lockCode || "",
 
     picture1: data?.picture1 || null,

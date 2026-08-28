@@ -14,6 +14,7 @@ export interface CreateCabinetFormValues  {
   city: string
   country: string
   serialNumber: string
+  customSerialNumber: string // only for ui
   lockCode: string
   picture1: File | null
   picture2: File | null
