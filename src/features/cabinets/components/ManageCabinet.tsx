@@ -220,14 +220,18 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
         if(id) {
           handleCabinetUpdate()
         } else {
-          const cabinetRes = await createCabinetMutation.mutateAsync(values)
-          if(cabinetRes) {
-            setId(cabinetRes.id)
-            formik.setErrors({})
-            formik.setTouched({})
-            formik.resetForm({values})
-            setStep("asset-information")
-          }
+          try {
+            const cabinetRes = await createCabinetMutation.mutateAsync(values)
+            if(cabinetRes) {
+              setId(cabinetRes.id)
+              formik.setErrors({})
+              formik.setTouched({})
+              formik.resetForm({values})
+              setStep("asset-information")
+            }
+            } catch (error) {
+              errorToast(getApiErrorMessage(error)) 
+            }
         }
       }
     }
@@ -273,12 +277,17 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
       city: values.city,
       country: values.country,
     };
-    await updateCabinetMutation.mutateAsync(payload as CreateCabinetFormValues)
-    successToast("Cabinet updated successfully")
-    if(!cabinetId) {
-      setStep("asset-information")
+    try {
+      await updateCabinetMutation.mutateAsync(payload as CreateCabinetFormValues)
+      successToast("Cabinet updated successfully")
+      setIsEditing("")
+      formik.resetForm({values})
+      if(!cabinetId) {
+        setStep("asset-information")
+      }
+    } catch (error) {
+      errorToast(getApiErrorMessage(error))
     }
-    formik.resetForm({values})
   }
   // Asset Update Function
   const handleAssetUpdate = async () => {
@@ -303,26 +312,19 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
             components: values.asset.components,
           })
         } catch (error) {
-          errorToast(
-            error instanceof Error
-              ? error.message
-              : 'Something went wrong',
-          )
+          errorToast(getApiErrorMessage(error))
           return
         }
 
         successToast('Asset updated successfully')
         formik.resetForm({ values })
+        
       } else {
         successToast('Asset updated successfully')
         formik.resetForm({ values })
       }
     } catch (error) {
-      errorToast(
-        error instanceof Error
-          ? error.message
-          : 'Something went wrong',
-      )
+      errorToast(getApiErrorMessage(error))
     }
   }
 
