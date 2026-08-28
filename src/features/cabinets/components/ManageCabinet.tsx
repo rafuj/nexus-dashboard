@@ -66,6 +66,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
     parseAsStringEnum(STEPS.map(step => step.id)).withDefault('basic-information')
   )
   
+  const { id: cabinetId } = useParams<{ id: string }>()
   const [id, setId] = useQueryState(
     "id",
     parseAsString.withDefault("")
@@ -81,11 +82,10 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
   const [successModalOpen, setSuccessModalOpen] = useState<boolean>(false)
 
   const createCabinetMutation = useCreateCabinet()
-  const updateCabinetMutation = useUpdateCabinet(id ?? '')
+  const updateCabinetMutation = useUpdateCabinet(cabinetId ?? id ?? '')
   const createAssetMutation = useCreateAssets()
 
   // Cabinet View States
-  const { id: cabinetId } = useParams<{ id: string }>()
   const { user } = useAuth();
   const role: Role = user?.role ?? "admin";
   const canManageCabinets = can(role, MANAGE_CABINETS)
@@ -147,26 +147,24 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
 
   useEffect(()=>{
     if(serialData && isSerialSuccess) {
-      setValues({
-        ...values,
-        imei: serialData?.imei,
-        serialNumberRecognition: true,
-        imeiRecognition: true
-      })
+      setFieldValue("serialNumberRecognition", true)
+      if(!cabinetId) {
+        setFieldValue("imei", serialData?.imei)
+        setFieldValue("imeiRecognition", true)
+      }
     } else if(isSerialSuccess && !serialData) {
-      setValues({
-        ...values,
-        imei: "",
-        imeiRecognition: false
-      })
+      if(!cabinetId) {
+        setFieldValue("imei", "")
+        setFieldValue("imeiRecognition", false)
+      }
     }
-  },[serialData, isSerialSuccess])
+  },[serialData, isSerialSuccess, cabinetId])
 
   useEffect(()=>{
-    if(imeiData && isImeiSuccess) {
+    if(imeiData && isImeiSuccess && !cabinetId) {
       setFieldValue("imeiRecognition", true)
     }
-  },[imeiData, isImeiSuccess])
+  },[imeiData, isImeiSuccess, cabinetId])
 
   // reset formik when there is a cabinet data
   useEffect(() => {
@@ -637,7 +635,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                       value={values.addressLine1}
                       onValueChange={(value)=> setFieldValue("addressLine1", value)}
                       onPlaceSelect={(place) => {
-                        const { postalCode, countryCode, city, address } = place
+                        const { postalCode, countryCode, city, address, lat, lng } = place
                           const country = countryCode?.toUpperCase() ?? '';
                           
                           setValues({
@@ -646,6 +644,8 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                             country: country,
                             city: city ?? '',
                             zipCode: formatPostalCode(country === "LT" ? "LT"+postalCode : country === "LV" ? "LV"+postalCode : country === "EE" ? "EE"+postalCode : postalCode || '', country),
+                            latitude: lat?.toString() || '',
+                            longitude: lng?.toString() || '',
                           });
                           handleBlur("zipCode")
                       }}
@@ -654,7 +654,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                         "!bg-[#BDBDBD]/15 !border-border cursor-auto" : fieldsReadOnly
                       })}
                     />
-                    {touched.addressLine1 && errors.addressLine1 && <p className="mt-1 text-error text-xs">{errors.addressLine1}</p> }
+                    {(touched.addressLine1 || touched.latitude) && (errors.addressLine1 || errors.latitude) && <p className="mt-1 text-error text-xs">{errors.addressLine1 || errors.latitude}</p> }
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Address Line 2</Label>
@@ -761,11 +761,13 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                       setFieldValue("brand", value)
                       setFieldValue("cabinetModelId", "")
                       // update module code value on brand change
-                      if(value === "Nexus") {
-                        setFieldValue("imei", serialData?.imei || "")
-                      } else {
-                        if(serialData?.imei === values.imei) {
-                          setFieldValue("imei", "")
+                      if(!cabinetId) {
+                        if(value === "Nexus") {
+                          setFieldValue("imei", serialData?.imei || "")
+                        } else {
+                          if(serialData?.imei === values.imei) {
+                            setFieldValue("imei", "")
+                          }
                         }
                       }
                     }} disabled={fieldsReadOnly}>
@@ -807,8 +809,10 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                           ...values, 
                           serialNumberRecognition: false,
                           serialNumber: e.target.value,
-                          imei: serialData?.imei === values.imei ? "" : values.imei
                         })
+                        if(!cabinetId) {
+                          setFieldValue("imei", serialData?.imei === values.imei ? "" : values.imei)
+                        }
                       }}
                       onBlur={handleBlur}
                       readOnly={serialLoading || !values.brand || fieldsReadOnly}
@@ -849,7 +853,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                         maxLength={50}
                         readOnly={Boolean(
                           (values.brand === "Nexus" && serialData?.imei) || imeiLoading
-                        ) || fieldsReadOnly}
+                        ) || fieldsReadOnly || Boolean(cabinetId)}
                         errors={touched.imei ? errors.imei : (errors.imeiRecognition ? errors.imeiRecognition : '')}
                       />
                       {values.imeiRecognition && <CircleCheck size={20} className="absolute top-1/2 right-3 -translate-y-1/2 text-[#11BE48]" />}
@@ -901,7 +905,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                   </div>
                 </div>
               </div>
-              {values.imeiRecognition && (
+              {(values.imeiRecognition || data?.imei) && (
                 <>
                   {/* Sound Settings */}
                   <div>

@@ -10,6 +10,8 @@ export interface CreateCabinetFormValues  {
   name: string
   description?: string
   addressLine2: string
+  latitude: string
+  longitude: string
   zipCode: string
   city: string
   country: string
@@ -74,6 +76,8 @@ export const createCabinet = async (
   formData.append("name", values.name)
   formData.append("accessType", values.accessType)
   formData.append("addressLine1", values.addressLine1)
+  formData.append("latitude", values.latitude)
+  formData.append("longitude", values.longitude)
   formData.append("zipCode", values.zipCode)
   formData.append("city", values.city)
   formData.append("country", values.country)

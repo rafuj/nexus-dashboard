@@ -19,6 +19,12 @@ export const updateCabinet = async (
   if(values.addressLine1) {
     formData.append("addressLine1", values.addressLine1)
   }
+  if(values.latitude){
+    formData.append("latitude", values.latitude)
+  }
+  if(values.longitude){
+    formData.append("longitude", values.longitude)
+  }
   if(values.addressLine2) {
     formData.append("addressLine2", values.addressLine2)
   }
@@ -36,9 +42,10 @@ export const updateCabinet = async (
       formData.append("serialNumber", values.serialNumber)
     }
   } else {
-    if(values.imei){
-      formData.append("imei", values.imei)
-    }
+    // reason behind this is IMEI is not updatable like this
+    // if(values.imei){
+    //   formData.append("imei", values.imei)
+    // }
     if(values.serialNumber){
       formData.append("customSerialNumber", values.serialNumber)
     }

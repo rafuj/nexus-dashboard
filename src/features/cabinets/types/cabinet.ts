@@ -54,6 +54,8 @@ export const cabinetInitialValues = (
 
     addressLine1: data?.addressLine1 || "",
     addressLine2: data?.addressLine2 || "",
+    latitude: data?.latitude || "",
+    longitude: data?.longitude || "",
     zipCode: data?.zipCode || "",
     city: data?.city || "",
     country: data?.country || "",

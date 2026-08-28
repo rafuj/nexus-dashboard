@@ -13,6 +13,10 @@ export const cabinetValidationSchema = Yup.object({
   addressLine1: Yup.string()
     .trim()
     .required("Address is required"),
+    
+  latitude: Yup.string()
+    .trim()
+    .required("To enter a valid address, please search for and select an address from the dropdown."),
 
   addressLine2: Yup.string()
     .trim(),
@@ -217,19 +221,7 @@ export const cabinetUpdateSchema = Yup.object({
     then: (schema) => schema.notRequired(),
     otherwise: (schema) => schema.default(false).required("Serial number does not recognized"),
   }),
-
-  imeiRecognition: Yup.boolean().when(
-    ["brand", "imei"],
-    {
-      is: (brand: string, imei: string) =>
-        brand !== "Nexus" && imei !== "",
-      then: (schema) =>
-        schema
-          .required("Module code does not recognized"),
-      otherwise: (schema) => schema.notRequired(),
-    }
-  ),
-
+  
   brand: Yup.string()
   .trim()
   .required("Brand is required"),
