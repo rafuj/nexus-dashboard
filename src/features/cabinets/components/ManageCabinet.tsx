@@ -648,17 +648,18 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                       value={values.addressLine1}
                       onValueChange={(value)=> setFieldValue("addressLine1", value)}
                       onPlaceSelect={(place) => {
-                        const { postalCode, countryCode, city, address, lat, lng } = place
+                        const { postalCode, countryCode, city, lat, lng, houseNumber, street, address } = place
                           const country = countryCode?.toUpperCase() ?? '';
-                          
                           setValues({
                             ...values,
-                            addressLine1: address.slice(0, 50),
+                            addressLine1: (houseNumber && street) ? houseNumber + " " + street : address.slice(0, 50),
                             country: country,
                             city: city ?? '',
                             zipCode: formatPostalCode(country === "LT" ? "LT"+postalCode : country === "LV" ? "LV"+postalCode : country === "EE" ? "EE"+postalCode : postalCode || '', country),
                             latitude: lat || 0,
                             longitude: lng || 0,
+                            // houseNumber: houseNumber || '',
+                            // street: street || '',
                           });
                           handleBlur("zipCode")
                       }}

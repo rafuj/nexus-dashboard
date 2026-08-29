@@ -28,14 +28,17 @@ const ALLOWED_COUNTRY_SET = new Set<string>(
 );
 
 export type SelectedPlace = {
-  address: string;
-  city: string | null;
-  postalCode: string | null;
-  country: string | null;
-  countryCode: string | null;
-  lat: number | null;
-  lng: number | null;
-  placeId: string | null;
+  address: string
+  city: string | ""
+  postalCode: string | ""
+  country: string | ""
+  countryCode: string | ""
+  lat: number | null
+  lng: number | null
+  placeId: string | ""
+  houseNumber: string | ""
+  street: string | ""
+  area?: string | ""
 };
 
 type AddressSuggestion = {
@@ -481,13 +484,16 @@ export function PlacesAutocomplete({
 
             onPlaceSelect({
               address: "",
-              city: null,
-              postalCode: null,
-              country: null,
-              countryCode: null,
+              city: "",
+              postalCode: "",
+              country: "",
+              countryCode: "",
               lat: null,
               lng: null,
-              placeId: null,
+              placeId: "",
+              houseNumber: "",
+              street: "",
+              area: "",
             });
 
             return;
@@ -577,13 +583,16 @@ export function PlacesAutocomplete({
 
             onPlaceSelect({
               address: "",
-              city: null,
-              postalCode: null,
-              country: null,
-              countryCode: null,
+              city: "",
+              postalCode: "",
+              country: "",
+              countryCode: "",
               lat: null,
               lng: null,
-              placeId: null,
+              placeId: "",
+              houseNumber: "",
+              street: "",
+              area: "",
             });
             errorToast("Non EU/UK Address is not allowed")
 
@@ -611,18 +620,36 @@ export function PlacesAutocomplete({
           /**
            * Valid EU/UK address.
            */
+
+          /**
+           * House Number 
+           * Street
+           * Area
+           **/
+          const street =
+            getComponent("route");
+
+          const houseNumber =
+            getComponent("street_number");
+
+          const area =
+            getComponent("sublocality") ??
+            getComponent("sublocality_level_1") ??
+            getComponent("neighborhood");
+
+
           onPlaceSelect({
             address:
               place.formattedAddress ??
               suggestion.label,
 
-            city,
+              city: city || '',
 
-            postalCode,
+              postalCode: postalCode || '',
 
-            country,
+              country: country || '',
 
-            countryCode,
+              countryCode,
 
             lat:
               place.location?.lat() ??
@@ -635,6 +662,10 @@ export function PlacesAutocomplete({
             placeId:
               prediction.placeId ??
               null,
+
+            houseNumber:houseNumber || '',
+            street:street || '',
+            area:area || '',
           });
         } catch {
           /**
@@ -645,13 +676,16 @@ export function PlacesAutocomplete({
 
           onPlaceSelect({
             address: "",
-            city: null,
-            postalCode: null,
-            country: null,
-            countryCode: null,
+            city: "",
+            postalCode: "",
+            country: "",
+            countryCode: "",
             lat: null,
             lng: null,
-            placeId: null,
+            placeId: "",
+            houseNumber: "",
+            street: "",
+            area: "",
           });
         } finally {
           sessionTokenRef.current =
