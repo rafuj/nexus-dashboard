@@ -14,6 +14,14 @@ export const cabinetValidationSchema = Yup.object({
     .trim()
     .required("Address is required"),
     
+  street: Yup.string()
+    .trim()
+    .required("Street is required"),
+    
+  number: Yup.string()
+    .trim()
+    .required("Number is required"),
+    
   latitude: Yup.string()
     .trim()
     .required("To enter a valid address, please search for and select an address from the dropdown."),
@@ -167,7 +175,19 @@ export const cabinetUpdateSchema = Yup.object({
   addressLine1: Yup.string()
     .trim()
     .required("Address is required"),
+    
+  street: Yup.string()
+    .trim()
+    .required("Street is required"),
+    
+  number: Yup.string()
+    .trim()
+    .required("Number is required"),
 
+  latitude: Yup.string()
+    .trim()
+    .required("To enter a valid address, please search for and select an address from the dropdown."),
+    
   addressLine2: Yup.string()
     .trim(),
 
@@ -221,7 +241,7 @@ export const cabinetUpdateSchema = Yup.object({
     then: (schema) => schema.notRequired(),
     otherwise: (schema) => schema.default(false).required("Serial number does not recognized"),
   }),
-  
+
   brand: Yup.string()
   .trim()
   .required("Brand is required"),

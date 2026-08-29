@@ -213,7 +213,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
 
     if (step === "basic-information") {
       // Error Block
-      if(errors.name || errors.addressLine1 || errors.zipCode || errors.city || errors.country || errors.accessType || errors.brand || errors.cabinetModelId || errors.imei) {
+      if(errors.name || errors.addressLine1 || errors.zipCode || errors.city || errors.country || errors.accessType || errors.brand || errors.cabinetModelId || errors.imei || errors.street || errors.number || errors.latitude) {
         errorToast("Please fill all required fields")
         return
       } else {
@@ -357,7 +357,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
     }
 
     if (step === "basic-information") {
-      if(errors.name || errors.addressLine1 || errors.zipCode || errors.city || errors.country || errors.accessType || errors.brand || errors.cabinetModelId || errors.imei) {
+      if(errors.name || errors.addressLine1 || errors.zipCode || errors.city || errors.country || errors.accessType || errors.brand || errors.cabinetModelId || errors.imei || errors.street || errors.number || errors.latitude) {
         errorToast("Please fill all required fields")
         return
       } else {
@@ -694,6 +694,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       readOnly={fieldsReadOnly}
+                      errors={touched.street ? errors.street : ''}
                     />
                   </div>
                   <div>
@@ -707,6 +708,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       readOnly={fieldsReadOnly}
+                      errors={touched.number ? errors.number : ''}
                     />
                   </div>
                 </div>
