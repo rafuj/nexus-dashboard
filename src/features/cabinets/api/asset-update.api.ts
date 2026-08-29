@@ -1,7 +1,7 @@
 import { api } from "@/app/api-manage/api"
 import { API_ROUTES } from "@/app/api-manage/api-routes"
 import { formatDateDDMMYYYY } from "@/lib/utils"
-import type { CreateCabinetFormValues } from "./cabinet.api"
+import type { CreateCabinetFormValues } from "../types/cabinet"
 
 export const updateAsset = async (
   id: string,

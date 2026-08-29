@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import type { CreateCabinetFormValues } from "../api/cabinet.api"
 import { updateAsset } from "../api/asset-update.api"
+import type { CreateCabinetFormValues } from "../types/cabinet"
 
 export const useUpdateAsset = (id: string) => {
   const queryClient = useQueryClient()

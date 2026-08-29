@@ -15,7 +15,7 @@ import { DatePicker } from "@/shared/components/ui/date-picker";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { cn, formatDateSlash } from "@/lib/utils";
 import SchedulePicker from "./SchedulePicker";
-import type { AvailabilityType, BrightnessType, ColorType, DayConfig, VolumeType } from "../types/cabinet";
+import type { AvailabilityType, BrightnessType, ColorType, CreateCabinetFormValues, DayConfig, VolumeType } from "../types/cabinet";
 import { availabilityTypeList, brightnessList, colorList, dayList, STEPS, volumeList } from "../mock/addCabinetData";
 import { ConfirmationModal } from "./ConfirmationModal";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/components/ui/dropdown-menu";
@@ -42,7 +42,6 @@ import { useCreateAssets } from "../hooks/useCreateAssets";
 import { LoaderButton } from "@/app/components/loader-button";
 import { parseAsString, parseAsStringEnum, useQueryState } from "nuqs";
 import { useUpdateCabinet } from "../hooks/useUpdateCabinet";
-import type { CreateCabinetFormValues } from "../api/cabinet.api";
 import { getFormChanges } from "@/lib/getFormChanges";
 import { can, type Role } from "@/lib/permissions";
 import { useAuth } from "@/app/hooks/useAuth";
@@ -116,14 +115,19 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
           ...values,
           asset: {
             ...values.asset,
-            cabinetId: id
+            cabinetId: id || cabinetId
           }
         })
-        
-        successToast("Cabinet created successfully")
-        setStep("basic-information")
         setConfirmModalOpen(false)
-        setSuccessModalOpen(true)
+        if(!cabinetId) {
+          successToast("Cabinet created successfully")
+          setStep("basic-information")
+          setSuccessModalOpen(true)
+        } else {
+          successToast("Asset updated successfully")
+          formik.resetForm({values})
+          setIsEditing("")
+        }
       } catch (error) {
           errorToast(getApiErrorMessage(error));
       }
@@ -294,35 +298,44 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
       errorToast("No changes found")
       return
     }
-    try {
-      await updateAssetMutation.mutateAsync({
-        ...values,
-        asset: {
-          ...values.asset,
-          cabinetId,
-        },
-      })
-
-      if (values.asset.components && values.asset.id === "1") {
-        try {
-          await updateAssetComponents.mutateAsync({
-            assetId: assetViewData.id,
-            components: values.asset.components,
-          })
-        } catch (error) {
-          errorToast(getApiErrorMessage(error))
-          return
-        }
-
-        successToast('Asset updated successfully')
-        formik.resetForm({ values })
+    if(assetViewData) {
+      try {
         
-      } else {
-        successToast('Asset updated successfully')
-        formik.resetForm({ values })
+          await updateAssetMutation.mutateAsync({
+            ...values,
+            asset: {
+              ...values.asset,
+              cabinetId,
+            },
+          })
+
+          if (values.asset.components && values.asset.id === "1") {
+            try {
+              await updateAssetComponents.mutateAsync({
+                assetId: assetViewData.id,
+                components: values.asset.components,
+              })
+            } catch (error) {
+              errorToast(getApiErrorMessage(error))
+              return
+            }
+
+            successToast('Asset updated successfully')
+            formik.resetForm({ values })
+            
+          } else {
+            successToast('Asset updated successfully')
+            formik.resetForm({ values })
+          }
+      } catch (error) {
+        errorToast(getApiErrorMessage(error))
       }
-    } catch (error) {
-      errorToast(getApiErrorMessage(error))
+    } else {
+      if(values.asset.id === "1") {
+        setConfirmModalOpen(true)
+      } else {
+        formik.handleSubmit()
+      }
     }
   }
 
@@ -644,8 +657,8 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                             country: country,
                             city: city ?? '',
                             zipCode: formatPostalCode(country === "LT" ? "LT"+postalCode : country === "LV" ? "LV"+postalCode : country === "EE" ? "EE"+postalCode : postalCode || '', country),
-                            latitude: lat?.toString() || '',
-                            longitude: lng?.toString() || '',
+                            latitude: lat || 0,
+                            longitude: lng || 0,
                           });
                           handleBlur("zipCode")
                       }}

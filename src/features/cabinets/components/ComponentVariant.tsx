@@ -6,7 +6,7 @@ import { InfoIcon } from "lucide-react";
 import type { ComponentTypesAED } from "../api/componentTypes.api";
 import { useComponentTypesVariants } from "../hooks/useComponentTypesVariants";
 import type { FormikErrors, FormikProps } from "formik";
-import type { CreateCabinetFormValues } from "../api/cabinet.api";
+import type { CreateCabinetFormValues } from "../types/cabinet";
 
 interface ComponentVariantProps {
     componentType: ComponentTypesAED,

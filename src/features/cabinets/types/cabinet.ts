@@ -1,5 +1,5 @@
 import { convertDDMMYYYY } from "@/lib/utils";
-import type { CreateCabinetFormValues } from "../api/cabinet.api";
+
 
 export type StepType = 'basic-information' | 'cabinet-details' | 'asset-information';
 
@@ -35,6 +35,70 @@ export interface StepperProps {
   hideLine?: boolean,
 }
 
+
+export interface CreateCabinetFormValues  {
+  accessType: "public" | "private"
+  addressLine1: string
+  name: string
+  description?: string
+  addressLine2: string
+  latitude: number
+  longitude: number
+  zipCode: string
+  city: string
+  country: string
+  serialNumber: string
+  customSerialNumber?: string // only for ui
+  lockCode: string
+  picture1: File | null
+  picture2: File | null
+  picture3: File | null
+  
+  // model
+  cabinetModelId: string
+  brand: string // only for ui
+  cabinetModel?: {
+    brand: string
+  }
+  serialNumberRecognition: boolean // for logic
+  imeiRecognition: boolean // only for ui
+  
+  // optional values for create cabinet
+  imei: string
+  volume: VolumeType
+  color: ColorType
+  brightness: BrightnessType
+  primaryLanguage: string
+  secondaryLanguage: string
+
+  // asset info
+  asset: {
+    id: string // id is for error handling not for apies
+    brand: string // brand is for error handling not for apies
+    cabinetId?: string // cabinetId is for error handling not for apies
+    assetModelId?: string
+    assetModel?: { // only for ui
+      brand: string
+      assetTypeId: string
+    }
+    checkupDate?: Date | undefined
+    components?: {
+        componentTypeId: string
+        componentVariantId?: string
+        componentVariantName?: string // is set to visible in ui not for apies
+        expiresAt: Date | undefined
+        lotNumber?: string
+        serialNumber?: string
+        id: string // for update api
+    }[]
+    expiresAt?: Date | undefined
+    name: string
+    notes?: string
+    purchaseDate?: Date | undefined
+    serialNumber?: string
+  }
+}
+
 export const cabinetInitialValues = (
   data?: Partial<CreateCabinetFormValues> | null
 ): CreateCabinetFormValues => {
@@ -54,8 +118,8 @@ export const cabinetInitialValues = (
 
     addressLine1: data?.addressLine1 || "",
     addressLine2: data?.addressLine2 || "",
-    latitude: data?.latitude || "",
-    longitude: data?.longitude || "",
+    latitude: data?.latitude || 0,
+    longitude: data?.longitude || 0,
     zipCode: data?.zipCode || "",
     city: data?.city || "",
     country: data?.country || "",

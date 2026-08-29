@@ -10,8 +10,8 @@ import {
 import { type Dispatch, type SetStateAction } from "react"
 import { SuccessModal } from "./SuccessModal"
 import { formatDateSlash } from "@/lib/utils"
-import type { CreateCabinetFormValues } from "../api/cabinet.api"
 import { LoaderButton } from "@/app/components/loader-button"
+import type { CreateCabinetFormValues } from "../types/cabinet"
 interface ModalProps {
   open: boolean,
   setOpen: Dispatch<SetStateAction<boolean>>,
