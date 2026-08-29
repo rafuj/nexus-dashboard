@@ -118,7 +118,7 @@ export const cabinetInitialValues = (
     name: data?.name || "",
     description: data?.description || "",
 
-    addressLine1: data?.street + " " + data?.number + ", " + data?.zipCode || "", // ui only
+    addressLine1: data?.street ? (data?.street + " " + data?.number + ", " + data?.zipCode) : "", // ui only
     addressLine2: data?.addressLine2 || "",
 
     street: data?.street || "",
