@@ -53,7 +53,8 @@ export const createCabinet = async (
     const payload = {
       name: values.name,
       accessType: values.accessType,
-      addressLine1: values.addressLine1,
+      street: values.street,
+      number: values.number,
       latitude: values.latitude,
       longitude: values.longitude,
       zipCode: values.zipCode,

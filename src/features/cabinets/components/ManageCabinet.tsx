@@ -642,7 +642,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                 </div>
                 <div className="pb-3 grid sm:grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Address Line 1 <span className="text-error">*</span></Label>
+                    <Label className="text-xs text-accent-foreground font-medium flex items-center mb-3">Address Line 1<span className="text-error">*</span></Label>
                     <PlacesAutocomplete
                       placeholder="Search for an address"
                       value={values.addressLine1}
@@ -652,14 +652,14 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                           const country = countryCode?.toUpperCase() ?? '';
                           setValues({
                             ...values,
-                            addressLine1: (houseNumber && street) ? houseNumber + " " + street : address.slice(0, 50),
+                            addressLine1: address,
                             country: country,
                             city: city ?? '',
                             zipCode: formatPostalCode(country === "LT" ? "LT"+postalCode : country === "LV" ? "LV"+postalCode : country === "EE" ? "EE"+postalCode : postalCode || '', country),
                             latitude: lat || 0,
                             longitude: lng || 0,
-                            // houseNumber: houseNumber || '',
-                            // street: street || '',
+                            number: houseNumber || '',
+                            street: street || '',
                           });
                           handleBlur("zipCode")
                       }}
@@ -678,6 +678,32 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
                       name="addressLine2"
                       value={values.addressLine2}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      readOnly={fieldsReadOnly}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Street <span className="text-error">*</span></Label>
+                    <Input
+                      placeholder="e.g. building"
+                      autoComplete="off"
+                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      name="street"
+                      value={values.street}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      readOnly={fieldsReadOnly}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">House Number <span className="text-error">*</span></Label>
+                    <Input
+                      placeholder="e.g. building"
+                      autoComplete="off"
+                      className="h-12.5 px-5 placeholder:text-accent-foreground/20"
+                      name="number"
+                      value={values.number}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       readOnly={fieldsReadOnly}

@@ -39,9 +39,11 @@ export interface StepperProps {
 export interface CreateCabinetFormValues  {
   accessType: "public" | "private"
   addressLine1: string
+  addressLine2: string
   name: string
   description?: string
-  addressLine2: string
+  street: string
+  number: string
   latitude: number
   longitude: number
   zipCode: string
@@ -116,8 +118,12 @@ export const cabinetInitialValues = (
     name: data?.name || "",
     description: data?.description || "",
 
-    addressLine1: data?.addressLine1 || "",
+    addressLine1: data?.street + " " + data?.number + ", " + data?.zipCode || "", // ui only
     addressLine2: data?.addressLine2 || "",
+
+    street: data?.street || "",
+    number: data?.number || "",
+
     latitude: data?.latitude || 0,
     longitude: data?.longitude || 0,
     zipCode: data?.zipCode || "",
