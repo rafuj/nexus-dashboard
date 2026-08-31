@@ -814,10 +814,7 @@ export function PlacesAutocomplete({
           ref={inputRef}
           type="text"
           role="combobox"
-          aria-expanded={open}
-          aria-controls={listboxId}
-          aria-autocomplete="list"
-          autoComplete="street-address"
+          autoComplete="nope"
           value={inputValue}
           disabled={
             disabled ||

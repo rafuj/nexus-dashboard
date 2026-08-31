@@ -20,11 +20,10 @@ interface ModalProps {
   values: CreateCabinetFormValues,
   handleSubmit: () => void
   id: string,
-  isLoading: boolean,
-  resetForm: () => void
+  isLoading: boolean
 }
 
-export const ConfirmationModal: React.FC<ModalProps>  = ({ open, setOpen, successModalOpen, setSuccessModalOpen, values, handleSubmit, id, isLoading, resetForm }) => {
+export const ConfirmationModal: React.FC<ModalProps>  = ({ open, setOpen, successModalOpen, setSuccessModalOpen, values, handleSubmit, id, isLoading }) => {
 
 
     return (
@@ -157,7 +156,7 @@ export const ConfirmationModal: React.FC<ModalProps>  = ({ open, setOpen, succes
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-            <SuccessModal open={successModalOpen} setOpen={setSuccessModalOpen} cabinetId={id} resetForm={resetForm} />
+            <SuccessModal open={successModalOpen} setOpen={setSuccessModalOpen} cabinetId={id} />
         </>
     )
 }

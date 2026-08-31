@@ -218,7 +218,12 @@ export const getCitiesByCountry = (countryIso2: string|''): CityOption[] => {
   if (!countryIso2) return [];
   return City.getCitiesOfCountry(countryIso2) || [];
 };
-
+export const getCountryName = (countryIso: string) => {
+  return COUNTRY_OPTIONS.find((item) => item.iso === countryIso)?.country;
+}
+export const getCountryCode = (countryName: string) => {
+  return COUNTRY_OPTIONS.find((item) => item.country === countryName)?.iso;
+}
 export const formatPostalCode = (value: string, countryIso: string): string => {
   const rule = COUNTRY_OPTIONS.find(
     (item) => item.iso === countryIso

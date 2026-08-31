@@ -44,8 +44,8 @@ export interface CreateCabinetFormValues  {
   description?: string
   street: string
   number: string
-  latitude: number
-  longitude: number
+  latitude: number | null
+  longitude: number | null
   zipCode: string
   city: string
   country: string
@@ -118,14 +118,19 @@ export const cabinetInitialValues = (
     name: data?.name || "",
     description: data?.description || "",
 
-    addressLine1: data?.street ? (data?.street + " " + data?.number + ", " + data?.zipCode) : "", // ui only
+    addressLine1: [
+      [data?.street, data?.number].filter(Boolean).join(" "),
+        data?.zipCode,
+      ]
+        .filter(Boolean)
+        .join(", ") || "", // ui only
     addressLine2: data?.addressLine2 || "",
 
     street: data?.street || "",
     number: data?.number || "",
 
-    latitude: data?.latitude || 0,
-    longitude: data?.longitude || 0,
+    latitude: data?.latitude || null,
+    longitude: data?.longitude || null,
     zipCode: data?.zipCode || "",
     city: data?.city || "",
     country: data?.country || "",

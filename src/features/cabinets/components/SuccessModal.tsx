@@ -12,10 +12,9 @@ interface ModalProps {
   open: boolean
   setOpen: Dispatch<SetStateAction<boolean>>
   cabinetId?: string 
-  resetForm: () => void
 }
 
-export const SuccessModal: React.FC<ModalProps>  = ({ open, setOpen, cabinetId, resetForm }) => {
+export const SuccessModal: React.FC<ModalProps>  = ({ open, setOpen, cabinetId }) => {
   const navigate = useNavigate()
   return (
     <Dialog open={open} onOpenChange={()=> {
@@ -43,7 +42,6 @@ export const SuccessModal: React.FC<ModalProps>  = ({ open, setOpen, cabinetId, 
               navigate('/cabinets/list/'+cabinetId)
             }}>OK</button>
             <button type="button" className="w-full underline text-sm font-semibold text-accent-foreground" onClick={()=> {
-              resetForm()
               setOpen(false)
             }}>Add another cabinet</button>
           </DialogFooter>

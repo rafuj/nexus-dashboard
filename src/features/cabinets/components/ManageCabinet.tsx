@@ -5,7 +5,7 @@ import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Icons } from "@/app/icons/icons";
 import {  useNavigate, useParams } from "react-router";
 import { CabinetsStepper } from "./CabinetsStepper";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Input } from "@/shared/components/ui/input"
 import { Label } from "@/shared/components/ui/label";
 import { Textarea } from "@/shared/components/ui/textarea";
@@ -52,6 +52,8 @@ import { useAssetView } from "../hooks/useAssetView";
 import { useUpdateAsset } from "../hooks/useUpdateAsset";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { useUpdateAssetComponents } from "../hooks/useUpdateAssetComponents";
+import { handleUpdateMapAddress } from "@/lib/map-helper";
+import { CityCombobox } from "./CityCombobox";
 
 interface ManageCabinetProps {
   className?: string
@@ -123,6 +125,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
           successToast("Cabinet created successfully")
           setStep("basic-information")
           setSuccessModalOpen(true)
+          formik.resetForm({values: cabinetInitialValues()})
         } else {
           successToast("Asset updated successfully")
           formik.resetForm({values})
@@ -134,7 +137,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
     },
   });
 
-  const {values, setValues, setFieldValue, errors, touched, handleChange, handleBlur} = formik
+  const {values, setValues, setFieldValue, setTouched, errors, touched, handleChange, handleBlur} = formik
   
   const { data: assetTypes, isLoading: assetTypesLoading } = useAssetTypes()
   const { data: brandsList } = useAssetTypesBrands(values.asset.id)
@@ -262,25 +265,14 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
     if(Object.keys(changes).length === 0) {
       if(cabinetId) {
         errorToast("No changes found")
-        setIsEditing("")
       } else {
         setStep("asset-information")
       }
       return
     }
     
-    const { asset, ...otherChanges } = changes;
-    const payload = {
-      ...otherChanges,
-      name: values.name,
-      accessType: values.accessType,
-      addressLine1: values.addressLine1,
-      zipCode: values.zipCode,
-      city: values.city,
-      country: values.country,
-    };
     try {
-      await updateCabinetMutation.mutateAsync(payload as CreateCabinetFormValues)
+      await updateCabinetMutation.mutateAsync(values)
       successToast("Cabinet updated successfully")
       setIsEditing("")
       formik.resetForm({values})
@@ -374,13 +366,24 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
     }
   };
 
-  const availableCities = useMemo(() => {
-    if (values.country) {
-      return getCitiesByCountry(values.country);
-    }
+  // const availableCities = useMemo(() => {
+  //   if (values.country) {
+  //     return getCitiesByCountry(values.country);
+  //   }
 
-    return [];
-  }, [values.country]);
+  //   return [];
+  // }, [values.country]);
+
+  // 1. Destructure the primitive string value out FIRST
+  const countryCode = values.country;
+
+  // 2. Pass ONLY the primitive string to useMemo
+  const availableCities = useMemo(() => {
+    if (!countryCode) return [];
+    
+    // Clean heavy lookup
+    return getCitiesByCountry(countryCode) || [];
+  }, [countryCode]); // Works properly because countryCode is a string, not an object property
 
   const connectivityUntil = useMemo(() => {
       if (typeof assignCredits !== "number" || assignCredits <= 0) {
@@ -409,6 +412,40 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
     setAssignCredits(numericValue);
   };
 
+  const updateAddress = (values:CreateCabinetFormValues) => {
+    handleUpdateMapAddress(values, setValues);
+  }
+  const debounceTimerRef = useRef<number | null>(null);
+
+  const handleDebouncedChange = (fieldName: keyof CreateCabinetFormValues, rawValue:string, currentValues:CreateCabinetFormValues) => {
+    const country = currentValues.country || '';
+  
+    const value = fieldName === 'zipCode' 
+      ? formatPostalCode(rawValue, country) 
+      : rawValue;
+
+    setFieldValue(fieldName, value);
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      updateAddress({
+        ...currentValues,
+        [fieldName]: value,
+      });
+    }, 400);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
+  
   const switchContent = () => {
     switch (step) {
       case 'asset-information':
@@ -648,20 +685,28 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                       value={values.addressLine1}
                       onValueChange={(value)=> setFieldValue("addressLine1", value)}
                       onPlaceSelect={(place) => {
-                        const { postalCode, countryCode, city, lat, lng, houseNumber, street, address } = place
-                          const country = countryCode?.toUpperCase() ?? '';
-                          setValues({
+                        const { postalCode, countryCode, city, lat, lng, houseNumber, street, address } = place;
+                        const country = countryCode?.toUpperCase() ?? '';
+
+                        // 1. Pre-calculate the formatted zip code outside state setters
+                        const rawZip = ["LT", "LV", "EE"].includes(country) ? `${country}${postalCode ?? ''}` : (postalCode ?? '');
+                        const formattedZip = rawZip ? formatPostalCode(rawZip, country) : '';
+
+                        // 2. Batch update values WITHOUT triggering automatic immediate re-validation (2nd argument: false)
+                        setValues(
+                          {
                             ...values,
-                            addressLine1: address,
+                            addressLine1: address || '',
                             country: country,
-                            city: city ?? '',
-                            zipCode: formatPostalCode(country === "LT" ? "LT"+postalCode : country === "LV" ? "LV"+postalCode : country === "EE" ? "EE"+postalCode : postalCode || '', country),
-                            latitude: lat || 0,
-                            longitude: lng || 0,
+                            city: city || '',
+                            zipCode: formattedZip,
+                            latitude: lat ?? null,
+                            longitude: lng ?? null,
                             number: houseNumber || '',
                             street: street || '',
-                          });
-                          handleBlur("zipCode")
+                          },
+                          false // Prevents immediate schema validation on setValues
+                        );
                       }}
                       disabled={fieldsReadOnly}
                       inputClassName={cn({
@@ -686,29 +731,29 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Street <span className="text-error">*</span></Label>
                     <Input
-                      placeholder="e.g. building"
+                      placeholder="e.g. street"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
                       name="street"
                       value={values.street}
-                      onChange={handleChange}
                       onBlur={handleBlur}
                       readOnly={fieldsReadOnly}
                       errors={touched.street ? errors.street : ''}
+                      onChange={(e) => handleDebouncedChange("street", e.target.value, values)}
                     />
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">House Number <span className="text-error">*</span></Label>
                     <Input
-                      placeholder="e.g. building"
+                      placeholder="e.g. 123"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
                       name="number"
                       value={values.number}
-                      onChange={handleChange}
                       onBlur={handleBlur}
                       readOnly={fieldsReadOnly}
                       errors={touched.number ? errors.number : ''}
+                      onChange={(e) => handleDebouncedChange("number", e.target.value, values)}
                     />
                   </div>
                 </div>
@@ -721,12 +766,9 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
                       name="zipCode"
                       value={values.zipCode}
-                      onChange={(e)=> {
-                        const { value } = e.target;
-                        const country = values.country || "";
-                        const formatted = formatPostalCode(value, country);
-                        setFieldValue("zipCode", formatted);
-                      }}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                        handleDebouncedChange("zipCode", e.target.value, values)
+                      }
                       onBlur={handleBlur}
                       errors={touched.zipCode ? errors.zipCode : ''}
                       maxLength={12}
@@ -735,39 +777,29 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">City <span className="text-error">*</span></Label>
-                    <Select
-                      value={values.city || ""}
-                      onValueChange={(value) => setFieldValue("city", value)}
-                      disabled={fieldsReadOnly}
-                    >
-                      <SelectTrigger className="w-full !h-12.5">
-                        <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-                          <span className="line-clamp-1 w-0 grow text-left">
-                            <SelectValue placeholder="Select city" />
-                          </span>
-                        </div>
-                      </SelectTrigger>
+                    <CityCombobox
+                      availableCities={availableCities}
+                      selectedCity={values.city}
+                      disabled={!values.country || fieldsReadOnly}
+                      onSelectCity={(cityName) => {
+                        handleDebouncedChange("city", cityName, values);
+                      }}
+                    />
 
-                      <SelectContent>
-                          {availableCities?.map((item)=> <SelectItem value={item.name} key={item.name}>{item.name}</SelectItem> )}
-                          {values.city &&
-                          !availableCities?.some(
-                            (item) => item.name.toLowerCase() === values.city.toLowerCase()
-                          ) && (
-                            <SelectItem value={values.city} key={values.city}>
-                              {values.city}
-                            </SelectItem>
-                          )}
-                      </SelectContent>
-                    </Select>
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Country <span className="text-error">*</span></Label>
                     <Select
                       value={values.country || ""}
                       onValueChange={(value) => {
-                        setFieldValue("country", value)
-                        setFieldValue("city", "")
+                        setValues({
+                          ...values,
+                          country: value,
+                          city: "",
+                          addressLine1: "",
+                          latitude: null,
+                          longitude: null
+                        })
                       }}
                       disabled={fieldsReadOnly}
                     >
@@ -1222,12 +1254,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
             values,
             handleSubmit: formik.handleSubmit,
             id: id,
-            isLoading: createAssetMutation.isPending,
-            resetForm: () => {
-              formik.resetForm();
-              setStep("basic-information");
-              setId("")
-            }
+            isLoading: createAssetMutation.isPending
           }
         }
       />
