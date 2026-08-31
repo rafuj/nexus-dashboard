@@ -11,6 +11,8 @@ export function cabinetStatusLabel(status: CabinetStatus) {
       return "Active"
     case "paused":
       return "Paused"
+    case "n/a":
+      return "N/A"
     default :
       return status
   }
@@ -26,6 +28,8 @@ export function cabinetStatusBadgeClass(status: CabinetStatus) {
       return "bg-success"
     case "paused":
       return "bg-foreground"
+    case "n/a":
+      return "bg-foreground"
     default :
       return "bg-error"
   }
@@ -40,6 +44,8 @@ export function cabinetStatusSoftBadgeClass(status: CabinetStatus) {
       return "bg-card-warning text-warning"
     case "paused":
       return "bg-card-neutral text-accent-foreground"
+    case "n/a":
+      return "bg-card-neutral text-accent-foreground"
     default :
       return "bg-card-error text-error"
   }
@@ -53,6 +59,8 @@ export function statusBadgeColor(status: CabinetStatus) {
     case "warning":
       return "text-success"
     case "paused":
+      return "text-foreground"
+    case "n/a":
       return "text-foreground"
     default :
       return "text-error"
@@ -74,6 +82,8 @@ export const getHealthBadgeClass = (health: string = "Ok") => {
       return "bg-card-error text-error"
     case "Paused":
       return "bg-card-neutral text-foreground" 
+    case "n/a":
+      return "bg-card-neutral text-foreground" 
     default:
       return "bg-card-neutral text-accent-foreground"
   }
@@ -88,6 +98,8 @@ export const getHealthBadgeTooltipColor = (health: string = "Ok") => {
     case "Urgent":
       return "bg-error [&_.arrow]:bg-error [&_.arrow]:fill-error"
     case "Paused":
+      return "bg-card-neutral text-foreground [&_.arrow]:bg-card-neutral [&_.arrow]:fill-card-neutral" 
+    case "n/a":
       return "bg-card-neutral text-foreground [&_.arrow]:bg-card-neutral [&_.arrow]:fill-card-neutral" 
     default:
       return "bg-neutral [&_.arrow]:bg-neutral [&_.arrow]:fill-neutral"

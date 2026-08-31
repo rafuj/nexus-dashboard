@@ -73,17 +73,15 @@ export const cabinetsMonitorTableColumns = [
       const doorOpen = row.original.deviceState?.doorOpen
       const temperature = row.original.deviceState?.temperature
       const temperatureOutOfRangeSince = new Date() // data is not available now
-      const isPaused = !row.original.deviceState
+      const notInitialized = !row.original.deviceState
 
       const getCabinetStatusColor = () => {
-        if(isPaused) {
-          return getHealthBadgeClass("Paused")
+        if(notInitialized) {
+          return getHealthBadgeClass("n/a")
         } else if (getPresenceStatus(assetPresent, assetTakenAt) === "Urgent" || doorOpen || getTemperatureStatus({current:temperature, temperatureOutOfRangeSince}) === "Urgent") {
           return getHealthBadgeClass("Urgent")
         } else if (getTemperatureStatus({current:temperature, temperatureOutOfRangeSince}) === "Warning" || getPresenceStatus(assetPresent, assetTakenAt) === "Warning" || getPresenceStatus(assetPresent, assetTakenAt) === "Taken") {
           return getHealthBadgeClass("Warning")
-        } else if (!row.original.deviceState) {
-          return getHealthBadgeClass("Paused")
         } else {
           return getHealthBadgeClass("Ok")
         }
@@ -120,8 +118,9 @@ export const cabinetsMonitorTableColumns = [
       cellClassName: "align-middle relative group",
     },
     cell: ({ row }) => {
-      const health = !row.original.deviceState ? "Paused" : "Ok"
-      const isPaused = !row.original.deviceState
+      const health = !row.original.deviceState ? "n/a" : "Ok"
+      const healthText = !row.original.deviceState ? "N/A" : "Ok"
+      const notInitialized = !row.original.deviceState
 
       return (
         <div className="inline-flex items-center gap-1.5 relative">
@@ -133,10 +132,10 @@ export const cabinetsMonitorTableColumns = [
                     getHealthBadgeClass(health)
                   )}
                 >
-                  {health}
+                  {healthText}
                 </span>
             </TooltipTrigger>
-            {!isPaused && (
+            {!notInitialized && (
               <TooltipContent side="right" className={cn(getHealthBadgeTooltipColor(health))}>
               {getHealthTooltip(health)}
             </TooltipContent>)}
@@ -159,19 +158,19 @@ export const cabinetsMonitorTableColumns = [
     cell: ({ row }) => {
       const assetTakenAt = row.original.deviceState?.assetStateChangedAt
       const assetPresent = row.original.deviceState?.assetPresent
-      const isPaused = !row.original.deviceState
+      const notInitialized = !row.original.deviceState
       return (
         <div className="inline-flex items-center gap-1.5 relative">
           <Tooltip>
             <TooltipTrigger>
               {
-                isPaused ? (
+                notInitialized ? (
                   <span className={cn(
                       "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all",
-                      getHealthBadgeClass("Paused")
+                      getHealthBadgeClass("n/a")
                     )}
                   >
-                    Paused
+                    N/A
                   </span>
                 ) : (
                   row.original.deviceState?.assetPresent ? (
@@ -196,7 +195,7 @@ export const cabinetsMonitorTableColumns = [
                 )
               }
             </TooltipTrigger>
-            {!isPaused && (
+            {!notInitialized && (
               <TooltipContent side="right" className={cn(getPresenceTooltipClass(assetPresent, assetTakenAt))}>
                 {getPresenceTooltip(assetPresent, assetTakenAt)}
               </TooltipContent>
@@ -219,20 +218,20 @@ export const cabinetsMonitorTableColumns = [
     },
     cell: ({ row }) => {
       const doorOpenedAt = row.original.deviceState?.doorStateChangedAt
-      const isPaused = !row.original.deviceState
+      const notInitialized = !row.original.deviceState
       return (
 
         <div className="inline-flex items-center gap-1.5 relative">
           <Tooltip>
             <TooltipTrigger>
               {
-                isPaused ? (
+                notInitialized ? (
                   <span className={cn(
                       "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all",
-                      getHealthBadgeClass("Paused")
+                      getHealthBadgeClass("n/a")
                     )}
                   >
-                    Paused
+                    N/A
                   </span>
                 ) : (
                   row.original.deviceState?.doorOpen ? (
@@ -257,7 +256,7 @@ export const cabinetsMonitorTableColumns = [
                 )
               }
             </TooltipTrigger>
-            {!isPaused && (
+            {!notInitialized && (
               <TooltipContent side="right" className={cn(getDoorStatusTooltipClass(doorOpenedAt))}>
                 {getDoorStatusTooltip(doorOpenedAt)}
               </TooltipContent>
@@ -283,26 +282,26 @@ export const cabinetsMonitorTableColumns = [
             current: row.original.deviceState?.temperature,
             temperatureOutOfRangeSince: new Date() // no data available now, so static data
           }
-      const isPaused = !row.original.deviceState
+      const notInitialized = !row.original.deviceState
       return (
         <div className="flex">
           <Tooltip>
             <TooltipTrigger>
               {
-                isPaused ? (
+                notInitialized ? (
                   <span className={cn(
                       "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all",
-                      getHealthBadgeClass("Paused")
+                      getHealthBadgeClass("n/a")
                     )}
                   >
-                    Paused
+                    N/A
                   </span>
                 ) : (
                     getTemperatureChip(temp)
                 )
               }
             </TooltipTrigger>
-            {!isPaused && (
+            {!notInitialized && (
               <TooltipContent side="right" className={cn(getTemperatureTooltipClass(temp))}>
                 {getTemperatureTooltip(temp)}
               </TooltipContent>
