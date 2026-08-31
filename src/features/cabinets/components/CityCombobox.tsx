@@ -11,7 +11,6 @@ import {
   Command,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList, } from "@/shared/components/ui/command";
 import { Input } from "@/shared/components/ui/input";

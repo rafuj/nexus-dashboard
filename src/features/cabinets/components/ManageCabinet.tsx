@@ -137,7 +137,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
     },
   });
 
-  const {values, setValues, setFieldValue, setTouched, errors, touched, handleChange, handleBlur} = formik
+  const {values, setValues, setFieldValue, errors, touched, handleChange, handleBlur} = formik
   
   const { data: assetTypes, isLoading: assetTypesLoading } = useAssetTypes()
   const { data: brandsList } = useAssetTypesBrands(values.asset.id)
