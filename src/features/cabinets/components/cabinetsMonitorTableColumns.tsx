@@ -89,7 +89,7 @@ export const cabinetsMonitorTableColumns = [
         }
       }
       return (
-        <Link className={cn("px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all", getCabinetStatusColor())} to={`/cabinets/list/${row.original.id}`} >
+        <Link className={cn("px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all", getCabinetStatusColor())} to={`/cabinets/monitor/${row.original.id}`} >
             {row.original.name}
         </Link>
       )
