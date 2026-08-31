@@ -9,9 +9,10 @@ import {
 } from "@/shared/components/ui/select"
 import type { CabinetsListToolbarProps } from "../types/cabinetList"
 import { Icons } from "@/app/icons/icons"
+import { CityCombobox } from "./CityCombobox"
+import { allCities} from "@/lib/country-helper"
 
 const STATUS_FILTER_ALL = "all"
-const CITY_FILTER_ALL = "all"
 
 export function CabinetsListToolbar({
   search,
@@ -24,6 +25,8 @@ export function CabinetsListToolbar({
   onRefresh,
   isFetching
 }: CabinetsListToolbarProps) {
+
+
   return (
     <div className="flex flex-wrap gap-3 sm:gap-4 flex-row sm:items-end">
       <div className="min-w-[260px] grow space-y-2">
@@ -43,24 +46,13 @@ export function CabinetsListToolbar({
         </div>
       </div>
       {/* City */}
-      <Select value={city} onValueChange={onCityChange}>
-        <SelectTrigger className="w-full min-w-42 sm:w-44 text-sm md:!h-12.5">
-          <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-            <span className="font-normal text-foreground">City:</span>
-            <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="All Cities" /></span>
-          </div>
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value={CITY_FILTER_ALL}>All Cities</SelectItem>
-          <SelectItem value="Amsterdam">Amsterdam</SelectItem>
-          <SelectItem value="Rotterdam">Rotterdam</SelectItem>
-          <SelectItem value="The Hague (Den Haag)">The Hague (Den Haag)</SelectItem>
-          <SelectItem value="Utrecht">Utrecht</SelectItem>
-          <SelectItem value="Eindhoven">Eindhoven</SelectItem>
-          <SelectItem value="Delft">Delft</SelectItem>
-          <SelectItem value="Groningen">Groningen</SelectItem>
-        </SelectContent>
-      </Select>
+      <CityCombobox
+        availableCities={allCities}
+        selectedCity={city}
+        onSelectCity={onCityChange}
+        prefix="City"
+        className="w-[auto] capitalize"
+      />
       {/* Status Filter */}
       <Select value={statusFilter} onValueChange={onStatusFilterChange}>
         <SelectTrigger className="w-full min-w-42 sm:w-44 text-sm md:!h-12.5">

@@ -213,6 +213,12 @@ export const COUNTRY_OPTIONS:CountryOption[] = [
   },
 ];
 
+export const countryIsos = COUNTRY_OPTIONS.map((country) => country.iso);
+
+export const allCities = City.getAllCities().filter((city) =>
+  countryIsos.includes(city.countryCode)
+)
+
 // Get Cties for a specific country ISO code
 export const getCitiesByCountry = (countryIso2: string|''): CityOption[] => {
   if (!countryIso2) return [];

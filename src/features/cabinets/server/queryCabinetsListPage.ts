@@ -16,6 +16,7 @@ export type CabinetsListQuery = {
   pageSize: number
   sorting: SortingState
   city: string
+  data: Cabinet[]
 }
 
 export type CabinetsListPageResult = {
@@ -39,7 +40,7 @@ export function filterCabinets(
     }
     if (q) {
       const inName = row.name.toLowerCase().includes(q)
-      const inSerial = row.serial.toLowerCase().includes(q)
+      const inSerial = row?.serialNumber?.toLowerCase().includes(q)
       if (!inName && !inSerial) return false
     }
     return true
@@ -79,7 +80,7 @@ function compareRows(a: Cabinet, b: Cabinet, columnId: string): number {
  */
 export function queryCabinetsListPage(query: CabinetsListQuery): CabinetsListPageResult {
   const filtered = filterCabinets(
-    mockCabinetsList,
+    query.data,
     query.search,
     query.statusFilter,
     query.city

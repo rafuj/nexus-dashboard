@@ -366,14 +366,6 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
     }
   };
 
-  // const availableCities = useMemo(() => {
-  //   if (values.country) {
-  //     return getCitiesByCountry(values.country);
-  //   }
-
-  //   return [];
-  // }, [values.country]);
-
   // 1. Destructure the primitive string value out FIRST
   const countryCode = values.country;
 

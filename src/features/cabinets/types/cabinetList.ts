@@ -18,8 +18,8 @@ export interface Cabinet {
   name: string;
   city: string;
   zipCode: string;
-  addressLine1: string;
-  houseNumber: string;
+  street: string;
+  number: string;
   cabinetCode: string;
   updaidCode: string;
   serial: string;
@@ -39,6 +39,7 @@ export interface Cabinet {
   doorOpenedAt: Date | string | null;
   assetTakenAt: Date | string | null;
   temperatureOutOfRangeSince: Date | string | null;
+  serialNumber: string;
 }
 
 export interface SmartCabinet {

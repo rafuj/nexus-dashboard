@@ -24,6 +24,8 @@ interface CityComboboxProps {
   selectedCity: string;
   onSelectCity: (city: string) => void;
   disabled?: boolean;
+  prefix?: string
+  className?: string
 }
 
 export function CityCombobox({
@@ -31,6 +33,8 @@ export function CityCombobox({
   selectedCity,
   onSelectCity,
   disabled = false,
+  prefix,
+  className
 }: CityComboboxProps) {
   const [open, setOpen] = React.useState(false);
 
@@ -56,11 +60,12 @@ export function CityCombobox({
           role="combobox"
           aria-expanded={open}
           disabled={disabled || availableCities.length === 0}
-          className={cn("w-full justify-between h-12.5 px-5 bg-white rounded-md border !border-border text-accent-foreground", {
+          className={cn("w-full justify-between h-12.5 px-5 bg-white rounded-md border !border-border text-accent-foreground", className, {
             "!bg-[#BDBDBD]/15 !border-border cursor-auto !opacity-100 text-accent-foreground" : disabled
           })}
           
         >
+          {prefix && <span className="font-normal text-foreground">{prefix}:</span>}
           {selectedCity
             ? availableCities.find((city) => city.name === selectedCity)?.name || selectedCity
             : "Select city..."}
