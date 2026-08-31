@@ -1,4 +1,4 @@
-import type { CabinetConnectionType, CabinetStatus } from "../types/cabinetList"
+import type { CabinetConnectionType, CabinetStatus, SmartCabinet } from "../types/cabinetList"
 import dayjs from "dayjs";
 
 export function cabinetStatusLabel(status: CabinetStatus) {
@@ -10,7 +10,7 @@ export function cabinetStatusLabel(status: CabinetStatus) {
     case "warning":
       return "Active"
     case "paused":
-      return "Paused"
+      return "paused"
     case "n/a":
       return "N/A"
     default :
@@ -72,15 +72,15 @@ export function cabinetTypeLabel(type: CabinetConnectionType) {
 }
 
 // Asset Health
-export const getHealthBadgeClass = (health: string = "Ok") => {
+export const getHealthBadgeClass = (health: string = "ok") => {
   switch (health) {
-    case "Ok":
+    case "ok":
       return "bg-card-success text-success"
-    case "Warning":
+    case "warning":
       return "bg-card-warning text-warning"
-    case "Urgent":
+    case "urgent":
       return "bg-card-error text-error"
-    case "Paused":
+    case "paused":
       return "bg-card-neutral text-foreground" 
     case "n/a":
       return "bg-card-neutral text-foreground" 
@@ -89,15 +89,15 @@ export const getHealthBadgeClass = (health: string = "Ok") => {
   }
 }
 
-export const getHealthBadgeTooltipColor = (health: string = "Ok") => {
+export const getHealthBadgeTooltipColor = (health: string = "ok") => {
   switch (health) {
-    case "Ok":
+    case "ok":
       return "bg-success [&_.arrow]:bg-success [&_.arrow]:fill-success"
-    case "Warning":
+    case "warning":
       return "bg-warning [&_.arrow]:bg-warning [&_.arrow]:fill-warning"
-    case "Urgent":
+    case "urgent":
       return "bg-error [&_.arrow]:bg-error [&_.arrow]:fill-error"
-    case "Paused":
+    case "paused":
       return "bg-card-neutral text-foreground [&_.arrow]:bg-card-neutral [&_.arrow]:fill-card-neutral" 
     case "n/a":
       return "bg-card-neutral text-foreground [&_.arrow]:bg-card-neutral [&_.arrow]:fill-card-neutral" 
@@ -106,13 +106,13 @@ export const getHealthBadgeTooltipColor = (health: string = "Ok") => {
   }
 }
 
-export const getHealthTooltip = (health: string = "Ok") => {
+export const getHealthTooltip = (health: string = "ok") => {
   switch (health) {
-    case "Warning":
+    case "warning":
       return "Expiration date(s) about to reach "
-    case "Urgent":
+    case "urgent":
       return "Expiration date(s) reached"
-    // case "Paused":
+    // case "paused":
     //   return "Asset in stress"
     default:
       return "No attention needed"
@@ -121,22 +121,22 @@ export const getHealthTooltip = (health: string = "Ok") => {
 
 // Asset Presence
 type AssetPresenceStatus =
-  | "Present"
-  | "Taken"
-  | "Warning"
-  | "Urgent";
+  | "present"
+  | "taken"
+  | "warning"
+  | "urgent";
 
 export const getPresenceStatus = (
   assetPresent: boolean,
   takenAt?: string | Date | null
 ): AssetPresenceStatus => {
-  if (assetPresent) return "Present";
+  if (assetPresent) return "present";
 
   const hoursTaken = dayjs().diff(dayjs(takenAt), "hour", true);
 
-  if (hoursTaken < 1) return "Taken";
-  if (hoursTaken < 6) return "Warning";
-  return "Urgent";
+  if (hoursTaken < 1) return "taken";
+  if (hoursTaken < 6) return "warning";
+  return "urgent";
 };
 
 export const getPresenceBadgeClass = (
@@ -144,14 +144,14 @@ export const getPresenceBadgeClass = (
   takenAt?: string | Date | null
 ) => {
   switch (getPresenceStatus(assetPresent, takenAt)) {
-    case "Present":
+    case "present":
       return "bg-card-success text-success";
 
-    case "Taken":
-    case "Warning":
+    case "taken":
+    case "warning":
       return "bg-card-warning text-warning";
 
-    case "Urgent":
+    case "urgent":
       return "bg-card-error text-error";
   }
 };
@@ -161,16 +161,16 @@ export const getPresenceTooltip = (
   takenAt?: string | Date | null
 ) => {
   switch (getPresenceStatus(assetPresent, takenAt)) {
-    case "Present":
+    case "present":
       return "No attention needed";
 
-    case "Taken":
+    case "taken":
       return "Asset taken <1 hour";
 
-    case "Warning":
+    case "warning":
       return "Asset taken for >1 hour";
 
-    case "Urgent":
+    case "urgent":
       return "Asset taken for >6 hours";
   }
 };
@@ -180,45 +180,45 @@ export const getPresenceTooltipClass = (
   takenAt?: string | Date | null
 ) => {
   switch (getPresenceStatus(assetPresent, takenAt)) {
-    case "Present":
+    case "present":
       return "bg-success [&_.arrow]:bg-success [&_.arrow]:fill-success";
 
-    case "Taken":
-    case "Warning":
+    case "taken":
+    case "warning":
       return "bg-warning [&_.arrow]:bg-warning [&_.arrow]:fill-warning";
 
-    case "Urgent":
+    case "urgent":
       return "bg-error [&_.arrow]:bg-error [&_.arrow]:fill-error";
   }
 };
 
 
 // DoorStatus
-type DoorStatus = "Closed" | "Open" | "Warning" | "Urgent";
+type DoorStatus = "closed" | "open" | "warning" | "urgent";
 export const getDoorStatus = (
   openedAt?: string | Date | null
 ): DoorStatus => {
-  if (!openedAt) return "Closed";
+  if (!openedAt) return "closed";
 
   const minutesOpen = dayjs().diff(dayjs(openedAt), "minute");
 
-  if (minutesOpen < 30) return "Open";
-  if (minutesOpen < 60) return "Warning";
-  return "Urgent";
+  if (minutesOpen < 30) return "open";
+  if (minutesOpen < 60) return "warning";
+  return "urgent";
 };
 
 export const getDoorBadgeClass = (openedAt?: string | Date | null) => {
   const status = getDoorStatus(openedAt);
 
   switch (status) {
-    case "Closed":
+    case "closed":
       return "bg-card-success text-success";
 
-    case "Open":
-    case "Warning":
+    case "open":
+    case "warning":
       return "bg-card-warning text-warning";
 
-    case "Urgent":
+    case "urgent":
       return "bg-card-error text-error";
   }
 };
@@ -227,16 +227,16 @@ export const getDoorStatusTooltip = (openedAt?: string | Date | null) => {
   const status = getDoorStatus(openedAt);
 
   switch (status) {
-    case "Closed":
+    case "closed":
       return "No attention needed";
 
-    case "Open":
+    case "open":
       return "Door open <30 min";
 
-    case "Warning":
+    case "warning":
       return "Door open for >30 min";
 
-    case "Urgent":
+    case "urgent":
       return "Door open for >1 hour";
   }
 };
@@ -247,14 +247,14 @@ export const getDoorStatusTooltipClass = (
   const status = getDoorStatus(openedAt);
 
   switch (status) {
-    case "Closed":
+    case "closed":
       return "bg-success [&_.arrow]:bg-success [&_.arrow]:fill-success";
 
-    case "Open":
-    case "Warning":
+    case "open":
+    case "warning":
       return "bg-warning [&_.arrow]:bg-warning [&_.arrow]:fill-warning";
 
-    case "Urgent":
+    case "urgent":
       return "bg-error [&_.arrow]:bg-error [&_.arrow]:fill-error";
   }
 };
@@ -262,7 +262,7 @@ export const getDoorStatusTooltipClass = (
 const HIGH_TEMPERATURE_LIMIT = 25
 const LOW_TEMPERATURE_LIMIT = 20
 
-export type TemperatureStatus = "OK" | "Warning" | "Urgent";
+export type TemperatureStatus = "ok" | "warning" | "urgent";
 export type TemperatureState = {
   current: number;
   temperatureOutOfRangeSince: string | Date | null;
@@ -272,19 +272,19 @@ export const getTemperatureStatus = ({
   current,
   temperatureOutOfRangeSince,
 }: TemperatureState): TemperatureStatus => {
-  if (LOW_TEMPERATURE_LIMIT >= current && current >= HIGH_TEMPERATURE_LIMIT) return "OK";
+  if (LOW_TEMPERATURE_LIMIT >= current && current >= HIGH_TEMPERATURE_LIMIT) return "ok";
   const hours = dayjs().diff(dayjs(temperatureOutOfRangeSince), "hour", true);
 
-  if (hours < 1) return "OK";
-  if (hours < 2) return "Warning";
-  return "Urgent";
+  if (hours < 1) return "ok";
+  if (hours < 2) return "warning";
+  return "urgent";
 };
 
 export const getTemperatureTooltipClass = (data: TemperatureState) => {
   switch (getTemperatureStatus(data)) {
-    case "Urgent":
+    case "urgent":
       return "bg-error [&_.arrow]:bg-error [&_.arrow]:fill-error";
-    case "Warning":
+    case "warning":
       return "bg-warning [&_.arrow]:bg-warning [&_.arrow]:fill-warning";
     default:
       return "bg-success [&_.arrow]:bg-success [&_.arrow]:fill-success";
@@ -293,9 +293,9 @@ export const getTemperatureTooltipClass = (data: TemperatureState) => {
 
 export const getTemperatureBadgeClass = (data: TemperatureState) => {
   switch (getTemperatureStatus(data)) {
-    case "Urgent":
+    case "urgent":
       return "bg-card-error text-error";
-    case "Warning":
+    case "warning":
       return "bg-card-warning text-warning";
     default:
       return "bg-card-success text-success";
@@ -305,11 +305,11 @@ export const getTemperatureBadgeClass = (data: TemperatureState) => {
 export const getTemperatureTooltip = (data: TemperatureState) => {
   const status = getTemperatureStatus(data);
 
-  if (status === "OK") {
+  if (status === "ok") {
     return "No attention needed";
   }
 
-  if (status === "Warning") {
+  if (status === "warning") {
     return data.current >= HIGH_TEMPERATURE_LIMIT
       ? "Temperature too high for >1 hour"
       : "Temperature too low for >1 hour";
@@ -318,4 +318,127 @@ export const getTemperatureTooltip = (data: TemperatureState) => {
   return data.current >= HIGH_TEMPERATURE_LIMIT
     ? "Temperature too high for >2 hours"
     : "Temperature too low for >2 hours";
+};
+
+
+
+export const getOverallStatus = (cabinet: SmartCabinet) => {
+  const assetTakenAt = cabinet.deviceState?.assetStateChangedAt;
+  const assetPresent = cabinet.deviceState?.assetPresent;
+  const doorOpen = cabinet.deviceState?.doorOpen;
+  const temperature = cabinet.deviceState?.temperature;
+
+  const temperatureOutOfRangeSince = new Date(); // data is not available now
+
+  if (!cabinet.deviceState) {
+    return "n/a"
+  }
+  
+  if (cabinet?.status === "paused") {
+    return "paused"
+  }
+
+  if (
+    getPresenceStatus(assetPresent, assetTakenAt) === "urgent" ||
+    doorOpen ||
+    getTemperatureStatus({
+      current: temperature,
+      temperatureOutOfRangeSince,
+    }) === "urgent"
+  ) {
+    return "urgent"
+  }
+
+  if (
+    getTemperatureStatus({
+      current: temperature,
+      temperatureOutOfRangeSince,
+    }) === "warning" ||
+    getPresenceStatus(assetPresent, assetTakenAt) === "warning" ||
+    getPresenceStatus(assetPresent, assetTakenAt) === "taken"
+  ) {
+    return "warning"
+  }
+
+  return "ok"
+};
+export const getOverallStatusBadgeClass = (cabinet: SmartCabinet) => {
+  const assetTakenAt = cabinet.deviceState?.assetStateChangedAt;
+  const assetPresent = cabinet.deviceState?.assetPresent;
+  const doorOpen = cabinet.deviceState?.doorOpen;
+  const temperature = cabinet.deviceState?.temperature;
+
+  const temperatureOutOfRangeSince = new Date(); // data is not available now
+
+  if (!cabinet.deviceState) {
+    return getHealthBadgeClass("n/a")
+  }
+  
+  if (cabinet?.status === "paused") {
+    return getHealthBadgeClass("paused")
+  }
+
+  if (
+    getPresenceStatus(assetPresent, assetTakenAt) === "urgent" ||
+    doorOpen ||
+    getTemperatureStatus({
+      current: temperature,
+      temperatureOutOfRangeSince,
+    }) === "urgent"
+  ) {
+    return getHealthBadgeClass("urgent")
+  }
+
+  if (
+    getTemperatureStatus({
+      current: temperature,
+      temperatureOutOfRangeSince,
+    }) === "warning" ||
+    getPresenceStatus(assetPresent, assetTakenAt) === "warning" ||
+    getPresenceStatus(assetPresent, assetTakenAt) === "taken"
+  ) {
+    return getHealthBadgeClass("warning")
+  }
+
+  return getHealthBadgeClass("ok")
+};
+export const getOverallStatusCardClass = (cabinet: SmartCabinet) => {
+  const assetTakenAt = cabinet.deviceState?.assetStateChangedAt;
+  const assetPresent = cabinet.deviceState?.assetPresent;
+  const doorOpen = cabinet.deviceState?.doorOpen;
+  const temperature = cabinet.deviceState?.temperature;
+
+  const temperatureOutOfRangeSince = new Date(); // data is not available now
+
+  if (!cabinet.deviceState) {
+    return getHealthBadgeClass("n/a")
+  }
+  
+  if (cabinet?.status === "paused") {
+    return getHealthBadgeClass("paused")
+  }
+
+  if (
+    getPresenceStatus(assetPresent, assetTakenAt) === "urgent" ||
+    doorOpen ||
+    getTemperatureStatus({
+      current: temperature,
+      temperatureOutOfRangeSince,
+    }) === "urgent"
+  ) {
+    return getHealthBadgeClass("urgent")
+  }
+
+  if (
+    getTemperatureStatus({
+      current: temperature,
+      temperatureOutOfRangeSince,
+    }) === "warning" ||
+    getPresenceStatus(assetPresent, assetTakenAt) === "warning" ||
+    getPresenceStatus(assetPresent, assetTakenAt) === "taken"
+  ) {
+    return getHealthBadgeClass("warning")
+  }
+
+  return getHealthBadgeClass("ok")
 };

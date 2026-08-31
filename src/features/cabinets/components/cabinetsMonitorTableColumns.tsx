@@ -8,7 +8,7 @@ import { cn, formatDateTime } from "@/lib/utils" // Adjusted path to use your Ca
 import { Link } from "react-router"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/components/ui/tooltip"
 import type { SmartCabinet } from "../types/cabinetList"
-import { getDoorBadgeClass, getDoorStatus, getDoorStatusTooltip, getDoorStatusTooltipClass, getHealthBadgeClass, getHealthBadgeTooltipColor, getHealthTooltip, getPresenceBadgeClass, getPresenceStatus, getPresenceTooltip, getPresenceTooltipClass, getTemperatureBadgeClass, getTemperatureStatus, getTemperatureTooltip, getTemperatureTooltipClass, type TemperatureState } from "../lib/cabinetListDisplay"
+import { getDoorBadgeClass, getDoorStatus, getDoorStatusTooltip, getDoorStatusTooltipClass, getHealthBadgeClass, getHealthBadgeTooltipColor, getHealthTooltip, getOverallStatusBadgeClass, getPresenceBadgeClass, getPresenceStatus, getPresenceTooltip, getPresenceTooltipClass, getTemperatureBadgeClass, getTemperatureStatus, getTemperatureTooltip, getTemperatureTooltipClass, type TemperatureState } from "../lib/cabinetListDisplay"
 
 const columnHelper = createColumnHelper<SmartCabinet>()
 
@@ -17,7 +17,7 @@ export const getTemperatureChip = (
   className?: string
 ) => {
   switch (getTemperatureStatus(data)) {
-    case "Urgent":
+    case "urgent":
       return (
         <span
           className={cn(
@@ -29,7 +29,7 @@ export const getTemperatureChip = (
         </span>
       );
 
-    case "Warning":
+    case "warning":
       return (
         <span
           className={cn(
@@ -45,11 +45,11 @@ export const getTemperatureChip = (
       return (
         <span
           className={cn(
-            "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block", getTemperatureBadgeClass(data),
+            "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block uppercase", getTemperatureBadgeClass(data),
             className
           )}
         >
-          OK
+          ok
         </span>
       );
   }
@@ -68,26 +68,8 @@ export const cabinetsMonitorTableColumns = [
       cellClassName: "align-middle",
     },
     cell: ({ row }) => {
-      const assetTakenAt = row.original.deviceState?.assetStateChangedAt
-      const assetPresent = row.original.deviceState?.assetPresent
-      const doorOpen = row.original.deviceState?.doorOpen
-      const temperature = row.original.deviceState?.temperature
-      const temperatureOutOfRangeSince = new Date() // data is not available now
-      const notInitialized = !row.original.deviceState
-
-      const getCabinetStatusColor = () => {
-        if(notInitialized) {
-          return getHealthBadgeClass("n/a")
-        } else if (getPresenceStatus(assetPresent, assetTakenAt) === "Urgent" || doorOpen || getTemperatureStatus({current:temperature, temperatureOutOfRangeSince}) === "Urgent") {
-          return getHealthBadgeClass("Urgent")
-        } else if (getTemperatureStatus({current:temperature, temperatureOutOfRangeSince}) === "Warning" || getPresenceStatus(assetPresent, assetTakenAt) === "Warning" || getPresenceStatus(assetPresent, assetTakenAt) === "Taken") {
-          return getHealthBadgeClass("Warning")
-        } else {
-          return getHealthBadgeClass("Ok")
-        }
-      }
       return (
-        <Link className={cn("px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all", getCabinetStatusColor())} to={`/cabinets/monitor/${row.original.id}`} >
+        <Link className={cn("px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all", getOverallStatusBadgeClass(row.original))} to={`/cabinets/monitor/${row.original.id}`} >
             {row.original.name}
         </Link>
       )
@@ -118,8 +100,8 @@ export const cabinetsMonitorTableColumns = [
       cellClassName: "align-middle relative group",
     },
     cell: ({ row }) => {
-      const health = !row.original.deviceState ? "n/a" : "Ok"
-      const healthText = !row.original.deviceState ? "N/A" : "Ok"
+      const health = !row.original.deviceState ? "n/a" : "ok"
+      const healthText = !row.original.deviceState ? "N/A" : "OK"
       const notInitialized = !row.original.deviceState
 
       return (
@@ -128,7 +110,7 @@ export const cabinetsMonitorTableColumns = [
             <TooltipTrigger>
               <span
                   className={cn(
-                    "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all",
+                    "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all capitalize",
                     getHealthBadgeClass(health)
                   )}
                 >
@@ -176,7 +158,7 @@ export const cabinetsMonitorTableColumns = [
                   row.original.deviceState?.assetPresent ? (
                     <span
                     className={cn(
-                      "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all",
+                      "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all capitalize",
                       getPresenceBadgeClass(assetPresent, assetTakenAt)
                     )}
                   >
@@ -185,7 +167,7 @@ export const cabinetsMonitorTableColumns = [
                   ) : (
                       <span
                       className={cn(
-                        "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all",
+                        "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all capitalize",
                         getPresenceBadgeClass(assetPresent, assetTakenAt)
                       )}
                     >
@@ -237,7 +219,7 @@ export const cabinetsMonitorTableColumns = [
                   row.original.deviceState?.doorOpen ? (
                     <span
                       className={cn(
-                        "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all",
+                        "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all capitalize",
                         getDoorBadgeClass(doorOpenedAt)
                       )}
                     >
@@ -246,7 +228,7 @@ export const cabinetsMonitorTableColumns = [
                     ) : (
                       <span
                         className={cn(
-                          "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all",
+                          "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all capitalize",
                           getDoorBadgeClass()
                         )}
                       >

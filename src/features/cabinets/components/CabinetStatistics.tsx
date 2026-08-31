@@ -21,7 +21,7 @@ export const CabinetStatistics = () => {
   const doorOpenedAt = isSuccess && data?.doorOpen ? data?.doorStateChangedAt : ""
   const assetTakenAt = isSuccess && data?.assetStateChangedAt
   const assetPresent = isSuccess && data?.assetPresent
-  const health = "Ok"
+  const health = "ok"
 
   // const isPaused = data?.status === "paused"
 
@@ -36,7 +36,7 @@ export const CabinetStatistics = () => {
             <TooltipTrigger className="w-full">
               <span
                 className={cn(
-                  "px-3 py-1 rounded-[4px] text-xs w-full text-center block transition-all",
+                  "px-3 py-1 rounded-[4px] text-xs w-full text-center block transition-all capitalize",
                   getDoorBadgeClass(doorOpenedAt)
                 )}
               >
@@ -56,7 +56,7 @@ export const CabinetStatistics = () => {
               <TooltipTrigger className="w-full">
                 <span
                   className={cn(
-                    "px-3 py-1 rounded-[4px] text-xs w-full text-center inline-block transition-all",
+                    "px-3 py-1 rounded-[4px] text-xs w-full text-center inline-block transition-all capitalize",
                     getPresenceBadgeClass(assetPresent, assetTakenAt)
                   )}
                 >
@@ -76,7 +76,7 @@ export const CabinetStatistics = () => {
               <TooltipTrigger className="w-full">
                 <span
                     className={cn(
-                      "px-3 py-1 rounded-[4px] text-xs w-full text-center inline-block transition-all",
+                      "px-3 py-1 rounded-[4px] text-xs w-full text-center inline-block transition-all uppercase",
                       getHealthBadgeClass(health)
                     )}
                   >

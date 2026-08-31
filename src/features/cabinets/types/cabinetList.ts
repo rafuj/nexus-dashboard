@@ -9,59 +9,30 @@ export type FilterStatus = "ok" | "warning" | "urgent" | "paused" | 'all'
 
 export type CabinetConnectionType = "connected" | "not_connected";
 
-export type AssetHealth = 'Ok' | 'Warning' | 'Urgent' | 'Paused';
-export type AssetPresence = 'Present' | 'Missing';
-export type DoorStatus = 'Closed' | 'Open';
+export type AssetHealth = 'ok' | 'warning' | 'urgent' | 'paused';
+export type AssetPresence = 'present' | 'missing';
+export type DoorStatus = 'closed' | 'open';
 
-export interface Cabinet {
-  id: string;
-  name: string;
-  city: string;
-  zipCode: string;
-  street: string;
-  number: string;
-  cabinetCode: string;
-  updaidCode: string;
-  serial: string;
-  type: CabinetConnectionType;
-  location: string;
-  locationCoordinates: {
-    lat: number;
-    lng: number;
-  };
-  asset: "aed" | "none";
-  assetPresence: AssetPresence;
-  assetHealth: AssetHealth;
-  doorStatus: DoorStatus;
-  status: CabinetStatus;
-  temperature: number;
-  lastActivityAt: string;
-  doorOpenedAt: Date | string | null;
-  assetTakenAt: Date | string | null;
-  temperatureOutOfRangeSince: Date | string | null;
-  serialNumber: string;
-}
-
-export interface SmartCabinet {
-  id: string;
-  name: string;
+interface BaseCabinet {
   accessType: string;
-  addressLine1: string;
+  id: string;
+  name: string;
   city: string;
   country: string;
   zipCode: string;
-
+  latitude: number;
+  longitude: number;
+  street: string;
+  number: string;
+  addressLine2: string;
   serialNumber: string;
   lockCode: string;
-
   assignedAt: string;
   createdAt: string;
   description: string;
-
   smart: boolean;
   status: string;
   tenantId: string;
-
   deviceState: {
     assetPresent: boolean;
     assetStateChangedAt: string;
@@ -72,11 +43,12 @@ export interface SmartCabinet {
     lastSeenAt: string;
     rssi: number;
     temperature: number;
-
-    // not available in api
-    assetHealth: string
+    assetHealth: string;
   };
 }
+
+export interface Cabinet extends BaseCabinet {}
+export interface SmartCabinet extends BaseCabinet {}
 
 export type CabinetsListToolbarProps = {
   search: string
@@ -110,6 +82,18 @@ export const cabinetConfig = {
     pin: "text-error",
   },
   paused: {
+    bg: "card-neutral",
+    text: "text-foreground",
+    badge: "bg-foreground text-white",
+    pin: "text-foreground",
+  },
+  assigned: {
+    bg: "card-success",
+    text: "text-success",
+    badge: "bg-success text-white",
+    pin: "text-success",
+  },
+  "n/a": {
     bg: "card-neutral",
     text: "text-foreground",
     badge: "bg-foreground text-white",

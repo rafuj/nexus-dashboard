@@ -12,7 +12,6 @@ import { ChevronRight, PlusCircle } from "lucide-react";
 
 import { CabinetsListToolbar } from "../components/CabinetsListToolbar";
 import { cabinetListColumns } from "../components/cabinetsTableColumns";
-// import { queryCabinetsListPage } from "../server/queryCabinetsListPage";
 import { DataTable, DataTablePagination } from "@/shared/components/data-table";
 import { cn } from "@/lib/utils";
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
@@ -55,9 +54,7 @@ export default function CabinetsListView() {
   const debouncedSearch = useDebounce(search, 400)
   const {
     data,
-    // isPending,
     isFetching,
-    // isError,
     refetch,
   } = useCabinetsList({
     search: debouncedSearch,
@@ -206,14 +203,14 @@ export default function CabinetsListView() {
             {(isFetching && !data) ? (
                 <div className="p-5 bg-white border border-border rounded-md">
                   <div className="flex flex-col gap-4">
-                    <Skeleton className="h-14 w-1/2" />
-                    <Skeleton className="h-14" />
-                    <Skeleton className="h-14 w-3/4" />
-                    <Skeleton className="h-14 w-[90%]" />
-                    <Skeleton className="h-14 w-3/4" />
-                    <Skeleton className="h-14 w-[90%]" />
-                    <Skeleton className="h-14 w-1/2" />
-                    <Skeleton className="h-14 w-3/4" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
                   </div>
                 </div>
               ) : (
