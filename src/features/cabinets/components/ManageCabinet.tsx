@@ -156,16 +156,20 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
     // Only Create
     if(!cabinetId && !id) {
       if(isSerialError) {
-        setFieldValue("imei", "")
-        setFieldValue("imeiRecognition", false)
-        setFieldValue("serialNumberRecognition", false)
-      } else if(serialData && isSerialSuccess) {
-          setFieldValue("serialNumberRecognition", true)
-          setFieldValue("imei", serialData?.imei)
-          setFieldValue("imeiRecognition", true)
-      } else if(isSerialSuccess && !serialData) {
-          setFieldValue("imei", "")
-          setFieldValue("imeiRecognition", false)
+        setValues({
+          ...values,
+          imei: "",
+          imeiRecognition: false,
+          serialNumberRecognition: false,
+        }, true)
+      }
+      if(serialData && isSerialSuccess) {
+        setValues({
+          ...values,
+          serialNumberRecognition: true,
+          imei: serialData?.imei || "",
+          imeiRecognition: true,
+        }, true)
       }
     }
   },[serialData, isSerialSuccess, isSerialError])
@@ -880,12 +884,11 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                           ...values, 
                           serialNumberRecognition: false,
                           serialNumber: e.target.value
-                        }, true)
+                        })
                       }}
                       onBlur={handleBlur}
                       readOnly={Boolean(serialLoading || !values.brand || fieldsReadOnly || cabinetId || id)}
                       maxLength={50}
-                      // errors={touched.serialNumber ? errors.serialNumber : (errors.serialNumberRecognition ? errors.serialNumberRecognition : '')}
                       errors={errors.serialNumber || errors.serialNumberRecognition || ''}
                     />
                     <div className="text-xs mt-2">
@@ -923,7 +926,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                         readOnly={Boolean(
                           (values.brand === "Nexus" && serialData?.imei) || imeiLoading
                         ) || fieldsReadOnly || Boolean(cabinetId || id)}
-                        errors={touched.imei ? errors.imei : (errors.imeiRecognition ? errors.imeiRecognition : '')}
+                        errors={(touched.imei || touched.imeiRecognition) ? (errors.imei || errors.imeiRecognition) : ''}
                       />
                       {values.imeiRecognition && <CircleCheck size={20} className="absolute top-1/2 right-3 -translate-y-1/2 text-[#11BE48]" />}
                     </div>
