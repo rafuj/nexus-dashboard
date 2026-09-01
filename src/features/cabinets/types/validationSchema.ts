@@ -68,14 +68,14 @@ export const cabinetValidationSchema = Yup.object({
         .required("Serial number is required")
         .matches(
           serialRegex,
-          "Nexus Brand Serial number format does not match"
+          "Nexus serial number invalid. Please check again"
         ),
     otherwise: (schema) =>
       schema
         .notRequired()
         .test(
           "no-nexus-regex",
-          "Serial number cannot follow Nexus format",
+          "Nexus serial number invalid. Please check again",
           (value) => !value || !serialRegex.test(value)
         ),
   }),
@@ -84,28 +84,25 @@ export const cabinetValidationSchema = Yup.object({
   .when("brand", {
     is: (brand: string) => brand !== "Nexus",
     then: (schema) => schema.notRequired(),
-    otherwise: (schema) => schema.default(false).required("Serial number does not recognized"),
+    otherwise: (schema) => schema.default(false).required("Nexus serial number invalid. Please check again"),
   }),
 
   imei: Yup.string()
     .trim()
     .notRequired()
     .matches(imeiRegex, {
-      message: "Invalid Module Code format",
+      message: "Module code invalid. Please check again",
       excludeEmptyString: true,
     }),
 
-  imeiRecognition: Yup.boolean().when(
-    ["brand", "imei"],
-    {
-      is: (brand: string, imei: string) =>
-        brand !== "Nexus" && imei !== "",
-      then: (schema) =>
-        schema
-          .required("Module code does not recognized"),
-      otherwise: (schema) => schema.notRequired(),
-    }
-  ),
+  imeiRecognition: Yup.boolean().when("brand", {
+    is: (brand?: string) => brand !== "Nexus",
+    then: (schema) =>
+      schema
+        .oneOf([true], "Module code invalid. Please check again")
+        .required("Module code invalid. Please check again"),
+    otherwise: (schema) => schema.notRequired().nullable(),
+  }),
 
   brand: Yup.string()
   .trim()
@@ -165,9 +162,9 @@ export const cabinetUpdateSchema = Yup.object({
   .trim()
   .required("Access type is required"),
 
-  cabinetModelId: Yup.string()
-  .trim()
-  .required("Model is required"),
+  // cabinetModelId: Yup.string()
+  // .trim()
+  // .required("Model is required"),
 
   // serialNumber: Yup.string()
   // .trim()
@@ -190,9 +187,9 @@ export const cabinetUpdateSchema = Yup.object({
   //   otherwise: (schema) => schema.default(false).required("Serial number does not recognized"),
   // }),
 
-  brand: Yup.string()
-  .trim()
-  .required("Brand is required"),
+  // brand: Yup.string()
+  // .trim()
+  // .required("Brand is required"),
   
 });
 
