@@ -117,11 +117,11 @@ export default function CabinetMapCard({ cabinets, openCabinetId, setOpenCabinet
                                 <div className="p-1 min-w-[260px] font-sans text-accent-foreground text-xs">
                                 
                                     {/* Top Header Label */}
-                                    <Link to={`/cabinets/monitor?id=${cabinet.id}`}>
-                                        <h3 className="text-sm font-semibold pb-2 underline">
+                                    <h3 className="text-sm pb-2 font-semibold">
+                                        <Link to={`/cabinets/monitor?id=${cabinet.id}`} className='underline'>
                                             {cabinet.name}
-                                        </h3>
-                                    </Link>
+                                        </Link>
+                                    </h3>
                                     
                                     {/* Details Rows */}
                                     <div className="flex justify-between py-1.5 gap-3">
