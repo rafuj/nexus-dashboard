@@ -68,7 +68,7 @@ export function CityCombobox({
           {prefix && <span className="font-normal text-foreground">{prefix}:</span>}
           {selectedCity
             ? availableCities.find((city) => city.name === selectedCity)?.name || selectedCity
-            : "Select city..."}
+            : "Select City"}
           {!disabled && <ChevronDown className="ml-2 h-4 w-4 shrink-0" />}
         </Button>
       </PopoverTrigger>
