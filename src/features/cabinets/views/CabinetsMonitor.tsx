@@ -26,7 +26,7 @@ import { useDebounce } from "@/app/hooks/use-debounce";
 
 const CITY_FILTER_ALL = "all";
 const STATUS_FILTER_ALL = "all";
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 12;
 const filterStatuses = [
   "paused",
   "ok",

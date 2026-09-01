@@ -50,7 +50,7 @@ export default function CabinetsMapView() {
 
   const filteredCabinets = filterCabinets(
       data || [],
-      search,
+      debouncedSearch,
       statusFilter,
       "",
       city

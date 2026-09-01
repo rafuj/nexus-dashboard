@@ -1,9 +1,9 @@
-import React, { useMemo, type Dispatch, type SetStateAction } from 'react';
-import { Map, APIProvider, AdvancedMarker, Pin, InfoWindow } from '@vis.gl/react-google-maps';
+import React, { useEffect, useMemo, type Dispatch, type SetStateAction } from 'react';
+import { Map, APIProvider, AdvancedMarker, Pin, InfoWindow, useMap } from '@vis.gl/react-google-maps';
 import { Icons } from '@/app/icons/icons';
 import { cn, formatDateTime } from '@/lib/utils';
 import { Link } from 'react-router';
-import type { SmartCabinet } from '../types/cabinetList';
+import type { Cabinet, SmartCabinet } from '../types/cabinetList';
 import { getOverallStatus, getOverallStatusBadgeClass } from '../lib/cabinetListDisplay';
 
 // Map status to Hex codes specifically for Google's native <Pin /> element
@@ -22,51 +22,6 @@ interface CabinetMapProps {
 }
 export default function CabinetMapCard({ cabinets, openCabinetId, setOpenCabinetId }: CabinetMapProps) {
 
-    function getZoomFromBounds(bounds: { north: number; south: number; east: number; west: number }) {
-        const latDiff = Math.abs(bounds.north - bounds.south);
-        const lngDiff = Math.abs(bounds.east - bounds.west);
-        const maxDiff = Math.max(latDiff, lngDiff);
-
-        if (maxDiff < 0.01) return 15;
-        if (maxDiff < 0.05) return 13;
-        if (maxDiff < 0.2) return 11;
-        if (maxDiff < 1) return 9;
-        if (maxDiff < 5) return 7;
-        return 5;
-    }
-
-    const { defaultCenter, defaultZoom } = useMemo(() => {
-        const validCabinets = cabinets.filter(
-            (c) => c.latitude != null && c.longitude != null && Number(c.latitude) !== 0
-        );
-
-        if (!validCabinets.length) {
-            return { defaultCenter: { lat: 40.416775, lng: -3.70379 }, defaultZoom: 6 }; // Default fallback (e.g., Spain)
-        }
-
-        let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
-        let sumLat = 0, sumLng = 0;
-
-        validCabinets.forEach((c) => {
-            const lat = Number(c.latitude);
-            const lng = Number(c.longitude);
-            minLat = Math.min(minLat, lat);
-            maxLat = Math.max(maxLat, lat);
-            minLng = Math.min(minLng, lng);
-            maxLng = Math.max(maxLng, lng);
-            sumLat += lat;
-            sumLng += lng;
-        });
-
-        const center = {
-            lat: sumLat / validCabinets.length,
-            lng: sumLng / validCabinets.length,
-        };
-
-        const zoom = getZoomFromBounds({ north: maxLat, south: minLat, east: maxLng, west: minLng });
-
-        return { defaultCenter: center, defaultZoom: zoom };
-    }, [cabinets]);
 
     return (
         <div className="relative">
@@ -118,8 +73,6 @@ export default function CabinetMapCard({ cabinets, openCabinetId, setOpenCabinet
             <div className="min-h-[450px] h-full rounded-xl overflow-hidden relative">
                 <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
                     <Map
-                        defaultCenter={defaultCenter}
-                        defaultZoom={defaultZoom}
                         mapId="NEXUS_CLUSTER_MAP" // Required for AdvancedMarker pin colors
                         disableDefaultUI={false}
                         zoomControl={true}
@@ -130,6 +83,7 @@ export default function CabinetMapCard({ cabinets, openCabinetId, setOpenCabinet
                         streetViewControl={false}   // Removes the orange Pegman icon
                         mapTypeControl={false}
                     >
+                    <MapViewport cabinets={cabinets} />
                     {cabinets.map((cabinet) => {
                         const position = {
                             lat: cabinet?.latitude || 0,
@@ -224,3 +178,41 @@ export default function CabinetMapCard({ cabinets, openCabinetId, setOpenCabinet
         </div>
     );
 }
+const MapViewport = ({ cabinets }: { cabinets: Cabinet[] }) => {
+    const map = useMap();
+
+    useEffect(() => {
+        if (!map) return;
+
+        const validCabinets = cabinets.filter(
+            (cabinet) =>
+            cabinet.latitude != null &&
+            cabinet.longitude != null &&
+            Number(cabinet.latitude) !== 0 &&
+            Number(cabinet.longitude) !== 0
+        );
+
+        if (!validCabinets.length) return;
+
+        const bounds = new google.maps.LatLngBounds();
+
+        validCabinets.forEach((cabinet) => {
+            bounds.extend({
+                lat: Number(cabinet.latitude),
+                lng: Number(cabinet.longitude),
+            });
+        });
+
+        map.fitBounds(bounds);
+        google.maps.event.addListenerOnce(map, "idle", () => {
+            if ((map.getZoom() ?? 0) > 16) {
+                map.setZoom(16);
+            }
+        });
+
+        }, [map, cabinets]);
+    
+    return null;
+}
+
+  
