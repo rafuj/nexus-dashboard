@@ -98,14 +98,14 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
   const updateAssetComponents = useUpdateAssetComponents()
   // Cabinet View States
   const validationSchema = useMemo(() => {
-    if (!cabinetId) {
+    if (!cabinetId && !id) {
       return cabinetValidationSchema
     }
 
     return step === 'basic-information'
       ? cabinetUpdateSchema
       : assetUpdateSchema
-  }, [cabinetId, step])
+  }, [cabinetId, id, step])
   // Basic Information
   const formik = useFormik({
     initialValues: cabinetInitialValues(),
@@ -175,7 +175,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
 
   // reset formik when there is a cabinet data
   useEffect(() => {
-    if (isSuccess && isAssetViewSuccess && data && assetViewData) {
+    if (data || assetViewData) {
       formik.resetForm({
         values: cabinetInitialValues({
           ...data,
@@ -213,10 +213,9 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
         )
       );
     }
-
     if (step === "basic-information") {
       // Error Block
-      if(errors.name || errors.addressLine1 || errors.zipCode || errors.city || errors.country || errors.accessType || errors.brand || errors.cabinetModelId || errors.imei || errors.street || errors.number || errors.latitude || errors.serialNumber || errors.imeiRecognition || errors.serialNumberRecognition) {
+      if(Object.keys(errors).length !== 0) {
         errorToast("Please fill all required fields")
         return
       } else {
@@ -349,7 +348,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
     }
 
     if (step === "basic-information") {
-      if(errors.name || errors.addressLine1 || errors.zipCode || errors.city || errors.country || errors.accessType || errors.brand || errors.cabinetModelId || errors.imei || errors.street || errors.number || errors.latitude) {
+      if(Object.keys(errors).length !== 0) {
         errorToast("Please fill all required fields")
         return
       } else {
@@ -474,8 +473,8 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                       {!assetTypesLoading && assetTypes?.map((option) => (
                         <DropdownMenuItem className="text-accent-foreground font-semibold text-xs h-10 py-2 px-2.5 hover:!bg-chip" 
                           onClick={()=> {
-                            setFieldValue("asset.id", option.id)
-                            setFieldValue("asset.name", option.name)
+                            setFieldValue("asset.id", option.id, true)
+                            setFieldValue("asset.name", option.name, true)
                           }} key={option.id}>
                           {option.name}
                         </DropdownMenuItem>
@@ -496,7 +495,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                     <div>
                       <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand<span className="text-error">*</span></Label>
                       <Select value={values.asset.brand} onValueChange={(value)=> {
-                          setFieldValue("asset.brand", value)
+                          setFieldValue("asset.brand", value, true)
                           setFieldValue("asset.assetModelId", "")
                         }} disabled={!brandsList || fieldsReadOnly}>
                         <SelectTrigger className={cn("w-full !h-12.5")}>
@@ -519,7 +518,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                     <div>
                       <Label className="text-xs text-accent-foreground font-medium block mb-3">Model<span className="text-error">*</span></Label>
                       <Select value={values.asset.assetModelId} onValueChange={(value)=> {
-                          setFieldValue("asset.assetModelId", value)
+                          setFieldValue("asset.assetModelId", value, true)
                         }} disabled={!modelsList || fieldsReadOnly}>
                         <SelectTrigger className={cn("w-full !h-12.5")}>
                           <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
@@ -557,14 +556,14 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                         <DatePicker className="!bg-white text-xs pl-5 pr-4"
                           dateType="past"
                           value={values.asset.purchaseDate}
-                          onChange={(value)=>setFieldValue("asset.purchaseDate", value)} disabled={fieldsReadOnly} />
+                          onChange={(value)=>setFieldValue("asset.purchaseDate", value, true)} disabled={fieldsReadOnly} />
                       </div>
                       <div>
                         <Label className="text-xs text-accent-foreground font-medium block mb-3">Next check-up</Label>
                         <DatePicker className="!bg-white text-xs pl-5 pr-4"
                           dateType="future"
                           value={values.asset.checkupDate} 
-                          onChange={(value)=>setFieldValue("asset.checkupDate", value)} disabled={fieldsReadOnly} />
+                          onChange={(value)=>setFieldValue("asset.checkupDate", value, true)} disabled={fieldsReadOnly} />
                       </div>
                     </div>
                   </div>
@@ -576,21 +575,21 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                           <DatePicker className="!bg-white text-xs pl-5 pr-4"
                             dateType="future"
                             value={values.asset.expiresAt}
-                            onChange={(value)=>setFieldValue("asset.expiresAt", value)} disabled={fieldsReadOnly} />
+                            onChange={(value)=>setFieldValue("asset.expiresAt", value, true)} disabled={fieldsReadOnly} />
                         </div>
                         <div>
                           <Label className="text-xs text-accent-foreground font-medium block mb-3">Check-Up Date</Label>
                           <DatePicker className="!bg-white text-xs pl-5 pr-4" 
                             dateType="future"
                             value={values.asset.checkupDate} 
-                            onChange={(value)=>setFieldValue("asset.checkupDate", value)} disabled={fieldsReadOnly} />
+                            onChange={(value)=>setFieldValue("asset.checkupDate", value, true)} disabled={fieldsReadOnly} />
                         </div>
                         <div>
                           <Label className="text-xs text-accent-foreground font-medium block mb-3">Date of Purchase</Label>
                           <DatePicker className="!bg-white text-xs pl-5 pr-4" 
                             dateType="past"
                             value={values.asset.purchaseDate} 
-                            onChange={(value)=>setFieldValue("asset.purchaseDate", value)} disabled={fieldsReadOnly} />
+                            onChange={(value)=>setFieldValue("asset.purchaseDate", value, true)} disabled={fieldsReadOnly} />
                         </div>
                     </div>
                   </>
@@ -685,20 +684,17 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                         const formattedZip = rawZip ? formatPostalCode(rawZip, country) : '';
 
                         // 2. Batch update values WITHOUT triggering automatic immediate re-validation (2nd argument: false)
-                        setValues(
-                          {
-                            ...values,
-                            addressLine1: address || '',
-                            country: country,
-                            city: city || '',
-                            zipCode: formattedZip,
-                            latitude: lat ?? null,
-                            longitude: lng ?? null,
-                            number: houseNumber || '',
-                            street: street || '',
-                          },
-                          false // Prevents immediate schema validation on setValues
-                        );
+                        setValues({
+                          ...values,
+                          addressLine1: address || '',
+                          country: country,
+                          city: city || '',
+                          zipCode: formattedZip,
+                          latitude: lat ?? null,
+                          longitude: lng ?? null,
+                          number: houseNumber || '',
+                          street: street || '',
+                        }, true);
                       }}
                       disabled={fieldsReadOnly}
                       inputClassName={cn({
@@ -791,7 +787,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                           addressLine1: "",
                           latitude: null,
                           longitude: null
-                        })
+                        }, true)
                       }}
                       disabled={fieldsReadOnly}
                     >
@@ -824,8 +820,11 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand<span className="text-error">*</span></Label>
                     <Select value={values.brand} onValueChange={(value)=> {
-                      setFieldValue("brand", value)
-                      setFieldValue("cabinetModelId", "")
+                      setValues({
+                        ...values,
+                        brand: value,
+                        cabinetModelId: ""
+                      }, true)
                       // update module code value on brand change
                       if(!cabinetId) {
                         if(value === "Nexus") {
@@ -836,7 +835,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                           }
                         }
                       }
-                    }} disabled={fieldsReadOnly}>
+                    }} disabled={Boolean(fieldsReadOnly || cabinetId || id)}>
                       <SelectTrigger className={cn("w-full !h-12.5")}>
                         <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                           <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder={"Select Brand"} /></span>
@@ -850,7 +849,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                   </div>
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Model<span className="text-error">*</span></Label>
-                    <Select value={values.cabinetModelId} onValueChange={(value)=> setFieldValue("cabinetModelId", value)} disabled={fieldsReadOnly}>
+                    <Select value={values.cabinetModelId} onValueChange={(value)=> setFieldValue("cabinetModelId", value, true)} disabled={Boolean(fieldsReadOnly || cabinetId || id)}>
                       <SelectTrigger className={cn("w-full !h-12.5")}>
                         <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                           <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder={"Select Model"} /></span>
@@ -881,7 +880,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                         }
                       }}
                       onBlur={handleBlur}
-                      readOnly={serialLoading || !values.brand || fieldsReadOnly}
+                      readOnly={Boolean(serialLoading || !values.brand || fieldsReadOnly || cabinetId || id)}
                       maxLength={50}
                       errors={touched.serialNumber ? errors.serialNumber : (errors.serialNumberRecognition ? errors.serialNumberRecognition : '')}
                     />
@@ -919,7 +918,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                         maxLength={50}
                         readOnly={Boolean(
                           (values.brand === "Nexus" && serialData?.imei) || imeiLoading
-                        ) || fieldsReadOnly || Boolean(cabinetId)}
+                        ) || fieldsReadOnly || Boolean(cabinetId || id)}
                         errors={touched.imei ? errors.imei : (errors.imeiRecognition ? errors.imeiRecognition : '')}
                       />
                       {values.imeiRecognition && <CircleCheck size={20} className="absolute top-1/2 right-3 -translate-y-1/2 text-[#11BE48]" />}

@@ -59,12 +59,19 @@ export const updateAssetComponent = async (
     serialNumber: component.serialNumber,
   }
 
-  const { data } = await api.put(
-    `${API_ROUTES.ASSETS}/${assetId}/components/${componentId}`,
-    payload,
-  )
-
-  return data
+  if(componentId) {
+    const { data } = await api.put(
+      `${API_ROUTES.ASSETS}/${assetId}/components/${componentId}`,
+      payload,
+    )
+    return data
+  } else {
+    const { data } = await api.post(
+      `${API_ROUTES.ASSETS}/${assetId}/components`,
+      payload,
+    )
+    return data
+  }
 }
 
 export const updateAssetComponents = async (
