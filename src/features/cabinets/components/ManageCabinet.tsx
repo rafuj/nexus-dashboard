@@ -216,7 +216,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
 
     if (step === "basic-information") {
       // Error Block
-      if(errors.name || errors.addressLine1 || errors.zipCode || errors.city || errors.country || errors.accessType || errors.brand || errors.cabinetModelId || errors.imei || errors.street || errors.number || errors.latitude) {
+      if(errors.name || errors.addressLine1 || errors.zipCode || errors.city || errors.country || errors.accessType || errors.brand || errors.cabinetModelId || errors.imei || errors.street || errors.number || errors.latitude || errors.serialNumber || errors.imeiRecognition || errors.serialNumberRecognition) {
         errorToast("Please fill all required fields")
         return
       } else {

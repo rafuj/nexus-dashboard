@@ -1,10 +1,10 @@
 "use client"
 import { Pencil, Trash2 } from "lucide-react"
-// import type { SettingsGroupRow } from "../types/settingsList"
 import { useState } from "react"
-import { MemberDeleteConfirmation } from "./MemberDeleteConfirmation"
 
 import { EditMemberDrawer } from "./EditMemberDrawer"
+import { ConfirmationPopup } from "@/app/components/confirmation-popup"
+import { successToast } from "@/lib/toast"
 
 export function MemberListRowActions() {
   const [open, setOpen] = useState<boolean>(false)
@@ -23,7 +23,15 @@ export function MemberListRowActions() {
             <Trash2 size={16} />
         </button>
       </div>
-      <MemberDeleteConfirmation open={open} setOpen={setOpen} />
+      <ConfirmationPopup
+        open={open}
+        setOpen={setOpen}
+        title="Are you sure you want to delete this Member?"
+        description="Deleting this member will permanently remove it from the system and may affect cabinet organization"
+        onConfirm={() => {
+          successToast("Member deleted successfully")
+        }}
+      />
     </>
   )
 }
