@@ -54,7 +54,10 @@ export function filterCabinets(
       [
         row.name,
         row.city,
-        // row.assetHealth,
+        row.zipCode,
+        row.serialNumber,
+        row.street,
+        row.number,
         row.status,
       ].some((field) => field?.toLowerCase().includes(q));
 
@@ -68,8 +71,14 @@ function compareRows(a: SmartCabinet, b: SmartCabinet, columnId: string): number
       return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" })
     case "city":
       return a.city.localeCompare(b.city, undefined, { sensitivity: "base" })
-    // case "assetHealth":
-    //   return a.assetHealth.localeCompare(b.assetHealth)
+    case "zipCode":
+      return a.zipCode?.localeCompare(b.zipCode, undefined, { sensitivity: "base" }) || 0
+    case "street":
+      return a.street?.localeCompare(b.street, undefined, { sensitivity: "base" }) || 0
+    case "number":
+      return a.number?.localeCompare(b.number, undefined, { sensitivity: "base" }) || 0
+    case "status":
+      return a.status?.localeCompare(b.status, undefined, { sensitivity: "base" }) || 0
     case "createdAt": 
       return a.createdAt.localeCompare(b.createdAt) // we need to change this later to last update
     default:

@@ -296,7 +296,7 @@ export const cabinetsMonitorTableColumns = [
 
   // 7. Last Update Column
   columnHelper.accessor("createdAt", { //we need to change this later to last update
-    id: "lastActivityAt",
+    id: "createdAt",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Last Update" />
     ),

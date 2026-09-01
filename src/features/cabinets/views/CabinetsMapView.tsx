@@ -13,9 +13,9 @@ import MapPin from "@/assets/icons/map-pin.svg?react"
 import { parseAsStringLiteral, useQueryState } from "nuqs";
 import { useDebounce } from "@/app/hooks/use-debounce";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { useSmartCabinetsList } from "../hooks/useSmartCabinetsList";
-import { filterCabinets } from "../server/queryCabinetsMonitorPage";
 import { getOverallStatus } from "../lib/cabinetListDisplay";
+import { useCabinetsList } from "../hooks/useCabinetsList";
+import { filterCabinets } from "../server/queryCabinetsListPage";
 
 const STATUS_FILTER_ALL = "all";
 const CITY_FILTER_ALL = "all";
@@ -40,7 +40,7 @@ export default function CabinetsMapView() {
     data,
     isFetching,
     refetch,
-  } = useSmartCabinetsList({
+  } = useCabinetsList({
     search: debouncedSearch,
     status: statusFilter,
     city,
@@ -52,7 +52,6 @@ export default function CabinetsMapView() {
       data || [],
       debouncedSearch,
       statusFilter,
-      "",
       city
     )
 

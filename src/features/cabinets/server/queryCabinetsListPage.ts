@@ -40,8 +40,13 @@ export function filterCabinets(
     }
     if (q) {
       const inName = row.name.toLowerCase().includes(q)
+      const inCity = row.city.toLowerCase().includes(q)
+      const inZipCode = row.zipCode?.toLowerCase().includes(q)
       const inSerial = row?.serialNumber?.toLowerCase().includes(q)
-      if (!inName && !inSerial) return false
+      const inStreet = row?.street?.toLowerCase().includes(q)
+      const inNumber = row?.number?.toLowerCase().includes(q)
+      const status = row?.status?.toLowerCase().includes(q)
+      if (!inName && !inCity && !inZipCode && !inSerial && !inStreet && !inNumber && !status) return false
     }
     return true
   })
@@ -55,20 +60,16 @@ function compareRows(a: Cabinet, b: Cabinet, columnId: string): number {
       )
     case "status":
       return a.status.localeCompare(b.status)
-    // case "type":
-    //   return a.type.localeCompare(b.type)
-    // case "location":
-    //   return a.location.localeCompare(b.location, undefined, { sensitivity: "base" })
-    // case "asset":
-    //   return a.asset.localeCompare(b.asset)
-    // case "temperature": {
-    //   if (a.temperature == null && b.temperature == null) return 0
-    //   if (a.temperature == null) return 1
-    //   if (b.temperature == null) return -1
-    //   return a.temperature - b.temperature
-    // }
-    // case "lastActivityAt":
-    //   return a.lastActivityAt.localeCompare(b.lastActivityAt)
+    case "city":
+      return a.city.localeCompare(b.city, undefined, { sensitivity: "base" })
+    case "zipCode":
+      return a.zipCode?.localeCompare(b.zipCode, undefined, { sensitivity: "base" }) || 0
+    case "street":
+      return a.street?.localeCompare(b.street, undefined, { sensitivity: "base" }) || 0
+    case "number":
+      return a.number?.localeCompare(b.number, undefined, { sensitivity: "base" }) || 0
+    case "createdAt":
+      return a.createdAt?.localeCompare(b.createdAt, undefined, { sensitivity: "base" }) || 0
     default:
       return 0
   }
