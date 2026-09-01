@@ -30,7 +30,7 @@ function filterFactoryRows(
     return (
       row.id.toLowerCase().includes(q) ||
       row.serialNumber.toLowerCase().includes(q) ||
-      row.imei.toLowerCase().includes(q)
+      row?.imei?.toLowerCase().includes(q)
     )
   })
 }
@@ -48,7 +48,7 @@ function compareRows(
       return a.serialNumber.localeCompare(b.serialNumber)
 
     case "imei":
-      return a.imei.localeCompare(b.imei)
+      return a?.imei?.localeCompare(b?.imei)
 
     case "linkedOn":
       return (
