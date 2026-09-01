@@ -37,9 +37,7 @@ export default function CabinetsActivity() {
   const [search, setSearch] = useState("");
   const [cabinetGroup, setCabinetGroup] = useState<string>(CABINET_FILTER_ALL);
   const [activityType, setActivityType] = useState<string>(ACTIVITY_FILTER_ALL);
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: "cabinet", desc: false },
-  ]);
+  const [sorting, setSorting] = useState<SortingState>([]);
   const [openActivity, setOpenActivity] = useState<boolean>(false)
 
   const today = new Date();

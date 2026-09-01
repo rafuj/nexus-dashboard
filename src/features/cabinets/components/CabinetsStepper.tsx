@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import React from 'react';
-import type { StepperProps } from '../types/addCabinet';
+import type { StepperProps } from '../types/cabinet';
 
 export const CabinetsStepper: React.FC<StepperProps> = ({ step, setStep, stepList, hideLine }) => {
   // Find the index of the active step to determine past/present/future states

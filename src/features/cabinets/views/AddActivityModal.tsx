@@ -29,7 +29,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
   const [selectedCabinet, setSelectedCabinet] = useState<Cabinet | null>(null);
 
   const filteredCabinets = mockCabinetsList.filter((item) =>
-    item.name.toLowerCase().includes(search.toLowerCase()) || item.city.toLowerCase().includes(search.toLowerCase()) || item.location.toLowerCase().includes(search.toLowerCase())
+    item.name.toLowerCase().includes(search.toLowerCase()) || item.city.toLowerCase().includes(search.toLowerCase()) || item.street.toLowerCase().includes(search.toLowerCase())
   );
   
 
@@ -59,7 +59,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
                           </div>
                           <div className="w-0 grow">
                             <h5 className="text-xs font-medium">{selectedCabinet.name}</h5>
-                            <div className="text-xs text-[#717893]">{selectedCabinet.addressLine1} {selectedCabinet.city}</div>
+                            <div className="text-xs text-[#717893]">{selectedCabinet.number} {selectedCabinet.street}, {selectedCabinet.city}</div>
                           </div>
                           <button type="button" className="text-[#A72822] font-medium text-xs select-none" onClick={()=> {
                             setSelectedCabinet(null);

@@ -52,7 +52,7 @@ export const cabinetListColumns = (canManageCabinets: boolean) => [
     },
     cell: ({ row }) => row.original.zipCode
   }),
-  columnHelper.accessor("addressLine1", {
+  columnHelper.accessor("street", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Street" />
     ),
@@ -60,9 +60,9 @@ export const cabinetListColumns = (canManageCabinets: boolean) => [
       headerClassName: "",
       cellClassName: "tabular-nums",
     },
-    cell: ({ row }) => row.original.addressLine1
+    cell: ({ row }) => row.original.street
   }),
-  columnHelper.accessor("houseNumber", {
+  columnHelper.accessor("number", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Number" />
     ),
@@ -71,9 +71,9 @@ export const cabinetListColumns = (canManageCabinets: boolean) => [
       cellClassName:
         "align-middle whitespace-nowrap",
     },
-    cell: ({ row }) => row.original.houseNumber,
+    cell: ({ row }) => row.original.number,
   }),
-  columnHelper.accessor("lastActivityAt", {
+  columnHelper.accessor("createdAt", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Last Update" />
     ),
@@ -82,7 +82,7 @@ export const cabinetListColumns = (canManageCabinets: boolean) => [
       cellClassName:
         "align-middle whitespace-nowrap",
     },
-    cell: ({ row }) => formatISODate(row.original.lastActivityAt),
+    cell: ({ row }) => formatISODate(row.original.createdAt), // this is not last update, this is created at - we need to fix this later
   }),
   // columnHelper.accessor("cabinetCode", {
   //   header: ({ column }) => (

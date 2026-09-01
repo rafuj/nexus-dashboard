@@ -9,7 +9,7 @@ import {
 } from "@/shared/components/ui/select";
 import { X } from "lucide-react";
 import { cn } from '@/lib/utils';
-import type { DayConfig } from '../types/addCabinet';
+import type { DayConfig } from '../types/cabinet';
 
 interface ScheduleRowProps {
   dayConfig: DayConfig;

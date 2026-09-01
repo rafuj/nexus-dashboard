@@ -29,6 +29,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { errorToast, successToast } from "@/lib/toast";
 import { useAuth } from "@/app/hooks/useAuth";
+import { CityCombobox } from "@/features/cabinets/components/CityCombobox";
 
 const validationSchema = Yup.object({
   tenantType: Yup.string()
@@ -270,7 +271,7 @@ export default function MyAccount() {
                         </label>
                       </div>
                       <div className="text-center">
-                        <div className="font-medium text-base mt-3 text-accent-foreground">Admin User</div>
+                        <div className="font-medium text-base mt-3 text-accent-foreground">{user?.firstName + " " +user?.lastName}</div>
                         <div className="text-xs mt-1">Senior Safety Officer</div>
                         {values.tenantType === 'business' && <div className="text-error text-xs font-semibold mt-3">
                           Company account
@@ -466,14 +467,15 @@ export default function MyAccount() {
                             </div>
                             <div>
                                 <FieldLabel className="font-medium text-accent-foreground mb-2.5">City</FieldLabel>
-                                <Select value={values.organization.city} onValueChange={(value)=> setFieldValue("organization.city", value)}>
-                                  <SelectTrigger className="w-full text-sm md:!h-14">
-                                    <SelectValue placeholder="Select City" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {availableCities?.map((item)=> <SelectItem value={item.name} key={item.name}>{item.name}</SelectItem> )}
-                                  </SelectContent>
-                                </Select>
+                                <CityCombobox
+                                    availableCities={availableCities}
+                                    selectedCity={values.organization.city}
+                                    disabled={!values.organization.country}
+                                    onSelectCity={(cityName) => {
+                                      setFieldValue("organization.city", cityName);
+                                    }}
+                                    className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
+                                  />
                             </div>
                           </div>
                         </>

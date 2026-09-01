@@ -213,12 +213,23 @@ export const COUNTRY_OPTIONS:CountryOption[] = [
   },
 ];
 
+export const countryIsos = COUNTRY_OPTIONS.map((country) => country.iso);
+
+export const allCities = City.getAllCities().filter((city) =>
+  countryIsos.includes(city.countryCode)
+)
+
 // Get Cties for a specific country ISO code
 export const getCitiesByCountry = (countryIso2: string|''): CityOption[] => {
   if (!countryIso2) return [];
   return City.getCitiesOfCountry(countryIso2) || [];
 };
-
+export const getCountryName = (countryIso: string) => {
+  return COUNTRY_OPTIONS.find((item) => item.iso === countryIso)?.country;
+}
+export const getCountryCode = (countryName: string) => {
+  return COUNTRY_OPTIONS.find((item) => item.country === countryName)?.iso;
+}
 export const formatPostalCode = (value: string, countryIso: string): string => {
   const rule = COUNTRY_OPTIONS.find(
     (item) => item.iso === countryIso

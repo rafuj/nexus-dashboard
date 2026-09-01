@@ -10,9 +10,11 @@ import DashboardOverviewChart from "../components/DashboardOverviewChart";
 import RespondersCard from "../components/RespondersCard";
 import ConnectedCabinets from "../components/ConnectedCabinets";
 import Certificates from "../components/Certificates";
+import { useAuth } from "@/app/hooks/useAuth";
 
 export default function DashboardView() {
   const stats = mockDashboardStats;
+  const { user } = useAuth()
   return (
     <>
       <Helmet>
@@ -24,7 +26,7 @@ export default function DashboardView() {
             <CollapsedSidebarTrigger />
             <div className="grow w-0 flex items-center justify-between max-md:flex-wrap gap-4 md:gap-7">
               <div className="md:w-0 grow">
-                <h1 className="text-xl font-medium lg:text-4xl lg:leading-[1] tracking-tight mb-1 md:mb-3">Welcome, Anne</h1>
+                <h1 className="text-xl font-medium lg:text-4xl lg:leading-[1] tracking-tight mb-1 md:mb-3">Welcome, {user?.firstName}</h1>
                 <p className="text-xs lg:text-sm">
                   Here's what's happening with your Updaid fleet.
                 </p>

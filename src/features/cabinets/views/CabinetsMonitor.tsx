@@ -22,11 +22,12 @@ import { parseAsStringLiteral, useQueryState } from "nuqs";
 import type { CabinetStatus } from "../types/cabinetList";
 import { useSmartCabinetsList } from "../hooks/useSmartCabinetsList";
 import { useDebounce } from "@/app/hooks/use-debounce";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 
 const CITY_FILTER_ALL = "all";
 const STATUS_FILTER_ALL = "all";
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 12;
 const filterStatuses = [
   "paused",
   "ok",
@@ -43,9 +44,7 @@ export default function CabinetsMonitor() {
 
   console.log("setCabinetId",setCabinetId)
 
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: "cabinet", desc: false },
-  ]);
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -53,7 +52,8 @@ export default function CabinetsMonitor() {
   });
   const debouncedSearch = useDebounce(search, 400)
   const {
-    data
+    data,
+    isFetching
   } = useSmartCabinetsList({
     search: debouncedSearch,
     status,
@@ -99,6 +99,13 @@ export default function CabinetsMonitor() {
       ...p,
       pageIndex: 0,
     }))
+  }
+  const refreshPage = () => {
+    // Later this will just invalidate queryKeys
+    setSearch("")
+    setCity(CITY_FILTER_ALL)
+    setStatus(STATUS_FILTER_ALL)
+    resetPagination()
   }
 
   // eslint-disable-next-line react-hooks/incompatible-library -- useReactTable
@@ -164,7 +171,7 @@ export default function CabinetsMonitor() {
               <p className="text-xs m-0">Overall status uses the highest severity. Paused cabinets are not monitored.</p>
             </div>
             <div className="flex flex-wrap gap-4">
-              <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 xl:px-7">
+              <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 xl:px-7" onClick={refreshPage}>
                 <RotateCcw size={16} /> <span>Refresh</span>
               </button>
               <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 xl:px-7">
@@ -191,6 +198,20 @@ export default function CabinetsMonitor() {
                 }
               />
             </div>
+            {(isFetching && !data) ? (
+              <div className="p-5 bg-white border border-border rounded-md">
+                <div className="flex flex-col gap-4">
+                  <Skeleton className="h-12" />
+                  <Skeleton className="h-12" />
+                  <Skeleton className="h-12" />
+                  <Skeleton className="h-12" />
+                  <Skeleton className="h-12" />
+                  <Skeleton className="h-12" />
+                  <Skeleton className="h-12" />
+                  <Skeleton className="h-12" />
+                </div>
+              </div>
+            ) : (
             <div
               className={cn(
                 "bg-white border rounded-[10px] border-border py-5 px-4",
@@ -208,6 +229,7 @@ export default function CabinetsMonitor() {
                 />
               </div>
             </div>
+            )}
           </section>
         </div>
       </main>

@@ -2,8 +2,9 @@
 import { Pencil, Trash2 } from "lucide-react"
 import type { SettingsGroupRow } from "../types/settingsList"
 import { useState } from "react"
-import { DeleteConfirmation } from "./DeleteConfirmation"
 import { EditGroupDrawer } from "./EditGroupDrawer"
+import { ConfirmationPopup } from "@/app/components/confirmation-popup"
+import { successToast } from "@/lib/toast"
 
 export function ListRowActions({ row }: { row: SettingsGroupRow }) {
   const [open, setOpen] = useState<boolean>(false)
@@ -21,7 +22,16 @@ export function ListRowActions({ row }: { row: SettingsGroupRow }) {
             <Trash2 size={16} />
         </button>
       </div>
-      <DeleteConfirmation open={open} setOpen={setOpen} />
+      <ConfirmationPopup 
+        open={open}
+        setOpen={setOpen}
+        title="Are you sure you want to delete this group?"
+        description="Deleting this group will permanently remove it from the system and may affect cabinet organization, member access, and related configurations."
+        onConfirm={() => {
+          successToast("Group deleted successfully")
+          setOpen(false)
+        }}
+      />
     </>
   )
 }

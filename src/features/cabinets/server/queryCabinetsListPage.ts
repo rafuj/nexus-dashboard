@@ -16,6 +16,7 @@ export type CabinetsListQuery = {
   pageSize: number
   sorting: SortingState
   city: string
+  data: Cabinet[]
 }
 
 export type CabinetsListPageResult = {
@@ -39,7 +40,7 @@ export function filterCabinets(
     }
     if (q) {
       const inName = row.name.toLowerCase().includes(q)
-      const inSerial = row.serial.toLowerCase().includes(q)
+      const inSerial = row?.serialNumber?.toLowerCase().includes(q)
       if (!inName && !inSerial) return false
     }
     return true
@@ -54,20 +55,20 @@ function compareRows(a: Cabinet, b: Cabinet, columnId: string): number {
       )
     case "status":
       return a.status.localeCompare(b.status)
-    case "type":
-      return a.type.localeCompare(b.type)
-    case "location":
-      return a.location.localeCompare(b.location, undefined, { sensitivity: "base" })
-    case "asset":
-      return a.asset.localeCompare(b.asset)
-    case "temperature": {
-      if (a.temperature == null && b.temperature == null) return 0
-      if (a.temperature == null) return 1
-      if (b.temperature == null) return -1
-      return a.temperature - b.temperature
-    }
-    case "lastActivityAt":
-      return a.lastActivityAt.localeCompare(b.lastActivityAt)
+    // case "type":
+    //   return a.type.localeCompare(b.type)
+    // case "location":
+    //   return a.location.localeCompare(b.location, undefined, { sensitivity: "base" })
+    // case "asset":
+    //   return a.asset.localeCompare(b.asset)
+    // case "temperature": {
+    //   if (a.temperature == null && b.temperature == null) return 0
+    //   if (a.temperature == null) return 1
+    //   if (b.temperature == null) return -1
+    //   return a.temperature - b.temperature
+    // }
+    // case "lastActivityAt":
+    //   return a.lastActivityAt.localeCompare(b.lastActivityAt)
     default:
       return 0
   }
@@ -79,7 +80,7 @@ function compareRows(a: Cabinet, b: Cabinet, columnId: string): number {
  */
 export function queryCabinetsListPage(query: CabinetsListQuery): CabinetsListPageResult {
   const filtered = filterCabinets(
-    mockCabinetsList,
+    query.data,
     query.search,
     query.statusFilter,
     query.city

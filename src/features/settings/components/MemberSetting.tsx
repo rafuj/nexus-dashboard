@@ -31,9 +31,7 @@ export default function MemberSetting() {
   const [statusFilter, setStatusFilter] = useQueryState("status", { defaultValue: STATUS_FILTER_ALL });
   const [roleFilter, setRoleFilter] = useQueryState("role", parseAsStringLiteral(roleTypes).withDefault(ROLE_FILTER_ALL));
 
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: "cabinet", desc: false },
-  ]);
+  const [sorting, setSorting] = useState<SortingState>([]);
   console.log(setSorting)
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,

@@ -70,8 +70,8 @@ function compareRows(a: SmartCabinet, b: SmartCabinet, columnId: string): number
       return a.city.localeCompare(b.city, undefined, { sensitivity: "base" })
     // case "assetHealth":
     //   return a.assetHealth.localeCompare(b.assetHealth)
-    case "deviceState.lastSeenAt":
-      return a.deviceState.lastSeenAt.localeCompare(b.deviceState.lastSeenAt)
+    case "createdAt": 
+      return a.createdAt.localeCompare(b.createdAt) // we need to change this later to last update
     default:
       return 0
   }

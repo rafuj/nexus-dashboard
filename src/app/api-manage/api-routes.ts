@@ -22,5 +22,8 @@ export const API_ROUTES = {
     CABINETS_INVENTORY: `${API_VERSION}/cabinets/inventory`,
     DEVICES: `${API_VERSION}/devices`,
     DEVICE_INSTALLATION: `${API_VERSION}/device-installations`,
-    
+    CABINET_BRANDS: `${API_VERSION}/cabinet-models/brands`,
+    CABINET_MODELS: `${API_VERSION}/cabinet-models`,
+    SERIAL_CHECK: `${API_VERSION}/cabinets/serial-check`,
+    IMEI_CHECK: `${API_VERSION}/devices/imei-check`,
 }

@@ -6,7 +6,7 @@ import { InfoIcon } from "lucide-react";
 import type { ComponentTypesAED } from "../api/componentTypes.api";
 import { useComponentTypesVariants } from "../hooks/useComponentTypesVariants";
 import type { FormikErrors, FormikProps } from "formik";
-import type { CreateCabinetFormValues } from "../api/cabinet.api";
+import type { CreateCabinetFormValues } from "../types/cabinet";
 
 interface ComponentVariantProps {
     componentType: ComponentTypesAED,
@@ -98,7 +98,7 @@ export default function ComponentVariant({ componentType, formik, fieldsReadOnly
                         </Select>
                         {renderError(
                             !!touched?.asset,
-                            (errors?.asset?.components?.[0] as FormikErrors<{ expiresAt?: string }> | undefined)?.expiresAt
+                            (errors?.asset?.components?.[firstSetIdx] as FormikErrors<{ componentVariantId?: string }> | undefined)?.componentVariantId
                         )}
                     </div>
 
@@ -109,14 +109,14 @@ export default function ComponentVariant({ componentType, formik, fieldsReadOnly
                         </Label>
                         <DatePicker
                             value={components[firstSetIdx]?.expiresAt || undefined}
-                            onChange={(val) => setFieldValue(`asset.components[${firstSetIdx}].expiresAt`, val)}
+                            onChange={(val) => setFieldValue(`asset.components[${firstSetIdx}].expiresAt`, val, true)}
                             className="!bg-white text-xs pl-5 pr-4"
                             dateType="future"
                             disabled={fieldsReadOnly}
                         />
                         {renderError(
                             !!touched?.asset,
-                            (errors?.asset?.components?.[0] as FormikErrors<{ expiresAt?: string }> | undefined)?.expiresAt
+                            (errors?.asset?.components?.[firstSetIdx] as FormikErrors<{ expiresAt?: string }> | undefined)?.expiresAt
                         )}
                     </div>
 
@@ -152,8 +152,8 @@ export default function ComponentVariant({ componentType, formik, fieldsReadOnly
                                 // Find the full variant object from your options list
                                 const selectedVariant = componentTypeDataVariants?.find((v) => v.id === variantId);
                                 // Set both the ID and Name in Formik state
-                                setFieldValue(`asset.components[${secondSetIdx}].componentVariantId`, variantId)
-                                setFieldValue(`asset.components[${secondSetIdx}].componentVariantName`, selectedVariant?.name)
+                                setFieldValue(`asset.components[${secondSetIdx}].componentVariantId`, variantId, true)
+                                setFieldValue(`asset.components[${secondSetIdx}].componentVariantName`, selectedVariant?.name, true)
                             }}
                             disabled={fieldsReadOnly}
                         >
@@ -181,7 +181,7 @@ export default function ComponentVariant({ componentType, formik, fieldsReadOnly
                         </Label>
                         <DatePicker
                             value={components[secondSetIdx]?.expiresAt || undefined}
-                            onChange={(val) => setFieldValue(`asset.components[${secondSetIdx}].expiresAt`, val)}
+                            onChange={(val) => setFieldValue(`asset.components[${secondSetIdx}].expiresAt`, val, true)}
                             className="!bg-white text-xs pl-5 pr-4"
                             dateType="future"
                             disabled={fieldsReadOnly}
@@ -232,7 +232,7 @@ export default function ComponentVariant({ componentType, formik, fieldsReadOnly
                 </Label>
                 <DatePicker
                     value={components[batteryIdx]?.expiresAt || undefined}
-                    onChange={(val) => setFieldValue(`asset.components[${batteryIdx}].expiresAt`, val)}
+                    onChange={(val) => setFieldValue(`asset.components[${batteryIdx}].expiresAt`, val, true)}
                     className="!bg-white text-xs pl-5 pr-4"
                     dateType="future"
                     disabled={fieldsReadOnly}

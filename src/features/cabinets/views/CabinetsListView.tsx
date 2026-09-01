@@ -8,11 +8,10 @@ import {
   type PaginationState,
   type SortingState,
 } from "@tanstack/react-table";
-import { ChevronRight, Loader2, PlusCircle } from "lucide-react";
+import { ChevronRight, PlusCircle } from "lucide-react";
 
 import { CabinetsListToolbar } from "../components/CabinetsListToolbar";
 import { cabinetListColumns } from "../components/cabinetsTableColumns";
-// import { queryCabinetsListPage } from "../server/queryCabinetsListPage";
 import { DataTable, DataTablePagination } from "@/shared/components/data-table";
 import { cn } from "@/lib/utils";
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
@@ -25,11 +24,13 @@ import { parseAsStringLiteral, useQueryState } from "nuqs";
 import type { FilterStatus } from "../types/cabinetList";
 import { useCabinetsList } from "../hooks/useCabinetsList";
 import { useDebounce } from "@/app/hooks/use-debounce";
+import { queryCabinetsListPage } from "../server/queryCabinetsListPage";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 
 const STATUS_FILTER_ALL = "all";
 const CITY_FILTER_ALL = "all";
-const PAGE_SIZE = 8;
+const PAGE_SIZE = 12;
 const filterStatuses = [
   "paused",
   "ok",
@@ -42,9 +43,7 @@ export default function CabinetsListView() {
   const [search, setSearch] = useQueryState("search", { defaultValue:"" });
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsStringLiteral(filterStatuses).withDefault(STATUS_FILTER_ALL))
   const [city, setCity] = useQueryState("city", { defaultValue: CITY_FILTER_ALL });
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: "cabinet", desc: false },
-  ]);
+  const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: PAGE_SIZE,
@@ -52,10 +51,8 @@ export default function CabinetsListView() {
 
   const debouncedSearch = useDebounce(search, 400)
   const {
-    data: pageResult,
-    // isPending,
+    data,
     isFetching,
-    // isError,
     refetch,
   } = useCabinetsList({
     search: debouncedSearch,
@@ -65,10 +62,32 @@ export default function CabinetsListView() {
     limit: pagination.pageSize,
     sorting,
   })
-console.log("pageResult",pageResult)
+
   const { user } = useAuth();
   const role: Role = user?.role ?? "admin";
   const canManageCabinets = can(role, MANAGE_CABINETS)
+
+    const pageResult = useMemo(
+    () =>
+      queryCabinetsListPage({
+        search: debouncedSearch,
+        statusFilter,
+        pageIndex: pagination.pageIndex,
+        pageSize: pagination.pageSize,
+        sorting,
+        city,
+        data: data || []
+      }),
+    [
+      debouncedSearch,
+      statusFilter,
+      pagination.pageIndex,
+      pagination.pageSize,
+      sorting,
+      city,
+      data
+    ],
+  );
 
   const columns = useMemo(() => cabinetListColumns(canManageCabinets), []);
 
@@ -87,10 +106,9 @@ console.log("pageResult",pageResult)
   
   // eslint-disable-next-line react-hooks/incompatible-library -- useReactTable
   const table = useReactTable({
-    data: pageResult || [],
+    data: pageResult.rows,
     columns,
-    rowCount: pageResult?.length ?? 0, // here totalCount will be shown
-
+    rowCount: pageResult.totalCount,
     manualPagination: true,
     manualSorting: true,
 
@@ -115,6 +133,7 @@ console.log("pageResult",pageResult)
 
   const onRefresh = () => {
     refetch()
+    resetPage()
   }
 
   return (
@@ -179,28 +198,38 @@ console.log("pageResult",pageResult)
                 isFetching={isFetching}
               />
             </div>
-            <div
-              className={cn(
-                "bg-white border rounded-[10px] border-border py-5 px-4",
-              )}
-            >
-              <h4 className="text-sm font-semibold mb-4">{pageResult?.length ?? 0} Cabinets</h4>
-              <DataTable
-                table={table}
-                emptyMessage="No cabinets match your filters."
-              />
-              {isFetching && (
-                <div className="flex justify-center my-5">
-                  <Loader2 size={40} className="animate-spin" />
+            {(isFetching && !data) ? (
+                <div className="p-5 bg-white border border-border rounded-md">
+                  <div className="flex flex-col gap-4">
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className={cn(
+                    "bg-white border rounded-[10px] border-border py-5 px-4",
+                  )}
+                >
+                  <h4 className="text-sm font-semibold mb-4">{pageResult.totalCount ?? 0} Cabinets</h4>
+                  <DataTable
+                    table={table}
+                    emptyMessage="No cabinets match your filters."
+                  />
+                  <div className="border-border border-t px-4 py-3">
+                    <DataTablePagination
+                      table={table}
+                      navLabel="Cabinets table pagination"
+                    />
+                  </div>
                 </div>
               )}
-              <div className="border-border border-t px-4 py-3">
-                <DataTablePagination
-                  table={table}
-                  navLabel="Cabinets table pagination"
-                />
-              </div>
-            </div>
           </section>
         </div>
       </main>

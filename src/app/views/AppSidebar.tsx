@@ -133,8 +133,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const { user } = useAuth();
   const sidebarUser = user
-  ? { name: user.firstName+ " "+ user.lastName, email: user.email }
-  : { name: "", email: "" };
+  ? { name: user.firstName+ " "+ user.lastName, email: user.email, avatarFallback: user?.firstName?.slice(0, 1) + user?.lastName?.slice(0, 1), avatar:"" }
+  : { name: "", email: "", avatarFallback: "", avatar: "" };
   
 
     const sidebarMainMenu = () => {
