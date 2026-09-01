@@ -112,7 +112,6 @@ export default function CabinetMapCard({ cabinets, openCabinetId, setOpenCabinet
                             {openCabinetId === cabinet.id && (
                             <InfoWindow
                                 position={position}
-                                // onCloseClick={() => setOpenCabinetId(null)}
                             >
                                 <div className="p-1 min-w-[260px] font-sans text-accent-foreground text-xs">
                                 

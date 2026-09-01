@@ -3,7 +3,7 @@ import { Pencil, Trash2 } from "lucide-react"
 import type { Cabinet } from "../types/cabinetList"
 import { Link } from "react-router"
 import { useState } from "react"
-import { infoToast, loadingToast } from "@/lib/toast"
+import { infoToast } from "@/lib/toast"
 import { ConfirmationPopup } from "@/app/components/confirmation-popup"
 
 export function CabinetRowActions({ row }: { row: Cabinet }) {
