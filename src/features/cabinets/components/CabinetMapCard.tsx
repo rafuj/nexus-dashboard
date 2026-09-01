@@ -22,41 +22,50 @@ interface CabinetMapProps {
 }
 export default function CabinetMapCard({ cabinets, openCabinetId, setOpenCabinetId }: CabinetMapProps) {
 
-    const defaultCenter = useMemo(() => {
-        if (!cabinets.length) return undefined;
+    function getZoomFromBounds(bounds: { north: number; south: number; east: number; west: number }) {
+        const latDiff = Math.abs(bounds.north - bounds.south);
+        const lngDiff = Math.abs(bounds.east - bounds.west);
+        const maxDiff = Math.max(latDiff, lngDiff);
 
-        const cityCounts = cabinets.reduce<
-            Record<string, { count: number; lat: number; lng: number }>
-        >((acc, cabinet) => {
-            if (!cabinet.city || cabinet.latitude == null || cabinet.longitude == null) {
-            return acc;
-            }
+        if (maxDiff < 0.01) return 15;
+        if (maxDiff < 0.05) return 13;
+        if (maxDiff < 0.2) return 11;
+        if (maxDiff < 1) return 9;
+        if (maxDiff < 5) return 7;
+        return 5;
+    }
 
-            if (!acc[cabinet.city]) {
-            acc[cabinet.city] = {
-                count: 0,
-                lat: 0,
-                lng: 0,
-            };
-            }
+    const { defaultCenter, defaultZoom } = useMemo(() => {
+        const validCabinets = cabinets.filter(
+            (c) => c.latitude != null && c.longitude != null && Number(c.latitude) !== 0
+        );
 
-            acc[cabinet.city].count += 1;
-            acc[cabinet.city].lat += Number(cabinet.latitude);
-            acc[cabinet.city].lng += Number(cabinet.longitude);
+        if (!validCabinets.length) {
+            return { defaultCenter: { lat: 40.416775, lng: -3.70379 }, defaultZoom: 6 }; // Default fallback (e.g., Spain)
+        }
 
-            return acc;
-        }, {});
+        let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
+        let sumLat = 0, sumLng = 0;
 
-        const mostCommonCity = Object.values(cityCounts).sort(
-            (a, b) => b.count - a.count
-        )[0];
+        validCabinets.forEach((c) => {
+            const lat = Number(c.latitude);
+            const lng = Number(c.longitude);
+            minLat = Math.min(minLat, lat);
+            maxLat = Math.max(maxLat, lat);
+            minLng = Math.min(minLng, lng);
+            maxLng = Math.max(maxLng, lng);
+            sumLat += lat;
+            sumLng += lng;
+        });
 
-        if (!mostCommonCity) return undefined;
-
-        return {
-            lat: mostCommonCity.lat / mostCommonCity.count,
-            lng: mostCommonCity.lng / mostCommonCity.count,
+        const center = {
+            lat: sumLat / validCabinets.length,
+            lng: sumLng / validCabinets.length,
         };
+
+        const zoom = getZoomFromBounds({ north: maxLat, south: minLat, east: maxLng, west: minLng });
+
+        return { defaultCenter: center, defaultZoom: zoom };
     }, [cabinets]);
 
     return (
@@ -110,7 +119,7 @@ export default function CabinetMapCard({ cabinets, openCabinetId, setOpenCabinet
                 <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
                     <Map
                         defaultCenter={defaultCenter}
-                        defaultZoom={12}
+                        defaultZoom={defaultZoom}
                         mapId="NEXUS_CLUSTER_MAP" // Required for AdvancedMarker pin colors
                         disableDefaultUI={false}
                         zoomControl={true}

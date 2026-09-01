@@ -100,6 +100,13 @@ export default function CabinetsMonitor() {
       pageIndex: 0,
     }))
   }
+  const refreshPage = () => {
+    // Later this will just invalidate queryKeys
+    setSearch("")
+    setCity(CITY_FILTER_ALL)
+    setStatus(STATUS_FILTER_ALL)
+    resetPagination()
+  }
 
   // eslint-disable-next-line react-hooks/incompatible-library -- useReactTable
   const table = useReactTable({
@@ -164,7 +171,7 @@ export default function CabinetsMonitor() {
               <p className="text-xs m-0">Overall status uses the highest severity. Paused cabinets are not monitored.</p>
             </div>
             <div className="flex flex-wrap gap-4">
-              <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 xl:px-7">
+              <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 xl:px-7" onClick={refreshPage}>
                 <RotateCcw size={16} /> <span>Refresh</span>
               </button>
               <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 xl:px-7">
