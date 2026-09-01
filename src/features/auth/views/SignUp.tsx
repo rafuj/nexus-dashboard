@@ -15,6 +15,7 @@ import React, { useMemo, useState } from "react";
 import OtpInput from 'react-otp-input';
 import { COUNTRY_OPTIONS, getCitiesByCountry } from "@/lib/country-helper";
 import { LoaderButton } from "@/app/components/loader-button";
+import { CityCombobox } from "@/features/cabinets/components/CityCombobox";
 
 export type TenantType = "personal" | "business";
 
@@ -428,14 +429,15 @@ export default function SignUp() {
                         </div>
                         <div>
                             <label className="font-medium text-accent-foreground mb-2.5 block">City <span className="text-error">*</span></label>
-                            <Select value={formik.values.organization.city} onValueChange={(value)=> formik.setFieldValue("organization.city", value)}>
-                              <SelectTrigger className="w-full text-sm md:!h-14 bg-background/40" onBlur={() => formik.setFieldTouched("organization.city", true)}>
-                                <SelectValue placeholder="Select City" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {availableCities?.map((item)=> <SelectItem value={item.name} key={item.name}>{item.name}</SelectItem> )}
-                              </SelectContent>
-                            </Select>
+                            <CityCombobox
+                              availableCities={availableCities}
+                              selectedCity={formik.values.organization.city}
+                              disabled={!formik.values.organization.country}
+                              onSelectCity={(cityName) => {
+                                formik.setFieldValue("organization.city", cityName);
+                              }}
+                              className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
+                            />
                             {formik.touched.organization?.city &&
                               formik.errors.organization?.city && (
                                 <p className="mt-1 text-sm text-error">

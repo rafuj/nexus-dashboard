@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, type Dispatch, type SetStateAction } from 'react';
+import React, { useEffect, type Dispatch, type SetStateAction } from 'react';
 import { Map, APIProvider, AdvancedMarker, Pin, InfoWindow, useMap } from '@vis.gl/react-google-maps';
 import { Icons } from '@/app/icons/icons';
 import { cn, formatDateTime } from '@/lib/utils';
@@ -124,9 +124,13 @@ export default function CabinetMapCard({ cabinets, openCabinetId, setOpenCabinet
                                     </Link>
                                     
                                     {/* Details Rows */}
-                                    <div className="flex justify-between py-1.5">
+                                    <div className="flex justify-between py-1.5 gap-3">
                                         <span>Address</span>
-                                        <span className="font-semibold">{cabinet.number} {cabinet.street}</span>
+                                        <span className="font-semibold w-0 grow text-right truncate">
+                                            {[cabinet.number, cabinet.street, cabinet.zipCode]
+                                                .filter(Boolean)
+                                                .join(", ")}
+                                        </span>
                                     </div>
     {/*                                 
                                     <div className="flex justify-between py-1.5">

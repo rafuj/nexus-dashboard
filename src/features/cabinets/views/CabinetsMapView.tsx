@@ -181,7 +181,9 @@ export default function CabinetsMapView() {
                             <div className="flex justify-between items-baseline">
                               <span>Address</span>
                               <span className="font-semibold text-right truncate">
-                                {cabinet.number}, {cabinet.street}
+                                {[cabinet.number, cabinet.street, cabinet.zipCode]
+                                  .filter(Boolean)
+                                  .join(", ")}
                               </span>
                             </div>
                             
