@@ -22,6 +22,7 @@ import { parseAsStringLiteral, useQueryState } from "nuqs";
 import type { CabinetStatus } from "../types/cabinetList";
 import { useSmartCabinetsList } from "../hooks/useSmartCabinetsList";
 import { useDebounce } from "@/app/hooks/use-debounce";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 
 const CITY_FILTER_ALL = "all";
@@ -51,7 +52,8 @@ export default function CabinetsMonitor() {
   });
   const debouncedSearch = useDebounce(search, 400)
   const {
-    data
+    data,
+    isFetching
   } = useSmartCabinetsList({
     search: debouncedSearch,
     status,
@@ -196,6 +198,20 @@ export default function CabinetsMonitor() {
                 }
               />
             </div>
+            {(isFetching && !data) ? (
+              <div className="p-5 bg-white border border-border rounded-md">
+                <div className="flex flex-col gap-4">
+                  <Skeleton className="h-12" />
+                  <Skeleton className="h-12" />
+                  <Skeleton className="h-12" />
+                  <Skeleton className="h-12" />
+                  <Skeleton className="h-12" />
+                  <Skeleton className="h-12" />
+                  <Skeleton className="h-12" />
+                  <Skeleton className="h-12" />
+                </div>
+              </div>
+            ) : (
             <div
               className={cn(
                 "bg-white border rounded-[10px] border-border py-5 px-4",
@@ -213,6 +229,7 @@ export default function CabinetsMonitor() {
                 />
               </div>
             </div>
+            )}
           </section>
         </div>
       </main>
