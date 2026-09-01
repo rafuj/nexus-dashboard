@@ -270,7 +270,7 @@ export default function MyAccount() {
                         </label>
                       </div>
                       <div className="text-center">
-                        <div className="font-medium text-base mt-3 text-accent-foreground">Admin User</div>
+                        <div className="font-medium text-base mt-3 text-accent-foreground">{user?.firstName + " " +user?.lastName}</div>
                         <div className="text-xs mt-1">Senior Safety Officer</div>
                         {values.tenantType === 'business' && <div className="text-error text-xs font-semibold mt-3">
                           Company account
