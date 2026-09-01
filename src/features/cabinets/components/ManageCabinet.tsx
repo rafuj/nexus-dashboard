@@ -870,14 +870,14 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                       name="serialNumber"
                       value={values.serialNumber}
                       onChange={(e)=> {
-                        setValues({
-                          ...values, 
-                          serialNumberRecognition: false,
-                          serialNumber: e.target.value,
-                        })
                         if(!cabinetId) {
                           setFieldValue("imei", serialData?.imei === values.imei ? "" : values.imei)
                         }
+                        setValues({
+                          ...values, 
+                          serialNumberRecognition: false,
+                          serialNumber: e.target.value
+                        }, true)
                       }}
                       onBlur={handleBlur}
                       readOnly={Boolean(serialLoading || !values.brand || fieldsReadOnly || cabinetId || id)}
@@ -915,7 +915,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                           })
                         }}
                         onBlur={handleBlur}
-                        maxLength={50}
+                        maxLength={15}
                         readOnly={Boolean(
                           (values.brand === "Nexus" && serialData?.imei) || imeiLoading
                         ) || fieldsReadOnly || Boolean(cabinetId || id)}
