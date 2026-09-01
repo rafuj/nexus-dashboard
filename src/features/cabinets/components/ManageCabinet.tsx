@@ -148,9 +148,9 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
   const { data: cabinetBrands } = useCabinetBrands()
   const { data: cabinetModels } = useCabinetModels(values.brand)
   // serial number recognition api 
-  const { data: serialData, isLoading: serialLoading, isSuccess: isSerialSuccess, isError:isSerialError } = useSerialCheck(values.serialNumber)
+  const { data: serialData, isLoading: serialLoading, isSuccess: isSerialSuccess, isError:isSerialError } = useSerialCheck(values.serialNumber, !cabinetId && !id)
   // module code recognition api 
-  const { data: imeiData, isLoading: imeiLoading, isSuccess: isImeiSuccess } = useImeiCheck(values.imei)
+  const { data: imeiData, isLoading: imeiLoading, isSuccess: isImeiSuccess } = useImeiCheck(values.imei, !cabinetId && !id)
 
   useEffect(()=>{
     // Only Create
