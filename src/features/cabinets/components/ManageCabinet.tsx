@@ -148,30 +148,37 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
   const { data: cabinetBrands } = useCabinetBrands()
   const { data: cabinetModels } = useCabinetModels(values.brand)
   // serial number recognition api 
-  const { data: serialData, isLoading: serialLoading, isSuccess: isSerialSuccess } = useSerialCheck(values.serialNumber)
+  const { data: serialData, isLoading: serialLoading, isSuccess: isSerialSuccess, isError:isSerialError } = useSerialCheck(values.serialNumber, !cabinetId && !id)
   // module code recognition api 
-  const { data: imeiData, isLoading: imeiLoading, isSuccess: isImeiSuccess } = useImeiCheck(values.imei)
+  const { data: imeiData, isLoading: imeiLoading, isSuccess: isImeiSuccess } = useImeiCheck(values.imei, !cabinetId && !id)
 
   useEffect(()=>{
-    if(serialData && isSerialSuccess) {
-      setFieldValue("serialNumberRecognition", true)
-      if(!cabinetId) {
-        setFieldValue("imei", serialData?.imei)
-        setFieldValue("imeiRecognition", true)
+    // Only Create
+    if(!cabinetId && !id) {
+      if(isSerialError) {
+        setValues({
+          ...values,
+          imei: "",
+          imeiRecognition: false,
+          serialNumberRecognition: false,
+        }, true)
       }
-    } else if(isSerialSuccess && !serialData) {
-      if(!cabinetId) {
-        setFieldValue("imei", "")
-        setFieldValue("imeiRecognition", false)
+      if(serialData && isSerialSuccess) {
+        setValues({
+          ...values,
+          serialNumberRecognition: true,
+          imei: serialData?.imei || "",
+          imeiRecognition: true,
+        }, true)
       }
     }
-  },[serialData, isSerialSuccess, cabinetId])
+  },[serialData, isSerialSuccess, isSerialError])
 
   useEffect(()=>{
-    if(imeiData && isImeiSuccess && !cabinetId) {
+    if(imeiData && isImeiSuccess && !cabinetId && !id) {
       setFieldValue("imeiRecognition", true)
     }
-  },[imeiData, isImeiSuccess, cabinetId])
+  },[imeiData, isImeiSuccess])
 
   // reset formik when there is a cabinet data
   useEffect(() => {
@@ -870,19 +877,19 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                       name="serialNumber"
                       value={values.serialNumber}
                       onChange={(e)=> {
-                        setValues({
-                          ...values, 
-                          serialNumberRecognition: false,
-                          serialNumber: e.target.value,
-                        })
                         if(!cabinetId) {
                           setFieldValue("imei", serialData?.imei === values.imei ? "" : values.imei)
                         }
+                        setValues({
+                          ...values, 
+                          serialNumberRecognition: false,
+                          serialNumber: e.target.value
+                        })
                       }}
                       onBlur={handleBlur}
                       readOnly={Boolean(serialLoading || !values.brand || fieldsReadOnly || cabinetId || id)}
                       maxLength={50}
-                      errors={touched.serialNumber ? errors.serialNumber : (errors.serialNumberRecognition ? errors.serialNumberRecognition : '')}
+                      errors={errors.serialNumber || errors.serialNumberRecognition || ''}
                     />
                     <div className="text-xs mt-2">
                       Select the brand and model first. Serial Number of the Nexus brand will automatically be recognised and the remaining compatible cabinet details will be filled in automatically
@@ -890,7 +897,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                   </div>
                 </div>                
               </div>
-
+{console.log({errors, touched})}
               {/* Updaid Connection */}
               <div>
                 <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75 mt-5">
@@ -915,11 +922,11 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                           })
                         }}
                         onBlur={handleBlur}
-                        maxLength={50}
+                        maxLength={15}
                         readOnly={Boolean(
                           (values.brand === "Nexus" && serialData?.imei) || imeiLoading
                         ) || fieldsReadOnly || Boolean(cabinetId || id)}
-                        errors={touched.imei ? errors.imei : (errors.imeiRecognition ? errors.imeiRecognition : '')}
+                        errors={(touched.imei || touched.imeiRecognition) ? (errors.imei || errors.imeiRecognition) : ''}
                       />
                       {values.imeiRecognition && <CircleCheck size={20} className="absolute top-1/2 right-3 -translate-y-1/2 text-[#11BE48]" />}
                     </div>

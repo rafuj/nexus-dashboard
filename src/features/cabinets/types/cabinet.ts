@@ -8,6 +8,7 @@ export interface AssetType {
   value: string;
 }
 export const serialRegex = /^NEX-[A-Z0-9]{5}-[A-Z0-9]{4}$/;
+export const imeiRegex = /^\d{15}$/;
 
 export type VolumeType = '0%' | '50%' | '100%';
 

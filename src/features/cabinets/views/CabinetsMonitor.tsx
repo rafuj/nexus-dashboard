@@ -217,7 +217,7 @@ export default function CabinetsMonitor() {
                 "bg-white border rounded-[10px] border-border py-5 px-4",
               )}
             >
-              <h4 className="text-sm font-semibold mb-4">248 Cabinets</h4>
+              <h4 className="text-sm font-semibold mb-4">{data?.length ?? 0} Cabinets</h4>
               <DataTable
                 table={table}
                 emptyMessage="No cabinets match your filters."

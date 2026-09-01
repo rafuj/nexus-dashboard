@@ -1,6 +1,6 @@
 import { POSTAL_CODE_RULES } from "@/lib/country-helper";
 import * as Yup from "yup";
-import { serialRegex } from "./cabinet";
+import { imeiRegex, serialRegex } from "./cabinet";
 
 export const cabinetValidationSchema = Yup.object({
   name: Yup.string()
@@ -62,35 +62,56 @@ export const cabinetValidationSchema = Yup.object({
   serialNumber: Yup.string()
   .trim()
   .when("brand", {
-    is: (brand: string) => brand !== "Nexus",
-    then: (schema) => schema.notRequired(),
-    otherwise: (schema) =>
+    is: (brand: string) => brand === "Nexus",
+    then: (schema) =>
       schema
         .required("Serial number is required")
         .matches(
           serialRegex,
-          "Nexus Brand Serial number format does not match"
+          "Nexus serial number invalid. Please check again"
+        ),
+    otherwise: (schema) =>
+      schema
+        .notRequired()
+        .test(
+          "no-nexus-regex",
+          "Nexus serial number invalid. Please check again",
+          (value) => !value || !serialRegex.test(value)
         ),
   }),
 
-  serialNumberRecognition: Yup.boolean()
-  .when("brand", {
-    is: (brand: string) => brand !== "Nexus",
-    then: (schema) => schema.notRequired(),
-    otherwise: (schema) => schema.default(false).required("Serial number does not recognized"),
+  // serialNumberRecognition: Yup.boolean()
+  // .when("brand", {
+  //   is: (brand: string) => brand !== "Nexus",
+  //   then: (schema) => schema.notRequired(),
+  //   otherwise: (schema) => schema.default(false).required("Nexus serial number invalid. Please check again"),
+  // }),
+
+  serialNumberRecognition: Yup.boolean().when("brand", {
+    is: (brand?: string) => brand === "Nexus",
+    then: (schema) =>
+      schema
+        .oneOf([true], "Nexus serial number invalid. Please check again")
+        .required("Nexus serial number invalid. Please check again"),
+    otherwise: (schema) => schema.default(false),
   }),
 
-  imeiRecognition: Yup.boolean().when(
-    ["brand", "imei"],
-    {
-      is: (brand: string, imei: string) =>
-        brand !== "Nexus" && imei !== "",
-      then: (schema) =>
-        schema
-          .required("Module code does not recognized"),
-      otherwise: (schema) => schema.notRequired(),
-    }
-  ),
+  imei: Yup.string()
+    .trim()
+    .notRequired()
+    .matches(imeiRegex, {
+      message: "Module code invalid. Please check again",
+      excludeEmptyString: true,
+    }),
+
+  imeiRecognition: Yup.boolean().when("brand", {
+    is: (brand?: string) => brand !== "Nexus",
+    then: (schema) =>
+      schema
+        .oneOf([true], "Module code invalid. Please check again")
+        .required("Module code invalid. Please check again"),
+    otherwise: (schema) => schema.notRequired().nullable(),
+  }),
 
   brand: Yup.string()
   .trim()
@@ -150,34 +171,34 @@ export const cabinetUpdateSchema = Yup.object({
   .trim()
   .required("Access type is required"),
 
-  cabinetModelId: Yup.string()
-  .trim()
-  .required("Model is required"),
+  // cabinetModelId: Yup.string()
+  // .trim()
+  // .required("Model is required"),
 
-  serialNumber: Yup.string()
-  .trim()
-  .when("brand", {
-    is: (brand: string) => brand !== "Nexus",
-    then: (schema) => schema.notRequired(),
-    otherwise: (schema) =>
-      schema
-        .required("Serial number is required")
-        .matches(
-          serialRegex,
-          "Nexus Brand Serial number format does not match"
-        ),
-  }),
+  // serialNumber: Yup.string()
+  // .trim()
+  // .when("brand", {
+  //   is: (brand: string) => brand !== "Nexus",
+  //   then: (schema) => schema.notRequired(),
+  //   otherwise: (schema) =>
+  //     schema
+  //       .required("Serial number is required")
+  //       .matches(
+  //         serialRegex,
+  //         "Nexus Brand Serial number format does not match"
+  //       ),
+  // }),
 
-  serialNumberRecognition: Yup.boolean()
-  .when("brand", {
-    is: (brand: string) => brand !== "Nexus",
-    then: (schema) => schema.notRequired(),
-    otherwise: (schema) => schema.default(false).required("Serial number does not recognized"),
-  }),
+  // serialNumberRecognition: Yup.boolean()
+  // .when("brand", {
+  //   is: (brand: string) => brand !== "Nexus",
+  //   then: (schema) => schema.notRequired(),
+  //   otherwise: (schema) => schema.default(false).required("Serial number does not recognized"),
+  // }),
 
-  brand: Yup.string()
-  .trim()
-  .required("Brand is required"),
+  // brand: Yup.string()
+  // .trim()
+  // .required("Brand is required"),
   
 });
 
