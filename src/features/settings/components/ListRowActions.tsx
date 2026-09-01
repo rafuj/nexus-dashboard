@@ -29,6 +29,7 @@ export function ListRowActions({ row }: { row: SettingsGroupRow }) {
         description="Deleting this group will permanently remove it from the system and may affect cabinet organization, member access, and related configurations."
         onConfirm={() => {
           successToast("Group deleted successfully")
+          setOpen(false)
         }}
       />
     </>

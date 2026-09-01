@@ -30,6 +30,7 @@ export function MemberListRowActions() {
         description="Deleting this member will permanently remove it from the system and may affect cabinet organization"
         onConfirm={() => {
           successToast("Member deleted successfully")
+          setOpen(false)
         }}
       />
     </>

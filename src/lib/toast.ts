@@ -9,6 +9,10 @@ const baseOptions = (): ToastOptions => {
       boxShadow: "none",
       fontSize: "14px"
     },
+    // iconTheme: {
+    //   primary: '#713200',
+    //   secondary: '#FFFAEE',
+    // },
   };
 };
 
