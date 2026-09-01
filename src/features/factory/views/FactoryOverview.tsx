@@ -20,9 +20,7 @@ export default function FactoryOverview() {
   const [search, setSearch] = useState<string>("");
   const [prefix, setPrefix] = useState<string>("");
   const [linked, setLinked] = useState<string>("");
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: "serialNumber", desc: false },
-  ]);
+  const [sorting, setSorting] = useState<SortingState>([]);
   
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,

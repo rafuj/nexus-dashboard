@@ -43,9 +43,7 @@ export default function CabinetsListView() {
   const [search, setSearch] = useQueryState("search", { defaultValue:"" });
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsStringLiteral(filterStatuses).withDefault(STATUS_FILTER_ALL))
   const [city, setCity] = useQueryState("city", { defaultValue: CITY_FILTER_ALL });
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: "cabinet", desc: false },
-  ]);
+  const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: PAGE_SIZE,

@@ -138,7 +138,7 @@ export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen
                                     <h6 className="text-xs text-accent-foreground">{i.name}</h6>
                                   </td>
                                   <td className="border-b border-border group-last:border-0 px-2.5 py-2">
-                                    <div className="text-xs line-clamp-1 max-w-[80px]">{i.location}</div>
+                                    <div className="text-xs line-clamp-1 max-w-[80px]">{i.number + " " + i.street + "," + i.city}</div>
                                   </td>
                                   <td className="border-b border-border group-last:border-0 px-2.5 py-2">
                                       <span className={cn("py-1 px-2 rounded text-[10px] capitalize", cabinetStatusSoftBadgeClass(i.status))}>{i.status}</span>
@@ -192,7 +192,7 @@ export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen
                                 <Icons.cabinet />
                                 <div className="">
                                   <h6 className="text-xs font-medium">{i.name}</h6>
-                                  <div className="text-xs">{i.location}</div>
+                                  <div className="text-xs">{i.number + " " + i.street + "," + i.city}</div>
                                 </div>
                               </div>
                               <span className="flex items-center gap-1.5 text-xs capitalize w-25 grow">
@@ -246,7 +246,7 @@ export const EditGroupDrawer: React.FC<EditGroupDrawerProps>  = ({ open, setOpen
                                 </div>
 
                                 <div className="flex items-center gap-1.5 text-xs capitalize w-25">
-                                  <div className="text-xs truncate">{i.location}</div>
+                                  <div className="text-xs truncate">{i.number + " " + i.street + "," + i.city}</div>
                                 </div>
 
                                 <Button

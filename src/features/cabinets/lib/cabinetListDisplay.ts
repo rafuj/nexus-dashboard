@@ -324,9 +324,9 @@ export const getTemperatureTooltip = (data: TemperatureState) => {
 
 export const getOverallStatus = (cabinet: SmartCabinet) => {
   const assetTakenAt = cabinet.deviceState?.assetStateChangedAt;
-  const assetPresent = cabinet.deviceState?.assetPresent;
-  const doorOpen = cabinet.deviceState?.doorOpen;
-  const temperature = cabinet.deviceState?.temperature;
+  const assetPresent = Boolean(cabinet.deviceState?.assetPresent);
+  const doorOpen = Boolean(cabinet.deviceState?.doorOpen);
+  const temperature = Number(cabinet.deviceState?.temperature);
 
   const temperatureOutOfRangeSince = new Date(); // data is not available now
 
@@ -363,14 +363,14 @@ export const getOverallStatus = (cabinet: SmartCabinet) => {
   return "ok"
 };
 export const getOverallStatusBadgeClass = (cabinet: SmartCabinet) => {
-  const assetTakenAt = cabinet.deviceState?.assetStateChangedAt;
-  const assetPresent = cabinet.deviceState?.assetPresent;
-  const doorOpen = cabinet.deviceState?.doorOpen;
-  const temperature = cabinet.deviceState?.temperature;
+  const assetTakenAt = cabinet?.deviceState?.assetStateChangedAt;
+  const assetPresent = cabinet?.deviceState?.assetPresent;
+  const doorOpen = cabinet?.deviceState?.doorOpen;
+  const temperature = cabinet?.deviceState?.temperature;
 
   const temperatureOutOfRangeSince = new Date(); // data is not available now
 
-  if (!cabinet.deviceState) {
+  if (!cabinet?.deviceState) {
     return getHealthBadgeClass("n/a")
   }
   

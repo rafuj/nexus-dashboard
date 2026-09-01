@@ -43,9 +43,7 @@ export default function CabinetsMonitor() {
 
   console.log("setCabinetId",setCabinetId)
 
-  const [sorting, setSorting] = useState<SortingState>([
-    { id: "cabinet", desc: false },
-  ]);
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,

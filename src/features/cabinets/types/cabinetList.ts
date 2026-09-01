@@ -14,37 +14,37 @@ export type AssetPresence = 'present' | 'missing';
 export type DoorStatus = 'closed' | 'open';
 
 interface BaseCabinet {
-  accessType: string;
-  id: string;
-  name: string;
-  city: string;
-  country: string;
-  zipCode: string;
-  latitude: number;
-  longitude: number;
-  street: string;
-  number: string;
-  addressLine2: string;
-  serialNumber: string;
-  lockCode: string;
-  assignedAt: string;
-  createdAt: string;
-  description: string;
-  smart: boolean;
-  status: string;
-  tenantId: string;
+  accessType: string
+  id: string
+  name: string
+  city: string
+  country: string
+  zipCode: string
+  latitude: number
+  longitude: number
+  street: string
+  number: string
+  addressLine2?: string
+  serialNumber: string
+  lockCode: string
+  assignedAt: string
+  createdAt: string
+  description: string
+  smart: boolean
+  status: string
+  tenantId?: string
   deviceState: {
-    assetPresent: boolean;
-    assetStateChangedAt: string;
-    createdAt: string;
-    deviceInstallationId: string;
-    doorOpen: boolean;
-    doorStateChangedAt: string;
-    lastSeenAt: string;
-    rssi: number;
-    temperature: number;
-    assetHealth: string;
-  };
+    assetPresent: boolean
+    assetStateChangedAt: string
+    createdAt: string
+    deviceInstallationId: string
+    doorOpen: boolean
+    doorStateChangedAt: string
+    lastSeenAt: string
+    rssi: number
+    temperature: number
+    assetHealth: string
+  }
 }
 
 export interface Cabinet extends BaseCabinet {}

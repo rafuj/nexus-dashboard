@@ -4,11 +4,11 @@ import { api } from "@/app/api-manage/api"
 import { API_ROUTES } from "@/app/api-manage/api-routes"
 
 export type CabinetsListQuery = {
-  search: string
+  search?: string
   status?: string
   city?: string
-  page?: number
-  limit?: number
+  page: number
+  limit: number
   sorting?: SortingState
 }
 

@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { ChevronRight, PlusCircle } from "lucide-react";
 
 import { CabinetsListToolbar } from "../components/CabinetsListToolbar";
-import { cn, formatDateTime, formatISODate } from "@/lib/utils";
+import { cn, formatDateTime } from "@/lib/utils";
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Link } from "react-router";
@@ -43,7 +43,9 @@ export default function CabinetsMapView() {
   } = useSmartCabinetsList({
     search: debouncedSearch,
     status: statusFilter,
-    city
+    city,
+    page: 1,
+    limit: 9999999
   })
 
   const filteredCabinets = filterCabinets(

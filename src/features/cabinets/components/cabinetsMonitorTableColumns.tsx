@@ -295,7 +295,7 @@ export const cabinetsMonitorTableColumns = [
   }),
 
   // 7. Last Update Column
-  columnHelper.accessor("deviceState.assetStateChangedAt", {
+  columnHelper.accessor("createdAt", { //we need to change this later to last update
     id: "lastActivityAt",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Last Update" />
@@ -304,6 +304,6 @@ export const cabinetsMonitorTableColumns = [
       headerClassName: "",
       cellClassName: "align-middle whitespace-nowrap",
     },
-    cell: ({ row }) => formatDateTime(row.original.deviceState?.assetStateChangedAt),
+    cell: ({ row }) => formatDateTime(row.original.createdAt), // we need to change this later to last update
   }),
 ]
