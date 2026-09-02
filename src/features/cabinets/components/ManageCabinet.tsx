@@ -148,9 +148,9 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
   const { data: cabinetBrands } = useCabinetBrands()
   const { data: cabinetModels } = useCabinetModels(values.brand)
   // serial number recognition api 
-  const { data: serialData, isLoading: serialLoading, isSuccess: isSerialSuccess, isError:isSerialError } = useSerialCheck(values.serialNumber, !cabinetId && !id)
+  const { data: serialData, isLoading: serialLoading, isSuccess: isSerialSuccess, isError:isSerialError } = useSerialCheck(values.serialNumber, !cabinetId && !id && values.brand === "Nexus")
   // module code recognition api 
-  const { data: imeiData, isLoading: imeiLoading, isSuccess: isImeiSuccess } = useImeiCheck(values.imei, !cabinetId && !id)
+  const { data: imeiData, isLoading: imeiLoading, isSuccess: isImeiSuccess } = useImeiCheck(values.imei, !cabinetId && !id && !values.serialNumberRecognition)
 
   useEffect(()=>{
     // Only Create
@@ -164,19 +164,23 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
         }, true)
       }
       if(serialData && isSerialSuccess) {
-        setValues({
-          ...values,
-          serialNumberRecognition: true,
-          imei: serialData?.imei || "",
-          imeiRecognition: true,
-        }, true)
+        if (values.brand === "Nexus") {
+          setValues({
+            ...values,
+            serialNumberRecognition: true,
+            imei: serialData?.imei || "",
+            imeiRecognition: true,
+          }, true)
+        }
       }
     }
   },[serialData, isSerialSuccess, isSerialError])
 
   useEffect(()=>{
-    if(imeiData && isImeiSuccess && !cabinetId && !id) {
-      setFieldValue("imeiRecognition", true)
+    if (values.brand !== "Nexus") {
+      if(imeiData && isImeiSuccess && !cabinetId && !id) {
+        setFieldValue("imeiRecognition", true)
+      }
     }
   },[imeiData, isImeiSuccess])
 
@@ -827,21 +831,13 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Brand<span className="text-error">*</span></Label>
                     <Select value={values.brand} onValueChange={(value)=> {
-                      setValues({
-                        ...values,
-                        brand: value,
-                        cabinetModelId: ""
-                      }, true)
-                      // update module code value on brand change
-                      if(!cabinetId) {
-                        if(value === "Nexus") {
-                          setFieldValue("imei", serialData?.imei || "")
-                        } else {
-                          if(serialData?.imei === values.imei) {
-                            setFieldValue("imei", "")
-                          }
-                        }
-                      }
+                        setValues({
+                          ...values,
+                          brand: value,
+                          cabinetModelId: "",
+                          imei: (value === "Nexus" && serialData?.imei) ? serialData?.imei : "",
+                          imeiRecognition: (value === "Nexus" && serialData?.imei) ? true : false
+                        }, true)
                     }} disabled={Boolean(fieldsReadOnly || cabinetId || id)}>
                       <SelectTrigger className={cn("w-full !h-12.5")}>
                         <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
@@ -906,7 +902,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                 </div>
                 <div className="grid grid-cols-1 xl:grid-cols-2 my-3.75 gap-4">
                   <div className="xl:col-span-2">
-                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Module Code<span className="text-error">*</span></Label>
+                    <Label className="text-xs text-accent-foreground font-medium block mb-3">Module Code</Label>
                     <div className="relative">
                       <Input
                         placeholder="Enter module code"

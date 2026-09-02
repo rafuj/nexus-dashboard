@@ -80,13 +80,6 @@ export const cabinetValidationSchema = Yup.object({
         ),
   }),
 
-  // serialNumberRecognition: Yup.boolean()
-  // .when("brand", {
-  //   is: (brand: string) => brand !== "Nexus",
-  //   then: (schema) => schema.notRequired(),
-  //   otherwise: (schema) => schema.default(false).required("Nexus serial number invalid. Please check again"),
-  // }),
-
   serialNumberRecognition: Yup.boolean().when("brand", {
     is: (brand?: string) => brand === "Nexus",
     then: (schema) =>
@@ -104,8 +97,8 @@ export const cabinetValidationSchema = Yup.object({
       excludeEmptyString: true,
     }),
 
-  imeiRecognition: Yup.boolean().when("brand", {
-    is: (brand?: string) => brand !== "Nexus",
+  imeiRecognition: Yup.boolean().when(["brand", "imei"], {
+    is: (brand?: string, imei?: string) => brand !== "Nexus" && Boolean(imei),
     then: (schema) =>
       schema
         .oneOf([true], "Module code invalid. Please check again")
