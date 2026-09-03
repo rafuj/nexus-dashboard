@@ -35,6 +35,17 @@ export const factoryOverviewColumns = () => [
     cell: ({ }) => "NEX",
   }),
 
+  columnHelper.accessor("startsWith", {
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Starts With" />
+    ),
+    meta: {
+      headerClassName: "",
+      cellClassName: "align-middle whitespace-nowrap",
+    },
+    cell: ({ row }) => row.original.startsWith,
+  }),
+
   columnHelper.accessor("createdAt", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Generated On" />
@@ -45,7 +56,6 @@ export const factoryOverviewColumns = () => [
     },
     cell: ({ row }) => formatISODate(row.original.createdAt),
   }),
-
 
   columnHelper.accessor("deviceLinked", {
     header: ({ column }) => (

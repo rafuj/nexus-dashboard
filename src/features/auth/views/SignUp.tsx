@@ -72,7 +72,6 @@ const validationSchema = Yup.object({
   organization: Yup.object({
     city: Yup.string().trim(),
     country: Yup.string().trim(),
-    legalName: Yup.string().trim(),
     postalCode: Yup.string().trim(),
     street: Yup.string().trim(),
     vatNumber: Yup.string().trim(),
@@ -80,25 +79,21 @@ const validationSchema = Yup.object({
     is: "business",
     then: (schema) =>
       schema.shape({
-        city: Yup.string()
-          .trim()
-          .required("City is required"),
+        // city: Yup.string()
+        //   .trim()
+        //   .required("City is required"),
 
-        country: Yup.string()
-          .trim()
-          .required("Country is required"),
+        // country: Yup.string()
+        //   .trim()
+        //   .required("Country is required"),
 
-        legalName: Yup.string()
-          .trim()
-          .required("Legal name is required"),
+        // postalCode: Yup.string()
+        //   .trim()
+        //   .required("Postal code is required"),
 
-        postalCode: Yup.string()
-          .trim()
-          .required("Postal code is required"),
-
-        street: Yup.string()
-          .trim()
-          .required("Street is required"),
+        // street: Yup.string()
+        //   .trim()
+        //   .required("Street is required"),
 
         vatNumber: Yup.string()
           .trim()
@@ -130,11 +125,10 @@ export default function SignUp() {
       confirmPassword: "",
       tenantName: "",
       organization: {
-        city: "",
-        country: "",
-        legalName: "",
-        postalCode: "",
-        street: "",
+        // city: "",
+        // country: "",
+        // postalCode: "",
+        // street: "",
         vatNumber: "",
       },
       phone: ""
@@ -205,9 +199,9 @@ export default function SignUp() {
   }
 
   
-  const availableCities = useMemo(() => {
-    return getCitiesByCountry(formik.values.organization.country);
-  }, [formik.values.organization.country]);
+  // const availableCities = useMemo(() => {
+  //   return getCitiesByCountry(formik.values.organization.country);
+  // }, [formik.values.organization.country]);
 
   const switchComponent = () => {
     switch (tabs) {
@@ -397,8 +391,9 @@ export default function SignUp() {
                       )}
                     </div>
                     {formik.values.tenantType === "business" && (
-                      <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-                        <div>
+                      <div className="grid grid-cols-1 gap-x-4 gap-y-3">
+                      {/* <div className="grid grid-cols-2 gap-x-4 gap-y-3"> */}
+                        {/* <div>
                             <label className="font-medium text-accent-foreground mb-2.5 block">Country <span className="text-error">*</span></label>
                           <Select
                               onValueChange={(value) => {
@@ -446,24 +441,6 @@ export default function SignUp() {
                               )}
                         </div>
                         <div>
-                            <label className="font-medium text-accent-foreground mb-2.5 block">Legal Name <span className="text-error">*</span></label>
-                            <Input
-                              type="text"
-                              name="organization.legalName"
-                              placeholder="e.g. Global Resources"
-                              value={formik.values.organization.legalName}
-                              onChange={formik.handleChange}
-                              onBlur={formik.handleBlur}
-                              className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                            />
-                            {formik.touched.organization?.legalName &&
-                              formik.errors.organization?.legalName && (
-                                <p className="mt-1 text-sm text-error">
-                                  {formik.errors.organization?.legalName}
-                                </p>
-                              )}
-                        </div>
-                        <div>
                             <label className="font-medium text-accent-foreground mb-2.5 block">Postal Code <span className="text-error">*</span></label>
                             <Input
                               type="text"
@@ -498,7 +475,7 @@ export default function SignUp() {
                                   {formik.errors.organization?.street}
                                 </p>
                               )}
-                        </div>
+                        </div> */}
                         <div>
                             <label className="font-medium text-accent-foreground mb-2.5 block">Vat Number <span className="text-error">*</span></label>
                             <Input

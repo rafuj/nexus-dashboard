@@ -13,28 +13,25 @@ import type { DateRange } from "react-day-picker";
 import TagIcon from "@/assets/icons/tag.svg?react";
 import LinkIcon from "@/assets/icons/link.svg?react";
 import { useGeneratedSerialList } from "../hooks/useGeneratedSerialList";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 const PAGE_SIZE = 12
 
 export default function FactoryOverview() {
   const [search, setSearch] = useState<string>("");
-  const [prefix, setPrefix] = useState<string>("");
-  const [linked, setLinked] = useState<string>("");
+  const [prefix, setPrefix] = useState<string>("all");
+  const [linked, setLinked] = useState<string>("all");
   const [sorting, setSorting] = useState<SortingState>([]);
   
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: PAGE_SIZE,
   });
-  const today = new Date()
-  const [dateRange, setDateRange] = useState<DateRange>({
-    from: today,
-    to: today
-  });
+  const [dateRange, setDateRange] = useState<DateRange | null>();
 
   const columns = useMemo(() => factoryOverviewColumns(), []);
 
-  const { data } = useGeneratedSerialList()
+  const { data, isLoading } = useGeneratedSerialList()
 
 
   const resetPage = () =>
@@ -52,7 +49,8 @@ export default function FactoryOverview() {
         pageSize: pagination.pageSize,
         sorting,
         prefix,
-        linked
+        linked,
+        dateRange: dateRange || null
       }),
     [
       search,
@@ -61,30 +59,31 @@ export default function FactoryOverview() {
       sorting,
       prefix,
       linked,
-      data
+      data,
+      dateRange
     ],
   );
 
   const table = useReactTable({
-      data: pageResult.rows,
-      // data: data ?? [],
-      columns,
-      rowCount: pageResult.totalCount,
-      manualPagination: true,
-      manualSorting: true,
-      autoResetPageIndex: false,
-      getRowId: (row) => row.id,
-      getCoreRowModel: getCoreRowModel(),
-      onPaginationChange: setPagination,
-      onSortingChange: (updater) => {
-        setSorting(updater);
-        resetPage();
-      },
-      state: {
-        pagination,
-        sorting,
-      },
-    });
+    data: pageResult.rows,
+    // data: data ?? [],
+    columns,
+    rowCount: pageResult.totalCount,
+    manualPagination: true,
+    manualSorting: true,
+    autoResetPageIndex: false,
+    getRowId: (row) => row.id,
+    getCoreRowModel: getCoreRowModel(),
+    onPaginationChange: setPagination,
+    onSortingChange: (updater) => {
+      setSorting(updater);
+      resetPage();
+    },
+    state: {
+      pagination,
+      sorting,
+    },
+  });
 
   return (
     <>
@@ -114,20 +113,20 @@ export default function FactoryOverview() {
         <div className="p-5">
           <div className="space-y-5">
             <div className={cn(
-                  "bg-white border rounded-[10px] border-border p-4",
-                )}>
-                  <FactoryOverviewToolbar {
-                    ...{
-                      search,
-                      setSearch,
-                      prefix,
-                      setPrefix,
-                      linked,
-                      setLinked,
-                      dateRange,
-                      setDateRange
-                    }
-                  } />
+                "bg-white border rounded-[10px] border-border p-4",
+              )}>
+                <FactoryOverviewToolbar {
+                  ...{
+                    search,
+                    setSearch,
+                    prefix,
+                    setPrefix,
+                    linked,
+                    setLinked,
+                    dateRange,
+                    setDateRange
+                  }
+                } />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -137,7 +136,7 @@ export default function FactoryOverview() {
                     <TagIcon />
                   </div>
                   <div className="w-0 grow">
-                    <h5 className="font-semibold text-accent-primary">1,294</h5>
+                    <h5 className="font-semibold text-accent-primary">{data?.length}</h5>
                     <div className="text-sm">Total Generated</div>
                   </div>
                 </div>
@@ -148,7 +147,7 @@ export default function FactoryOverview() {
                     <LinkIcon />
                   </div>
                   <div className="w-0 grow">
-                    <h5 className="font-semibold text-accent-primary">183</h5>
+                    <h5 className="font-semibold text-accent-primary">{data?.filter((item) => !item.deviceLinked).length}</h5>
                     <div className="text-sm">Unlinked</div>
                   </div>
                 </div>
@@ -159,29 +158,44 @@ export default function FactoryOverview() {
                     <LinkIcon />
                   </div>
                   <div className="w-0 grow">
-                    <h5 className="font-semibold text-accent-primary">1,104</h5>
+                    <h5 className="font-semibold text-accent-primary">{data?.filter((item) => item.deviceLinked).length}</h5>
                     <div className="text-sm">Linked</div>
                   </div>
                 </div>
               </div>
             </div>
-            <div
-                className={cn(
-                  "bg-white border rounded-[10px] border-border p-4",
-                )}
-              >
-                <DataTable
-                  table={table}
-                  emptyMessage="No cabinets match your filters."
-                  tableClassName="text-accent-foreground"
-                />
-                <div className="border-border border-t pt-4">
-                  <DataTablePagination
-                    table={table}
-                    navLabel="Cabinets table pagination"
-                  />
+            {(isLoading && !data) ? (
+                <div className="p-5 bg-white border border-border rounded-md">
+                  <div className="flex flex-col gap-4">
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                    <Skeleton className="h-12" />
+                  </div>
                 </div>
-            </div>
+            ) : (
+              <div
+                  className={cn(
+                    "bg-white border rounded-[10px] border-border p-4",
+                  )}
+                >
+                  <DataTable
+                    table={table}
+                    emptyMessage="No cabinets match your filters."
+                    tableClassName="text-accent-foreground"
+                  />
+                  <div className="border-border border-t pt-4">
+                    <DataTablePagination
+                      table={table}
+                      navLabel="Cabinets table pagination"
+                    />
+                  </div>
+              </div>
+            )}
           </div>
         </div>
       </main>

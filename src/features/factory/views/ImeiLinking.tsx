@@ -19,6 +19,7 @@ import { useCreateDevices } from "../hooks/useCreateDevices";
 import { useDeviceInstallations } from "../hooks/useDeviceInstallations";
 import { getApiErrorMessage } from "@/app/api-manage/api";
 import { errorToast, successToast } from "@/lib/toast";
+import { imeiRegex, serialRegex } from "@/features/cabinets/types/cabinet";
 
 const PAGE_SIZE = 10;
 
@@ -134,10 +135,6 @@ export default function ImeiLinking() {
     }
   }, [imeiScanSuccess, serialScanSuccess])
   
-
-  
-  const imeiRegex = /^\d{15}$/;
-  const serialRegex = /^NEX-[A-Z0-9]{5}-[A-Z0-9]{4}$/;
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -323,18 +320,18 @@ export default function ImeiLinking() {
                       Scanner Status:
                       <span className="flex items-center gap-1.25 text-success2"><span className="size-2.5 bg-success2 rounded-full"></span> Connected</span>
                     </div>
-                    <div className="mt-3.75 flex flex-wrap gap-2.5">
-                      <div className="grow border border-border rounded-[10px] text-base px-5 py-3 text-accent-foreground">
-                        Counter: <span className="font-semibold">{scanCount}</span>
-                      </div>
-                      <button type="button" className="flex items-center gap-1.25 text-accent-foreground text-sm bg-chip h-12.5 px-5 xl:px-6 rounded-full">
-                        <RotateCcw size={16} />
-                        <span>Reset Counter</span>
-                      </button>
-                    </div>
                   </div>
                 }
                 {(deviceInstallations.isPending || createDevices.isPending) && <div className="md:col-span-2 text-center text-xl text-accent-foreground"> <span className="animate-spin"></span>Linking device ...</div> }
+                <div className="md:col-span-2 flex flex-wrap gap-2.5">
+                  <div className="grow border border-border rounded-[10px] text-base px-5 py-3 text-accent-foreground">
+                    Counter: <span className="font-semibold">{scanCount}</span>
+                  </div>
+                  <button type="button" className="flex items-center gap-1.25 text-accent-foreground text-sm bg-chip h-12.5 px-5 xl:px-6 rounded-full">
+                    <RotateCcw size={16} />
+                    <span>Reset Counter</span>
+                  </button>
+                </div>
               </div>
             </div>
             <div
@@ -356,7 +353,10 @@ export default function ImeiLinking() {
                       <Input
                         placeholder="Search serial number or IMEI..."
                         value={search}
-                        onChange={(e) => setSearch(e.target.value)}
+                        onChange={(e) => {
+                          resetPage()
+                          setSearch(e.target.value)
+                        }}
                         className="pl-9 h-10 border border-border bg-white md:!h-12.5"
                         autoComplete="off"
                       />

@@ -1075,7 +1075,6 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                   <div>
                     <Label className="text-xs text-accent-foreground font-medium block mb-3">Lock code (optional)</Label>
                     <Input
-                      placeholder="Enter 4-8 digit lock code"
                       autoComplete="off"
                       className="h-12.5 px-5 placeholder:text-accent-foreground/20"
                       name="lockCode"

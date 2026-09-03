@@ -34,7 +34,7 @@ export function FactoryOverviewToolbar({
           />
           <Input
             id="cabinet-search"
-            placeholder="Search cabinet name..."
+            placeholder="Search..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9 h-10 border border-border bg-white md:!h-12.5"

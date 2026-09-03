@@ -35,12 +35,12 @@ export const mockDashboardStats: DashboardStatDefinition[] = [
     url: "/cabinets/monitor?status=urgent",
   },
   {
-    id: "assets-paused",
-    title: "Paused",
+    id: "assets-suspended",
+    title: "Suspended",
     value: "3",
     icon: Icons.paused,
     className: "card-neutral",
-    url: "/cabinets/monitor?status=paused",
+    url: "/cabinets/monitor?status=suspended",
   },
 ];
 

@@ -9,6 +9,8 @@ export type FactoryRow = {
   serialNumber: string
   status: string
   tenantId: string
+  startsWith: string
+  prefix: string
 }
 
 export type FactoryOverviewToolbarProps = {

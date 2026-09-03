@@ -111,10 +111,12 @@ export default function ExploreUpgrades() {
                     Join the 1,200+ industrial networks currently leveraging real-time connectivity to save on operational overhead.
                   </p>
                   <div className="flex flex-wrap items-center justify-center gap-5 mt-7">
-                    <button type="button" className="flex items-center bg-primary text-white py-2 px-3 sm:py-4 sm:px-10 rounded-full gap-1.25">
-                      Upgrade Now
-                    </button>
-                    <Link to="#" className="underline text-accent-foreground text-sm">Contact Sales for Enterprise</Link>
+                    <Link to="https://updaid.com/pricing/" target="_blank">
+                      <button type="button" className="flex items-center bg-primary text-white py-2 px-3 sm:py-4 sm:px-10 rounded-full gap-1.25">
+                        Upgrade Now
+                      </button>
+                    </Link>
+                    <Link to="https://updaid.com/pricing/" target="_blank" className="underline text-accent-foreground text-sm">Contact Sales for Enterprise</Link>
                   </div>
                 </div>
               </div>
