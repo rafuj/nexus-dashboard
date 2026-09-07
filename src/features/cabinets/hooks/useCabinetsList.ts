@@ -11,6 +11,7 @@ export const useCabinetsList = (params: CabinetsListQuery) => {
     queryKey: ["cabinets", "list", params],
     queryFn: () => getCabinetsList(params),
     placeholderData: (previousData) => previousData,
-    staleTime
+    staleTime,
+    retry: false
   })
 }

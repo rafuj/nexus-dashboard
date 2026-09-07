@@ -11,6 +11,7 @@ export const useSmartCabinetsList = (params: CabinetsListQuery) => {
     queryKey: ["smart-cabinets", params],
     queryFn: () => getSmartCabinetList(params),
     placeholderData: (previousData) => previousData,
-    staleTime
+    staleTime,
+    retry: false
   })
 }

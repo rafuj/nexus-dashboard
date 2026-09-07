@@ -1,7 +1,3 @@
-import { parseAsStringLiteral, useQueryState } from "nuqs";
-
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
-
 import { Input } from "@/shared/components/ui/input";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -11,11 +7,10 @@ import { removeEmptyValues } from "@/lib/utils";
 import { PasswordInput } from "../components/PasswordInput";
 import { Link, useNavigate } from "react-router";
 import { CustomRadioGroup, type RadioOption } from "@/shared/components/CustomRadioGroup";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import OtpInput from 'react-otp-input';
-import { COUNTRY_OPTIONS, getCitiesByCountry } from "@/lib/country-helper";
 import { LoaderButton } from "@/app/components/loader-button";
-import { CityCombobox } from "@/features/cabinets/components/CityCombobox";
+
 
 export type TenantType = "personal" | "business";
 
@@ -105,15 +100,45 @@ const validationSchema = Yup.object({
 
 export default function SignUp() {
   
-  const [tabs, setTabs] = useQueryState("tabs",   parseAsStringLiteral(["signup", "verify-otp-reg"]).withDefault("signup"))
-  // const [tabs, setTabs] = useState("signup")
+  // const [tabs, setTabs] = useQueryState("tabs",   parseAsStringLiteral(["signup", "verify-otp-reg"]).withDefault("signup"))
+  const [tabs, setTabs] = useState("signup")
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const { sendOtpReg, verifyOtpReg, signup } = useAuth();
+  const { sendOtpReg, verifyOtpReg, signup, getUserRolePermission, getUser } = useAuth();
+
   const navigate = useNavigate()
 
   const [otp, setOtp] = useState<string>("")
   const OTP_LENGTH = 6
+  
+  const [timer, setTimer] = useState({
+      minutes: 29,
+      seconds: 59,
+    })
+
+  const [codeExpired, setCodeExpired] = useState<boolean>(false)
+
+  useEffect(() => {
+    if(!codeExpired) return
+    const countdown = setInterval(() => {
+      setTimer((prev) => {
+        if (prev.seconds > 0) {
+          return { ...prev, seconds: prev.seconds - 1 }
+        }
+
+        if (prev.minutes > 0) {
+          return { minutes: prev.minutes - 1, seconds: 59 }
+        }
+
+        clearInterval(countdown)
+        setCodeExpired(false)
+        errorToast("Verification Code Expired, please resend code and try again")
+        return prev
+      })
+    }, 1000)
+
+    return () => clearInterval(countdown)
+  }, [codeExpired])
 
   const formik = useFormik({
     initialValues: {
@@ -131,7 +156,8 @@ export default function SignUp() {
         // street: "",
         vatNumber: "",
       },
-      phone: ""
+      phone: "",
+      keepVerified: true
     },
 
     validationSchema,
@@ -144,6 +170,9 @@ export default function SignUp() {
         successToast("OTP sent successfully. Please verify your email.")
         setTabs("verify-otp-reg")
         setIsLoading(false)
+        setCodeExpired(true)
+        setTimer({ minutes: 29, seconds: 49 })
+
       } catch (error) {
         errorToast(
           error instanceof Error
@@ -184,10 +213,12 @@ export default function SignUp() {
           : { ...rest, organization }
 
       await signup(signupValues)
+      await getUserRolePermission();
+      await getUser();
 
       setIsLoading(false)
       successToast("Account created successfully")
-      navigate("/login")
+      navigate("/")
     } catch (error) {
       errorToast(
         error instanceof Error
@@ -242,6 +273,33 @@ export default function SignUp() {
                         >
                           Verify Code
                         </LoaderButton>
+                      </div>
+                      
+                      <div className="flex items-center gap-2.5 max-w-[240px] mx-auto mb-5 mt-7">
+                        <div className="h-px grow w-0 bg-accent-foreground" />
+                        <div className="size-1.25 rounded-full bg-accent-foreground" />
+                        <div className="h-px grow w-0 bg-accent-foreground" />
+                      </div>
+
+                      <div className="text-center text-accent-foreground text-sm">
+                        {codeExpired ? (
+                          <>
+                            Verification code will expire in{" "}
+                            <span className="font-semibold">{`${timer.minutes<10?'0':''}${timer.minutes}:${timer.seconds<10?'0':''}${timer.seconds}s`}</span>
+                          </>
+                          ) : (
+                          <div>
+                            Verification code expired, resend new code{" "}
+                            <button
+                              type="button"
+                              className="font-semibold"
+                              onClick={() => formik.submitForm()}
+                              disabled={formik.isSubmitting}
+                            >
+                              Resend
+                            </button>
+                          </div>
+                        )}
                       </div>
 
                     </form>
