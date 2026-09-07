@@ -69,11 +69,11 @@ const validationSchema = Yup.object({
     country: Yup.string().trim(),
     postalCode: Yup.string().trim(),
     street: Yup.string().trim(),
-    vatNumber: Yup.string().trim(),
-  }).when("tenantType", {
-    is: "business",
-    then: (schema) =>
-      schema.shape({
+    // vatNumber: Yup.string().trim(),
+  // }).when("tenantType", {
+  //   is: "business",
+  //   then: (schema) =>
+  //     schema.shape({
         // city: Yup.string()
         //   .trim()
         //   .required("City is required"),
@@ -90,13 +90,13 @@ const validationSchema = Yup.object({
         //   .trim()
         //   .required("Street is required"),
 
-        vatNumber: Yup.string()
-          .trim()
-          .required("VAT number is required"),
-      }),
-    otherwise: (schema) => schema.notRequired(),
-  }),
-});
+        // vatNumber: Yup.string()
+        //   .trim()
+        //   .required("VAT number is required"),
+  //     }),
+  //   otherwise: (schema) => schema.notRequired(),
+  })
+})
 
 export default function SignUp() {
   
@@ -149,15 +149,14 @@ export default function SignUp() {
       password: "",
       confirmPassword: "",
       tenantName: "",
-      organization: {
+      // organization: {
         // city: "",
         // country: "",
         // postalCode: "",
         // street: "",
-        vatNumber: "",
-      },
+        // vatNumber: "",
+      // },
       phone: "",
-      keepVerified: true
     },
 
     validationSchema,
@@ -202,7 +201,8 @@ export default function SignUp() {
 
       const values = removeEmptyValues(formik.values)
 
-      const { organization, confirmPassword, ...rest } = values;
+      // const { organization, confirmPassword, ...rest } = values;
+      const { confirmPassword, ...rest } = values;
 
       const signupValues =
         values.tenantType === "personal"
@@ -210,7 +210,8 @@ export default function SignUp() {
             ...rest,
             tenantName: values.firstName + " " + values.lastName
           }
-          : { ...rest, organization }
+          // : { ...rest, organization }
+          : { ...rest }
 
       await signup(signupValues)
       await getUserRolePermission();
@@ -533,7 +534,7 @@ export default function SignUp() {
                                   {formik.errors.organization?.street}
                                 </p>
                               )}
-                        </div> */}
+                        </div>
                         <div>
                             <label className="font-medium text-accent-foreground mb-2.5 block">Vat Number <span className="text-error">*</span></label>
                             <Input
@@ -552,6 +553,7 @@ export default function SignUp() {
                                 </p>
                               )}
                         </div>
+                         */}
                       </div>
                     )}
 
