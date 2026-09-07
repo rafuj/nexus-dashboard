@@ -1,7 +1,3 @@
-import { parseAsStringLiteral, useQueryState } from "nuqs";
-
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
-
 import { Input } from "@/shared/components/ui/input";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -11,11 +7,10 @@ import { removeEmptyValues } from "@/lib/utils";
 import { PasswordInput } from "../components/PasswordInput";
 import { Link, useNavigate } from "react-router";
 import { CustomRadioGroup, type RadioOption } from "@/shared/components/CustomRadioGroup";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import OtpInput from 'react-otp-input';
-import { COUNTRY_OPTIONS, getCitiesByCountry } from "@/lib/country-helper";
 import { LoaderButton } from "@/app/components/loader-button";
-import { CityCombobox } from "@/features/cabinets/components/CityCombobox";
+
 
 export type TenantType = "personal" | "business";
 
@@ -72,7 +67,6 @@ const validationSchema = Yup.object({
   organization: Yup.object({
     city: Yup.string().trim(),
     country: Yup.string().trim(),
-    legalName: Yup.string().trim(),
     postalCode: Yup.string().trim(),
     street: Yup.string().trim(),
     vatNumber: Yup.string().trim(),
@@ -80,25 +74,21 @@ const validationSchema = Yup.object({
     is: "business",
     then: (schema) =>
       schema.shape({
-        city: Yup.string()
-          .trim()
-          .required("City is required"),
+        // city: Yup.string()
+        //   .trim()
+        //   .required("City is required"),
 
-        country: Yup.string()
-          .trim()
-          .required("Country is required"),
+        // country: Yup.string()
+        //   .trim()
+        //   .required("Country is required"),
 
-        legalName: Yup.string()
-          .trim()
-          .required("Legal name is required"),
+        // postalCode: Yup.string()
+        //   .trim()
+        //   .required("Postal code is required"),
 
-        postalCode: Yup.string()
-          .trim()
-          .required("Postal code is required"),
-
-        street: Yup.string()
-          .trim()
-          .required("Street is required"),
+        // street: Yup.string()
+        //   .trim()
+        //   .required("Street is required"),
 
         vatNumber: Yup.string()
           .trim()
@@ -110,15 +100,45 @@ const validationSchema = Yup.object({
 
 export default function SignUp() {
   
-  const [tabs, setTabs] = useQueryState("tabs",   parseAsStringLiteral(["signup", "verify-otp-reg"]).withDefault("signup"))
-  // const [tabs, setTabs] = useState("signup")
+  // const [tabs, setTabs] = useQueryState("tabs",   parseAsStringLiteral(["signup", "verify-otp-reg"]).withDefault("signup"))
+  const [tabs, setTabs] = useState("signup")
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const { sendOtpReg, verifyOtpReg, signup } = useAuth();
+  const { sendOtpReg, verifyOtpReg, signup, getUserRolePermission, getUser } = useAuth();
+
   const navigate = useNavigate()
 
   const [otp, setOtp] = useState<string>("")
   const OTP_LENGTH = 6
+  
+  const [timer, setTimer] = useState({
+      minutes: 29,
+      seconds: 59,
+    })
+
+  const [codeExpired, setCodeExpired] = useState<boolean>(false)
+
+  useEffect(() => {
+    if(!codeExpired) return
+    const countdown = setInterval(() => {
+      setTimer((prev) => {
+        if (prev.seconds > 0) {
+          return { ...prev, seconds: prev.seconds - 1 }
+        }
+
+        if (prev.minutes > 0) {
+          return { minutes: prev.minutes - 1, seconds: 59 }
+        }
+
+        clearInterval(countdown)
+        setCodeExpired(false)
+        errorToast("Verification Code Expired, please resend code and try again")
+        return prev
+      })
+    }, 1000)
+
+    return () => clearInterval(countdown)
+  }, [codeExpired])
 
   const formik = useFormik({
     initialValues: {
@@ -130,14 +150,14 @@ export default function SignUp() {
       confirmPassword: "",
       tenantName: "",
       organization: {
-        city: "",
-        country: "",
-        legalName: "",
-        postalCode: "",
-        street: "",
+        // city: "",
+        // country: "",
+        // postalCode: "",
+        // street: "",
         vatNumber: "",
       },
-      phone: ""
+      phone: "",
+      keepVerified: true
     },
 
     validationSchema,
@@ -150,6 +170,9 @@ export default function SignUp() {
         successToast("OTP sent successfully. Please verify your email.")
         setTabs("verify-otp-reg")
         setIsLoading(false)
+        setCodeExpired(true)
+        setTimer({ minutes: 29, seconds: 49 })
+
       } catch (error) {
         errorToast(
           error instanceof Error
@@ -190,10 +213,12 @@ export default function SignUp() {
           : { ...rest, organization }
 
       await signup(signupValues)
+      await getUserRolePermission();
+      await getUser();
 
       setIsLoading(false)
       successToast("Account created successfully")
-      navigate("/login")
+      navigate("/")
     } catch (error) {
       errorToast(
         error instanceof Error
@@ -205,9 +230,9 @@ export default function SignUp() {
   }
 
   
-  const availableCities = useMemo(() => {
-    return getCitiesByCountry(formik.values.organization.country);
-  }, [formik.values.organization.country]);
+  // const availableCities = useMemo(() => {
+  //   return getCitiesByCountry(formik.values.organization.country);
+  // }, [formik.values.organization.country]);
 
   const switchComponent = () => {
     switch (tabs) {
@@ -248,6 +273,33 @@ export default function SignUp() {
                         >
                           Verify Code
                         </LoaderButton>
+                      </div>
+                      
+                      <div className="flex items-center gap-2.5 max-w-[240px] mx-auto mb-5 mt-7">
+                        <div className="h-px grow w-0 bg-accent-foreground" />
+                        <div className="size-1.25 rounded-full bg-accent-foreground" />
+                        <div className="h-px grow w-0 bg-accent-foreground" />
+                      </div>
+
+                      <div className="text-center text-accent-foreground text-sm">
+                        {codeExpired ? (
+                          <>
+                            Verification code will expire in{" "}
+                            <span className="font-semibold">{`${timer.minutes<10?'0':''}${timer.minutes}:${timer.seconds<10?'0':''}${timer.seconds}s`}</span>
+                          </>
+                          ) : (
+                          <div>
+                            Verification code expired, resend new code{" "}
+                            <button
+                              type="button"
+                              className="font-semibold"
+                              onClick={() => formik.submitForm()}
+                              disabled={formik.isSubmitting}
+                            >
+                              Resend
+                            </button>
+                          </div>
+                        )}
                       </div>
 
                     </form>
@@ -397,8 +449,9 @@ export default function SignUp() {
                       )}
                     </div>
                     {formik.values.tenantType === "business" && (
-                      <div className="grid grid-cols-2 gap-x-4 gap-y-3">
-                        <div>
+                      <div className="grid grid-cols-1 gap-x-4 gap-y-3">
+                      {/* <div className="grid grid-cols-2 gap-x-4 gap-y-3"> */}
+                        {/* <div>
                             <label className="font-medium text-accent-foreground mb-2.5 block">Country <span className="text-error">*</span></label>
                           <Select
                               onValueChange={(value) => {
@@ -446,24 +499,6 @@ export default function SignUp() {
                               )}
                         </div>
                         <div>
-                            <label className="font-medium text-accent-foreground mb-2.5 block">Legal Name <span className="text-error">*</span></label>
-                            <Input
-                              type="text"
-                              name="organization.legalName"
-                              placeholder="e.g. Global Resources"
-                              value={formik.values.organization.legalName}
-                              onChange={formik.handleChange}
-                              onBlur={formik.handleBlur}
-                              className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                            />
-                            {formik.touched.organization?.legalName &&
-                              formik.errors.organization?.legalName && (
-                                <p className="mt-1 text-sm text-error">
-                                  {formik.errors.organization?.legalName}
-                                </p>
-                              )}
-                        </div>
-                        <div>
                             <label className="font-medium text-accent-foreground mb-2.5 block">Postal Code <span className="text-error">*</span></label>
                             <Input
                               type="text"
@@ -498,7 +533,7 @@ export default function SignUp() {
                                   {formik.errors.organization?.street}
                                 </p>
                               )}
-                        </div>
+                        </div> */}
                         <div>
                             <label className="font-medium text-accent-foreground mb-2.5 block">Vat Number <span className="text-error">*</span></label>
                             <Input

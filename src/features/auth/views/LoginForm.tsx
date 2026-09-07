@@ -10,7 +10,7 @@ import * as Yup from "yup";
 import { Link, useNavigate } from "react-router";
 import { PasswordInput } from "../components/PasswordInput";
 import { errorToast, successToast } from "@/lib/toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import OTPInput from "react-otp-input";
 import { LoaderButton } from "@/app/components/loader-button";
 
@@ -27,6 +27,34 @@ export default function LoginForm({
   const navigate = useNavigate();
 
   const [tabs, setTabs] = useState("login")
+
+  const [timer, setTimer] = useState({
+      minutes: 29,
+      seconds: 59,
+    })
+
+  const [resendDisabled, setResendDisabled] = useState<boolean>(false)
+
+  useEffect(() => {
+    if(!resendDisabled) return
+    const countdown = setInterval(() => {
+      setTimer((prev) => {
+        if (prev.seconds > 0) {
+          return { ...prev, seconds: prev.seconds - 1 }
+        }
+
+        if (prev.minutes > 0) {
+          return { minutes: prev.minutes - 1, seconds: 59 }
+        }
+
+        clearInterval(countdown)
+        setResendDisabled(false)
+        return prev
+      })
+    }, 1000)
+
+    return () => clearInterval(countdown)
+  }, [resendDisabled])
 
   const formik = useFormik({
     initialValues: {
@@ -53,6 +81,11 @@ export default function LoginForm({
         successToast("Please verify OTP to Login")
         setTabs("verify-otp");
         setIsLoading(false)
+        setResendDisabled(true)
+        setTimer({
+          minutes: 29,
+          seconds: 59
+        })
       } catch (error) {
           errorToast("Invalid Email or Password")
           setIsLoading(false)
@@ -130,6 +163,26 @@ export default function LoginForm({
                 </div>
 
               </form>
+            </div>
+            
+            <div className="mt-2"></div>
+
+            <div className="text-center text-accent-foreground lg:text-base pt-2">
+              Didn't receive code?{" "}
+              {resendDisabled ? (
+                <>
+                  Resend in <span className="font-semibold">{`${timer.minutes<10?'0':''}${timer.minutes}:${timer.seconds<10?'0':''}${timer.seconds}s`}</span>
+                </>
+                ) : (
+                  <button
+                type="button"
+                className="font-semibold"
+                onClick={() => formik.submitForm()}
+                disabled={formik.isSubmitting}
+              >
+                Resend
+              </button>
+            )}
             </div>
           </div>
         )

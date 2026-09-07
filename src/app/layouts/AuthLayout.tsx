@@ -15,10 +15,10 @@ export default function AuthLayout() {
       background: `url(${authBg}) no-repeat center center / cover fixed`
     }}>
       <header className="w-full flex items-center justify-between xl:sticky xl:top-7.5">
-        <Link to="/" className="w-0 grow block max-w-[120px] md:max-w-[140px]">
+        <Link to="https://updaid.com/" target="_blank" className="w-0 grow block max-w-[120px] md:max-w-[140px]">
           <img src={updaidLogo} className="w-full" alt="updaid" />
         </Link>
-        <Link to="/contact-us" className="flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 min-w-[110px] md:min-w-[150px] md:h-12.5">
+        <Link to="https://updaid.com/" target="_blank" className="flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 min-w-[110px] md:min-w-[150px] md:h-12.5">
             <span>Contact Us</span>
         </Link>
       </header>

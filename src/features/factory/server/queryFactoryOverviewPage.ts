@@ -4,6 +4,7 @@
  */
 import type { SortingState } from "@tanstack/react-table"
 import type { FactoryRow } from "../types/factoryType"
+import type { DateRange } from "react-day-picker"
 
 export type FactoryOverviewQuery = {
   search: string
@@ -13,25 +14,72 @@ export type FactoryOverviewQuery = {
   prefix: string
   linked: string
   data: FactoryRow[]
+  dateRange: DateRange | null
 }
 
 export type CabinetsListPageResult = {
   rows: FactoryRow[]
   totalCount: number
 }
+// const matchesDate = (() => {
+//   const createdAt = new Date(row.createdAt)
+
+//   if (dateRange?.from && createdAt < dateRange.from) {
+//     return false
+//   }
+
+//   if (dateRange?.to) {
+//     const endDate = new Date(dateRange.to)
+//     endDate.setHours(23, 59, 59, 999)
+
+//     if (createdAt > endDate) {
+//       return false
+//     }
+//   }
+
+//   return true
+// })()
 
 function filterFactoryRows(
   rows: readonly FactoryRow[],
-  search: string
+  search: string,
+  prefix: string,
+  linked: string,
+  dateRange: DateRange | null
 ): FactoryRow[] {
   const q = search.trim().toLowerCase()
 
-  if (!q) return [...rows]
-
   return rows.filter((row) => {
-    return (
+    const matchesSearch =
+      !q ||
       row.id.toLowerCase().includes(q) ||
+      row.imei?.toLowerCase().includes(q) ||
       row.serialNumber.toLowerCase().includes(q)
+
+    const matchesPrefix =
+      !prefix ||
+      prefix === "all" ||
+      row.prefix === prefix
+
+    const matchesLinked =
+      linked === "all" ||
+      (linked === "linked" && row.deviceLinked) ||
+      (linked === "unlinked" && !row.deviceLinked)
+
+    const createdAt = new Date(row.createdAt)
+
+    const matchesDate =
+      (!dateRange?.from || createdAt >= dateRange.from) &&
+      (!dateRange?.to || createdAt <= dateRange.to)
+
+    return (
+      matchesSearch 
+      &&
+      matchesPrefix 
+      &&
+      matchesLinked 
+      &&
+      matchesDate
     )
   })
 }
@@ -45,20 +93,23 @@ function compareRows(
     case "id":
       return a.id.localeCompare(b.id)
 
-    case "serial":
+    case "serialNumber":
       return a.serialNumber.localeCompare(b.serialNumber)
 
-    case "linkedOn":
-      return (
-        new Date(a.assignedAt).getTime() -
-        new Date(b.assignedAt).getTime()
-      )
-
-    case "generatedOn":
+    case "createdAt":
       return (
         new Date(a.createdAt).getTime() -
         new Date(b.createdAt).getTime()
       )
+
+    case "deviceLinked":
+      return a.deviceLinked.toString().localeCompare(b.deviceLinked.toString())
+
+    case "startsWith":
+      return a?.startsWith?.localeCompare(b?.startsWith)
+
+    case "imei":
+      return a?.imei?.localeCompare(b?.imei)
 
     case "status":
       return a.status.localeCompare(b.status)
@@ -75,6 +126,9 @@ export function queryFactoryOverviewPage(query: FactoryOverviewQuery): CabinetsL
   const filtered = filterFactoryRows(
     query.data,
     query.search,
+    query.prefix,
+    query.linked,
+    query?.dateRange
   )
 
   const sorted = [...filtered]
