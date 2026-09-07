@@ -27,7 +27,7 @@ export default function FactoryOverview() {
     pageIndex: 0,
     pageSize: PAGE_SIZE,
   });
-  const [dateRange, setDateRange] = useState<DateRange | null>();
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
 
   const columns = useMemo(() => factoryOverviewColumns(), []);
 

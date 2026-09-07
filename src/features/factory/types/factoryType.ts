@@ -20,6 +20,6 @@ export type FactoryOverviewToolbarProps = {
   setPrefix: (value: string) => void
   linked: string
   setLinked: (value: string) => void
-  dateRange: DateRange,
+  dateRange?: DateRange,
   setDateRange: (value: DateRange) => void
 }
