@@ -10,7 +10,7 @@ import {
 } from "@tanstack/react-table";
 import { ChevronRight, PlusCircle, RotateCcw } from "lucide-react";
 import { DataTable, DataTablePagination } from "@/shared/components/data-table";
-import { cn } from "@/lib/utils";
+import { cn, formatISODate } from "@/lib/utils";
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Link } from "react-router";
@@ -23,6 +23,8 @@ import type { CabinetStatus } from "../types/cabinetList";
 import { useSmartCabinetsList } from "../hooks/useSmartCabinetsList";
 import { useDebounce } from "@/app/hooks/use-debounce";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { errorToast } from "@/lib/toast";
+import { exportExcel } from "@/lib/exportExcel";
 
 
 const CITY_FILTER_ALL = "all";
@@ -131,6 +133,47 @@ export default function CabinetsMonitor() {
   });
 
 
+
+  const allData = useMemo(
+    () =>
+      queryCabinetsMonitorPage({
+        search,
+        pageIndex: 0,
+        pageSize: data?.length || 0,
+        sorting,
+        status,
+        id: cabinetId,
+        city,
+        data: data || []
+      }),
+    [
+      search,
+      sorting,
+      city,
+      status,
+      cabinetId,
+      data
+    ],
+  );
+
+  const exportList = () => {
+    if (allData.rows.length === 0) {
+      errorToast("No data available to export")
+      return
+    }
+    const data = allData.rows.map((item) => ({
+      "Cabinet Name": item.name,
+      "City": item.city,
+      "Asset Health": "Ok",
+      "Asset Presence": "Taken",
+      "Door Status": "Opened",
+      "Temperature": "20",
+      "Last Update": formatISODate(item?.deviceState?.lastSeenAt || item?.createdAt)
+    }))
+    exportExcel(data, "cabinet-monitor")
+  }
+
+
   return (
     <>
       <Helmet>
@@ -174,7 +217,7 @@ export default function CabinetsMonitor() {
               <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 xl:px-7" onClick={refreshPage}>
                 <RotateCcw size={16} /> <span>Refresh</span>
               </button>
-              <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 xl:px-7">
+              <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 xl:px-7" onClick={()=> exportList()}>
                 <Icons.export /> <span>Export</span>
               </button>
             </div>
@@ -193,7 +236,7 @@ export default function CabinetsMonitor() {
                     setCity,
                     status,
                     setStatus,
-                    resetPage
+                    resetPage,
                   }
                 }
               />

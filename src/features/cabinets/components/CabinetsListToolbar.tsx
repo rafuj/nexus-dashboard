@@ -23,7 +23,8 @@ export function CabinetsListToolbar({
   onCityChange,
   resetPage,
   onRefresh,
-  isFetching
+  isFetching,
+  onExport
 }: CabinetsListToolbarProps) {
 
 
@@ -75,7 +76,7 @@ export function CabinetsListToolbar({
       <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25" onClick={onRefresh} disabled={isFetching}>
         <RotateCcw size={16} /> <span>Refresh</span>
       </button>
-      <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">
+      <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25" onClick={()=>onExport()}>
         <Icons.export /> <span>Export</span>
       </button>
     </div>

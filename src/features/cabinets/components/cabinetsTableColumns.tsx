@@ -7,7 +7,6 @@ import { DataTableColumnHeader } from "@/shared/components/data-table"
 import { cn, formatISODate } from "@/lib/utils"
 import {
   cabinetStatusBadgeClass,
-  cabinetStatusLabel,
   statusBadgeColor
 } from "../lib/cabinetListDisplay"
 import { CabinetRowActions } from "./CabinetRowActions"
@@ -84,28 +83,6 @@ export const cabinetListColumns = (canManageCabinets: boolean) => [
     },
     cell: ({ row }) => formatISODate(row.original.createdAt), // this is not last update, this is created at - we need to fix this later
   }),
-  // columnHelper.accessor("cabinetCode", {
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="Cabinet Code" />
-  //   ),
-  //   meta: {
-  //     headerClassName: "",
-  //     cellClassName:
-  //       "align-middle whitespace-nowrap",
-  //   },
-  //   cell: ({ row }) => row.original.cabinetCode,
-  // }),
-  // columnHelper.accessor("updaidCode", {
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="Updaid Code" />
-  //   ),
-  //   meta: {
-  //     headerClassName: "",
-  //     cellClassName:
-  //       "align-middle whitespace-nowrap",
-  //   },
-  //   cell: ({ row }) => row.original.updaidCode,
-  // }),
   columnHelper.accessor("status", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Status" />

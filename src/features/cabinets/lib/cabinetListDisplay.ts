@@ -26,6 +26,8 @@ export function cabinetStatusBadgeClass(status: CabinetStatus) {
       return "bg-success"
     case "ok":
       return "bg-success"
+    case "active":
+      return "bg-success"
     case "warning":
       return "bg-success"
     case "paused":

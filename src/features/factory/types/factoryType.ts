@@ -23,4 +23,5 @@ export type FactoryOverviewToolbarProps = {
   dateRange?: DateRange,
   setDateRange: (value: DateRange) => void
   resetPage: () => void
+  onExport: () => void
 }
