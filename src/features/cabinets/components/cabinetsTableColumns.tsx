@@ -119,7 +119,8 @@ export const cabinetListColumns = (canManageCabinets: boolean) => [
         className={cn("flex items-center capitalize gap-1")}
       >
         <span className={cn("size-1 block rounded-full", cabinetStatusBadgeClass(row.original.status))}></span>
-        <span className={cn(statusBadgeColor(row.original.status))}>{cabinetStatusLabel(row.original.status)}</span>
+        {/* <span className={cn(statusBadgeColor(row.original.status))}>{cabinetStatusLabel(row.original.status)}</span> */}
+        <span className={cn(statusBadgeColor(row.original.status))}>{row.original.status}</span>
       </span>
     ),
   }),

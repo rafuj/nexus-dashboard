@@ -10,7 +10,9 @@ export function cabinetStatusLabel(status: CabinetStatus) {
     case "warning":
       return "Active"
     case "paused":
-      return "paused"
+      return "Paused"
+    case "suspended":
+      return "Suspended"
     case "n/a":
       return "N/A"
     default :
@@ -40,6 +42,10 @@ export function cabinetStatusSoftBadgeClass(status: CabinetStatus) {
       return "bg-card-error text-error"
     case "ok":
       return "bg-card-success text-success"
+    case "active":
+      return "bg-card-success text-success"
+    case "suspended":
+      return "bg-card-error text-error"
     case "warning":
       return "bg-card-warning text-warning"
     case "paused":
@@ -53,11 +59,15 @@ export function cabinetStatusSoftBadgeClass(status: CabinetStatus) {
 export function statusBadgeColor(status: CabinetStatus) {
   switch (status) {
     case "urgent":
-      return "text-success"
+      return "text-error"
     case "ok":
       return "text-success"
-    case "warning":
+    case "active":
       return "text-success"
+    case "suspended":
+      return "text-error"
+    case "warning":
+      return "text-warning"
     case "paused":
       return "text-foreground"
     case "n/a":
