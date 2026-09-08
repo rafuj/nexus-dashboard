@@ -34,11 +34,16 @@ export default function FactoryOverview() {
   const { data, isLoading } = useGeneratedSerialList()
 
 
-  const resetPage = () =>
+  const resetPage = () => {
     setPagination((p) => ({
       ...p,
       pageIndex: 0,
-    }));
+    }))
+    setSearch("")
+    setPrefix("all")
+    setLinked("all")
+    setDateRange(undefined)
+  }
 
   const pageResult = useMemo(
     () =>
@@ -124,7 +129,8 @@ export default function FactoryOverview() {
                     linked,
                     setLinked,
                     dateRange,
-                    setDateRange
+                    setDateRange,
+                    resetPage
                   }
                 } />
             </div>

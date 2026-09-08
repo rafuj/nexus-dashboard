@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { format } from "date-fns"
+import { format, subMonths } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import type { DateRange } from "react-day-picker"
 
@@ -20,6 +20,7 @@ type DateRangePickerProps = {
   disabled?: boolean
   className?: string
   prefix?: string
+  dateType?: 'future' | 'past' | 'all' 
 }
 
 export function DateRangePicker({
@@ -27,28 +28,42 @@ export function DateRangePicker({
   onChange,
   disabled = false,
   className = "",
-  prefix = ""
+  prefix = "",
+  dateType = "all"
 }: DateRangePickerProps) {
   const [open, setOpen] = React.useState(false)
 
   const handleSelect = (range: DateRange | undefined) => {
-  // 1. If the picker was empty or reset, just apply the new range
-  if (!value?.from || !value?.to) {
-    onChange?.(range)
-    if (range?.from && range?.to) setOpen(false)
-    return
+    // No existing complete range
+    if (!value?.from || !value?.to) {
+      onChange?.(range)
+
+      // Close only after selecting both dates
+      if (range?.from && range?.to) {
+        setOpen(false)
+      }
+
+      return
+    }
+
+    // Existing range is complete.
+    // User clicked a new date, so start a new range.
+    const clickedDate =
+      range?.from?.getTime() === value.from.getTime()
+        ? range?.to
+        : range?.from
+
+    if (!clickedDate) return
+
+    onChange?.({
+      from: clickedDate,
+      to: undefined,
+    })
+
+    // IMPORTANT:
+    // Don't close here — user still needs to select the second date.
   }
-
-  // 2. If we had a full range, react-day-picker returns a weird mixed range.
-  // We need to figure out which date the user JUST clicked.
-  const clickedDate = range?.from?.getTime() === value.from.getTime() 
-    ? range?.to 
-    : range?.from
-
-  // 3. Force a brand new selection starting from that clicked date
-  onChange?.({ from: clickedDate, to: undefined })
-}
-  
+    
   const label = React.useMemo(() => {
     if (value?.from && value?.to) {
       const sameYear = value.from.getFullYear() === value.to.getFullYear()
@@ -88,9 +103,22 @@ export function DateRangePicker({
           mode="range"
           selected={value}
           onSelect={handleSelect}
-          defaultMonth={value?.from}
+          defaultMonth={
+            dateType === "past"
+              ? value?.from
+                ? subMonths(value.from, 1)
+                : subMonths(new Date(), 1)
+              : value?.from ?? new Date()
+          }
           numberOfMonths={2}
           className=""
+          disabled={
+            dateType === "future"
+              ? (date) => date < new Date()
+              : dateType === "past"
+                ? (date) => date > new Date()
+                : false
+          }
         />
       </PopoverContent>
     </Popover>
