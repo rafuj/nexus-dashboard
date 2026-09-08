@@ -38,6 +38,9 @@ export default function AuthLayout() {
           <Link to="" className="text-accent-foreground">Privacy Policy</Link>
         </div>
       </div>
+      <div className="absolute right-0 bottom-0 text-accent-foreground/40 text-xs p-2">
+        v{__APP_VERSION__}-{__GIT_COMMIT__}
+      </div>
     </main>
   );
 }
