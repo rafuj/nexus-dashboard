@@ -68,7 +68,6 @@ const validationSchema = Yup.object({
   organization: Yup.object({
     city: Yup.string().trim(),
     country: Yup.string().trim(),
-    legalName: Yup.string().trim(),
     postalCode: Yup.string().trim(),
     street: Yup.string().trim(),
     vatNumber: Yup.string().trim(),
@@ -83,10 +82,6 @@ const validationSchema = Yup.object({
         country: Yup.string()
           .trim()
           .required("Country is required"),
-
-        legalName: Yup.string()
-          .trim()
-          .required("Legal name is required"),
 
         postalCode: Yup.string()
           .trim()
@@ -119,7 +114,6 @@ export default function MyAccount() {
         organization: {
           city: "",
           country: "",
-          legalName: "",
           postalCode: "",
           street: "",
           vatNumber: "",
@@ -162,7 +156,6 @@ export default function MyAccount() {
           organization: {
             city: "",
             country: "",
-            legalName: "",
             postalCode: "",
             street: "",
             vatNumber: "",
@@ -365,19 +358,6 @@ export default function MyAccount() {
                             </Field>
                             <Field>
                                 <div>
-                                    <FieldLabel className="font-medium text-accent-foreground mb-2.5">Legal Name</FieldLabel>
-                                    <Input
-                                        type="text"
-                                        placeholder="e.g. Global Resources"
-                                        className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                                        value={values.organization.legalName}
-                                        onChange={handleChange}
-                                        name="organization.legalName"
-                                    />
-                                </div>
-                            </Field>
-                            <Field>
-                                <div>
                                     <FieldLabel className="font-medium text-accent-foreground mb-2.5">Position / job title</FieldLabel>
                                     <Input
                                         type="text"
@@ -452,6 +432,18 @@ export default function MyAccount() {
                                 </div>
                             </Field>
                             <div>
+                                <FieldLabel className="font-medium text-accent-foreground mb-2.5">City</FieldLabel>
+                                <CityCombobox
+                                    availableCities={availableCities}
+                                    selectedCity={values.organization.city}
+                                    disabled={!values.organization.country}
+                                    onSelectCity={(cityName) => {
+                                      setFieldValue("organization.city", cityName);
+                                    }}
+                                    className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
+                                  />
+                            </div>
+                            <div>
                               <FieldLabel className="font-medium text-accent-foreground mb-2.5">Country</FieldLabel>
                               <Select value={values.organization.country} onValueChange={(value)=> {
                                 setFieldValue("organization.country", value);
@@ -464,18 +456,6 @@ export default function MyAccount() {
                                     {COUNTRY_OPTIONS.map(country => <SelectItem value={country.iso} key={country.iso}>{country.country}</SelectItem>)}
                                   </SelectContent>
                                 </Select>
-                            </div>
-                            <div>
-                                <FieldLabel className="font-medium text-accent-foreground mb-2.5">City</FieldLabel>
-                                <CityCombobox
-                                    availableCities={availableCities}
-                                    selectedCity={values.organization.city}
-                                    disabled={!values.organization.country}
-                                    onSelectCity={(cityName) => {
-                                      setFieldValue("organization.city", cityName);
-                                    }}
-                                    className="placeholder:text-foreground/40 bg-background/40 border-border h-10 lg:h-14 md:px-5"
-                                  />
                             </div>
                           </div>
                         </>
