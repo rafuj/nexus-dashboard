@@ -29,11 +29,39 @@ export default function LoginForm({
   const [tabs, setTabs] = useState("login")
 
   const [timer, setTimer] = useState({
-      minutes: 29,
-      seconds: 59,
-    })
+    minutes: 2,
+    seconds: 59,
+  })
+  const [expiresIn, setExpiresIn] = useState({
+    minutes: 29,
+    seconds: 59,
+  })
 
   const [resendDisabled, setResendDisabled] = useState<boolean>(false)
+  const [codeExpired, setCodeExpired] = useState<boolean>(false)
+
+  useEffect(() => {
+    if(!codeExpired) return
+    const countdown = setInterval(() => {
+      setExpiresIn((prev) => {
+        if (prev.seconds > 0) {
+          return { ...prev, seconds: prev.seconds - 1 }
+        }
+
+        if (prev.minutes > 0) {
+          return { minutes: prev.minutes - 1, seconds: 59 }
+        }
+
+        clearInterval(countdown)
+        setCodeExpired(false)
+        setResendDisabled(false)
+        setTabs("login")
+        return prev
+      })
+    }, 1000)
+
+    return () => clearInterval(countdown)
+  }, [codeExpired])
 
   useEffect(() => {
     if(!resendDisabled) return
@@ -82,7 +110,12 @@ export default function LoginForm({
         setTabs("verify-otp");
         setIsLoading(false)
         setResendDisabled(true)
+        setCodeExpired(true)
         setTimer({
+          minutes: 2,
+          seconds: 59
+        })
+        setExpiresIn({
           minutes: 29,
           seconds: 59
         })
@@ -184,6 +217,24 @@ export default function LoginForm({
               </button>
             )}
             </div>
+
+
+            <div className="text-center text-accent-foreground text-sm">
+              {!resendDisabled && (
+                <>
+                  <div className="flex items-center gap-2.5 max-w-[240px] mx-auto mb-5 mt-7">
+                    <div className="h-px grow w-0 bg-accent-foreground" />
+                    <div className="size-1.25 rounded-full bg-accent-foreground" />
+                    <div className="h-px grow w-0 bg-accent-foreground" />
+                  </div>
+                  <div>
+                    Verification code will expire in{" "}
+                    <span className="font-semibold">{`${expiresIn.minutes<10?'0':''}${expiresIn.minutes}:${expiresIn.seconds<10?'0':''}${expiresIn.seconds}s`}</span>
+                  </div>
+                </>
+                )}
+            </div>
+
           </div>
         )
       default: 

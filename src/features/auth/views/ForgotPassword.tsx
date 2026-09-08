@@ -1,26 +1,52 @@
-import { useAuth } from "@/app/hooks/useAuth";
+// import { useAuth } from "@/app/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { Button } from "@/shared/components/ui/button";
 import {
-  FieldDescription,
   FieldLabel,
 } from "@/shared/components/ui/field";
 import { Input } from "@/shared/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { errorToast, successToast } from "@/lib/toast";
+import { errorToast } from "@/lib/toast";
 
 export default function ForgotPassword({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   
-  const { login } = useAuth();
+  
   const navigate = useNavigate();
 
   const [havingProblem, setHavingProblem] = useState(false);
+  const [timer, setTimer] = useState({
+    minutes: 2,
+    seconds: 59,
+  })
+  const [resendDisabled, setResendDisabled] = useState<boolean>(false)
+  const [isLinkSent, setIsLinkSent] = useState<boolean>(false)
+
+  useEffect(() => {
+    if(!resendDisabled) return
+    const countdown = setInterval(() => {
+      setTimer((prev) => {
+        if (prev.seconds > 0) {
+          return { ...prev, seconds: prev.seconds - 1 }
+        }
+
+        if (prev.minutes > 0) {
+          return { minutes: prev.minutes - 1, seconds: 59 }
+        }
+
+        clearInterval(countdown)
+        setResendDisabled(false)
+        return prev
+      })
+    }, 1000)
+
+    return () => clearInterval(countdown)
+  }, [resendDisabled])
 
   const formik = useFormik({
     initialValues: {
@@ -37,12 +63,13 @@ export default function ForgotPassword({
       setHavingProblem(false);
 
       try {
-        await login(values.email, "");
-
-        successToast("Please verify OTP to Login");
-        navigate("/login?tab=verify-otp", {
-          replace: true,
-        });
+        // await login(values.email, "");
+        console.log(values)
+        errorToast("This feature is under development");
+        setIsLinkSent(true)
+        // navigate("/login?tab=verify-otp", {
+        //   replace: true,
+        // });
       } catch (error) {
         errorToast(
           error instanceof Error
@@ -107,17 +134,24 @@ export default function ForgotPassword({
                   Send Email
                 </Button>
 
-                <FieldDescription className="text-center text-accent-foreground lg:text-base pt-2">
+                {isLinkSent && (<div className="text-center text-accent-foreground lg:text-base pt-2">
                   Didn't receive email?{" "}
-                  <button
+                  {resendDisabled ? (
+                    <>
+                      Resend in <span className="font-semibold">{`${timer.minutes<10?'0':''}${timer.minutes}:${timer.seconds<10?'0':''}${timer.seconds}s`}</span>
+                    </>
+                    ) : (
+                      <button
                     type="button"
                     className="font-semibold"
                     onClick={() => formik.submitForm()}
                     disabled={formik.isSubmitting}
                   >
-                    Resend Now
+                    Resend
                   </button>
-                </FieldDescription>
+                )}
+                </div>)}
+
               </div>
 
               {havingProblem && (

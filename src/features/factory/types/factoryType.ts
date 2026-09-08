@@ -22,4 +22,5 @@ export type FactoryOverviewToolbarProps = {
   setLinked: (value: string) => void
   dateRange?: DateRange,
   setDateRange: (value: DateRange) => void
+  resetPage: () => void
 }
