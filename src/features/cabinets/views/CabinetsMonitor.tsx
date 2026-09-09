@@ -26,7 +26,6 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 import { errorToast } from "@/lib/toast";
 import { exportMonitorExcel, type MonitorExportTone } from "@/lib/exportExcel";
 import { getDoorStatus, getOverallStatus, getPresenceStatus, getTemperatureStatus } from "../lib/cabinetListDisplay";
-import { mockCabinetsList } from "../mock/mockCabinetsList";
 
 
 const CITY_FILTER_ALL = "all";

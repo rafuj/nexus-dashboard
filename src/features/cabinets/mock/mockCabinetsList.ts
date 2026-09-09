@@ -105,28 +105,6 @@ export const mockCabinetsList: Cabinet[] = [
     }
   },
   {
-    id: "C0000004",
-    name: "Cabinet 004",
-    city: "Rotherdam",
-    zipCode: "1072 LR",
-    street: "Ferdinand Bolstraat",
-    number: "112",
-    latitude: 52.3537,
-    longitude: 4.8912,
-    status: "urgent",
-    serialNumber: "132434323432432434",
-    accessType: "",
-    country: "",
-    addressLine2: "",
-    lockCode: "",
-    assignedAt: "",
-    createdAt: "2026-09-02T17:55:04.746572Z",
-    description: "",
-    smart: true,
-    tenantId: "",
-    deviceState: null
-  },
-  {
     id: "C0000005",
     name: "Cabinet 005",
     city: "Groningen",
