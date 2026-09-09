@@ -11,10 +11,11 @@ import RespondersCard from "../components/RespondersCard";
 import ConnectedCabinets from "../components/ConnectedCabinets";
 import Certificates from "../components/Certificates";
 import { useAuth } from "@/app/hooks/useAuth";
+import { useDashboard } from "../hooks/useDashboard";
 
 export default function DashboardView() {
-  const stats = mockDashboardStats;
   const { user } = useAuth()
+  const {data} = useDashboard()
   return (
     <>
       <Helmet>
@@ -62,7 +63,7 @@ export default function DashboardView() {
                   </p>
                 </div>
               </div>
-              {stats.map((stat) => (
+              {mockDashboardStats(data).map((stat) => (
                 <DashboardStatCard key={stat.id} stat={stat} />
               ))}
             </section>

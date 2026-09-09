@@ -27,4 +27,7 @@ export const API_ROUTES = {
     CABINET_CITIES: `${API_VERSION}/cabinets/cities`,
     SERIAL_CHECK: `${API_VERSION}/cabinets/serial-check`,
     IMEI_CHECK: `${API_VERSION}/devices/imei-check`,
+    // dashboard
+    DASHBOARD: `${API_VERSION}/dashboard/overview`,
+
 }

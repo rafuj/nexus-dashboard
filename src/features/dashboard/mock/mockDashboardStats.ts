@@ -1,11 +1,11 @@
 import type { ActivityDefination, DashboardStatDefinition, RecentActivityDefinition, SystemHelthDefination, SystemLogsDefinition } from "../types/dashboardStats"
 import { Icons } from "@/app/icons/icons";
 
-export const mockDashboardStats: DashboardStatDefinition[] = [
+export const mockDashboardStats = (data:any): DashboardStatDefinition[] => [
   {
     id: "total-cabinets",
     title: "Total Cabinets",
-    value: "128",
+    value: data?.totalCabinets || "0",
     icon: Icons.cabinets,
     className: "card-info",
     url: "/cabinets/monitor?status=all",
@@ -13,7 +13,7 @@ export const mockDashboardStats: DashboardStatDefinition[] = [
   {
     id: "active-cabinets",
     title: "Ok",
-    value: "112",
+    value: "0",
     icon: Icons.activeCabinets,
     className: "card-success",
     url: "/cabinets/monitor?status=ok",
@@ -21,7 +21,7 @@ export const mockDashboardStats: DashboardStatDefinition[] = [
   {
     id: "maintenance-warning",
     title: "Warning",
-    value: "9",
+    value: "0",
     icon: Icons.warning,
     className: "card-warning",
     url: "/cabinets/monitor?status=warning",
@@ -29,7 +29,7 @@ export const mockDashboardStats: DashboardStatDefinition[] = [
   {
     id: "assets-urgent",
     title: "Urgent",
-    value: "340",
+    value: "0",
     icon: Icons.urgent,
     className: "card-error",
     url: "/cabinets/monitor?status=urgent",
@@ -37,7 +37,7 @@ export const mockDashboardStats: DashboardStatDefinition[] = [
   {
     id: "assets-suspended",
     title: "Suspended",
-    value: "3",
+    value: "0",
     icon: Icons.paused,
     className: "card-neutral",
     url: "/cabinets/monitor?status=suspended",
