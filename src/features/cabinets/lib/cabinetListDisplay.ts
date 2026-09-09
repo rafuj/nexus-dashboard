@@ -337,7 +337,7 @@ export const getTemperatureTooltip = (data: TemperatureState) => {
 export const getOverallStatus = (cabinet: SmartCabinet) => {
   const assetTakenAt = cabinet.deviceState?.assetStateChangedAt;
   const assetPresent = Boolean(cabinet.deviceState?.assetPresent);
-  const doorOpen = Boolean(cabinet.deviceState?.doorOpen);
+  const doorStatus = getDoorStatus(cabinet.deviceState?.doorStateChangedAt);
   const temperature = Number(cabinet.deviceState?.temperature);
 
   const temperatureOutOfRangeSince = new Date(); // data is not available now
@@ -352,7 +352,7 @@ export const getOverallStatus = (cabinet: SmartCabinet) => {
 
   if (
     getPresenceStatus(assetPresent, assetTakenAt) === "urgent" ||
-    doorOpen ||
+    doorStatus === "urgent" ||
     getTemperatureStatus({
       current: temperature,
       temperatureOutOfRangeSince,
@@ -367,6 +367,8 @@ export const getOverallStatus = (cabinet: SmartCabinet) => {
       temperatureOutOfRangeSince,
     }) === "warning" ||
     getPresenceStatus(assetPresent, assetTakenAt) === "warning" ||
+    doorStatus === "warning" ||
+    doorStatus === "open" ||
     getPresenceStatus(assetPresent, assetTakenAt) === "taken"
   ) {
     return "warning"
@@ -377,7 +379,7 @@ export const getOverallStatus = (cabinet: SmartCabinet) => {
 export const getOverallStatusBadgeClass = (cabinet: SmartCabinet) => {
   const assetTakenAt = cabinet?.deviceState?.assetStateChangedAt;
   const assetPresent = cabinet?.deviceState?.assetPresent;
-  const doorOpen = cabinet?.deviceState?.doorOpen;
+  const doorStatus = getDoorStatus(cabinet?.deviceState?.doorStateChangedAt);
   const temperature = cabinet?.deviceState?.temperature;
 
   const temperatureOutOfRangeSince = new Date(); // data is not available now
@@ -392,7 +394,7 @@ export const getOverallStatusBadgeClass = (cabinet: SmartCabinet) => {
 
   if (
     getPresenceStatus(assetPresent, assetTakenAt) === "urgent" ||
-    doorOpen ||
+    (doorStatus === 'urgent') ||
     getTemperatureStatus({
       current: temperature,
       temperatureOutOfRangeSince,
@@ -407,6 +409,8 @@ export const getOverallStatusBadgeClass = (cabinet: SmartCabinet) => {
       temperatureOutOfRangeSince,
     }) === "warning" ||
     getPresenceStatus(assetPresent, assetTakenAt) === "warning" ||
+    doorStatus === "warning" ||
+    doorStatus === "open" ||
     getPresenceStatus(assetPresent, assetTakenAt) === "taken"
   ) {
     return getHealthBadgeClass("warning")
@@ -417,7 +421,7 @@ export const getOverallStatusBadgeClass = (cabinet: SmartCabinet) => {
 export const getOverallStatusCardClass = (cabinet: SmartCabinet) => {
   const assetTakenAt = cabinet.deviceState?.assetStateChangedAt;
   const assetPresent = cabinet.deviceState?.assetPresent;
-  const doorOpen = cabinet.deviceState?.doorOpen;
+  const doorStatus = getDoorStatus(cabinet.deviceState?.doorStateChangedAt);
   const temperature = cabinet.deviceState?.temperature;
 
   const temperatureOutOfRangeSince = new Date(); // data is not available now
@@ -432,7 +436,7 @@ export const getOverallStatusCardClass = (cabinet: SmartCabinet) => {
 
   if (
     getPresenceStatus(assetPresent, assetTakenAt) === "urgent" ||
-    doorOpen ||
+    doorStatus === 'urgent' ||
     getTemperatureStatus({
       current: temperature,
       temperatureOutOfRangeSince,
@@ -447,6 +451,8 @@ export const getOverallStatusCardClass = (cabinet: SmartCabinet) => {
       temperatureOutOfRangeSince,
     }) === "warning" ||
     getPresenceStatus(assetPresent, assetTakenAt) === "warning" ||
+    doorStatus === "warning" ||
+    doorStatus === "open" ||
     getPresenceStatus(assetPresent, assetTakenAt) === "taken"
   ) {
     return getHealthBadgeClass("warning")

@@ -10,7 +10,7 @@ import {
 } from "@tanstack/react-table";
 import { ChevronRight, PlusCircle, RotateCcw } from "lucide-react";
 import { DataTable, DataTablePagination } from "@/shared/components/data-table";
-import { cn, formatISODate } from "@/lib/utils";
+import { cn, formatDateTime } from "@/lib/utils";
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Link } from "react-router";
@@ -24,7 +24,9 @@ import { useSmartCabinetsList } from "../hooks/useSmartCabinetsList";
 import { useDebounce } from "@/app/hooks/use-debounce";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { errorToast } from "@/lib/toast";
-import { exportExcel } from "@/lib/exportExcel";
+import { exportMonitorExcel, type MonitorExportTone } from "@/lib/exportExcel";
+import { getDoorStatus, getOverallStatus, getPresenceStatus, getTemperatureStatus } from "../lib/cabinetListDisplay";
+import { mockCabinetsList } from "../mock/mockCabinetsList";
 
 
 const CITY_FILTER_ALL = "all";
@@ -37,6 +39,30 @@ const filterStatuses = [
   "urgent",
   "all"
 ] as const satisfies readonly CabinetStatus[];
+
+const getMonitorExportTone = (status: string): MonitorExportTone => {
+  switch (status) {
+    case "ok":
+    case "present":
+    case "closed":
+      return "success"
+    case "taken":
+    case "open":
+    case "warning":
+      return "warning"
+    case "urgent":
+      return "error"
+    default:
+      return "neutral"
+  }
+}
+
+const formatMonitorStatus = (status: string) => {
+  if (status === "n/a") return "N/A"
+  if (status === "ok") return "OK"
+
+  return status.charAt(0).toUpperCase() + status.slice(1)
+}
 
 export default function CabinetsMonitor() {
   const [search, setSearch] = useQueryState("search", { defaultValue:"" });
@@ -132,8 +158,6 @@ export default function CabinetsMonitor() {
     },
   });
 
-
-
   const allData = useMemo(
     () =>
       queryCabinetsMonitorPage({
@@ -161,16 +185,47 @@ export default function CabinetsMonitor() {
       errorToast("No data available to export")
       return
     }
-    const data = allData.rows.map((item) => ({
-      "Cabinet Name": item.name,
-      "City": item.city,
-      "Asset Health": "Ok",
-      "Asset Presence": "Taken",
-      "Door Status": "Opened",
-      "Temperature": "20",
-      "Last Update": formatISODate(item?.deviceState?.lastSeenAt || item?.createdAt)
-    }))
-    exportExcel(data, "cabinet-monitor")
+    const exportedRows = allData.rows.map((item) => {
+      const isInitialized = Boolean(item.deviceState)
+      const assetPresence = isInitialized
+        ? getPresenceStatus(item?.deviceState?.assetPresent, item?.deviceState?.assetStateChangedAt)
+        : "n/a"
+      const doorStatus = isInitialized
+        ? getDoorStatus(item?.deviceState?.doorOpen ? item?.deviceState?.doorStateChangedAt : undefined)
+        : "n/a"
+      const temperatureStatus = isInitialized
+        ? getTemperatureStatus({
+            current: item?.deviceState?.temperature,
+            // Matches the current monitor-table presentation until this timestamp is supplied by the API.
+            temperatureOutOfRangeSince: new Date(),
+          })
+        : "n/a"
+
+      return {
+        data: {
+          "Cabinet Name": item.name,
+          "City": item.city,
+          "Asset Health": isInitialized ? "OK" : "N/A",
+          "Asset Presence": formatMonitorStatus(assetPresence),
+          "Door Status": formatMonitorStatus(doorStatus),
+          "Temperature": formatMonitorStatus(temperatureStatus),
+          "Last Update": formatDateTime(item.createdAt),
+        },
+        tones: {
+          "Cabinet Name": getMonitorExportTone(getOverallStatus(item)),
+          "Asset Health": isInitialized ? "success" : "neutral",
+          "Asset Presence": getMonitorExportTone(assetPresence),
+          "Door Status": getMonitorExportTone(doorStatus),
+          "Temperature": getMonitorExportTone(temperatureStatus),
+        } satisfies Record<string, MonitorExportTone>,
+      }
+    })
+
+    exportMonitorExcel(
+      exportedRows.map(({ data }) => data),
+      "cabinet-monitor",
+      exportedRows.map(({ tones }) => tones)
+    )
   }
 
 
