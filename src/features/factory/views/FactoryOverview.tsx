@@ -14,7 +14,7 @@ import TagIcon from "@/assets/icons/tag.svg?react";
 import LinkIcon from "@/assets/icons/link.svg?react";
 import { useGeneratedSerialList } from "../hooks/useGeneratedSerialList";
 import { Skeleton } from "@/shared/components/ui/skeleton";
-import { exportSerialNumbersExcel } from "@/lib/exportExcel";
+import { exportExcel } from "@/lib/exportExcel";
 import { errorToast } from "@/lib/toast";
 
 const PAGE_SIZE = 12
@@ -91,10 +91,10 @@ export default function FactoryOverview() {
       "Serial Number": item.serialNumber,
       "Prefix": item.prefix || "NEX",
       "Generated On": formatDateSlash(item.createdAt),
-      "Linked Status": item.deviceLinked ? "Linked" : "Unlinked",
+      "Linked Status": item.deviceLinked ? "✓ Linked" : "✕ Unlinked"  ,
       "IMEI Number": item.imei || "N/A"
     }))
-    exportSerialNumbersExcel(data, "factory-overview")
+    exportExcel(data, "factory-overview")
   }
   
 
