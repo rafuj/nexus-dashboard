@@ -47,7 +47,7 @@ export function cabinetStatusSoftBadgeClass(status: CabinetStatus) {
     case "active":
       return "bg-card-success text-success"
     case "suspended":
-      return "bg-card-error text-error"
+      return "bg-foreground/20 text-foreground"
     case "warning":
       return "bg-card-warning text-warning"
     case "paused":
@@ -67,7 +67,7 @@ export function statusBadgeColor(status: CabinetStatus) {
     case "active":
       return "text-success"
     case "suspended":
-      return "text-error"
+      return "text-foreground/70"
     case "warning":
       return "text-warning"
     case "paused":
