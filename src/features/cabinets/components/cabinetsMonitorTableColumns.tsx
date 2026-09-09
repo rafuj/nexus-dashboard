@@ -155,25 +155,14 @@ export const cabinetsMonitorTableColumns = [
                     N/A
                   </span>
                 ) : (
-                  row.original.deviceState?.assetPresent ? (
-                    <span
-                    className={cn(
-                      "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all capitalize",
-                      getPresenceBadgeClass(assetPresent, assetTakenAt)
-                    )}
-                  >
-                    {getPresenceStatus(assetPresent, assetTakenAt)}
-                  </span>
-                  ) : (
-                      <span
+                  <span
                       className={cn(
                         "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all capitalize",
                         getPresenceBadgeClass(assetPresent, assetTakenAt)
                       )}
                     >
-                      {getPresenceStatus(assetPresent, assetTakenAt)}
-                    </span>
-                  )
+                    {getPresenceStatus(assetPresent, assetTakenAt)}
+                  </span>
                 )
               }
             </TooltipTrigger>

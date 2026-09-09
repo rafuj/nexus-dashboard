@@ -8,6 +8,7 @@ import {
   SelectValue,
 } from "@/shared/components/ui/select"
 import type { CabinetMonitorToolbarProps } from "../types/cabinetMonitor"
+import { useCabinetCities } from "../hooks/useCabinetCities"
 
 
 const CITY_FILTER_ALL = "all"
@@ -20,8 +21,11 @@ export function CabinetsMonitorToolbar({
   setCity,
   status,
   setStatus,
-  resetPage
+  resetPage,
 }: CabinetMonitorToolbarProps) {
+
+  const {data:cities} = useCabinetCities()
+  
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
       <div className="w-full max-w-[260px] space-y-2">
@@ -52,13 +56,9 @@ export function CabinetsMonitorToolbar({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={CITY_FILTER_ALL}>All Cities</SelectItem>
-              <SelectItem value="Amsterdam">Amsterdam</SelectItem>
-              <SelectItem value="Rotterdam">Rotterdam</SelectItem>
-              <SelectItem value="The Hague (Den Haag)">The Hague (Den Haag)</SelectItem>
-              <SelectItem value="Utrecht">Utrecht</SelectItem>
-              <SelectItem value="Eindhoven">Eindhoven</SelectItem>
-              <SelectItem value="Delft">Delft</SelectItem>
-              <SelectItem value="Groningen">Groningen</SelectItem>
+              {cities?.map((city) => (
+                <SelectItem key={city} value={city}>{city}</SelectItem>
+              ))}
             </SelectContent>
           </Select>
           {/* Status */}

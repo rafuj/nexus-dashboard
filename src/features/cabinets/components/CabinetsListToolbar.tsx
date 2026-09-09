@@ -9,10 +9,10 @@ import {
 } from "@/shared/components/ui/select"
 import type { CabinetsListToolbarProps } from "../types/cabinetList"
 import { Icons } from "@/app/icons/icons"
-import { CityCombobox } from "./CityCombobox"
-import { allCities} from "@/lib/country-helper"
+import { useCabinetCities } from "../hooks/useCabinetCities"
 
 const STATUS_FILTER_ALL = "all"
+const CITY_FILTER_ALL = "all"
 
 export function CabinetsListToolbar({
   search,
@@ -23,9 +23,11 @@ export function CabinetsListToolbar({
   onCityChange,
   resetPage,
   onRefresh,
-  isFetching
+  isFetching,
+  onExport
 }: CabinetsListToolbarProps) {
 
+const {data:cities} = useCabinetCities()
 
   return (
     <div className="flex flex-wrap gap-3 sm:gap-4 flex-row sm:items-end">
@@ -46,13 +48,20 @@ export function CabinetsListToolbar({
         </div>
       </div>
       {/* City */}
-      <CityCombobox
-        availableCities={allCities}
-        selectedCity={city}
-        onSelectCity={onCityChange}
-        prefix="City"
-        className="w-[auto] capitalize"
-      />
+      <Select value={city} onValueChange={onCityChange}>
+        <SelectTrigger className="w-full min-w-42 sm:w-44 text-sm md:!h-12.5">
+          <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
+            <span className="font-normal text-foreground">City:</span>
+            <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="All" /></span>
+          </div>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={CITY_FILTER_ALL}>All Cities</SelectItem>
+          {cities?.map((city) => (
+            <SelectItem key={city} value={city}>{city}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
       {/* Status Filter */}
       <Select value={statusFilter} onValueChange={onStatusFilterChange}>
         <SelectTrigger className="w-full min-w-42 sm:w-44 text-sm md:!h-12.5">
@@ -63,10 +72,12 @@ export function CabinetsListToolbar({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value={STATUS_FILTER_ALL}>All</SelectItem>
-          <SelectItem value="ok">OK</SelectItem>
+          <SelectItem value="active">Active</SelectItem>
+          <SelectItem value="suspended">Suspended</SelectItem>
+          {/* <SelectItem value="ok">OK</SelectItem>
           <SelectItem value="warning">Warning</SelectItem>
           <SelectItem value="urgent">Urgent</SelectItem>
-          <SelectItem value="paused">Paused</SelectItem>
+          <SelectItem value="paused">Paused</SelectItem> */}
         </SelectContent>
       </Select>
       <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-white text-accent-foreground py-2 px-3 sm:py-3 rounded-[10px] text-sm gap-1.25 border border-border" onClick={resetPage}>
@@ -75,7 +86,7 @@ export function CabinetsListToolbar({
       <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25" onClick={onRefresh} disabled={isFetching}>
         <RotateCcw size={16} /> <span>Refresh</span>
       </button>
-      <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">
+      <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25" onClick={()=>onExport()}>
         <Icons.export /> <span>Export</span>
       </button>
     </div>

@@ -10,7 +10,7 @@ import {
 } from "@tanstack/react-table";
 import { ChevronRight, PlusCircle, RotateCcw } from "lucide-react";
 import { DataTable, DataTablePagination } from "@/shared/components/data-table";
-import { cn } from "@/lib/utils";
+import { cn, formatDateTime } from "@/lib/utils";
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Link } from "react-router";
@@ -23,6 +23,9 @@ import type { CabinetStatus } from "../types/cabinetList";
 import { useSmartCabinetsList } from "../hooks/useSmartCabinetsList";
 import { useDebounce } from "@/app/hooks/use-debounce";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { errorToast } from "@/lib/toast";
+import { exportMonitorExcel, type MonitorExportTone } from "@/lib/exportExcel";
+import { getDoorStatus, getOverallStatus, getPresenceStatus, getTemperatureStatus } from "../lib/cabinetListDisplay";
 
 
 const CITY_FILTER_ALL = "all";
@@ -35,6 +38,30 @@ const filterStatuses = [
   "urgent",
   "all"
 ] as const satisfies readonly CabinetStatus[];
+
+const getMonitorExportTone = (status: string): MonitorExportTone => {
+  switch (status) {
+    case "ok":
+    case "present":
+    case "closed":
+      return "success"
+    case "taken":
+    case "open":
+    case "warning":
+      return "warning"
+    case "urgent":
+      return "error"
+    default:
+      return "neutral"
+  }
+}
+
+const formatMonitorStatus = (status: string) => {
+  if (status === "n/a") return "N/A"
+  if (status === "ok") return "OK"
+
+  return status.charAt(0).toUpperCase() + status.slice(1)
+}
 
 export default function CabinetsMonitor() {
   const [search, setSearch] = useQueryState("search", { defaultValue:"" });
@@ -130,6 +157,76 @@ export default function CabinetsMonitor() {
     },
   });
 
+  const allData = useMemo(
+    () =>
+      queryCabinetsMonitorPage({
+        search,
+        pageIndex: 0,
+        pageSize: data?.length || 0,
+        sorting,
+        status,
+        id: cabinetId,
+        city,
+        data: data || []
+      }),
+    [
+      search,
+      sorting,
+      city,
+      status,
+      cabinetId,
+      data
+    ],
+  );
+
+  const exportList = () => {
+    if (allData.rows.length === 0) {
+      errorToast("No data available to export")
+      return
+    }
+    const exportedRows = allData.rows.map((item) => {
+      const isInitialized = Boolean(item.deviceState)
+      const assetPresence = isInitialized
+        ? getPresenceStatus(item?.deviceState?.assetPresent, item?.deviceState?.assetStateChangedAt)
+        : "n/a"
+      const doorStatus = isInitialized
+        ? getDoorStatus(item?.deviceState?.doorOpen ? item?.deviceState?.doorStateChangedAt : undefined)
+        : "n/a"
+      const temperatureStatus = isInitialized
+        ? getTemperatureStatus({
+            current: item?.deviceState?.temperature,
+            // Matches the current monitor-table presentation until this timestamp is supplied by the API.
+            temperatureOutOfRangeSince: new Date(),
+          })
+        : "n/a"
+
+      return {
+        data: {
+          "Cabinet Name": item.name,
+          "City": item.city,
+          "Asset Health": isInitialized ? "OK" : "N/A",
+          "Asset Presence": formatMonitorStatus(assetPresence),
+          "Door Status": formatMonitorStatus(doorStatus),
+          "Temperature": formatMonitorStatus(temperatureStatus),
+          "Last Update": formatDateTime(item.createdAt),
+        },
+        tones: {
+          "Cabinet Name": getMonitorExportTone(getOverallStatus(item)),
+          "Asset Health": isInitialized ? "success" : "neutral",
+          "Asset Presence": getMonitorExportTone(assetPresence),
+          "Door Status": getMonitorExportTone(doorStatus),
+          "Temperature": getMonitorExportTone(temperatureStatus),
+        } satisfies Record<string, MonitorExportTone>,
+      }
+    })
+
+    exportMonitorExcel(
+      exportedRows.map(({ data }) => data),
+      "cabinet-monitor",
+      exportedRows.map(({ tones }) => tones)
+    )
+  }
+
 
   return (
     <>
@@ -174,7 +271,7 @@ export default function CabinetsMonitor() {
               <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 xl:px-7" onClick={refreshPage}>
                 <RotateCcw size={16} /> <span>Refresh</span>
               </button>
-              <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 xl:px-7">
+              <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 xl:px-7" onClick={()=> exportList()}>
                 <Icons.export /> <span>Export</span>
               </button>
             </div>
@@ -193,7 +290,7 @@ export default function CabinetsMonitor() {
                     setCity,
                     status,
                     setStatus,
-                    resetPage
+                    resetPage,
                   }
                 }
               />

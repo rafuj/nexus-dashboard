@@ -18,7 +18,7 @@ export default function AuthLayout() {
         <Link to="https://updaid.com/" target="_blank" className="w-0 grow block max-w-[120px] md:max-w-[140px]">
           <img src={updaidLogo} className="w-full" alt="updaid" />
         </Link>
-        <Link to="https://updaid.com/" target="_blank" className="flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 min-w-[110px] md:min-w-[150px] md:h-12.5">
+        <Link to="https://updaid.com/contact/" target="_blank" className="flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 min-w-[110px] md:min-w-[150px] md:h-12.5">
             <span>Contact Us</span>
         </Link>
       </header>
@@ -33,12 +33,12 @@ export default function AuthLayout() {
         <div className="flex flex-wrap justify-center items-center text-xs md:text-sm lg:text-base gap-3">
           <span className="text-accent-foreground">&copy; 2026, Updaid.com</span>
           <span className="h-1 w-1 rounded-full bg-accent-foreground lg:mx-3 xl:mx-7"></span>
-          <Link to="" className="text-accent-foreground">Terms & Licensing</Link>
+          <Link to="https://updaid.com/terms-and-conditions/" target="_blank" className="text-accent-foreground">Terms & Licensing</Link>
           <span className="h-1 w-1 rounded-full bg-accent-foreground lg:mx-3 xl:mx-7"></span>
-          <Link to="" className="text-accent-foreground">Privacy Policy</Link>
+          <Link to="https://updaid.com/privacy-statement/" target="_blank" className="text-accent-foreground">Privacy Policy</Link>
         </div>
       </div>
-      <div className="absolute right-0 bottom-0 text-accent-foreground/40 text-xs p-2">
+      <div className="fixed right-0 bottom-0 text-accent-foreground/40 text-xs p-2">
         v{__APP_VERSION__}-{__GIT_COMMIT__}
       </div>
     </main>

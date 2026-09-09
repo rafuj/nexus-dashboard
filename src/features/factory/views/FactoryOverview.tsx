@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip"
-import { cn } from "@/lib/utils";
+import { cn, formatDateSlash } from "@/lib/utils";
 import { DataTable, DataTablePagination } from "@/shared/components/data-table";
 import { useMemo, useState } from "react";
 import { getCoreRowModel, useReactTable, type PaginationState, type SortingState } from "@tanstack/react-table";
@@ -14,6 +14,8 @@ import TagIcon from "@/assets/icons/tag.svg?react";
 import LinkIcon from "@/assets/icons/link.svg?react";
 import { useGeneratedSerialList } from "../hooks/useGeneratedSerialList";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { exportExcel } from "@/lib/exportExcel";
+import { errorToast } from "@/lib/toast";
 
 const PAGE_SIZE = 12
 
@@ -69,6 +71,33 @@ export default function FactoryOverview() {
     ],
   );
 
+  const allData = useMemo(() => queryFactoryOverviewPage({
+    data: data || [],
+    search: search || "",
+    pageIndex: 0,
+    pageSize: data?.length || 0,
+    sorting: sorting,
+    prefix: prefix || "all",
+    linked: linked || "all",
+    dateRange: dateRange || null
+  }), [search, prefix, linked, data, dateRange, sorting])
+
+  const exportList = () => {
+    if(allData.rows.length === 0) {
+      errorToast("No data available to export")
+      return
+    }
+    const data = allData.rows.map((item) => ({
+      "Serial Number": item.serialNumber,
+      "Prefix": item.prefix || "NEX",
+      "Generated On": formatDateSlash(item.createdAt),
+      "Linked Status": item.deviceLinked ? "✓ Linked" : "✕ Unlinked"  ,
+      "IMEI Number": item.imei || "N/A"
+    }))
+    exportExcel(data, "factory-overview")
+  }
+  
+
   const table = useReactTable({
     data: pageResult.rows,
     // data: data ?? [],
@@ -114,7 +143,6 @@ export default function FactoryOverview() {
             </div>
           </div>
         </header>
-
         <div className="p-5">
           <div className="space-y-5">
             <div className={cn(
@@ -130,7 +158,8 @@ export default function FactoryOverview() {
                     setLinked,
                     dateRange,
                     setDateRange,
-                    resetPage
+                    resetPage,
+                    onExport: exportList
                   }
                 } />
             </div>

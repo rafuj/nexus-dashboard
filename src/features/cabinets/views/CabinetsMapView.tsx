@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { ChevronRight, PlusCircle } from "lucide-react";
 
 import { CabinetsListToolbar } from "../components/CabinetsListToolbar";
-import { cn, formatDateTime } from "@/lib/utils";
+import { cn, formatDateTime, formatISODate } from "@/lib/utils";
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Link } from "react-router";
@@ -16,6 +16,8 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 import { getOverallStatus } from "../lib/cabinetListDisplay";
 import { useCabinetsList } from "../hooks/useCabinetsList";
 import { filterCabinets } from "../server/queryCabinetsListPage";
+import { errorToast } from "@/lib/toast";
+import { exportExcel } from "@/lib/exportExcel";
 
 const STATUS_FILTER_ALL = "all";
 const CITY_FILTER_ALL = "all";
@@ -66,6 +68,22 @@ export default function CabinetsMapView() {
     resetPage()
   }
 
+  const exportList = () => {
+    if (filteredCabinets.length === 0) {
+      errorToast("No data available to export")
+      return
+    }
+    const data = filteredCabinets.map((item) => ({
+      "Cabinet Name": item.name,
+      "City": item.city,
+      "Zip Code": item.zipCode,
+      "Street": item.street,
+      "Number": item.number,
+      "Last Update": formatISODate(item?.deviceState?.lastSeenAt || item?.createdAt),
+      "Status": item.status.charAt(0).toUpperCase() + item.status.slice(1)
+    }))
+    exportExcel(data, "cabinet-list")
+  }
   return (
     <>
       <Helmet>
@@ -120,6 +138,7 @@ export default function CabinetsMapView() {
                 }}
                 resetPage={resetPage}
                 onRefresh={onRefresh}
+                onExport={exportList}
               />
           </div>
           <section className={cn("lg:h-0 grow gap-2.5 grid grid-cols-1",{"lg:grid-cols-[830fr_310fr]": openSidebar})} aria-label="Cabinets">

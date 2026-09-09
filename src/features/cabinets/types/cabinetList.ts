@@ -60,6 +60,7 @@ export type CabinetsListToolbarProps = {
   resetPage: () => void
   onRefresh: () => void
   isFetching?: boolean
+  onExport: () => void
 }
 
 export const cabinetConfig = {

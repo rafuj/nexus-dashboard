@@ -13,7 +13,7 @@ import { ChevronRight, PlusCircle } from "lucide-react";
 import { CabinetsListToolbar } from "../components/CabinetsListToolbar";
 import { cabinetListColumns } from "../components/cabinetsTableColumns";
 import { DataTable, DataTablePagination } from "@/shared/components/data-table";
-import { cn } from "@/lib/utils";
+import { cn, formatISODate } from "@/lib/utils";
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Link } from "react-router";
@@ -26,6 +26,8 @@ import { useCabinetsList } from "../hooks/useCabinetsList";
 import { useDebounce } from "@/app/hooks/use-debounce";
 import { queryCabinetsListPage } from "../server/queryCabinetsListPage";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { errorToast } from "@/lib/toast";
+import { exportExcel } from "@/lib/exportExcel";
 
 
 const STATUS_FILTER_ALL = "all";
@@ -136,6 +138,43 @@ export default function CabinetsListView() {
     resetPage()
   }
 
+  const allData = useMemo(
+    () =>
+      queryCabinetsListPage({
+        search: debouncedSearch,
+        statusFilter,
+        pageIndex: 0,
+        pageSize: data?.length || 0,
+        sorting,
+        city,
+        data: data || []
+      }),
+    [
+      debouncedSearch,
+      statusFilter,
+      sorting,
+      city,
+      data
+    ],
+  );
+
+  const exportList = () => {
+    if (allData.rows.length === 0) {
+      errorToast("No data available to export")
+      return
+    }
+    const data = allData.rows.map((item) => ({
+      "Cabinet Name": item.name,
+      "City": item.city,
+      "Zip Code": item.zipCode,
+      "Street": item.street,
+      "Number": item.number,
+      "Last Update": formatISODate(item?.deviceState?.lastSeenAt || item?.createdAt),
+      "Status": item.status.charAt(0).toUpperCase() + item.status.slice(1)
+    }))
+    exportExcel(data, "cabinet-list")
+  }
+
   return (
     <>
       <Helmet>
@@ -196,6 +235,7 @@ export default function CabinetsListView() {
                 resetPage={resetPage}
                 onRefresh={onRefresh}
                 isFetching={isFetching}
+                onExport={exportList}
               />
             </div>
             {(isFetching && !data) ? (
