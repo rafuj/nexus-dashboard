@@ -64,7 +64,7 @@ export const linkedCombinationColumns = () => [
       headerClassName: "",
       cellClassName: "align-middle",
     },
-    cell: ({ row }) => "V1",
+    cell: ({ row }) => row.original.model || "V1",
   }),
 
   columnHelper.accessor("linkedAt", {

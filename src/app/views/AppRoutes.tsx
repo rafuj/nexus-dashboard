@@ -22,8 +22,8 @@ import ImeiLinking from "@/features/factory/views/ImeiLinking";
 import FactoryOverview from "@/features/factory/views/FactoryOverview";
 import SignUp from "@/features/auth/views/SignUp";
 import UPDGeneration from "@/features/factory/views/UPDGeneration";
-import NEXGeneration from "@/features/factory/views/NexGeneration";
 import NotFound from "@/features/error-page/NotFound";
+import NEXGeneration from "@/features/factory/views/NEXGeneration";
 
 const helmetContext = {};
 

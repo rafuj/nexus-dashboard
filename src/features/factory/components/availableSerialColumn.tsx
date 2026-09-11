@@ -40,7 +40,7 @@ export const availableSerialColumn = () => [
       headerClassName: "xl:w-1/4",
       cellClassName: "align-middle",
     },
-    cell: ({ row }) => "V1",
+    cell: ({ row }) => row.original.model || "V1",
   }),
 
   columnHelper.accessor("createdAt", {

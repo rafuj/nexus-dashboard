@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { DataTable, DataTablePagination } from "@/shared/components/data-table";
 import { Input } from "@/shared/components/ui/input";
 import { useEffect, useMemo, useState } from "react";
-import { getCoreRowModel, useReactTable, type PaginationState, type SortingState } from "@tanstack/react-table";
+import { getCoreRowModel, useReactTable, type PaginationState } from "@tanstack/react-table";
 import { factoryColumns } from "../components/factoryColumns";
 import { queryImeiLinkingPage } from "../server/queryImeiLinkingPage";
 import { useGeneratedSerialList } from "../hooks/useGeneratedSerialList";

@@ -15,6 +15,8 @@ export type FactoryRow = {
   updCode: string
   type: string
   model: string
+  combination: string
+  linkedAt: string
 }
 
 export type FactoryOverviewToolbarProps = {
