@@ -7,9 +7,7 @@ export interface AssetType {
   label: string;
   value: string;
 }
-export const serialRegex = /^NEX-[A-Z0-9]{5}-[A-Z0-9]{4}$/;
 
-// will remove serial regex later and use nexRegex and updRegex
 export const nexRegex = /^NEX\d{2}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
 export const updRegex = /^UPD\d{2}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
 
