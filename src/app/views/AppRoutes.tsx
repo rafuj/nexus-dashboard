@@ -19,9 +19,10 @@ import ExploreUpgrades from "@/features/explore-upgrades/views/ExploreUpgrades";
 import MyAccount from "@/features/my-account/views/MyAccount";
 import { useAuth } from "../hooks/useAuth";
 import ImeiLinking from "@/features/factory/views/ImeiLinking";
-import GenerateSerialNumber from "@/features/factory/views/GenerateSerialNumber";
 import FactoryOverview from "@/features/factory/views/FactoryOverview";
 import SignUp from "@/features/auth/views/SignUp";
+import UPDGeneration from "@/features/factory/views/UPDGeneration";
+import NEXGeneration from "@/features/factory/views/NexGeneration";
 
 const helmetContext = {};
 
@@ -34,12 +35,22 @@ export default function AppRoutes() {
       case "super":
         return <>
           <Route path="/" element={<ImeiLinking />} />
-          <Route path="/generate-serial-number" element={<GenerateSerialNumber />} />
+          <Route path="/nex-generation" element={<NEXGeneration />} />
+          <Route path="/upd-generation" element={<UPDGeneration />} />
           <Route path="/factory-overview" element={<FactoryOverview />} />
         </>
       default :
         return <>
           <Route path="/" element={<DashboardView />} />
+          <Route path="/cabinets" element={<Navigate to="/cabinets/list" replace />} />
+          <Route path="/cabinets/list" element={<CabinetsListView />} />
+          <Route path="/cabinets/add" element={<AddCabinets />} />
+          <Route path="/cabinets/activity" element={<CabinetsActivity />} />
+          <Route path="/cabinets/monitor" element={<CabinetsMonitor />} />
+          <Route path="/cabinets/map" element={<CabinetsMapView />} />
+          <Route path="/cabinets/list/:id" element={<CabinetView />} />
+          <Route path="/cabinets/monitor/:id" element={<CabinetView />} />
+          <Route path="/settings" element={<Settings />} />
         </>
     }
   }
@@ -64,15 +75,6 @@ export default function AppRoutes() {
             <Route element={<PageLayout />}>
 
               {/* Common Routes */}
-              <Route path="/cabinets" element={<Navigate to="/cabinets/list" replace />} />
-              <Route path="/cabinets/list" element={<CabinetsListView />} />
-              <Route path="/cabinets/add" element={<AddCabinets />} />
-              <Route path="/cabinets/activity" element={<CabinetsActivity />} />
-              <Route path="/cabinets/monitor" element={<CabinetsMonitor />} />
-              <Route path="/cabinets/map" element={<CabinetsMapView />} />
-              <Route path="/cabinets/list/:id" element={<CabinetView />} />
-              <Route path="/cabinets/monitor/:id" element={<CabinetView />} />
-              <Route path="/settings" element={<Settings />} />
               <Route path="/my-account" element={<MyAccount />} />
               
               {/* Routes by Role */}

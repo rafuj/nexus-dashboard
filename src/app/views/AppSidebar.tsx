@@ -109,8 +109,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       isActive: false,
     },
     {
-      title: "Generate Serial Number",
-      url: "/generate-serial-number",
+      title: "NEX Generation",
+      url: "/nex-generation",
+      icon: <GenerateSerialNumberIcon />,
+      isActive: false,
+    },
+    {
+      title: "UPD Generation",
+      url: "/upd-generation",
       icon: <GenerateSerialNumberIcon />,
       isActive: false,
     },
