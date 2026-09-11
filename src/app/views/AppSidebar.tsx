@@ -103,7 +103,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   
   const factoryNavMain = [
     {
-      title: "IMEI Linking",
+      title: "Linking",
       url: "/",
       icon: <ImeiLinkingIcon />,
       isActive: false,

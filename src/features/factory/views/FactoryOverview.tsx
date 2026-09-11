@@ -5,25 +5,43 @@ import DateAndTimeChip from "@/app/components/time-date-chip"
 import { cn, formatDateSlash } from "@/lib/utils";
 import { DataTable, DataTablePagination } from "@/shared/components/data-table";
 import { useMemo, useState } from "react";
-import { getCoreRowModel, useReactTable, type PaginationState, type SortingState } from "@tanstack/react-table";
-import { factoryOverviewColumns } from "../components/factoryOverviewColumns";
+import { getCoreRowModel, useReactTable, type PaginationState } from "@tanstack/react-table";
+import { linkedCombinationColumns } from "../components/linkedCombinationColumns";
 import { queryFactoryOverviewPage } from "../server/queryFactoryOverviewPage";
 import { FactoryOverviewToolbar } from "../components/FactoryOverviewToolbar";
 import type { DateRange } from "react-day-picker";
-import TagIcon from "@/assets/icons/tag.svg?react";
-import LinkIcon from "@/assets/icons/link.svg?react";
 import { useGeneratedSerialList } from "../hooks/useGeneratedSerialList";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { exportExcel } from "@/lib/exportExcel";
 import { errorToast } from "@/lib/toast";
+import { parseAsStringEnum, useQueryState } from "nuqs"
+import { FactoryInfoCards } from "../components/FactoryInfoCards";
+import { availableSerialColumn } from "../components/availableSerialColumn";
 
-const PAGE_SIZE = 12
+const PAGE_SIZE = 10
 
 export default function FactoryOverview() {
   const [search, setSearch] = useState<string>("");
   const [prefix, setPrefix] = useState<string>("all");
   const [linked, setLinked] = useState<string>("all");
-  const [sorting, setSorting] = useState<SortingState>([]);
+
+  const tablist = [
+    {
+      id: "linked",
+      name: "Linked combinations",
+    },
+    {
+      id: "available",
+      name: "Available serial numbers",
+    },
+  ] as const
+
+  const tabValues = tablist.map((tab) => tab.id)
+
+  const [tabs, setTabs] = useQueryState(
+    "tabs",
+    parseAsStringEnum(tabValues).withDefault("linked")
+  )
   
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -31,7 +49,8 @@ export default function FactoryOverview() {
   });
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
 
-  const columns = useMemo(() => factoryOverviewColumns(), []);
+  const linkedColumns = useMemo(() => linkedCombinationColumns(), []);
+  const availableColumns = useMemo(() => availableSerialColumn(), []);
 
   const { data, isLoading } = useGeneratedSerialList()
 
@@ -54,7 +73,6 @@ export default function FactoryOverview() {
         search,
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
-        sorting,
         prefix,
         linked,
         dateRange: dateRange || null
@@ -63,7 +81,6 @@ export default function FactoryOverview() {
       search,
       pagination.pageIndex,
       pagination.pageSize,
-      sorting,
       prefix,
       linked,
       data,
@@ -76,11 +93,10 @@ export default function FactoryOverview() {
     search: search || "",
     pageIndex: 0,
     pageSize: data?.length || 0,
-    sorting: sorting,
     prefix: prefix || "all",
     linked: linked || "all",
     dateRange: dateRange || null
-  }), [search, prefix, linked, data, dateRange, sorting])
+  }), [search, prefix, linked, data, dateRange])
 
   const exportList = () => {
     if(allData.rows.length === 0) {
@@ -100,22 +116,16 @@ export default function FactoryOverview() {
 
   const table = useReactTable({
     data: pageResult.rows,
-    // data: data ?? [],
-    columns,
+    columns: tabs === "linked" ? linkedColumns : availableColumns,
     rowCount: pageResult.totalCount,
     manualPagination: true,
-    manualSorting: true,
     autoResetPageIndex: false,
+    enableSorting: false,
     getRowId: (row) => row.id,
     getCoreRowModel: getCoreRowModel(),
     onPaginationChange: setPagination,
-    onSortingChange: (updater) => {
-      setSorting(updater);
-      resetPage();
-    },
     state: {
       pagination,
-      sorting,
     },
   });
 
@@ -132,7 +142,7 @@ export default function FactoryOverview() {
               <div className="md:w-0 grow">
                 <h1 className="text-xl font-medium lg:text-4xl lg:leading-[1] tracking-tight mb-1 md:mb-3">Overview</h1>
                 <p className="text-xs lg:text-sm">
-                  View and manage all generated cabinet serial numbers.
+                  {tabs === "linked" ? "View linked cabinet bodies, PCB enclosures and IMEI numbers." : "View generated NEX and UPD serial numbers not yet assigned."}
                 </p>
               </div>
               <div className="flex items-center max-sm:flex-wrap gap-2.5">
@@ -159,46 +169,27 @@ export default function FactoryOverview() {
                     dateRange,
                     setDateRange,
                     resetPage,
-                    onExport: exportList
+                    onExport: exportList,
+                    tabs
                   }
                 } />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              <div>
-                <div className="py-4 px-3 rounded-[15px] card-info border flex items-center gap-2.5">
-                  <div className="rounded-full bg-info text-white size-12.5 flex items-center justify-center">
-                    <TagIcon />
-                  </div>
-                  <div className="w-0 grow">
-                    <h5 className="font-semibold text-accent-primary">{data?.length}</h5>
-                    <div className="text-sm">Total Generated</div>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className="py-4 px-3 rounded-[15px] card-success2 border flex items-center gap-2.5">
-                  <div className="rounded-full bg-success2 text-white size-12.5 flex items-center justify-center">
-                    <LinkIcon />
-                  </div>
-                  <div className="w-0 grow">
-                    <h5 className="font-semibold text-accent-primary">{data?.filter((item) => !item.deviceLinked).length}</h5>
-                    <div className="text-sm">Unlinked</div>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className="py-4 px-3 rounded-[15px] card-warning border flex items-center gap-2.5">
-                  <div className="rounded-full bg-warning text-white size-12.5 flex items-center justify-center">
-                    <LinkIcon />
-                  </div>
-                  <div className="w-0 grow">
-                    <h5 className="font-semibold text-accent-primary">{data?.filter((item) => item.deviceLinked).length}</h5>
-                    <div className="text-sm">Linked</div>
-                  </div>
-                </div>
-              </div>
+            <FactoryInfoCards tabs={tabs} />
+            
+            <div className="flex flex-wrap justify-between border-b-1 border-border">
+              <ul className="flex text-[13px] select-none translate-y-[1px]">
+                {
+                  tablist.map(item=> <li key={item.id} className={cn("capitalize text-foreground px-2 sm:px-4 xl:px-6.5 border-b-2 border-transparent py-3 cursor-pointer font-Inter", {
+                    "text-primary font-semibold border-primary": tabs === item.id
+                  })} onClick={()=> {
+                    setTabs(item.id)
+                    resetPage()
+                  }}>{item.name}</li> )
+                }
+              </ul>
             </div>
+
             {(isLoading && !data) ? (
                 <div className="p-5 bg-white border border-border rounded-md">
                   <div className="flex flex-col gap-4">
@@ -222,11 +213,13 @@ export default function FactoryOverview() {
                     table={table}
                     emptyMessage="No cabinets match your filters."
                     tableClassName="text-accent-foreground"
+                    key={tabs}
                   />
                   <div className="border-border border-t pt-4">
                     <DataTablePagination
                       table={table}
                       navLabel="Cabinets table pagination"
+                      key={tabs}
                     />
                   </div>
               </div>

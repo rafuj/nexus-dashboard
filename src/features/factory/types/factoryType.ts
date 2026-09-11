@@ -24,4 +24,5 @@ export type FactoryOverviewToolbarProps = {
   setDateRange: (value: DateRange) => void
   resetPage: () => void
   onExport: () => void
+  tabs: 'linked' | 'available'
 }

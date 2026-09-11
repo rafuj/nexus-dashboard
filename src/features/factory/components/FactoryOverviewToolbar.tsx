@@ -24,7 +24,8 @@ export function FactoryOverviewToolbar({
   dateRange,
   setDateRange,
   resetPage,
-  onExport
+  onExport,
+  tabs
 }: FactoryOverviewToolbarProps) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
@@ -36,7 +37,7 @@ export function FactoryOverviewToolbar({
           />
           <Input
             id="cabinet-search"
-            placeholder="Search..."
+            placeholder={tabs === "linked" ? "Search NEX, UPD or IMEI..." : "Search serial number..."}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9 h-10 border border-border bg-white md:!h-12.5"
@@ -46,20 +47,38 @@ export function FactoryOverviewToolbar({
       </div>
 
       <div className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row sm:items-end sm:flex-wrap">
-          {/* PREFIX_DEFAULT */}
-          <Select value={prefix} onValueChange={setPrefix}>
-            <SelectTrigger className="w-full min-w-36 sm:w-36 md:!h-12.5 text-sm">
-              <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-                <span className="font-normal text-foreground">Prefix:</span>
-                <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="All" /></span>
-              </div>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={PREFIX_DEFAULT}>All</SelectItem>
-              <SelectItem value="NEX">NEX</SelectItem>
-              <SelectItem value="UPD">UPD</SelectItem>
-            </SelectContent>
-          </Select>
+          {tabs === "linked" ? (
+            <Select value={prefix} onValueChange={setPrefix}>
+              <SelectTrigger className="w-full min-w-36 sm:w-auto md:!h-12.5 text-sm">
+                <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
+                  <span className="font-normal text-foreground shrink-0">Combination:</span>
+                  <span className="line-clamp-1 grow text-left"><SelectValue placeholder="All" /></span>
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={PREFIX_DEFAULT}>All</SelectItem>
+                <SelectItem value="connected">Connected Nexus</SelectItem>
+                <SelectItem value="non-connected">Non-connected Nexus</SelectItem>
+                <SelectItem value="separate">Separate module</SelectItem>
+              </SelectContent>
+            </Select>
+            ) : (
+            <>
+              <Select value={linked} onValueChange={setLinked}>
+                <SelectTrigger className="w-full min-w-36 sm:w-auto md:!h-12.5 text-sm">
+                  <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
+                    <span className="font-normal text-foreground shrink-0">Type:</span>
+                    <span className="line-clamp-1 grow text-left"><SelectValue placeholder="All" /></span>
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={LINKED_DEFAULT}>All</SelectItem>
+                  <SelectItem value="NEX">NEX</SelectItem>
+                  <SelectItem value="UPD">UPD</SelectItem>
+                </SelectContent>
+              </Select>
+            </>
+          )}
           <div className="min-w-[190px]">
             <DateRangePicker
               prefix="Date Range"
@@ -72,20 +91,21 @@ export function FactoryOverviewToolbar({
               dateType="past"
             />
           </div>
-          {/* LINKED_DEFAULT */}
-          <Select value={linked} onValueChange={setLinked}>
-            <SelectTrigger className="w-full min-w-36 sm:w-36 md:!h-12.5 text-sm">
-              <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-                <span className="font-normal text-foreground">Linked:</span>
-                <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="All" /></span>
-              </div>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={LINKED_DEFAULT}>All</SelectItem>
-              <SelectItem value="linked">Linked</SelectItem>
-              <SelectItem value="unlinked">Un Linked</SelectItem>
-            </SelectContent>
-          </Select>
+          {tabs === "available" && (
+            <Select value={prefix} onValueChange={setPrefix}>
+              <SelectTrigger className="w-full min-w-36 sm:w-auto md:!h-12.5 text-sm">
+                <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
+                  <span className="font-normal text-foreground shrink-0">Module model:</span>
+                  <span className="line-clamp-1 grow text-left"><SelectValue placeholder="All" /></span>
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={PREFIX_DEFAULT}>All</SelectItem>
+                <SelectItem value="connected-v1">Connected V1</SelectItem>
+                <SelectItem value="non-connected-v2">Non-connected V1</SelectItem>
+              </SelectContent>
+            </Select>
+          )}
           <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-white text-accent-foreground py-2 px-3 sm:py-3 rounded-[10px] text-sm gap-1.25 border border-border" onClick={resetPage}>
             <RotateCcw size={16} /> <span>Reset Filter</span>
           </button>
