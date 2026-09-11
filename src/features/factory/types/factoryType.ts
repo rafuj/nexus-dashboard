@@ -11,6 +11,10 @@ export type FactoryRow = {
   tenantId: string
   startsWith: string
   prefix: string
+  nexCode: string
+  updCode: string
+  type: string
+  model: string
 }
 
 export type FactoryOverviewToolbarProps = {

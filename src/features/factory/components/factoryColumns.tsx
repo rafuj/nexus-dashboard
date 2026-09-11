@@ -4,7 +4,7 @@
  */
 import { createColumnHelper } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "@/shared/components/data-table"
-import { cn, formatISODate } from "@/lib/utils"
+import { formatISODate } from "@/lib/utils"
 import type { FactoryRow } from "../types/factoryType"
 
 const columnHelper = createColumnHelper<FactoryRow>()
@@ -12,7 +12,7 @@ const columnHelper = createColumnHelper<FactoryRow>()
 export const factoryColumns = () => [
   columnHelper.accessor("serialNumber", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Cabinet Serial Number" />
+      <DataTableColumnHeader column={column} title="Combination" />
     ),
     meta: {
       headerClassName: "",
@@ -21,45 +21,47 @@ export const factoryColumns = () => [
     cell: ({ row }) => row.original.serialNumber,
   }),
 
+  columnHelper.accessor("nexCode", {
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="NEX code" />
+    ),
+    meta: {
+      headerClassName: "",
+      cellClassName: "align-middle",
+    },
+    cell: ({ row }) => row.original.nexCode || "—",
+  }),
+
+  columnHelper.accessor("updCode", {
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="UPD code" />
+    ),
+    meta: {
+      headerClassName: "",
+      cellClassName: "align-middle",
+    },
+    cell: ({ row }) => row.original.updCode || "—",
+  }),
+
   columnHelper.accessor("imei", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="IMEI Number" />
+      <DataTableColumnHeader column={column} title="IMEI" />
     ),
     meta: {
       headerClassName: "",
       cellClassName: "align-middle whitespace-nowrap",
     },
-    cell: ({ row }) => row.original.imei,
+    cell: ({ row }) => row.original.imei || "—",
   }),
 
   columnHelper.accessor("assignedAt", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Linked On" />
+      <DataTableColumnHeader column={column} title="Linked at" />
     ),
     meta: {
       headerClassName: "",
       cellClassName: "align-middle whitespace-nowrap",
     },
     cell: ({ row }) => formatISODate(row.original.assignedAt),
-  }),
-
-  columnHelper.accessor("status", {
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
-    ),
-    meta: {
-      headerClassName: "text-center",
-      cellClassName: "align-middle",
-    },
-    cell: ({ row }) => (
-      <span className="flex items-center justify-center gap-1 capitalize">
-        <span className={cn("min-w-20 px-3 py-1 rounded-[4px] flex justify-center", {
-            "text-[#1DB600] bg-[#E6F6E3]" : row.original.status === 'linked',
-            "" : row.original.status === 'unlinked',
-        })}>
-          {row.original.status}
-        </span>
-      </span>
-    ),
   }),
 ]

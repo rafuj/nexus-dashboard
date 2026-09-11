@@ -23,6 +23,7 @@ import FactoryOverview from "@/features/factory/views/FactoryOverview";
 import SignUp from "@/features/auth/views/SignUp";
 import UPDGeneration from "@/features/factory/views/UPDGeneration";
 import NEXGeneration from "@/features/factory/views/NexGeneration";
+import NotFound from "@/features/error-page/NotFound";
 
 const helmetContext = {};
 
@@ -51,6 +52,7 @@ export default function AppRoutes() {
           <Route path="/cabinets/list/:id" element={<CabinetView />} />
           <Route path="/cabinets/monitor/:id" element={<CabinetView />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/explore-upgrade" element={<ExploreUpgrades />} />
         </>
     }
   }
@@ -64,24 +66,22 @@ export default function AppRoutes() {
         </Helmet>
         <Suspense fallback="loading...">
           <Routes>
+            {/* Auth Routes */}
             <Route element={<AuthLayout />}>
               <Route path="/login" element={<LoginForm />} />
-
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/signup" element={<SignUp />} />
             </Route>
 
+            {/* Page Layout Routes */}
             <Route element={<PageLayout />}>
-
               {/* Common Routes */}
               <Route path="/my-account" element={<MyAccount />} />
-              
               {/* Routes by Role */}
               {routesByRole()}
-
+              <Route path="*" element={<NotFound />} />
             </Route>
-            <Route path="/explore-upgrade" element={<ExploreUpgrades />} />
           </Routes>
         </Suspense>
       </HelmetProvider>
