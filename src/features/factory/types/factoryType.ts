@@ -11,6 +11,12 @@ export type FactoryRow = {
   tenantId: string
   startsWith: string
   prefix: string
+  nexCode: string
+  updCode: string
+  type: string
+  model: string
+  combination: string
+  linkedAt: string
 }
 
 export type FactoryOverviewToolbarProps = {
@@ -24,4 +30,5 @@ export type FactoryOverviewToolbarProps = {
   setDateRange: (value: DateRange) => void
   resetPage: () => void
   onExport: () => void
+  tabs: 'linked' | 'available'
 }

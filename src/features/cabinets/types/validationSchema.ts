@@ -1,6 +1,6 @@
 import { POSTAL_CODE_RULES } from "@/lib/country-helper";
 import * as Yup from "yup";
-import { imeiRegex, serialRegex } from "./cabinet";
+import { imeiRegex, nexRegex } from "./cabinet";
 
 export const cabinetValidationSchema = Yup.object({
   name: Yup.string()
@@ -67,7 +67,7 @@ export const cabinetValidationSchema = Yup.object({
       schema
         .required("Serial number is required")
         .matches(
-          serialRegex,
+          nexRegex,
           "Nexus serial number invalid. Please check again"
         ),
     otherwise: (schema) =>
@@ -76,7 +76,7 @@ export const cabinetValidationSchema = Yup.object({
         .test(
           "no-nexus-regex",
           "Nexus serial number invalid. Please check again",
-          (value) => !value || !serialRegex.test(value)
+          (value) => !value || !nexRegex.test(value)
         ),
   }),
 
@@ -163,35 +163,6 @@ export const cabinetUpdateSchema = Yup.object({
   accessType: Yup.string()
   .trim()
   .required("Access type is required"),
-
-  // cabinetModelId: Yup.string()
-  // .trim()
-  // .required("Model is required"),
-
-  // serialNumber: Yup.string()
-  // .trim()
-  // .when("brand", {
-  //   is: (brand: string) => brand !== "Nexus",
-  //   then: (schema) => schema.notRequired(),
-  //   otherwise: (schema) =>
-  //     schema
-  //       .required("Serial number is required")
-  //       .matches(
-  //         serialRegex,
-  //         "Nexus Brand Serial number format does not match"
-  //       ),
-  // }),
-
-  // serialNumberRecognition: Yup.boolean()
-  // .when("brand", {
-  //   is: (brand: string) => brand !== "Nexus",
-  //   then: (schema) => schema.notRequired(),
-  //   otherwise: (schema) => schema.default(false).required("Serial number does not recognized"),
-  // }),
-
-  // brand: Yup.string()
-  // .trim()
-  // .required("Brand is required"),
   
 });
 

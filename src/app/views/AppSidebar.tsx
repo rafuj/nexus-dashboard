@@ -103,14 +103,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   
   const factoryNavMain = [
     {
-      title: "IMEI Linking",
+      title: "Linking",
       url: "/",
       icon: <ImeiLinkingIcon />,
       isActive: false,
     },
     {
-      title: "Generate Serial Number",
-      url: "/generate-serial-number",
+      title: "NEX Generation",
+      url: "/nex-generation",
+      icon: <GenerateSerialNumberIcon />,
+      isActive: false,
+    },
+    {
+      title: "UPD Generation",
+      url: "/upd-generation",
       icon: <GenerateSerialNumberIcon />,
       isActive: false,
     },

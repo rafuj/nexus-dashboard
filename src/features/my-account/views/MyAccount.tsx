@@ -1,5 +1,3 @@
-"use client";
-
 import { Helmet } from "react-helmet-async";
 import { cn } from "@/lib/utils";
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";

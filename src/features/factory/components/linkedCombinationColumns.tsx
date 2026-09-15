@@ -4,13 +4,13 @@
  */
 import { createColumnHelper } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "@/shared/components/data-table"
-import { formatISODate } from "@/lib/utils"
+import { formatDateTime } from "@/lib/utils"
 import type { FactoryRow } from "../types/factoryType"
 
 const columnHelper = createColumnHelper<FactoryRow>()
 
-export const factoryColumns = () => [
-  columnHelper.accessor("serialNumber", {
+export const linkedCombinationColumns = () => [
+  columnHelper.accessor("combination", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Combination" />
     ),
@@ -27,9 +27,10 @@ export const factoryColumns = () => [
     ),
     meta: {
       headerClassName: "",
-      cellClassName: "align-middle",
+      cellClassName: "align-middle whitespace-nowrap",
     },
-    cell: ({ row }) => row.original.nexCode || "—",
+    // cell: ({ row }) => row.original.nexCode,
+    cell: ({ }) => "NEX26-0001-0042",
   }),
 
   columnHelper.accessor("updCode", {
@@ -38,9 +39,10 @@ export const factoryColumns = () => [
     ),
     meta: {
       headerClassName: "",
-      cellClassName: "align-middle",
+      cellClassName: "align-middle whitespace-nowrap",
     },
-    cell: ({ row }) => row.original.updCode || "—",
+    // cell: ({ row }) => "UPD26-0001-0183",
+    cell: ({ }) => "UPD26-0001-0183",
   }),
 
   columnHelper.accessor("imei", {
@@ -54,14 +56,26 @@ export const factoryColumns = () => [
     cell: ({ row }) => row.original.imei || "—",
   }),
 
-  columnHelper.accessor("assignedAt", {
+  columnHelper.accessor("model", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Linked at" />
+      <DataTableColumnHeader column={column} title="Module model" />
     ),
     meta: {
       headerClassName: "",
-      cellClassName: "align-middle whitespace-nowrap",
+      cellClassName: "align-middle",
     },
-    cell: ({ row }) => formatISODate(row.original.assignedAt),
+    cell: ({ row }) => row.original.model || "V1",
   }),
+
+  columnHelper.accessor("linkedAt", {
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Processed at" />
+    ),
+    meta: {
+      headerClassName: "",
+      cellClassName: "align-middle",
+    },
+    cell: ({ row }) => formatDateTime(row.original.createdAt),
+  }),
+
 ]

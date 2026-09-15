@@ -8,6 +8,7 @@ export type DataTablePaginationProps<TData> = {
   table: Table<TData>
   className?: string
   navLabel?: string
+  resultSuffix?: string
 }
 
 /** Page numbers with gaps as `null` for ellipsis 
@@ -37,6 +38,7 @@ export function DataTablePagination<TData>({
   table,
   className,
   navLabel = "Table pagination",
+  resultSuffix = ""
 }: DataTablePaginationProps<TData>) {
   const totalRows = table.getRowCount()
   const { pageIndex, pageSize } = table.getState().pagination
@@ -68,6 +70,8 @@ export function DataTablePagination<TData>({
             <span>{rangeStart}</span>–
             <span>{rangeEnd}</span> of{" "}
             <span>{totalRows}</span>
+            {" "}
+            {resultSuffix}
           </>
         )}
       </p>
