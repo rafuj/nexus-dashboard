@@ -140,9 +140,8 @@ export default function UPDGeneration() {
                       </div>
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="V1">V1</SelectItem>
-                      <SelectItem value="V1.2">V1.2</SelectItem>
-                      <SelectItem value="V2">V2</SelectItem>
+                      <SelectItem value="connected-v1">Connected V1</SelectItem>
+                      <SelectItem value="non-connected-v1">Non Connected V1</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

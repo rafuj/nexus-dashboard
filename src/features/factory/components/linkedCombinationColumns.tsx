@@ -47,7 +47,7 @@ export const linkedCombinationColumns = () => [
 
   columnHelper.accessor("imei", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="IMEI Number" />
+      <DataTableColumnHeader column={column} title="IMEI" />
     ),
     meta: {
       headerClassName: "",
@@ -69,7 +69,7 @@ export const linkedCombinationColumns = () => [
 
   columnHelper.accessor("linkedAt", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Linked at" />
+      <DataTableColumnHeader column={column} title="Processed at" />
     ),
     meta: {
       headerClassName: "",

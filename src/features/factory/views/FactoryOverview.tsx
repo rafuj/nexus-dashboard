@@ -28,7 +28,7 @@ export default function FactoryOverview() {
   const tablist = [
     {
       id: "linked",
-      name: "Linked combinations",
+      name: "Processed units",
     },
     {
       id: "available",
@@ -218,8 +218,9 @@ export default function FactoryOverview() {
                   <div className="border-border border-t pt-4">
                     <DataTablePagination
                       table={table}
-                      navLabel="Cabinets table pagination"
+                      navLabel="Factory Serial Overview"
                       key={tabs}
+                      resultSuffix={tabs === "linked" ? "processed units" : "available serial numbers"}
                     />
                   </div>
               </div>

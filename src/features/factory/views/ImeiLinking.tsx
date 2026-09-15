@@ -40,16 +40,36 @@ export default function ImeiLinking() {
     },
   ] as const
 
+  const moduleModelList = [
+    {
+      id: "connected-v1",
+      name: "Connected V1",
+    },
+    {
+      id: "non-connected-v1",
+      name: "Non-connected V1",
+    },
+  ] as const
+
   type CombinationsType = (typeof combinationsTypeList)[number]["id"]
+  type ModuleValueType = (typeof moduleModelList)[number]["id"]
 
   const tabValues = combinationsTypeList.map(
     (tab) => tab.id
   ) as CombinationsType[]
+  const moduleValues = moduleModelList.map(
+    (tab) => tab.id
+  ) as ModuleValueType[]
 
   const [combinationsType, setCombinationsType] = useQueryState(
     "combinations",
     parseAsStringEnum(tabValues).withDefault("connected-nexus")
   )
+  const [moduleModel, setModuleModel] = useQueryState(
+    "module",
+    parseAsStringEnum(moduleValues).withDefault(moduleModelList[0].id)
+  )
+
   const [search, setSearch] = useState<string>("");
   const [filterCombination, setFilterCombination] = useState<string>("all");
 
@@ -261,12 +281,17 @@ export default function ImeiLinking() {
           <div className="space-y-5">
             {/* Cabinet Serial Number */}
             <div className="bg-white border rounded-[10px] border-border py-5 px-4">
-              <div className="mb-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-[21fr_25fr_5fr] 2xl:grid-cols-[42fr_45fr_30fr] gap-3">
+              <div className={cn("mb-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-[21fr_25fr_5fr] 2xl:grid-cols-[42fr_45fr_30fr] gap-3", {
+                "xl:grid-cols-[3fr_3fr_4fr] 2xl:grid-cols-[3fr_3fr_4fr]": combinationsType === "separate-module"
+              })}>
                 <div>
                   <div className="text-xs font-medium text-accent-foreground mb-1.25">
                     <span>Combinations type</span>
                   </div>
-                  <Select value={combinationsType} onValueChange={(value:CombinationsType) => setCombinationsType(value)}>
+                  <Select value={combinationsType} onValueChange={(value:CombinationsType) => {
+                    setCombinationsType(value)
+                    setModuleModel(moduleModelList[0].id)
+                  }}>
                     <SelectTrigger className="w-full !h-9">
                       <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                         <span className="line-clamp-1 w-0 grow text-left"><SelectValue /></span>
@@ -281,7 +306,39 @@ export default function ImeiLinking() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="flex">
+                {combinationsType === "separate-module" && (
+                  <div>
+                    <div className="text-xs font-medium text-accent-foreground mb-1.25">
+                      <span>Module model</span>
+                    </div>
+                    <Select value={moduleModel} onValueChange={(value:ModuleValueType) => {
+                      setModuleModel(value);
+                      if(value === "non-connected-v1") {
+                        setScannedDevices(prev => ([{
+                          ...prev[0],
+                          imei: ""
+                        }]))
+                        setImeiScanSuccess(false);
+                      }
+                    }}>
+                      <SelectTrigger className="w-full !h-9">
+                        <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
+                          <span className="line-clamp-1 w-0 grow text-left"><SelectValue /></span>
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {moduleModelList.map((moduleModel) => (
+                          <SelectItem key={moduleModel.id} value={moduleModel.id}>
+                            {moduleModel.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+                <div className={cn("flex", {
+                  "max-xl:col-span-2 max-sm:col-span-1": combinationsType === "separate-module"
+                })}>
                   <div className="card-info px-4 py-5 text-[13px] rounded-[10px] w-full xl:w-auto max-w-full">
                     {combinationsType === "connected-nexus" && "Links a Nexus cabinet body to its PCB enclosure and connected IMEI."}
                     {combinationsType === "non-connected-nexus" && "Links a Nexus cabinet body to its PCB enclosure without an IMEI."}
@@ -299,10 +356,10 @@ export default function ImeiLinking() {
                       Scan NEX code
                     </div>
                     <div className="relative">
-                      <BoxIcons className="text-success2 absolute top-1/2 -translate-y-1/2 left-4.5 pointer-events-none" />
+                      <BoxIcons className="text-success2 absolute top-1/2 -translate-y-1/2 left-3.5 pointer-events-none" />
                       <input
                         type="text"
-                        className="h-[70px] lg:h-[82px] w-full border card-success2 pl-17 pr-4 py-5 rounded-[10px] outline-0 text-xl lg:text-2xl text-accent-foreground font-semibold"
+                        className="h-[58px] w-full border card-success2 pl-11.5 pr-4 py-5 rounded-[10px] outline-0 text-[17px] text-accent-foreground font-semibold"
                         value={scannedDevices?.[0]?.serialNumber ?? ""}
                         onChange={(e) => handleChange(e, "serialNumber")}
                         placeholder="e.g. NEX26-0001-0043"
@@ -321,10 +378,10 @@ export default function ImeiLinking() {
                     Scan UPD code
                   </div>
                   <div className="relative">
-                    <BoxIcons className="text-success2 absolute top-1/2 -translate-y-1/2 left-4.5 pointer-events-none" />
+                    <BoxIcons className="text-success2 absolute top-1/2 -translate-y-1/2 left-3.5 pointer-events-none" />
                     <input
                       type="text"
-                      className="h-[70px] lg:h-[82px] w-full border card-success2 pl-17 pr-4 py-5 rounded-[10px] outline-0 text-xl lg:text-2xl text-accent-foreground font-semibold"
+                      className="h-[58px] w-full border card-success2 pl-11.5 pr-4 py-5 rounded-[10px] outline-0 text-[17px] text-accent-foreground font-semibold"
                       value={scannedDevices?.[0]?.upd ?? ""}
                       onChange={(e) => handleChange(e, "upd")}
                       placeholder="e.g. UPD26-0001-0043"
@@ -343,14 +400,18 @@ export default function ImeiLinking() {
                       Scan IMEI number
                     </div>
                     <div className="relative">
-                      <BoxIcons className="text-success2 absolute top-1/2 -translate-y-1/2 left-4.5 pointer-events-none" />
+                      <BoxIcons className={cn("text-success2 absolute top-1/2 -translate-y-1/2 left-3.5 pointer-events-none", {
+                        "text-foreground":moduleModel === "non-connected-v1"
+                      })} />
                       <input
                         type="text"
-                        className="h-[70px] lg:h-[82px] w-full border card-success2 pl-17 pr-4 py-5 rounded-[10px] outline-0 text-xl lg:text-2xl text-accent-foreground font-semibold"
+                        className={cn("h-[58px] w-full border card-success2 pl-11.5 pr-4 py-5 rounded-[10px] outline-0 text-[17px] text-accent-foreground font-semibold", {
+                          "bg-[#F5F6F9] border-[#D9DBE5]": moduleModel === "non-connected-v1"
+                        })}
                         value={scannedDevices?.[0]?.imei ?? ""}
                         onChange={(e) => handleChange(e, "imei")}
-                        placeholder="e.g. 847394728949384"
-                        disabled={deviceInstallations.isPending || createDevices.isPending}
+                        placeholder={moduleModel === "non-connected-v1" ? "Not applicable to this module model" : "e.g. 847394728949384"}
+                        disabled={deviceInstallations.isPending || createDevices.isPending || moduleModel === "non-connected-v1"}
                       />
                     </div>
                     {imeiScanSuccess &&(
@@ -469,7 +530,8 @@ export default function ImeiLinking() {
                 <div className="border-border border-t pt-4">
                   <DataTablePagination
                     table={table}
-                    navLabel="Cabinets table pagination"
+                    navLabel="IMEI Links"
+                    resultSuffix="links"
                   />
                 </div>
             </div>
