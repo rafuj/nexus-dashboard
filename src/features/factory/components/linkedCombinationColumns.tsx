@@ -69,7 +69,7 @@ export const linkedCombinationColumns = () => [
 
   columnHelper.accessor("linkedAt", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Processed at" />
+      <DataTableColumnHeader column={column} title="Scanned at" />
     ),
     meta: {
       headerClassName: "",

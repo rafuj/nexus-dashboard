@@ -56,7 +56,7 @@ export const factoryColumns = () => [
 
   columnHelper.accessor("assignedAt", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Linked at" />
+      <DataTableColumnHeader column={column} title="Scanned at" />
     ),
     meta: {
       headerClassName: "",
