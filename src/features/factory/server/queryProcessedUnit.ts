@@ -1,12 +1,11 @@
 import type { FactoryRow } from "../types/factoryType"
 import type { DateRange } from "react-day-picker"
 
-export type FactoryOverviewQuery = {
+interface ProcessedUnitQuery {
   search: string
   pageIndex: number
   pageSize: number
-  prefix: string
-  linked: string
+  combination: string
   data: FactoryRow[]
   dateRange: DateRange | null
 }
@@ -19,8 +18,7 @@ export type CabinetsListPageResult = {
 function filterFactoryRows(
   rows: readonly FactoryRow[],
   search: string,
-  prefix: string,
-  linked: string,
+  combination: string,
   dateRange: DateRange | null
 ): FactoryRow[] {
   const q = search.trim().toLowerCase()
@@ -32,15 +30,10 @@ function filterFactoryRows(
       row.imei?.toLowerCase().includes(q) ||
       row.serialNumber.toLowerCase().includes(q)
 
-    const matchesPrefix =
-      !prefix ||
-      prefix === "all" ||
-      row.prefix === prefix
-
-    const matchesLinked =
-      linked === "all" ||
-      (linked === "linked" && row.deviceLinked) ||
-      (linked === "unlinked" && !row.deviceLinked)
+    const matchesCombination =
+      !combination ||
+      combination === "all" ||
+      row.combination === combination
 
     const createdAt = new Date(row.createdAt)
 
@@ -49,11 +42,9 @@ function filterFactoryRows(
       (!dateRange?.to || createdAt <= dateRange.to)
 
     return (
-      matchesSearch 
+      matchesSearch
       &&
-      matchesPrefix 
-      &&
-      matchesLinked 
+      matchesCombination
       &&
       matchesDate
     )
@@ -64,12 +55,11 @@ function filterFactoryRows(
  * Mock “server” list: filter → sort → paginate over {@link mockFactoryList}.
  * Replace with a real `fetch()` when an API exists; keep the same result shape.
  */
-export function queryFactoryOverviewPage(query: FactoryOverviewQuery): CabinetsListPageResult {
+export function queryProcessedUnit(query: ProcessedUnitQuery): CabinetsListPageResult {
   const filtered = filterFactoryRows(
     query.data,
     query.search,
-    query.prefix,
-    query.linked,
+    query.combination,
     query?.dateRange
   )
 

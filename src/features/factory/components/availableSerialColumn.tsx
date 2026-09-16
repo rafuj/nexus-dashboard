@@ -5,8 +5,8 @@
 import { createColumnHelper } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "@/shared/components/data-table"
 import { formatISODate } from "@/lib/utils"
-import type { FactoryRow } from "../types/factoryType"
-const columnHelper = createColumnHelper<FactoryRow>()
+import type { AvailableSerialNumbersRow } from "../types/factoryType"
+const columnHelper = createColumnHelper<AvailableSerialNumbersRow>()
 
 export const availableSerialColumn = () => [
   columnHelper.accessor("serialNumber", {
@@ -28,11 +28,10 @@ export const availableSerialColumn = () => [
       headerClassName: "xl:w-1/4",
       cellClassName: "align-middle whitespace-nowrap",
     },
-    // cell: ({ row }) => row.original.prefix,
-    cell: ({ }) => "NEX",
+    cell: ({ row }) => row.original.type,
   }),
 
-  columnHelper.accessor("model", {
+  columnHelper.accessor("deviceModel", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Module model" />
     ),
@@ -40,10 +39,10 @@ export const availableSerialColumn = () => [
       headerClassName: "xl:w-1/4",
       cellClassName: "align-middle",
     },
-    cell: ({ row }) => row.original.model || "V1",
+    cell: ({ row }) => row.original?.deviceModel?.modelName || "—",
   }),
 
-  columnHelper.accessor("createdAt", {
+  columnHelper.accessor("generatedAt", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Generated On" />
     ),
@@ -51,7 +50,7 @@ export const availableSerialColumn = () => [
       headerClassName: "xl:w-1/4",
       cellClassName: "align-middle whitespace-nowrap",
     },
-    cell: ({ row }) => formatISODate(row.original.createdAt),
+    cell: ({ row }) => formatISODate(row.original.generatedAt),
   }),
 
 ]

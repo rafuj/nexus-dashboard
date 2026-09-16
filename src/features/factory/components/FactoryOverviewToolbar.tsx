@@ -10,6 +10,7 @@ import {
 import { Icons } from "@/app/icons/icons"
 import type { FactoryOverviewToolbarProps } from "../types/factoryType"
 import { DateRangePicker } from "@/shared/components/ui/date-range-picker"
+import { useDeviceModels } from "../hooks/useDeviceModels"
 
 const PREFIX_DEFAULT = "all"
 const LINKED_DEFAULT = "all"
@@ -17,16 +18,19 @@ const LINKED_DEFAULT = "all"
 export function FactoryOverviewToolbar({
   search,
   setSearch,
-  prefix,
-  setPrefix,
-  linked,
-  setLinked,
+  type,
+  setType,
+  deviceModelId,
+  setDeviceModelId,
+  combination,
+  setCombination,
   dateRange,
   setDateRange,
   resetPage,
   onExport,
   tabs
 }: FactoryOverviewToolbarProps) {
+  const { data:deviceModels, isLoading } = useDeviceModels()
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end">
       <div className="min-w-[min(100%,9rem)] flex-1 space-y-2">
@@ -48,7 +52,7 @@ export function FactoryOverviewToolbar({
 
       <div className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row sm:items-end sm:flex-wrap">
           {tabs === "linked" ? (
-            <Select value={prefix} onValueChange={setPrefix}>
+            <Select value={combination} onValueChange={setCombination}>
               <SelectTrigger className="w-full min-w-36 sm:w-auto md:!h-12.5 text-sm">
                 <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                   <span className="font-normal text-foreground shrink-0">Combination:</span>
@@ -64,7 +68,7 @@ export function FactoryOverviewToolbar({
             </Select>
             ) : (
             <>
-              <Select value={linked} onValueChange={setLinked}>
+              <Select value={type} onValueChange={setType}>
                 <SelectTrigger className="w-full min-w-36 sm:w-auto md:!h-12.5 text-sm">
                   <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                     <span className="font-normal text-foreground shrink-0">Type:</span>
@@ -92,7 +96,7 @@ export function FactoryOverviewToolbar({
             />
           </div>
           {tabs === "available" && (
-            <Select value={prefix} onValueChange={setPrefix}>
+            <Select value={deviceModelId} onValueChange={setDeviceModelId}>
               <SelectTrigger className="w-full min-w-36 sm:w-auto md:!h-12.5 text-sm">
                 <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                   <span className="font-normal text-foreground shrink-0">Module model:</span>
@@ -100,9 +104,22 @@ export function FactoryOverviewToolbar({
                 </div>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value={PREFIX_DEFAULT}>All</SelectItem>
-                <SelectItem value="connected-v1">Connected V1</SelectItem>
-                <SelectItem value="non-connected-v2">Non-connected V1</SelectItem>
+                {
+                  isLoading ? (
+                    <SelectItem value="loading">Loading...</SelectItem>
+                  ) : (
+                    <>
+                    <SelectItem value="all">All</SelectItem>
+                      {
+                        deviceModels?.map((model) => (
+                          <SelectItem key={model.id} value={model.id}>
+                            {model.modelName}
+                          </SelectItem>
+                        ))
+                      }
+                    </>
+                  )
+                }
               </SelectContent>
             </Select>
           )}

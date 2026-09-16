@@ -32,5 +32,6 @@ export const API_ROUTES = {
     DEVICE_MODELS: `${API_VERSION}/device-models`,
     DEVICE_INSTALLATION: `${API_VERSION}/device-installations`,
     DEVICES_INVENTORY: `${API_VERSION}/devices/inventory`,
-
+    // factory
+    AVAILABLE_SERIAL_NUMBERS: `${API_VERSION}/factory/serial-numbers/available`
 }
