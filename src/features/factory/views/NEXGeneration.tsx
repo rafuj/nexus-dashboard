@@ -16,6 +16,7 @@ export default function NEXGeneration() {
 
   const [quantity, setQuantity] = useState<number|''>('')
   const [isSuccess, setIsSuccess] = useState<boolean>(false)
+  const [lastGenQuantity, setLastGenQuantity] = useState<number|''>("")
   
   const currentYear = new Date().getFullYear();
 
@@ -34,10 +35,10 @@ export default function NEXGeneration() {
         await generateSerialMutation.mutateAsync(
           {
             quantity,
-            // year: productionYear,
-            // prefix: "NEX",
+            productionYear
           }
         )
+        setLastGenQuantity(quantity)
         successToast(`Generated ${quantity} New Serial Number successfully`)
         setQuantity("")
         setIsSuccess(true)
@@ -161,9 +162,9 @@ export default function NEXGeneration() {
                       <Check />
                     </div>
                     <div className="text-success2">
-                      <h6 className="font-semibold text-success2 text-base mb-1">Successfully generated 100 NEX serial numbers</h6>
+                      <h6 className="font-semibold text-success2 text-base mb-1">Successfully generated {lastGenQuantity} NEX serial numbers</h6>
                       <div className="text-[13px] text-foreground">
-                        Generated 28 July 2026 at 13:45:32
+                        Generated {new Date().toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                       </div>
                     </div>
                   </div>

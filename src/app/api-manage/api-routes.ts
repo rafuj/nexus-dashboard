@@ -20,8 +20,6 @@ export const API_ROUTES = {
     ASSETS: `${API_VERSION}/assets`,
     COMPONENT_TYPES: `${API_VERSION}/component-types`,
     CABINETS_INVENTORY: `${API_VERSION}/cabinets/inventory`,
-    DEVICES: `${API_VERSION}/devices`,
-    DEVICE_INSTALLATION: `${API_VERSION}/device-installations`,
     CABINET_BRANDS: `${API_VERSION}/cabinet-models/brands`,
     CABINET_MODELS: `${API_VERSION}/cabinet-models`,
     CABINET_CITIES: `${API_VERSION}/cabinets/cities`,
@@ -29,5 +27,10 @@ export const API_ROUTES = {
     IMEI_CHECK: `${API_VERSION}/devices/imei-check`,
     // dashboard
     DASHBOARD: `${API_VERSION}/dashboard/overview`,
+    // devices
+    DEVICES: `${API_VERSION}/devices`,
+    DEVICE_MODELS: `${API_VERSION}/device-models`,
+    DEVICE_INSTALLATION: `${API_VERSION}/device-installations`,
+    DEVICES_INVENTORY: `${API_VERSION}/devices/inventory`,
 
 }

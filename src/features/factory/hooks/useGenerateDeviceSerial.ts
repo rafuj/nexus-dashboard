@@ -1,16 +1,16 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { generateCabinetSerial } from "../api/generateCabinetSerial"
+import { generateDeviceSerial } from "../api/generateDeviceSerial.api"
 
 
-export const useGenerateSerial = () => {
+export const useGenerateDeviceSerial = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: generateCabinetSerial,
+    mutationFn: generateDeviceSerial,
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["nex-generation"],
+        queryKey: ["upd-generation"],
       })
     },
   })
