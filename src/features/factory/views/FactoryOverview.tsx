@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet-async";
 
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip"
-import { cn } from "@/lib/utils";
+import { cn, formatISODate } from "@/lib/utils";
 import { DataTable, DataTablePagination } from "@/shared/components/data-table";
 import { useMemo, useState } from "react";
 import { getCoreRowModel, useReactTable, type PaginationState } from "@tanstack/react-table";
@@ -114,9 +114,19 @@ export default function FactoryOverview() {
     ],
   );
 
+  const availableAllData = useMemo(() => queryAvailableSerial({
+    data: availableSerialData?.serialNumbers || [],
+    search,
+    pageIndex: 0,
+    pageSize: availableSerialData?.serialNumbers.length || 0,
+    type,
+    deviceModelId,
+    dateRange: dateRange || null
+  }), [search, availableSerialData?.serialNumbers, dateRange, type, deviceModelId])
+
   const allData = useMemo(() => queryProcessedUnit({
     data: data || [],
-    search: search || "",
+    search: search,
     pageIndex: 0,
     pageSize: data?.length || 0,
     combination,
@@ -124,14 +134,34 @@ export default function FactoryOverview() {
   }), [search, data, dateRange, combination])
 
   const exportList = () => {
-    if(allData.rows.length === 0) {
-      errorToast("No data available to export")
-      return
+    if(tabs === "linked") {
+      if(allData.rows.length === 0) {
+        errorToast("No data available to export")
+        return
+      }
+      const data = allData.rows.map((item) => ({
+        "Combination": item.serialNumber,
+        "NEX Code": item.nexCode,
+        "UPD Code": item.updCode,
+        "IMEI": item.imei,
+        "Module Model": item.model,
+        "Scanned at": formatISODate(item.createdAt),
+      }))
+      exportExcel(data, "processed-unit-export")
     }
-    const data = allData.rows.map((item) => ({
-      "Serial Number": item.serialNumber,
-    }))
-    exportExcel(data, "factory-overview")
+    if(tabs === "available") {
+      if(availableAllData.rows.length === 0) {
+        errorToast("No data available to export")
+        return
+      }
+      const data = availableAllData.rows.map((item) => ({
+        "Serial Number": item.serialNumber,
+        "Type": item.type,
+        "Module model": item.deviceModel?.modelName,
+        "Generated On": formatISODate(item.generatedAt)
+      }))
+      exportExcel(data, "available-serial")
+    }
   }
   
   const processUnitTable = useReactTable({
