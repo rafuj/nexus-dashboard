@@ -10,7 +10,7 @@ export const useGenerateDeviceSerial = () => {
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["upd-generation"],
+        queryKey: ["available-serial"],
       })
     },
   })

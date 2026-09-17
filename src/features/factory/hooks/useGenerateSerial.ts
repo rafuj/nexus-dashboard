@@ -10,7 +10,7 @@ export const useGenerateSerial = () => {
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["nex-generation"],
+        queryKey: ["available-serial"],
       })
     },
   })
