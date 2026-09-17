@@ -12,6 +12,7 @@ import { Check } from "lucide-react";
 import { Link } from "react-router";
 import { useGenerateDeviceSerial } from "../hooks/useGenerateDeviceSerial";
 import { useDeviceModels } from "../hooks/useDeviceModels";
+import { useAvailableSerialNumbers } from "../hooks/useAvailableSerialNumbers";
 
 export default function UPDGeneration() {
 
@@ -28,6 +29,8 @@ export default function UPDGeneration() {
   );
 
   const [productionYear, setProductionYear] = useState<string|''>(currentYear.toString().slice(2))
+
+  const { data, isLoading } = useAvailableSerialNumbers({})
   
   const generateSerialMutation = useGenerateDeviceSerial()
 
@@ -92,7 +95,7 @@ export default function UPDGeneration() {
                 <div className="flex items-center gap-3.75">
                   <span className="font-semibold text-[#A72822] text-sm">Available UPD serial numbers</span>
                 </div>
-                <h5 className="font-semibold text-[30px] leading-[1] mb-2 mt-1.75">163</h5>
+                <h5 className="font-semibold text-[30px] leading-[1] mb-2 mt-1.75">{isLoading ? "..." : (data?.totalAvailableUpd || 0)}</h5>
                 <div className="text-xs">
                   Generated but not yet assigned
                 </div>

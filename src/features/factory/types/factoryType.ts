@@ -49,7 +49,7 @@ export interface AvailableSerialNumbersRow {
 export type AvailableSerialNumbersQuery = {
   search?: string
   //this will be extended later with other filters
-  page: number
-  limit: number
+  page?: number
+  limit?: number
   sorting?: SortingState
 }
