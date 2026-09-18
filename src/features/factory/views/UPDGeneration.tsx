@@ -4,18 +4,22 @@ import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip"
 import { Input } from "@/shared/components/ui/input";
 import { useState } from "react";
-import { useGenerateSerial } from "../hooks/useGenerateSerial";
 import { errorToast, successToast } from "@/lib/toast";
 import { getApiErrorMessage } from "@/app/api-manage/api";
 import { LoaderButton } from "@/app/components/loader-button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { Check } from "lucide-react";
 import { Link } from "react-router";
+import { useGenerateDeviceSerial } from "../hooks/useGenerateDeviceSerial";
+import { useDeviceModels } from "../hooks/useDeviceModels";
+import { useAvailableSerialNumbers } from "../hooks/useAvailableSerialNumbers";
 
 export default function UPDGeneration() {
 
   const [quantity, setQuantity] = useState<number|''>('')
   const [isSuccess, setIsSuccess] = useState<boolean>(false)
+  const [deviceModelId, setDeviceModelId] = useState<string|''>('')
+  const [lastGenQuantity, setLastGenQuantity] = useState<number|''>("")
   
   const currentYear = new Date().getFullYear();
 
@@ -25,27 +29,36 @@ export default function UPDGeneration() {
   );
 
   const [productionYear, setProductionYear] = useState<string|''>(currentYear.toString().slice(2))
+
+  const { data, isLoading } = useAvailableSerialNumbers({})
   
-  const generateSerialMutation = useGenerateSerial()
+  const generateSerialMutation = useGenerateDeviceSerial()
+
+  const {data:deviceModels, isLoading:isDeviceModelsLoading} = useDeviceModels()
 
   const handleGenerate = async () =>{
-    if(quantity) {
-      try {
-        await generateSerialMutation.mutateAsync(
-          {
-            quantity,
-            // year: productionYear,
-            // prefix: "UPD",
-          }
-        )
-        successToast(`Generated ${quantity} New Serial Number successfully`)
-        setQuantity("")
-        setIsSuccess(true)
-      } catch (error) {
-          errorToast(getApiErrorMessage(error));
-      }
-    } else {
+    if(!deviceModelId) {
+      errorToast("Device Model is a required field")
+      return
+    }
+    if(!quantity) {
       errorToast("Quantity is a required field")
+      return
+    }
+    try {
+      await generateSerialMutation.mutateAsync(
+        {
+          quantity,
+          productionYear,
+          deviceModelId
+        }
+      )
+      successToast(`Generated ${quantity} New Serial Number successfully`)
+      setLastGenQuantity(quantity)
+      setQuantity("")
+      setIsSuccess(true)
+    } catch (error) {
+        errorToast(getApiErrorMessage(error));
     }
   }
 
@@ -82,7 +95,7 @@ export default function UPDGeneration() {
                 <div className="flex items-center gap-3.75">
                   <span className="font-semibold text-[#A72822] text-sm">Available UPD serial numbers</span>
                 </div>
-                <h5 className="font-semibold text-[30px] leading-[1] mb-2 mt-1.75">163</h5>
+                <h5 className="font-semibold text-[30px] leading-[1] mb-2 mt-1.75">{isLoading ? "..." : (data?.totalAvailableUpd || 0)}</h5>
                 <div className="text-xs">
                   Generated but not yet assigned
                 </div>
@@ -133,15 +146,24 @@ export default function UPDGeneration() {
                   <div className="text-xs font-medium text-accent-foreground mb-3.5">
                     <span>Model <span>*</span></span>
                   </div>
-                  <Select>
+                  <Select value={deviceModelId} onValueChange={(value) => setDeviceModelId(value)}>
                     <SelectTrigger className="w-full !h-12.5">
                       <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
                         <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select model" /></span>
                       </div>
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="connected-v1">Connected V1</SelectItem>
-                      <SelectItem value="non-connected-v1">Non Connected V1</SelectItem>
+                      {
+                        isDeviceModelsLoading ? (
+                          <SelectItem value="loading">Loading...</SelectItem>
+                        ) : (
+                          deviceModels?.map((model) => (
+                            <SelectItem key={model.id} value={model.id}>
+                              {model.modelName}
+                            </SelectItem>
+                          ))
+                        )
+                      }
                     </SelectContent>
                   </Select>
                 </div>
@@ -170,11 +192,11 @@ export default function UPDGeneration() {
               </div>
               <div className="card-info px-4 py-3.25 rounded-[10px] mt-5">
                 <span className="font-medium text-[11px] mb-1.25">Serial format</span>
-                <span className="text-base font-semibold block text-accent-foreground">UPD[YY]-[XXXX]-[XXXX]</span>
+                <span className="text-base font-semibold block text-accent-foreground">UPD[YY]-[XXXXX]-[XXXXX]</span>
               </div>
               <div className="flex flex-wrap items-center gap-2 gap-x-5 mt-6">
                 <LoaderButton loading={generateSerialMutation.isPending} className="rounded-full px-5 xl:px-8 h-12.5" onClick={handleGenerate}>Generate Serial Numbers</LoaderButton>
-                <span className="text-[13px]">Generated serials will be assigned to model V1.2.</span>
+                {deviceModelId && <span className="text-[13px]">Generated serials will be assigned to model {deviceModels?.find((m) => m.id === deviceModelId)?.modelName}.</span>}
               </div>
 
             {isSuccess && (
@@ -184,9 +206,9 @@ export default function UPDGeneration() {
                     <Check />
                   </div>
                   <div className="text-success2">
-                    <h6 className="font-semibold text-success2 text-base mb-1">Successfully generated 100 UPD serial numbers</h6>
+                    <h6 className="font-semibold text-success2 text-base mb-1">Successfully generated {lastGenQuantity} UPD serial numbers</h6>
                     <div className="text-[13px] text-foreground">
-                      Generated 28 July 2026 at 13:45:32
+                      Generated {new Date().toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </div>
                 </div>

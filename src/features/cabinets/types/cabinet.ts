@@ -8,8 +8,8 @@ export interface AssetType {
   value: string;
 }
 
-export const nexRegex = /^NEX\d{2}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
-export const updRegex = /^UPD\d{2}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
+export const nexRegex = /^NEX\d{2}-[A-Z0-9]{5}-[A-Z0-9]{5}$/;
+export const updRegex = /^UPD\d{2}-[A-Z0-9]{5}-[A-Z0-9]{5}$/;
 
 export const imeiRegex = /^\d{15}$/;
 
@@ -67,9 +67,10 @@ export interface CreateCabinetFormValues  {
     brand: string
   }
   serialNumberRecognition: boolean // for logic
-  imeiRecognition: boolean // only for ui
+  deviceCodeRecognition: boolean // only for ui
   
   // optional values for create cabinet
+  deviceSerialNumber: string
   imei: string
   volume: VolumeType
   color: ColorType
@@ -151,11 +152,12 @@ export const cabinetInitialValues = (
     brand: data?.cabinetModel?.brand || "", // only for ui
     cabinetModelId: data?.cabinetModelId || "",
     serialNumberRecognition: false, // will update later
-    imeiRecognition: false, // only for ui
-
-
-    // Device Settings All Optional Fields
+    deviceCodeRecognition: false, // only for ui
     imei: data?.imei || "",
+    
+    
+    // Device Settings All Optional Fields
+    deviceSerialNumber: data?.deviceSerialNumber || data?.imei || "",
     volume: data?.volume || "50%",
     color: data?.color || "white",
     brightness: data?.brightness || "50%",

@@ -1,16 +1,16 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { deviceInstallations } from "../api/device-installations.api"
+import { deviceImeiLink } from "../api/device-imei-link.api"
 
 
-export const useDeviceInstallations = () => {
+export const useDeviceImeiLink = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: deviceInstallations,
+    mutationFn: deviceImeiLink,
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["available-serial", "factory-logs"],
+        queryKey: ["cabinets-inventory", "list"],
       })
     },
   })

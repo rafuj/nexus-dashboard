@@ -11,11 +11,13 @@ import { LoaderButton } from "@/app/components/loader-button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { Check } from "lucide-react";
 import { Link } from "react-router";
+import { useAvailableSerialNumbers } from "../hooks/useAvailableSerialNumbers";
 
 export default function NEXGeneration() {
 
   const [quantity, setQuantity] = useState<number|''>('')
   const [isSuccess, setIsSuccess] = useState<boolean>(false)
+  const [lastGenQuantity, setLastGenQuantity] = useState<number|''>("")
   
   const currentYear = new Date().getFullYear();
 
@@ -25,6 +27,8 @@ export default function NEXGeneration() {
   );
 
   const [productionYear, setProductionYear] = useState<string|''>(currentYear.toString().slice(2))
+
+  const { data, isLoading } = useAvailableSerialNumbers({})
   
   const generateSerialMutation = useGenerateSerial()
 
@@ -34,10 +38,10 @@ export default function NEXGeneration() {
         await generateSerialMutation.mutateAsync(
           {
             quantity,
-            // year: productionYear,
-            // prefix: "NEX",
+            productionYear
           }
         )
+        setLastGenQuantity(quantity)
         successToast(`Generated ${quantity} New Serial Number successfully`)
         setQuantity("")
         setIsSuccess(true)
@@ -82,7 +86,7 @@ export default function NEXGeneration() {
                 <div className="flex items-center gap-3.75">
                   <span className="font-semibold text-[#A72822] text-sm">Available NEX serial numbers</span>
                 </div>
-                <h5 className="font-semibold text-[30px] leading-[1] mb-2 mt-1.75">184</h5>
+                <h5 className="font-semibold text-[30px] leading-[1] mb-2 mt-1.75">{isLoading ? "..." :(data?.totalAvailableNex || 0)}</h5>
                 <div className="text-xs">
                   Generated but not yet assigned
                 </div>
@@ -148,7 +152,7 @@ export default function NEXGeneration() {
               </div>
               <div className="card-info px-4 py-3.25 rounded-[10px] mt-5">
                 <span className="font-medium text-[11px] mb-1.25">Serial format</span>
-                <span className="text-base font-semibold block text-accent-foreground">NEX[YY]-[XXXX]-[XXXX]</span>
+                <span className="text-base font-semibold block text-accent-foreground">NEX[YY]-[XXXXX]-[XXXXX]</span>
               </div>
               <div className="flex flex-wrap items-center gap-2 gap-x-5 mt-6">
                 <LoaderButton loading={generateSerialMutation.isPending} className="rounded-full px-5 xl:px-8 h-12.5" onClick={handleGenerate}>Generate Serial Numbers</LoaderButton>
@@ -161,9 +165,9 @@ export default function NEXGeneration() {
                       <Check />
                     </div>
                     <div className="text-success2">
-                      <h6 className="font-semibold text-success2 text-base mb-1">Successfully generated 100 NEX serial numbers</h6>
+                      <h6 className="font-semibold text-success2 text-base mb-1">Successfully generated {lastGenQuantity} NEX serial numbers</h6>
                       <div className="text-[13px] text-foreground">
-                        Generated 28 July 2026 at 13:45:32
+                        Generated {new Date().toLocaleString('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                       </div>
                     </div>
                   </div>

@@ -1,16 +1,16 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { createGenerateSerial } from "../api/generateSerial.api"
+import { generateCabinetSerial } from "../api/generate-cabinet-serial"
 
 
 export const useGenerateSerial = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: createGenerateSerial,
+    mutationFn: generateCabinetSerial,
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["cabinets-inventory", "list"],
+        queryKey: ["available-serial"],
       })
     },
   })

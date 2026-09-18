@@ -1,16 +1,16 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { createDevices } from "../api/devices.api"
+import { generateDeviceSerial } from "../api/generate-device-serial.api"
 
 
-export const useCreateDevices = () => {
+export const useGenerateDeviceSerial = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: createDevices,
+    mutationFn: generateDeviceSerial,
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["cabinets-inventory", "list"],
+        queryKey: ["available-serial"],
       })
     },
   })

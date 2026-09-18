@@ -11,15 +11,16 @@ import { Input } from "@/shared/components/ui/input";
 import { useEffect, useMemo, useState } from "react";
 import { getCoreRowModel, useReactTable, type PaginationState } from "@tanstack/react-table";
 import { factoryColumns } from "../components/factoryColumns";
-import { queryImeiLinkingPage } from "../server/queryImeiLinkingPage";
-import { useGeneratedSerialList } from "../hooks/useGeneratedSerialList";
-import { useCreateDevices } from "../hooks/useCreateDevices";
+import { useFactoryLogs } from "../hooks/useFactoryLogs";
 import { useDeviceInstallations } from "../hooks/useDeviceInstallations";
 import { getApiErrorMessage } from "@/app/api-manage/api";
 import { errorToast, successToast } from "@/lib/toast";
 import { imeiRegex, nexRegex, updRegex } from "@/features/cabinets/types/cabinet";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
+import { useDeviceReserve } from "../hooks/useDeviceReserve";
+import { useDeviceImeiLink } from "../hooks/useDeviceImeiLink";
+import { queryImeiLinkingPage } from "../server/queryImeiLinkingPage";
 
 const PAGE_SIZE = 10;
 
@@ -80,7 +81,7 @@ export default function ImeiLinking() {
 
   const columns = useMemo(() => factoryColumns(), []);
 
-  const { data } = useGeneratedSerialList()
+  const { data } = useFactoryLogs()
 
   const resetPage = () =>
   setPagination((p) => ({
@@ -94,12 +95,14 @@ export default function ImeiLinking() {
         search,
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
-        data: data || []
+        data: data?.units || [],
+        combination: filterCombination
       }),
     [
       search,
       pagination.pageIndex,
       pagination.pageSize,
+      filterCombination,
       data
     ],
   );
@@ -111,7 +114,7 @@ export default function ImeiLinking() {
     manualPagination: true,
     enableSorting: false,
     autoResetPageIndex: false,
-    getRowId: (row) => row.id,
+    getRowId: (row) => row.scannedAt,
     getCoreRowModel: getCoreRowModel(),
     onPaginationChange: setPagination,
     state: {
@@ -124,64 +127,116 @@ export default function ImeiLinking() {
   const [scannedDevices, setScannedDevices] = useState<
     {
       imei: string
-      serialNumber: string
-      upd: string
+      cabinetSerialNumber: string
+      deviceSerialNumber: string
     }[]
   >([]);
 
   const [imeiScanSuccess, setImeiScanSuccess] = useState<boolean>(false)
   const [serialScanSuccess, setSerialScanSuccess] = useState<boolean>(false)
-  const [updScanSuccess, setUpdScanSuccess] = useState<boolean>(false)
+  const [deviceScanSuccess, setDeviceScanSuccess] = useState<boolean>(false)
   const [linkedSuccess, setLinkedSuccess] = useState<boolean>(false)
-  const [lastScan, setLastScan] = useState<{serialNumber?:string,imei?:string}>({})
+  const [lastScan, setLastScan] = useState<{cabinetSerialNumber?:string,imei?:string,deviceSerialNumber?:string}>({})
 
-  const createDevices = useCreateDevices();
-  const deviceInstallations = useDeviceInstallations();
+  const deviceInstallations = useDeviceInstallations()
+  const deviceReserve = useDeviceReserve()
+  const deviceImeiLink = useDeviceImeiLink()
 
   const handleDeviceInstallations = async () => {
     if (!scannedDevices.length) return;
+    const payload = {
+      cabinetSerialNumber: scannedDevices[0]?.cabinetSerialNumber,
+      deviceSerialNumber: scannedDevices[0]?.deviceSerialNumber,
+      imei: scannedDevices[0]?.imei,
+    };
 
-    try {
-      const devicePayload = {
-        imeis: scannedDevices.map((device) => device.imei),
-        model: "NEXUS V4.4",
-      };
+    const onSuccess = (message?: string) => {
       setLastScan({
-        serialNumber: scannedDevices?.[0]?.serialNumber ?? "",
-        imei: scannedDevices?.[0]?.imei ?? ""
+        cabinetSerialNumber: scannedDevices?.[0]?.cabinetSerialNumber ?? "",
+        imei: scannedDevices?.[0]?.imei ?? "",
+        deviceSerialNumber: scannedDevices?.[0]?.deviceSerialNumber ?? ""
       })
-
-      const installationPayload = {
-        installations: scannedDevices,
-      };
-
-      await createDevices.mutateAsync(devicePayload);
-
-      await deviceInstallations.mutateAsync(installationPayload);
-
       setLinkedSuccess(true)
-      successToast("Devices installed successfully");
+      successToast(message || "Devices installed successfully");
       setScanCount((prev) => prev + 1);
-
-    } catch (error) {
-      errorToast(getApiErrorMessage(error));
     }
+
+    // Connected Nexus
+    if(combinationsType === "connected-nexus") {
+      if(updRegex.test(payload?.deviceSerialNumber) && nexRegex.test(payload?.cabinetSerialNumber) && imeiRegex.test(payload?.imei)) {
+        try {
+          await deviceInstallations.mutateAsync(payload);
+          onSuccess()
+        } catch (error) {
+          errorToast(getApiErrorMessage(error));
+          return
+        }
+      }
+    }
+
+    // Non Connected Nexus
+    if(combinationsType === "non-connected-nexus") {
+      if(updRegex.test(payload?.deviceSerialNumber) && nexRegex.test(payload?.cabinetSerialNumber)) {
+        try {
+          await deviceInstallations.mutateAsync({
+            cabinetSerialNumber: payload?.cabinetSerialNumber,
+            deviceSerialNumber: payload?.deviceSerialNumber,
+          });
+          onSuccess()
+        } catch (error) {
+          errorToast(getApiErrorMessage(error));
+          return
+        }
+      }
+    }
+    
+    // Seperated Module
+    if(combinationsType === "separate-module") {
+      if(moduleModel === "non-connected-v1") {
+        if(updRegex.test(payload?.deviceSerialNumber)) {
+          try {
+            await deviceReserve.mutateAsync({
+              serialNumber: payload?.deviceSerialNumber,
+            })
+            onSuccess()
+          } catch (error) {
+            errorToast(getApiErrorMessage(error));
+            return
+          }
+        }
+      }
+      if(moduleModel === "connected-v1") {
+        if(updRegex.test(payload?.deviceSerialNumber) && imeiRegex.test(payload?.imei)) {
+          try {
+            await deviceImeiLink.mutateAsync({
+              serialNumber: payload?.deviceSerialNumber,
+              imei: payload?.imei,
+            })
+            onSuccess()
+          } catch (error) {
+            errorToast(getApiErrorMessage(error));
+            return
+          }
+        }
+      }
+    }
+
   };
 
   useEffect(() => {
-    if(imeiScanSuccess && serialScanSuccess){
+    if(!linkedSuccess && (serialScanSuccess || imeiScanSuccess || deviceScanSuccess)) {
       handleDeviceInstallations()
     }
-  }, [imeiScanSuccess, serialScanSuccess])
+  }, [imeiScanSuccess, serialScanSuccess, deviceScanSuccess, combinationsType, moduleModel, scannedDevices])
   
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    field: "serialNumber" | "imei" | "upd"
+    field: "cabinetSerialNumber" | "imei" | "deviceSerialNumber"
   ) => {
     let value = e.target.value.toUpperCase();
+    setLinkedSuccess(false)
 
-    if (field === "serialNumber") {
+    if (field === "cabinetSerialNumber") {
       setSerialScanSuccess(false)
       // Remove existing hyphens
       value = value.replace(/-/g, "");
@@ -189,12 +244,12 @@ export default function ImeiLinking() {
       // Allow only letters and numbers
       value = value.replace(/[^A-Z0-9]/g, "");
 
-      // Maximum: 5 + 4 + 4 = 13 characters
-      value = value.slice(0, 13);
+      // Maximum: 5 + 5 + 5 = 15 characters
+      value = value.slice(0, 15);
 
       // Add hyphens automatically
-      if (value.length > 9) {
-        value = `${value.slice(0, 5)}-${value.slice(5, 9)}-${value.slice(9)}`;
+      if (value.length > 10) {
+        value = `${value.slice(0, 5)}-${value.slice(5, 10)}-${value.slice(10)}`;
       } else if (value.length > 5) {
         value = `${value.slice(0, 5)}-${value.slice(5)}`;
       } else if (value.length === 5) {
@@ -205,27 +260,27 @@ export default function ImeiLinking() {
       }
     }
 
-    if (field === "upd") {
-      setUpdScanSuccess(false)
+    if (field === "deviceSerialNumber") {
+      setDeviceScanSuccess(false)
       // Remove existing hyphens
       value = value.replace(/-/g, "");
 
       // Allow only letters and numbers
       value = value.replace(/[^A-Z0-9]/g, "");
 
-      // Maximum: 5 + 4 + 4 = 13 characters
-      value = value.slice(0, 13);
+      // Maximum: 5 + 5 + 5 = 15 characters
+      value = value.slice(0, 15);
 
       // Add hyphens automatically
-      if (value.length > 9) {
-        value = `${value.slice(0, 5)}-${value.slice(5, 9)}-${value.slice(9)}`;
+      if (value.length > 10) {
+        value = `${value.slice(0, 5)}-${value.slice(5, 10)}-${value.slice(10)}`;
       } else if (value.length > 5) {
         value = `${value.slice(0, 5)}-${value.slice(5)}`;
       } else if (value.length === 5) {
         value = `${value}-`;
       }
       if(updRegex.test(value)) {
-        setUpdScanSuccess(true)
+        setDeviceScanSuccess(true)
       }
     }
 
@@ -242,9 +297,9 @@ export default function ImeiLinking() {
     setScannedDevices((prev) => [
       {
         ...(prev[0] ?? {
-          serialNumber: "",
+          cabinetSerialNumber: "",
           imei: "",
-          upd: ""
+          deviceSerialNumber: ""
         }),
         [field]: value,
       },
@@ -291,6 +346,10 @@ export default function ImeiLinking() {
                   <Select value={combinationsType} onValueChange={(value:CombinationsType) => {
                     setCombinationsType(value)
                     setModuleModel(moduleModelList[0].id)
+                    if(linkedSuccess) {
+                      setLinkedSuccess(false)
+                      setScannedDevices([])
+                    }
                   }}>
                     <SelectTrigger className="w-full !h-9">
                       <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
@@ -318,7 +377,10 @@ export default function ImeiLinking() {
                           ...prev[0],
                           imei: ""
                         }]))
-                        setImeiScanSuccess(false);
+                      }
+                      if(linkedSuccess) {
+                        setLinkedSuccess(false)
+                        setScannedDevices([])
                       }
                     }}>
                       <SelectTrigger className="w-full !h-9">
@@ -360,10 +422,10 @@ export default function ImeiLinking() {
                       <input
                         type="text"
                         className="h-[58px] w-full border card-success2 pl-11.5 pr-4 py-5 rounded-[10px] outline-0 text-[17px] text-accent-foreground font-semibold"
-                        value={scannedDevices?.[0]?.serialNumber ?? ""}
-                        onChange={(e) => handleChange(e, "serialNumber")}
-                        placeholder="e.g. NEX26-0001-0043"
-                        disabled={deviceInstallations.isPending || createDevices.isPending}
+                        value={scannedDevices?.[0]?.cabinetSerialNumber ?? ""}
+                        onChange={(e) => handleChange(e, "cabinetSerialNumber")}
+                        placeholder="e.g. NEX26-00001-00043"
+                        disabled={deviceInstallations.isPending}
                       />
                     </div>
                     {serialScanSuccess &&(<div className="text-xs font-semibold flex items-center justify-end text-success2 gap-1 mt-2.5">
@@ -382,13 +444,13 @@ export default function ImeiLinking() {
                     <input
                       type="text"
                       className="h-[58px] w-full border card-success2 pl-11.5 pr-4 py-5 rounded-[10px] outline-0 text-[17px] text-accent-foreground font-semibold"
-                      value={scannedDevices?.[0]?.upd ?? ""}
-                      onChange={(e) => handleChange(e, "upd")}
-                      placeholder="e.g. UPD26-0001-0043"
-                      disabled={deviceInstallations.isPending || createDevices.isPending}
+                      value={scannedDevices?.[0]?.deviceSerialNumber ?? ""}
+                      onChange={(e) => handleChange(e, "deviceSerialNumber")}
+                      placeholder="e.g. UPD26-00001-00183"
+                      disabled={deviceInstallations.isPending}
                     />
                   </div>
-                  {updScanSuccess &&(<div className="text-xs font-semibold flex items-center justify-end text-success2 gap-1 mt-2.5">
+                  {deviceScanSuccess &&(<div className="text-xs font-semibold flex items-center justify-end text-success2 gap-1 mt-2.5">
                     <span>Scanned successfully</span>
                     <Check size={14} />
                   </div>)}
@@ -411,10 +473,11 @@ export default function ImeiLinking() {
                         value={scannedDevices?.[0]?.imei ?? ""}
                         onChange={(e) => handleChange(e, "imei")}
                         placeholder={moduleModel === "non-connected-v1" ? "Not applicable to this module model" : "e.g. 847394728949384"}
-                        disabled={deviceInstallations.isPending || createDevices.isPending || moduleModel === "non-connected-v1"}
+                        disabled={deviceInstallations.isPending || moduleModel === "non-connected-v1"}
                       />
                     </div>
-                    {imeiScanSuccess &&(
+                    {moduleModel === "non-connected-v1" && <span className="text-[11px] text-xs font-semibold text-end block mt-1.5">Disabled — no IMEI scan required</span>}
+                    {moduleModel === "connected-v1" && imeiScanSuccess && (
                       <div className="text-xs font-semibold flex items-center justify-end text-success2 gap-1 mt-2.5">
                         <span>Scanned successfully</span>
                         <Check size={14} />
@@ -432,23 +495,23 @@ export default function ImeiLinking() {
                         <CheckIcon />
                       </div>
                       <div className="text-success2">
-                        <h6 className="font-semibold text-success2">Linked successfully</h6>
+                        <h6 className="font-semibold text-success2">
+                          {combinationsType === "connected-nexus" && "Successfully linked Connected Nexus"}
+                          {combinationsType === "non-connected-nexus" && "Successfully linked Non-connected Nexus"}
+                          {combinationsType === "separate-module" && (moduleModel === "connected-v1" ? "Successfully linked Connected V1 module" : "Successfully registered Non-connected V1 module")}
+                        </h6>
                         <div className="text-sm">
-                          Cabinet serial <span className="font-bold">{lastScan.serialNumber}</span> has been linked to IMEI <span className="font-bold">{lastScan.imei}.</span>
+                          {combinationsType === "connected-nexus" && `${lastScan.cabinetSerialNumber} ↔ ${lastScan.deviceSerialNumber} ↔ IMEI ${lastScan.imei}`}
+                          {combinationsType === "non-connected-nexus" && `${lastScan.cabinetSerialNumber} ↔ ${lastScan.deviceSerialNumber}`}
+                          {combinationsType === "separate-module" && (moduleModel === "connected-v1" ? `${lastScan.deviceSerialNumber} ↔ IMEI ${lastScan.imei}` : `${lastScan.deviceSerialNumber} marked as used • No IMEI required`)}
                         </div>
                       </div>
                     </div>
                     <button type="button" className="bg-white flex items-center gap-1.5 text-accent-foreground py-3.75 px-5 rounded-full text-sm" onClick={()=> {
-                      setScannedDevices([
-                        {
-                          imei:"",
-                          serialNumber:"",
-                          upd: ""
-                        }
-                      ])
+                      setScannedDevices([])
                       setImeiScanSuccess(false)
                       setSerialScanSuccess(false)
-                      setUpdScanSuccess(false)
+                      setDeviceScanSuccess(false)
                       setLinkedSuccess(false)
                     }}>
                       <BoxIcons className="size-5" />
@@ -457,12 +520,12 @@ export default function ImeiLinking() {
                   </div>
                 </div>
               }
-              {(deviceInstallations.isPending || createDevices.isPending) && <div className={cn("text-center text-xl text-accent-foreground py-10")}> <span className="animate-spin"></span>Linking device ...</div> }
+              {(deviceInstallations.isPending) && <div className={cn("text-center text-xl text-accent-foreground py-10")}> <span className="animate-spin"></span>Linking device ...</div> }
               <div className={cn("flex flex-wrap gap-2.5 mt-5")}>
                 <div className="border border-border rounded-[10px] text-sm px-5 py-2.75 text-accent-foreground">
                   Linked this session: <span className="font-semibold">{scanCount}</span>
                 </div>
-                <button type="button" className="flex items-center justify-center gap-1.25 text-accent-foreground text-xs bg-chip h-11 px-5 xl:px-6 rounded-full xl:min-w-[192px]">
+                <button type="button" className="flex items-center justify-center gap-1.25 text-accent-foreground text-xs bg-chip h-11 px-5 xl:px-6 rounded-full xl:min-w-[192px]" onClick={()=> setScanCount(0)}>
                   <RotateCcw size={16} />
                   <span>Reset Counter</span>
                 </button>
@@ -496,11 +559,9 @@ export default function ImeiLinking() {
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="all">All</SelectItem>
-                          {combinationsTypeList.map((combination) => (
-                            <SelectItem key={combination.id} value={combination.id}>
-                              {combination.name}
-                            </SelectItem>
-                          ))}
+                            <SelectItem value="Connected Nexus">Connected Nexus</SelectItem>
+                            <SelectItem value="Non-connected Nexus">Non-connected Nexus</SelectItem>
+                            <SelectItem value="Separate module">Separate module</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

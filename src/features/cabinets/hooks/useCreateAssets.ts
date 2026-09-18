@@ -9,7 +9,7 @@ export const useCreateAssets = () => {
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["assets", "create"],
+        queryKey: ["assets"],
       })
     },
   })

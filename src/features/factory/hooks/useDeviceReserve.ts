@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { deviceInstallations } from "../api/device-installations.api"
+import { deviceReserve } from "../api/device-reserve.api"
 
 
-export const useDeviceInstallations = () => {
+export const useDeviceReserve = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: deviceInstallations,
+    mutationFn: deviceReserve,
 
     onSuccess: () => {
       queryClient.invalidateQueries({

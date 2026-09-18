@@ -37,7 +37,7 @@ import { AVAILABLE_CREDITS, MANAGE_CABINETS } from "@/features/dashboard/mock/mo
 import { useCabinetBrands } from "../hooks/useCabinetBrands";
 import { useCabinetModels } from "../hooks/useCabinetModels";
 import { useSerialCheck } from "../hooks/useSerialCheck";
-import { useImeiCheck } from "../hooks/useImeiCheck";
+import { useDeviceSerialCheck } from "../hooks/useDeviceSerialCheck";
 import { useCreateAssets } from "../hooks/useCreateAssets";
 import { LoaderButton } from "@/app/components/loader-button";
 import { parseAsString, parseAsStringEnum, useQueryState } from "nuqs";
@@ -150,7 +150,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
   // serial number recognition api 
   const { data: serialData, isLoading: serialLoading, isSuccess: isSerialSuccess, isError:isSerialError } = useSerialCheck(values.serialNumber, !cabinetId && !id && values.brand === "Nexus")
   // module code recognition api 
-  const { data: imeiData, isLoading: imeiLoading, isSuccess: isImeiSuccess } = useImeiCheck(values.imei, !cabinetId && !id && !values.serialNumberRecognition)
+  const { data: deviceData, isLoading: deviceLoading, isSuccess: isDeviceSuccess } = useDeviceSerialCheck(values.deviceSerialNumber, !cabinetId && !id && !values.serialNumberRecognition)
 
   useEffect(()=>{
     // Only Create
@@ -158,8 +158,8 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
       if(isSerialError) {
         setValues({
           ...values,
-          imei: "",
-          imeiRecognition: false,
+          deviceSerialNumber: "",
+          deviceCodeRecognition: false,
           serialNumberRecognition: false,
         }, true)
       }
@@ -168,8 +168,8 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
           setValues({
             ...values,
             serialNumberRecognition: true,
-            imei: serialData?.imei || "",
-            imeiRecognition: true,
+            deviceSerialNumber: serialData?.imei || "",
+            deviceCodeRecognition: true,
           }, true)
         }
       }
@@ -178,11 +178,11 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
 
   useEffect(()=>{
     if (values.brand !== "Nexus") {
-      if(imeiData && isImeiSuccess && !cabinetId && !id) {
-        setFieldValue("imeiRecognition", true)
+      if(deviceData && isDeviceSuccess && !cabinetId && !id) {
+        setFieldValue("deviceCodeRecognition", true)
       }
     }
-  },[imeiData, isImeiSuccess])
+  },[deviceData, isDeviceSuccess])
 
   // reset formik when there is a cabinet data
   useEffect(() => {
@@ -193,7 +193,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
           asset: {
             ...assetViewData,
             cabinetId: cabinetId,
-            components: assetViewData?.components?.reverse() // component array stored in reverse order 
+            // components: assetViewData?.components?.reverse() // component array stored in reverse order 
           },
         }),
       });
@@ -835,8 +835,8 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                           ...values,
                           brand: value,
                           cabinetModelId: "",
-                          imei: (value === "Nexus" && serialData?.imei) ? serialData?.imei : "",
-                          imeiRecognition: (value === "Nexus" && serialData?.imei) ? true : false
+                          deviceSerialNumber: (value === "Nexus" && serialData?.imei) ? serialData?.imei : "",
+                          deviceCodeRecognition: (value === "Nexus" && serialData?.imei) ? true : false
                         }, true)
                     }} disabled={Boolean(fieldsReadOnly || cabinetId || id)}>
                       <SelectTrigger className={cn("w-full !h-12.5")}>
@@ -874,7 +874,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                       value={values.serialNumber}
                       onChange={(e)=> {
                         if(!cabinetId) {
-                          setFieldValue("imei", serialData?.imei === values.imei ? "" : values.imei)
+                          setFieldValue("deviceSerialNumber", serialData?.imei === values.deviceSerialNumber ? "" : values.deviceSerialNumber)
                         }
                         setValues({
                           ...values, 
@@ -893,7 +893,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                   </div>
                 </div>                
               </div>
-{console.log({errors, touched})}
+
               {/* Updaid Connection */}
               <div>
                 <div className="p-2.5 text-accent-foreground font-semibold flex items-center bg-border rounded-[8px] mb-3.75 mt-5">
@@ -908,25 +908,25 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                         placeholder="Enter module code"
                         autoComplete="off"
                         className="h-12.5 px-5 placeholder:text-accent-foreground/20 pr-10"
-                        name="imei"
-                        value={values.imei}
+                        name="deviceSerialNumber"
+                        value={values.deviceSerialNumber}
                         onChange={(e)=> {
                           setValues({
                             ...values,
-                            imeiRecognition: false,
-                            imei: e.target.value
+                            deviceCodeRecognition: false,
+                            deviceSerialNumber: e.target.value
                           })
                         }}
                         onBlur={handleBlur}
-                        maxLength={15}
+                        maxLength={17}
                         readOnly={Boolean(
-                          (values.brand === "Nexus" && serialData?.imei) || imeiLoading
+                          (values.brand === "Nexus") || deviceLoading
                         ) || fieldsReadOnly || Boolean(cabinetId || id)}
-                        errors={(touched.imei || touched.imeiRecognition) ? (errors.imei || errors.imeiRecognition) : ''}
+                        errors={(touched.deviceSerialNumber || touched.deviceCodeRecognition) ? (errors.deviceSerialNumber || errors.deviceCodeRecognition) : ''}
                       />
-                      {values.imeiRecognition && <CircleCheck size={20} className="absolute top-1/2 right-3 -translate-y-1/2 text-[#11BE48]" />}
+                      {values.deviceCodeRecognition && <CircleCheck size={20} className="absolute top-1/2 right-3 -translate-y-1/2 text-[#11BE48]" />}
                     </div>
-                    {values.imeiRecognition && (
+                    {values.deviceCodeRecognition && (
                       <div className="text-xs font-semibold flex items-center gap-2 text-[#11BE48] mt-2">
                         <CircleCheck size={18} />
                         <span>Module code recognised</span>
@@ -973,7 +973,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                   </div>
                 </div>
               </div>
-              {(values.imeiRecognition || data?.imei) && (
+              {(values.deviceCodeRecognition || data?.deviceSerialNumber) && (
                 <>
                   {/* Sound Settings */}
                   <div>
@@ -1243,7 +1243,10 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
             open:confirmModalOpen,
             setOpen: setConfirmModalOpen,
             successModalOpen,
-            setSuccessModalOpen,
+            setSuccessModalOpen: () => {
+              setSuccessModalOpen(!successModalOpen)
+              setId("")
+            },
             values,
             handleSubmit: formik.handleSubmit,
             id: id,

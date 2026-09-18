@@ -3,13 +3,11 @@ import { api } from "@/app/api-manage/api"
 import { API_ROUTES } from "@/app/api-manage/api-routes"
 
 export interface CreateDevicesI {
-  cabinetSerialNumber: string
-  deviceSerialNumber: string
-  imei?: string
+  serialNumber: string
 }
-export const deviceInstallations = async (values:CreateDevicesI) => {
+export const deviceReserve = async (values:CreateDevicesI) => {
   const { data } = await api.post(
-    API_ROUTES.DEVICE_INSTALLATION,
+    API_ROUTES.DEVICES_RESERVE,
     values
   );
 

@@ -1,12 +1,11 @@
 import type { FactoryRow } from "../types/factoryType"
 import type { DateRange } from "react-day-picker"
 
-export type FactoryOverviewQuery = {
+interface ProcessedUnitQuery {
   search: string
   pageIndex: number
   pageSize: number
-  prefix: string
-  linked: string
+  combination: string
   data: FactoryRow[]
   dateRange: DateRange | null
 }
@@ -19,8 +18,7 @@ export type CabinetsListPageResult = {
 function filterFactoryRows(
   rows: readonly FactoryRow[],
   search: string,
-  prefix: string,
-  linked: string,
+  combination: string,
   dateRange: DateRange | null
 ): FactoryRow[] {
   const q = search.trim().toLowerCase()
@@ -28,32 +26,27 @@ function filterFactoryRows(
   return rows.filter((row) => {
     const matchesSearch =
       !q ||
-      row.id.toLowerCase().includes(q) ||
+      row.nexCode?.toLowerCase().includes(q) ||
+      row.updCode?.toLowerCase().includes(q) ||
+      row.combination?.toLowerCase().includes(q) ||
       row.imei?.toLowerCase().includes(q) ||
-      row.serialNumber.toLowerCase().includes(q)
+      row.moduleModel?.toLowerCase().includes(q)
 
-    const matchesPrefix =
-      !prefix ||
-      prefix === "all" ||
-      row.prefix === prefix
+    const matchesCombination =
+      !combination ||
+      combination === "all" ||
+      row.combination === combination
 
-    const matchesLinked =
-      linked === "all" ||
-      (linked === "linked" && row.deviceLinked) ||
-      (linked === "unlinked" && !row.deviceLinked)
-
-    const createdAt = new Date(row.createdAt)
+    const scannedAt = new Date(row.scannedAt)
 
     const matchesDate =
-      (!dateRange?.from || createdAt >= dateRange.from) &&
-      (!dateRange?.to || createdAt <= dateRange.to)
+      (!dateRange?.from || scannedAt >= dateRange.from) &&
+      (!dateRange?.to || scannedAt <= dateRange.to)
 
     return (
-      matchesSearch 
+      matchesSearch
       &&
-      matchesPrefix 
-      &&
-      matchesLinked 
+      matchesCombination
       &&
       matchesDate
     )
@@ -64,12 +57,11 @@ function filterFactoryRows(
  * Mock “server” list: filter → sort → paginate over {@link mockFactoryList}.
  * Replace with a real `fetch()` when an API exists; keep the same result shape.
  */
-export function queryFactoryOverviewPage(query: FactoryOverviewQuery): CabinetsListPageResult {
+export function queryProcessedUnit(query: ProcessedUnitQuery): CabinetsListPageResult {
   const filtered = filterFactoryRows(
     query.data,
     query.search,
-    query.prefix,
-    query.linked,
+    query.combination,
     query?.dateRange
   )
 
