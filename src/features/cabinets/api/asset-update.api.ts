@@ -65,7 +65,7 @@ export const updateAssetComponent = async (
       payload,
     )
     return data
-  } else {
+  } else if(component.expiresAt || component.componentVariantId || component.lotNumber || component.serialNumber) {
     const { data } = await api.post(
       `${API_ROUTES.ASSETS}/${assetId}/components`,
       payload,

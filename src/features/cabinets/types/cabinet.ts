@@ -112,7 +112,7 @@ export const cabinetInitialValues = (
 
   const padsComponents = [...(data?.asset?.components || [])].filter(
     (c: any) => c.componentTypeId === "1"
-  );
+  ).sort((a: any, b: any) => Number(a.id) - Number(b.id));
 
   const batteryComponent = [...(data?.asset?.components || [])].find(
     (c: any) => c.componentTypeId === "2"
