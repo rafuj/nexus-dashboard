@@ -261,12 +261,12 @@ export default function FactoryOverview() {
             </div>
 
             <FactoryInfoCards tabs={tabs} data={{
-              connectedNexus: data?.connectedNexus || "0",
-              nonConnectedNexus: data?.nonConnectedNexus || "0",
-              separateModules: data?.separateModules || "0",
-              totalAvailable: availableSerialData?.totalAvailable || "0",
-              availableNexus: availableSerialData?.totalAvailableNex || "0",
-              availableUPD: availableSerialData?.totalAvailableUpd || "0"
+              connectedNexus: data?.connectedNexus || "...",
+              nonConnectedNexus: data?.nonConnectedNexus || "...",
+              separateModules: data?.separateModules || "...",
+              totalAvailable: availableSerialData?.totalAvailable || "...",
+              availableNexus: availableSerialData?.totalAvailableNex || "...",
+              availableUPD: availableSerialData?.totalAvailableUpd || "..."
             }} />
             
             <div className="flex flex-wrap justify-between border-b-1 border-border">
