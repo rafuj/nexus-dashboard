@@ -1,6 +1,6 @@
 import { POSTAL_CODE_RULES } from "@/lib/country-helper";
 import * as Yup from "yup";
-import { imeiRegex, nexRegex } from "./cabinet";
+import { nexRegex, updRegex } from "./cabinet";
 
 export const cabinetValidationSchema = Yup.object({
   name: Yup.string()
@@ -89,16 +89,16 @@ export const cabinetValidationSchema = Yup.object({
     otherwise: (schema) => schema.default(false),
   }),
 
-  imei: Yup.string()
+  deviceSerialNumber: Yup.string()
     .trim()
     .notRequired()
-    .matches(imeiRegex, {
+    .matches(updRegex, {
       message: "Module code invalid. Please check again",
       excludeEmptyString: true,
     }),
 
-  imeiRecognition: Yup.boolean().when(["brand", "imei"], {
-    is: (brand?: string, imei?: string) => brand !== "Nexus" && Boolean(imei),
+  deviceCodeRecognition: Yup.boolean().when(["brand", "deviceSerialNumber"], {
+    is: (brand?: string, deviceSerialNumber?: string) => brand !== "Nexus" && Boolean(deviceSerialNumber),
     then: (schema) =>
       schema
         .oneOf([true], "Module code invalid. Please check again")

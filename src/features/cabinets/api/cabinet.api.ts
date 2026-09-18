@@ -26,7 +26,7 @@ export const createCabinet = async (
           }
         : {
             customSerialNumber: values.serialNumber || '',
-            imei: values.imei || '',
+            deviceSerialNumber: values.deviceSerialNumber || '',
           }),
     }
 
