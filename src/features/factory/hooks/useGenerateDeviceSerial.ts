@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { generateDeviceSerial } from "../api/generateDeviceSerial.api"
+import { generateDeviceSerial } from "../api/generate-device-serial.api"
 
 
 export const useGenerateDeviceSerial = () => {

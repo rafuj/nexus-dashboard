@@ -4,7 +4,7 @@
  */
 import { createColumnHelper } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "@/shared/components/data-table"
-import { formatDateTime } from "@/lib/utils"
+import { formatISODate } from "@/lib/utils"
 import type { FactoryRow } from "../types/factoryType"
 
 const columnHelper = createColumnHelper<FactoryRow>()
@@ -18,7 +18,7 @@ export const linkedCombinationColumns = () => [
       headerClassName: "",
       cellClassName: "align-middle whitespace-nowrap",
     },
-    cell: ({ row }) => row.original.serialNumber,
+    cell: ({ row }) => row.original.combination,
   }),
 
   columnHelper.accessor("nexCode", {
@@ -29,8 +29,7 @@ export const linkedCombinationColumns = () => [
       headerClassName: "",
       cellClassName: "align-middle whitespace-nowrap",
     },
-    // cell: ({ row }) => row.original.nexCode,
-    cell: ({ }) => "NEX26-0001-0042",
+    cell: ({ row }) => row.original.nexCode || "—",
   }),
 
   columnHelper.accessor("updCode", {
@@ -41,8 +40,7 @@ export const linkedCombinationColumns = () => [
       headerClassName: "",
       cellClassName: "align-middle whitespace-nowrap",
     },
-    // cell: ({ row }) => "UPD26-0001-0183",
-    cell: ({ }) => "UPD26-0001-0183",
+    cell: ({ row }) => row.original.updCode || "—",
   }),
 
   columnHelper.accessor("imei", {
@@ -56,7 +54,7 @@ export const linkedCombinationColumns = () => [
     cell: ({ row }) => row.original.imei || "—",
   }),
 
-  columnHelper.accessor("model", {
+  columnHelper.accessor("moduleModel", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Module model" />
     ),
@@ -64,10 +62,10 @@ export const linkedCombinationColumns = () => [
       headerClassName: "",
       cellClassName: "align-middle",
     },
-    cell: ({ row }) => row.original.model || "V1",
+    cell: ({ row }) => row.original.moduleModel || "—",
   }),
 
-  columnHelper.accessor("linkedAt", {
+  columnHelper.accessor("scannedAt", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Scanned at" />
     ),
@@ -75,7 +73,7 @@ export const linkedCombinationColumns = () => [
       headerClassName: "",
       cellClassName: "align-middle",
     },
-    cell: ({ row }) => formatDateTime(row.original.createdAt),
+    cell: ({ row }) => formatISODate(row.original.scannedAt),
   }),
 
 ]

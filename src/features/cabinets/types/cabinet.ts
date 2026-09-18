@@ -8,8 +8,8 @@ export interface AssetType {
   value: string;
 }
 
-export const nexRegex = /^NEX\d{2}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
-export const updRegex = /^UPD\d{2}-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
+export const nexRegex = /^NEX\d{2}-[A-Z0-9]{5}-[A-Z0-9]{5}$/;
+export const updRegex = /^UPD\d{2}-[A-Z0-9]{5}-[A-Z0-9]{5}$/;
 
 export const imeiRegex = /^\d{15}$/;
 

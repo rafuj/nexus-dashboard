@@ -8,6 +8,7 @@ export type FactoryImeiLinkingQuery = {
   search: string
   pageIndex: number
   pageSize: number
+  combination: string
   data: FactoryRow[]
 }
 
@@ -18,21 +19,28 @@ export type CabinetsListPageResult = {
 
 function filterFactoryRows(
   rows: readonly FactoryRow[],
-  search: string
+  search: string,
+  combination: string
 ): FactoryRow[] {
   const q = search.trim().toLowerCase()
 
-  if (!q) return [...rows]
-
   return rows.filter((row) => {
-    return (
-      row.id.toLowerCase().includes(q) ||
-      row.serialNumber.toLowerCase().includes(q) ||
-      row?.imei?.toLowerCase().includes(q)
-    )
+    const matchesSearch =
+      !q ||
+      row.nexCode?.toLowerCase().includes(q) ||
+      row.updCode?.toLowerCase().includes(q) ||
+      row.combination?.toLowerCase().includes(q) ||
+      row.imei?.toLowerCase().includes(q) ||
+      row.moduleModel?.toLowerCase().includes(q)
+
+    const matchesCombination =
+      !combination ||
+      combination === "all" ||
+      row.combination === combination
+
+    return matchesSearch && matchesCombination
   })
 }
-
 /**
  * Mock “server” list: filter → sort → paginate over {@link mockFactoryList}.
  * Replace with a real `fetch()` when an API exists; keep the same result shape.
@@ -41,6 +49,7 @@ export function queryImeiLinkingPage(query: FactoryImeiLinkingQuery): CabinetsLi
   const filtered = filterFactoryRows(
     query.data,
     query.search,
+    query.combination,
   )
 
   const totalCount = filtered.length

@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { createDevices } from "../api/devices.api"
+import { deviceImeiLink } from "../api/device-imei-link.api"
 
 
-export const useCreateDevices = () => {
+export const useDeviceImeiLink = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: createDevices,
+    mutationFn: deviceImeiLink,
 
     onSuccess: () => {
       queryClient.invalidateQueries({

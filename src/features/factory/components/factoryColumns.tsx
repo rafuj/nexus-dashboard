@@ -10,7 +10,7 @@ import type { FactoryRow } from "../types/factoryType"
 const columnHelper = createColumnHelper<FactoryRow>()
 
 export const factoryColumns = () => [
-  columnHelper.accessor("serialNumber", {
+  columnHelper.accessor("combination", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Combination" />
     ),
@@ -18,7 +18,7 @@ export const factoryColumns = () => [
       headerClassName: "",
       cellClassName: "align-middle whitespace-nowrap",
     },
-    cell: ({ row }) => row.original.serialNumber,
+    cell: ({ row }) => row.original.combination,
   }),
 
   columnHelper.accessor("nexCode", {
@@ -54,7 +54,7 @@ export const factoryColumns = () => [
     cell: ({ row }) => row.original.imei || "—",
   }),
 
-  columnHelper.accessor("assignedAt", {
+  columnHelper.accessor("scannedAt", {
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Scanned at" />
     ),
@@ -62,6 +62,6 @@ export const factoryColumns = () => [
       headerClassName: "",
       cellClassName: "align-middle whitespace-nowrap",
     },
-    cell: ({ row }) => formatISODate(row.original.assignedAt),
+    cell: ({ row }) => formatISODate(row.original.scannedAt),
   }),
 ]

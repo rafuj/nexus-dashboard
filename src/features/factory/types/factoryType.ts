@@ -2,22 +2,12 @@ import type { SortingState } from "@tanstack/react-table"
 import type { DateRange } from "react-day-picker"
 
 export type FactoryRow = {
-  assignedAt: string
-  createdAt: string
-  deviceLinked: boolean
-  id: string
-  imei: string
-  serialNumber: string
-  status: string
-  tenantId: string
-  startsWith: string
-  prefix: string
+  combination: string
   nexCode: string
   updCode: string
-  type: string
-  model: string
-  combination: string
-  linkedAt: string
+  imei: string
+  moduleModel: string
+  scannedAt: string
 }
 
 export type FactoryOverviewToolbarProps = {
@@ -37,7 +27,7 @@ export type FactoryOverviewToolbarProps = {
 }
 
 export interface AvailableSerialNumbersRow {
-  deviceModel: {
+  deviceModel?: {
     id: string
     modelName: string
   }

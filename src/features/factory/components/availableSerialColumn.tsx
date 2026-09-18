@@ -44,7 +44,7 @@ export const availableSerialColumn = () => [
 
   columnHelper.accessor("generatedAt", {
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Generated On" />
+      <DataTableColumnHeader column={column} title="Generated at" />
     ),
     meta: {
       headerClassName: "xl:w-1/4",

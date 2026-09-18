@@ -10,7 +10,7 @@ import { linkedCombinationColumns } from "../components/linkedCombinationColumns
 import { queryProcessedUnit } from "../server/queryProcessedUnit";
 import { FactoryOverviewToolbar } from "../components/FactoryOverviewToolbar";
 import type { DateRange } from "react-day-picker";
-import { useGeneratedSerialList } from "../hooks/useGeneratedSerialList";
+import { useFactoryLogs } from "../hooks/useFactoryLogs";
 import { Skeleton } from "@/shared/components/ui/skeleton";
 import { exportExcel } from "@/lib/exportExcel";
 import { errorToast } from "@/lib/toast";
@@ -57,19 +57,21 @@ export default function FactoryOverview() {
   const availableColumns = useMemo(() => availableSerialColumn(), []);
 
   const debouncedSearch = useDebounce(search, 400)
-  const { data, isLoading } = useGeneratedSerialList()
+  const { data, isLoading } = useFactoryLogs()
   const { data: availableSerialData, isLoading: availableSerialDataIsLoading } = useAvailableSerialNumbers({
     search: debouncedSearch,
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
   })
 
-
-  const resetPage = () => {
+  const resetPagination = () => {
     setPagination((p) => ({
       ...p,
       pageIndex: 0,
     }))
+  }
+  const resetPage = () => {
+    resetPagination()
     setSearch("")
     setType("all")
     setDeviceModelId("all")
@@ -77,9 +79,10 @@ export default function FactoryOverview() {
     setDateRange(undefined)
   }
 
+
   const processUnitResult = useMemo(
     () => queryProcessedUnit({
-        data: data || [],
+        data: data?.units || [],
         search,
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
@@ -125,10 +128,10 @@ export default function FactoryOverview() {
   }), [search, availableSerialData?.serialNumbers, dateRange, type, deviceModelId])
 
   const allData = useMemo(() => queryProcessedUnit({
-    data: data || [],
+    data: data?.units || [],
     search: search,
     pageIndex: 0,
-    pageSize: data?.length || 0,
+    pageSize: data?.units?.length || 0,
     combination,
     dateRange: dateRange || null
   }), [search, data, dateRange, combination])
@@ -140,12 +143,12 @@ export default function FactoryOverview() {
         return
       }
       const data = allData.rows.map((item) => ({
-        "Combination": item.serialNumber,
+        "Combination": item.combination,
         "NEX Code": item.nexCode,
         "UPD Code": item.updCode,
         "IMEI": item.imei,
-        "Module Model": item.model,
-        "Scanned at": formatISODate(item.createdAt),
+        "Module Model": item.moduleModel,
+        "Scanned at": formatISODate(item.scannedAt)
       }))
       exportExcel(data, "processed-unit-export")
     }
@@ -171,7 +174,7 @@ export default function FactoryOverview() {
     manualPagination: true,
     autoResetPageIndex: false,
     enableSorting: false,
-    getRowId: (row) => row.id,
+    getRowId: (row) => row.updCode,
     getCoreRowModel: getCoreRowModel(),
     onPaginationChange: setPagination,
     state: {
@@ -226,15 +229,30 @@ export default function FactoryOverview() {
                 <FactoryOverviewToolbar {
                   ...{
                     search,
-                    setSearch,
+                    setSearch: (value: string) => {
+                      resetPage()
+                      setSearch(value)
+                    },
                     type,
-                    setType,
+                    setType: (value: string) => {
+                      resetPagination()
+                      setType(value)
+                    },
                     combination,
-                    setCombination,
+                    setCombination: (value: string) => {
+                      resetPagination()
+                      setCombination(value)
+                    },
                     deviceModelId,
-                    setDeviceModelId,
+                    setDeviceModelId: (value: string) => {
+                      resetPagination()
+                      setDeviceModelId(value)
+                    },
                     dateRange,
-                    setDateRange,
+                    setDateRange: (value: DateRange | undefined) => {
+                      resetPagination()
+                      setDateRange(value)
+                    },
                     resetPage,
                     onExport: exportList,
                     tabs
@@ -243,9 +261,9 @@ export default function FactoryOverview() {
             </div>
 
             <FactoryInfoCards tabs={tabs} data={{
-              connectedNexus: "0",
-              nonConnectedNexus: "0",
-              seperatedModules: "0",
+              connectedNexus: data?.connectedNexus || "0",
+              nonConnectedNexus: data?.nonConnectedNexus || "0",
+              separateModules: data?.separateModules || "0",
               totalAvailable: availableSerialData?.totalAvailable || "0",
               availableNexus: availableSerialData?.totalAvailableNex || "0",
               availableUPD: availableSerialData?.totalAvailableUpd || "0"

@@ -26,20 +26,22 @@ function filterFactoryRows(
   return rows.filter((row) => {
     const matchesSearch =
       !q ||
-      row.id.toLowerCase().includes(q) ||
+      row.nexCode?.toLowerCase().includes(q) ||
+      row.updCode?.toLowerCase().includes(q) ||
+      row.combination?.toLowerCase().includes(q) ||
       row.imei?.toLowerCase().includes(q) ||
-      row.serialNumber.toLowerCase().includes(q)
+      row.moduleModel?.toLowerCase().includes(q)
 
     const matchesCombination =
       !combination ||
       combination === "all" ||
       row.combination === combination
 
-    const createdAt = new Date(row.createdAt)
+    const scannedAt = new Date(row.scannedAt)
 
     const matchesDate =
-      (!dateRange?.from || createdAt >= dateRange.from) &&
-      (!dateRange?.to || createdAt <= dateRange.to)
+      (!dateRange?.from || scannedAt >= dateRange.from) &&
+      (!dateRange?.to || scannedAt <= dateRange.to)
 
     return (
       matchesSearch

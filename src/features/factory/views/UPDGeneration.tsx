@@ -192,7 +192,7 @@ export default function UPDGeneration() {
               </div>
               <div className="card-info px-4 py-3.25 rounded-[10px] mt-5">
                 <span className="font-medium text-[11px] mb-1.25">Serial format</span>
-                <span className="text-base font-semibold block text-accent-foreground">UPD[YY]-[XXXX]-[XXXX]</span>
+                <span className="text-base font-semibold block text-accent-foreground">UPD[YY]-[XXXXX]-[XXXXX]</span>
               </div>
               <div className="flex flex-wrap items-center gap-2 gap-x-5 mt-6">
                 <LoaderButton loading={generateSerialMutation.isPending} className="rounded-full px-5 xl:px-8 h-12.5" onClick={handleGenerate}>Generate Serial Numbers</LoaderButton>

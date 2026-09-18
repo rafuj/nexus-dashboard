@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { generateCabinetSerial } from "../api/generateCabinetSerial"
+import { generateCabinetSerial } from "../api/generate-cabinet-serial"
 
 
 export const useGenerateSerial = () => {

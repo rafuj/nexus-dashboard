@@ -27,11 +27,17 @@ export const API_ROUTES = {
     IMEI_CHECK: `${API_VERSION}/devices/imei-check`,
     // dashboard
     DASHBOARD: `${API_VERSION}/dashboard/overview`,
-    // devices
-    DEVICES: `${API_VERSION}/devices`,
-    DEVICE_MODELS: `${API_VERSION}/device-models`,
-    DEVICE_INSTALLATION: `${API_VERSION}/device-installations`,
-    DEVICES_INVENTORY: `${API_VERSION}/devices/inventory`,
+
     // factory
-    AVAILABLE_SERIAL_NUMBERS: `${API_VERSION}/factory/serial-numbers/available`
+    AVAILABLE_SERIAL_NUMBERS: `${API_VERSION}/factory/serial-numbers/available`,
+    FACTORY_LOGS: `${API_VERSION}/factory/processed-units`,
+
+    // devices
+    DEVICE_MODELS: `${API_VERSION}/device-models`,
+    DEVICES_INVENTORY: `${API_VERSION}/devices/inventory`,
+
+    // device
+    DEVICE_INSTALLATION: `${API_VERSION}/device-installations/factory`,
+    DEVICES_IMEI_LINK: `${API_VERSION}/devices/imei-link`,
+    DEVICES_RESERVE: `${API_VERSION}/devices/reserve`,
 }

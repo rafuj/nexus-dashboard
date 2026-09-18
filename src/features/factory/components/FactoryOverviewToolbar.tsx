@@ -61,9 +61,9 @@ export function FactoryOverviewToolbar({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value={PREFIX_DEFAULT}>All</SelectItem>
-                <SelectItem value="connected">Connected Nexus</SelectItem>
-                <SelectItem value="non-connected">Non-connected Nexus</SelectItem>
-                <SelectItem value="separate">Separate module</SelectItem>
+                <SelectItem value="Connected Nexus">Connected Nexus</SelectItem>
+                <SelectItem value="Non-connected Nexus">Non-connected Nexus</SelectItem>
+                <SelectItem value="Separate module">Separate module</SelectItem>
               </SelectContent>
             </Select>
             ) : (

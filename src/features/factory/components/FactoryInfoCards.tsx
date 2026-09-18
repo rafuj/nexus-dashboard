@@ -8,7 +8,7 @@ interface Props {
     data: {
         connectedNexus: string
         nonConnectedNexus: string
-        seperatedModules: string
+        separateModules: string
         totalAvailable: string
         availableNexus: string
         availableUPD: string
@@ -46,7 +46,7 @@ export const FactoryInfoCards = ({tabs, data}: Props) => {
                         <SeperatedModulesIcon />
                     </div>
                     <div className="w-0 grow">
-                        <h5 className="font-semibold text-accent-primary">{data.seperatedModules}</h5>
+                        <h5 className="font-semibold text-accent-primary">{data.separateModules}</h5>
                         <div className="text-sm">Separate modules</div>
                     </div>
                 </div>
