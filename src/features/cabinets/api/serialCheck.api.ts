@@ -2,7 +2,7 @@ import { api } from "@/app/api-manage/api"
 import { API_ROUTES } from "@/app/api-manage/api-routes"
 export interface SerialCheckResponse {
   id: string
-  imei: string
+  deviceSerialNumber: string
   serialNumber: string
   smart: boolean
 }

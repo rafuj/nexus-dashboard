@@ -168,7 +168,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
           setValues({
             ...values,
             serialNumberRecognition: true,
-            deviceSerialNumber: serialData?.imei || "",
+            deviceSerialNumber: serialData?.deviceSerialNumber || "",
             deviceCodeRecognition: true,
           }, true)
         }
@@ -835,8 +835,8 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                           ...values,
                           brand: value,
                           cabinetModelId: "",
-                          deviceSerialNumber: (value === "Nexus" && serialData?.imei) ? serialData?.imei : "",
-                          deviceCodeRecognition: (value === "Nexus" && serialData?.imei) ? true : false
+                          deviceSerialNumber: (value === "Nexus" && serialData?.deviceSerialNumber) ? serialData?.deviceSerialNumber : "",
+                          deviceCodeRecognition: (value === "Nexus" && serialData?.deviceSerialNumber) ? true : false
                         }, true)
                     }} disabled={Boolean(fieldsReadOnly || cabinetId || id)}>
                       <SelectTrigger className={cn("w-full !h-12.5")}>
@@ -874,7 +874,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                       value={values.serialNumber}
                       onChange={(e)=> {
                         if(!cabinetId) {
-                          setFieldValue("deviceSerialNumber", serialData?.imei === values.deviceSerialNumber ? "" : values.deviceSerialNumber)
+                          setFieldValue("deviceSerialNumber", serialData?.deviceSerialNumber === values.deviceSerialNumber ? "" : values.deviceSerialNumber)
                         }
                         setValues({
                           ...values, 
