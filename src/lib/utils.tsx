@@ -28,6 +28,7 @@ export function formatISODate(isoOrLocal: string) {
 }
 /** Formatting Date from ISO to a readable format */
 export function formatDateTime(isoOrLocal: string) {
+  if(!isoOrLocal) return "N/A"
   return dayjs(isoOrLocal).format("DD MMM YYYY, HH:mm");
 }
 /** Formatting Date from ISO to a readable format */
