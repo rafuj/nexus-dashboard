@@ -6,15 +6,14 @@ import { createColumnHelper } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "@/shared/components/data-table"
 import type { CabinetActivityRow } from "../types/activityList"
 import { ActivityIcons } from "@/app/icons/icons"
-import { EndActivityAction } from "./EndActivityAction"
 
 const columnHelper = createColumnHelper<CabinetActivityRow>()
 
 export const cabinetsActivityTableColumns = (tabValue: string) => [
 
   // 1. Cabinet Name
-  columnHelper.accessor("name", {
-    id: "name",
+  columnHelper.accessor("cabinetName", {
+    id: "cabinetName",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Cabinet Name" />
     ),
@@ -22,14 +21,33 @@ export const cabinetsActivityTableColumns = (tabValue: string) => [
       headerClassName: "",
       cellClassName: "align-middle tabular-nums",
     },
-    cell: ({ row }) => row.original.name,
+    cell: ({ row }) => row.original.cabinetName,
+  }),
+
+  columnHelper.accessor("group", {
+    id: "group",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Group" />
+    ),
+    meta: {
+      headerClassName: "",
+      cellClassName: "align-middle",
+    },
+    cell: ({ row }) => {
+      const group = row.original.group
+      return (
+        <div className="flex items-center gap-3">
+          <span>{group ? group : <span className="block w-8 border-b-2 border-accent-foreground"></span>}</span>
+        </div>
+      )
+    },
   }),
 
   // 2. Activity Column (Includes Dynamic Activity Description & Placeholder Icons)
   columnHelper.accessor("activity", {
     id: "activity",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Activity" />
+      <DataTableColumnHeader column={column} title={tabValue === "Activities" ? "Activity" : "Incident"} />
     ),
     meta: {
       headerClassName: "",
@@ -39,17 +57,33 @@ export const cabinetsActivityTableColumns = (tabValue: string) => [
       const activity = row.original.activity
       return (
         <div className="flex items-center gap-3">
-          <div className={tabValue === "Resolved" ? "text-success2" : "text-error"}>
+          <div className={tabValue === "Ongoing" ? "text-error" : "text-success2"}>
             <ActivityIcon activity={activity} />
           </div>
-          <span>{activity}</span>
+          <div>
+          <div>{activity}</div>
+            {tabValue === "Ongoing" ?  <>
+              {(activity === "Temperature too high" || activity === "Temperature too low") ? (
+                <span className="text-foreground text-[10px]">
+                  Last measured temp: {row.original.temperature}°C
+                </span>
+              ) : null}
+            </> : <>
+              {(activity === "Temperature too high" || activity === "Temperature too low") && <>
+                <span className="text-foreground text-[10px]">
+                  {activity === "Temperature too low" ? "Lowest" : "Highest"} measured temp: {row.original.temperature}°C
+                </span>
+              </>}
+            </>
+            }
+          </div>
         </div>
       )
     },
   }),
 
   // 3. Time Column
-  columnHelper.accessor("timestamp", {
+  columnHelper.accessor("time", {
     id: "time",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Time" />
@@ -58,47 +92,40 @@ export const cabinetsActivityTableColumns = (tabValue: string) => [
       headerClassName: "",
       cellClassName: "align-middle whitespace-nowrap",
     },
-    cell: ({ row }) => row.original.timestamp,
+    cell: ({ row }) => row.original.time,
   }),
 
-
-  // 5. Added by Column (Can render a string or an Avatar + User layout)
-  columnHelper.accessor("addedBy", {
-    id: "addedBy",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Added by" />
-    ),
-    meta: {
-      headerClassName: "",
-      cellClassName: "align-middle",
-    },
-    cell: ({ row }) => {
-      const entry = row.original.addedBy
-
-      if (typeof entry == "string") {
-        return <span className="text-slate-600">{entry}</span>
-      }
-
-      return (
-        <div className="flex items-center gap-2">
-          {entry.avatarUrl ? (
-            <img
-              src={entry.avatarUrl}
-              alt={entry.name}
-              className="size-10 rounded-full object-cover"
-            />
-          ) : (
-            <div className="flex size-6 items-center justify-center rounded-full bg-slate-200 text-xs font-semibold">
-              {entry.name.charAt(0)}
-            </div>
-          )}
-          <span className="font-medium">{entry.name}</span>
-        </div>
-      )
-    },
-  }),
-  ...(tabValue === "Resolved"
+  ...(tabValue === "Activities"
   ? [
+      columnHelper.accessor("addedBy", {
+        id: "addedBy",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Added by" />
+        ),
+        meta: {
+          headerClassName: "",
+          cellClassName: "align-middle",
+        },
+        cell: ({ row }) => {
+          const entry = row.original?.addedBy
+          return (
+            <div className="flex items-center gap-2">
+              {entry?.avatarUrl ? (
+                <img
+                  src={entry.avatarUrl}
+                  alt={entry.name}
+                  className="size-8 rounded-full object-cover"
+                />
+              ) : (
+                <div className="flex size-8 items-center justify-center rounded-full bg-slate-200 text-xs font-semibold">
+                  {entry?.name.charAt(0)}
+                </div>
+              )}
+              <span className="font-medium">{entry?.name}</span>
+            </div>
+          )
+        },
+      }),
       columnHelper.accessor("notes", {
         id: "notes",
         header: ({ column }) => (
@@ -127,33 +154,9 @@ export const cabinetsActivityTableColumns = (tabValue: string) => [
         },
       }),
     ]
-  : []),
-  ...(tabValue === "Ongoing"
-  ? [
-    columnHelper.accessor("addedBy", {
-      id: "actions",
-      header: "Actions",
-      meta: {
-        headerClassName: "",
-        cellClassName: "align-middle",
-      },
-      cell: ({ row }) => {
-        const entry = row.original.addedBy
-
-        if (typeof entry == "string") {
-          return <div className="flex items-center">
-            <div className="w-8.5 border-b-2 border-accent-foreground"></div>
-          </div>
-        }
-
-        return (
-          <EndActivityAction row={row.original} />
-        )
-      },
-    })
-    ]
-  : []),
+  : [])
 ]
+
 interface ActivityIconProps {
   activity: string
   className?: string
@@ -179,16 +182,17 @@ const ActivityIcon = ({ activity }: ActivityIconProps) => {
     case "Ventilator error":
       return <ActivityIcons.ventilatorError className={baseClass} />
 
-    case "Pads replaced":
-      return <ActivityIcons.padsReplaced className={baseClass} />
-
     case "Data retrieved":
+      return <ActivityIcons.dataRetrived className={baseClass} />
+    case "Data Retrieved":
       return <ActivityIcons.dataRetrived className={baseClass} />
 
     case "Battery replaced":
       return <ActivityIcons.batteryReplaced className={baseClass} />
+    case "Battery Replaced":
+      return <ActivityIcons.batteryReplaced className={baseClass} />
 
     default:
-      return <ActivityIcons.openDoor className={baseClass} />
+      return <ActivityIcons.padsReplaced className={baseClass} />
   }
 }

@@ -22,7 +22,8 @@ export function CabinetsActivityListToolbar({
   activityType,
   setActivityType,
   dateRange, 
-  setDateRange
+  setDateRange,
+  onReset
 }: ActivityCabinetsListToolbarProps) {
   return (
     <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-end">
@@ -46,7 +47,7 @@ export function CabinetsActivityListToolbar({
       <Select value={cabinetGroup} onValueChange={setCabinetGroup}>
         <SelectTrigger className="w-full min-w-42 sm:w-[180px] text-sm md:!h-12.5 xl:grow">
           <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-            <span className="font-normal text-foreground">Cabinet/Group:</span>
+            <span className="font-normal text-foreground">Group:</span>
             <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="All" /></span>
           </div>
         </SelectTrigger>
@@ -79,7 +80,7 @@ export function CabinetsActivityListToolbar({
           }
         }} />
       </div>
-      <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-white text-accent-foreground py-2 px-3 sm:py-3 rounded-[10px] text-sm gap-1.25 border border-border">
+      <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-white text-accent-foreground py-2 px-3 sm:py-3 rounded-[10px] text-sm gap-1.25 border border-border" onClick={onReset}>
         <RotateCcw size={16} /> <span>Reset Filter</span>
       </button>
       <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">

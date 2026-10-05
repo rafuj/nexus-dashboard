@@ -19,16 +19,16 @@ import type { DateRange } from "react-day-picker";
 import { cabinetsActivityTableColumns } from "../components/cabinetsActivityTableColumns";
 import { queryCabinetsActivityPage } from "../server/queryCabinetsActivityPage";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
-import { mockCabinetActivities } from "../mock/mockCabinetsActivity";
 import { AddActivityModal } from "./AddActivityModal";
+import type { ActivityStatus } from "../types/activityList";
+import { mockCabinetActivities, mockCabinetIncidents } from "../mock/mockCabinetsActivity";
 const CABINET_FILTER_ALL = "all";
 const ACTIVITY_FILTER_ALL = "all";
 const PAGE_SIZE = 8;
-export type TabValue = "Ongoing" | "Resolved";
 
 interface TabItem {
   label: string;
-  value: TabValue;
+  value: ActivityStatus;
   count: number;
 }
 
@@ -46,30 +46,24 @@ export default function CabinetsActivity() {
     to: today
   })
 
-  const tabCounts = useMemo(() => {
-    return {
-      Ongoing: mockCabinetActivities.filter(
-        (item) => item.status === "Ongoing"
-      ).length,
-      Resolved: mockCabinetActivities.filter(
-        (item) => item.status === "Resolved"
-      ).length,
-    };
-  }, []);
-
   const tablist : TabItem[] = [
     {
-      label:"Ongoing Activities", 
+      label:"Ongoing Incidents", 
       value:"Ongoing",
-      count: tabCounts.Ongoing
+      count: 10
     }, 
     {
-      label:"Resolved Activities", 
+      label:"Resolved Incidents", 
       value:"Resolved",
-      count: tabCounts.Resolved
+      count: 10
+    },
+    {
+      label:"Activities", 
+      value:"Activities",
+      count: 10
     }
   ]
-  const [tabValue, setTabValue] = useQueryState("tabs",   parseAsStringLiteral(["Resolved", "Ongoing"]).withDefault("Ongoing"))
+  const [tabValue, setTabValue] = useQueryState("tabs",   parseAsStringLiteral(["Resolved", "Ongoing", "Activities"]).withDefault("Ongoing"))
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -79,13 +73,14 @@ export default function CabinetsActivity() {
   const pageResult = useMemo(
     () =>
       queryCabinetsActivityPage({
+        data: tabValue === "Activities" ? mockCabinetActivities : mockCabinetIncidents,
         search,
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
         sorting,
         activityType,
         cabinetGroup,
-        status: tabValue
+        tabValue
       }),
     [
       search,
@@ -165,7 +160,7 @@ export default function CabinetsActivity() {
         <div className="p-5">
           <div className="flex flex-wrap md:flex-nowrap gap-5 items-center justify-between mb-5">
             <h2 className="text-xl md:text-2xl font-semibold">
-              Cabinet activity & maintenance tracking
+              Cabinet activity & incident tracking
             </h2>
               <button className="flex items-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25" type="button" onClick={()=> setOpenActivity(true)}>
                 <PlusCircle size={18} />
@@ -179,8 +174,8 @@ export default function CabinetsActivity() {
               )}
             >
               <div className="px-5">
-                <ul className="flex text-base select-none mb-5 border-b border-border">
-                  {tablist.map((item) => (
+                <ul className="flex 2xl:text-base select-none mb-5 border-b border-border">
+                  {tablist.map((item:TabItem) => (
                     <li
                       key={item.value}
                       className={cn(
@@ -197,7 +192,7 @@ export default function CabinetsActivity() {
                       }
                     >
                       {item.label}
-                      <span className={cn("ml-2 text-accent-foreground bg-chip py-1.75 px-3 rounded-full xl:min-w-15 inline-flex justify-center", {
+                      <span className={cn("ml-2 text-accent-foreground bg-chip py-1.25 px-3 rounded-full xl:min-w-12 inline-flex justify-center", {
                         "bg-primary text-white":
                             tabValue === item.value,
                       })}>{item.count}</span>
@@ -225,7 +220,8 @@ export default function CabinetsActivity() {
                         cabinetGroup,
                         setCabinetGroup,
                         dateRange,
-                        setDateRange
+                        setDateRange,
+                        onReset: resetPage
                       }
                     }
                   />
