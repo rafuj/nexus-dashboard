@@ -45,24 +45,6 @@ export default function CabinetsActivity() {
     from: undefined,
     to: undefined
   })
-
-  const tablist : TabItem[] = [
-    {
-      label:"Ongoing Incidents", 
-      value:"Ongoing",
-      count: 10
-    }, 
-    {
-      label:"Resolved Incidents", 
-      value:"Resolved",
-      count: 10
-    },
-    {
-      label:"Activities", 
-      value:"Activities",
-      count: 10
-    }
-  ]
   const [tabValue, setTabValue] = useQueryState("tabs",   parseAsStringLiteral(["Resolved", "Ongoing", "Activities"]).withDefault("Ongoing"))
 
   const [pagination, setPagination] = useState<PaginationState>({
@@ -82,6 +64,24 @@ export default function CabinetsActivity() {
     // to_date: dateRange.to,
     search,
   })
+
+  const tablist : TabItem[] = [
+    {
+      label:"Ongoing Incidents", 
+      value:"Ongoing",
+      count: 10
+    }, 
+    {
+      label:"Resolved Incidents", 
+      value:"Resolved",
+      count: 10
+    },
+    {
+      label:"Activities", 
+      value:"Activities",
+      count: activities?.length || 0
+    }
+  ]
 
   const pageResult = useMemo(
     () =>
