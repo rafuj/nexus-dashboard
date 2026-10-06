@@ -197,6 +197,29 @@ const ActivityIcon = ({ activity }: ActivityIconProps) => {
       return <ActivityIcons.batteryReplaced className={baseClass} />
     case "Battery Replaced":
       return <ActivityIcons.batteryReplaced className={baseClass} />
+    case "battery replaced":
+      return <ActivityIcons.batteryReplaced className={baseClass} />
+
+    case "repaired":
+      return <ActivityIcons.padsReplaced className={baseClass} />
+
+    case "damaged":
+      return <ActivityIcons.padsReplaced className={baseClass} />
+
+    case "battery replaced":
+      return <ActivityIcons.batteryReplaced className={baseClass} />
+
+    case "other":
+      return <ActivityIcons.padsReplaced className={baseClass} />
+
+    case "checked":
+      return <ActivityIcons.padsReplaced className={baseClass} />
+
+    case "stolen":
+      return <ActivityIcons.padsReplaced className={baseClass} />
+
+    case "pads replaced":
+      return <ActivityIcons.padsReplaced className={baseClass} />
 
     default:
       return <ActivityIcons.padsReplaced className={baseClass} />

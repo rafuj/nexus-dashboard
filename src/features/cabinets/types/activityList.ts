@@ -17,6 +17,14 @@ export type ActivityType =
   | "Battery Replaced"
   | "Pads Replaced"
   | "Data Retrieved"
+  // from apies
+  | "repaired"
+  | "damaged"
+  | "battery replaced"
+  | "other"
+  | "pads replaced"
+  | "checked"
+  | "stolen"
 
 export type ActivityUser = {
   name: string;
