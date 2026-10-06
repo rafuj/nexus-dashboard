@@ -12,92 +12,131 @@ import {
 import { getDoorBadgeClass, getDoorStatus, getDoorStatusTooltip, getDoorStatusTooltipClass, getHealthBadgeClass, getHealthBadgeTooltipColor, getHealthTooltip, getPresenceBadgeClass, getPresenceStatus, getPresenceTooltip, getPresenceTooltipClass, getTemperatureBadgeClass, getTemperatureTooltip, getTemperatureTooltipClass } from "../lib/cabinetListDisplay";
 import { useDeviceState } from "../hooks/useDeviceState";
 import { useParams } from "react-router";
+import { useDeviceStreamState } from "../hooks/useDeviceStreamState";
+import { useEffect, useState } from "react";
+interface DeviceState {
+  doorOpenedAt: string | ""
+  assetTakenAt: string | ""
+  assetPresent: boolean
+  ser: boolean
+  serStateChangedAt: string | ""
+  temperature: number | 0
+  isConnected: boolean
+}
+export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: string}) => {  
 
-export const CabinetStatistics = () => {  
+  const [state, setState] = useState<DeviceState>({
+  doorOpenedAt: "",
+  assetTakenAt: "",
+  assetPresent: false,
+  ser: false,
+  serStateChangedAt: "",
+  temperature: 0,
+  isConnected: false,
+})
 
   const {id} = useParams()
+
   const {data, isSuccess} = useDeviceState(id ?? '')
-
-  const doorOpenedAt = isSuccess && data?.doorOpen ? data?.doorStateChangedAt : ""
-  const assetTakenAt = isSuccess && data?.assetStateChangedAt
-  const assetPresent = isSuccess && data?.assetPresent
-  const health = "ok"
-
-  // const isPaused = data?.status === "paused"
+  const {deviceState, isConnected} = useDeviceStreamState(deviceSerialNumber ? id : "")
 
   const notInitialized = !data
+
+  useEffect(()=>{
+    if(deviceState) {
+      setState({
+        doorOpenedAt: deviceState?.doorOpen ? String(deviceState?.doorStateChangedAt) : "",
+        assetTakenAt: deviceState?.assetStateChangedAt ? String(deviceState?.assetStateChangedAt) : "",
+        assetPresent: !!deviceState?.assetPresent,
+        ser: !!deviceState?.ser,
+        serStateChangedAt: deviceState?.serStateChangedAt ? String(deviceState?.serStateChangedAt) : "",
+        temperature: Number(deviceState?.temperature) || 0,
+        isConnected: isConnected,
+      })
+    } else if(isSuccess) {
+      setState({
+        doorOpenedAt: data?.doorOpen ? String(data?.doorStateChangedAt) : "",
+        assetTakenAt: data?.assetStateChangedAt ? String(data?.assetStateChangedAt) : "",
+        assetPresent: !!data?.assetPresent,
+        ser: !!data?.ser,
+        serStateChangedAt: data?.serStateChangedAt ? String(data?.serStateChangedAt) : "",
+        temperature: Number(data?.temperature) || 0,
+        isConnected: isConnected,
+      })
+    }
+  }, [deviceState, isConnected, isSuccess])
 
   const cards = [
     {
       title: "Door",
       Icon: DoorIcon,
-      badgeClass: getDoorBadgeClass(doorOpenedAt),
+      badgeClass: getDoorBadgeClass(state.doorOpenedAt),
       value: <Tooltip>
             <TooltipTrigger className="w-full">
               <span
                 className={cn(
                   "px-3 py-1 rounded-[4px] text-xs w-full text-center block transition-all capitalize",
-                  getDoorBadgeClass(doorOpenedAt)
+                  getDoorBadgeClass(state.doorOpenedAt)
                 )}
               >
-                    {getDoorStatus(doorOpenedAt)}
+                    {getDoorStatus(state.doorOpenedAt)}
               </span>
             </TooltipTrigger>
-              <TooltipContent side="right" className={cn(getDoorStatusTooltipClass(doorOpenedAt))}>
-                {getDoorStatusTooltip(doorOpenedAt)}
+              <TooltipContent side="right" className={cn(getDoorStatusTooltipClass(state.doorOpenedAt))}>
+                {getDoorStatusTooltip(state.doorOpenedAt)}
               </TooltipContent>
           </Tooltip>
     },
     {
       title: "Asset Presence",
       Icon: AssetPresenceIcon,
-      badgeClass: getPresenceBadgeClass(assetPresent, assetTakenAt),
+      badgeClass: getPresenceBadgeClass(state.assetPresent, state.assetTakenAt),
       value: <Tooltip>
               <TooltipTrigger className="w-full">
                 <span
                   className={cn(
                     "px-3 py-1 rounded-[4px] text-xs w-full text-center inline-block transition-all capitalize",
-                    getPresenceBadgeClass(assetPresent, assetTakenAt)
+                    getPresenceBadgeClass(state.assetPresent, state.assetTakenAt)
                   )}
                 >
-                  {getPresenceStatus(assetPresent, assetTakenAt)}
+                  {getPresenceStatus(state.assetPresent, state.assetTakenAt)}
                 </span>
               </TooltipTrigger>
-              <TooltipContent side="right" className={cn(getPresenceTooltipClass(assetPresent, assetTakenAt))}>
-                {getPresenceTooltip(assetPresent, assetTakenAt)}
+              <TooltipContent side="right" className={cn(getPresenceTooltipClass(state.assetPresent, state.assetTakenAt))}>
+                {getPresenceTooltip(state.assetPresent, state.assetTakenAt)}
               </TooltipContent>
             </Tooltip>
     },
     { // static state
       title: "Asset Health",
       Icon: AssetHealthIcon,
-      badgeClass: getHealthBadgeClass(health),
+      badgeClass: getHealthBadgeClass(state.ser ? "urgent" : "ok"),
       value: <Tooltip>
               <TooltipTrigger className="w-full">
                 <span
                     className={cn(
                       "px-3 py-1 rounded-[4px] text-xs w-full text-center inline-block transition-all uppercase",
-                      getHealthBadgeClass(health)
+                      getHealthBadgeClass(state.ser ? "urgent" : "ok")
                     )}
                   >
-                    {health}
+                    {state.ser ? "urgent" : "ok"}
                   </span>
               </TooltipTrigger>
-              <TooltipContent side="right" className={cn(getHealthBadgeTooltipColor(health))}>
-                {getHealthTooltip(health)}
+              <TooltipContent side="right" className={cn(getHealthBadgeTooltipColor(state.ser ? "urgent" : "ok"))}>
+                {getHealthTooltip(state.ser ? "urgent" : "ok")}
               </TooltipContent>
             </Tooltip>
     },
     {
       title: "Temperature",
       Icon: TemperatureIcon,
-      badgeClass: getTemperatureBadgeClass({current: data?.temperature, temperatureOutOfRangeSince: new Date()}), // static data
+      badgeClass: getTemperatureBadgeClass({current: data?.temperature}), // static data
       value: <Tooltip>
               <TooltipTrigger className="w-full">
-                {getTemperatureChip({current: data?.temperature, temperatureOutOfRangeSince: new Date()}, "w-full")}
+                {getTemperatureChip({current: data?.temperature}, "w-full")}
               </TooltipTrigger>
-                <TooltipContent side="right" className={cn(getTemperatureTooltipClass({current: data?.temperature, temperatureOutOfRangeSince: new Date()}))}>
-                  {getTemperatureTooltip({current: data?.temperature, temperatureOutOfRangeSince: new Date()})}
+                <TooltipContent side="right" className={cn(getTemperatureTooltipClass({current: data?.temperature}))}>
+                  {getTemperatureTooltip({current: data?.temperature})}
                 </TooltipContent>
             </Tooltip>
     },

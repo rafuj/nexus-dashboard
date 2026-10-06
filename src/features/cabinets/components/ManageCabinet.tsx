@@ -632,7 +632,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                 <>
                   <MaintenanceMode />
                   {/* {data?.smart && <CabinetStatistics />} */}
-                  <CabinetStatistics />
+                  <CabinetStatistics deviceSerialNumber={data?.deviceSerialNumber} />
                 </>
               )}
               {/* Cabinet Details */}

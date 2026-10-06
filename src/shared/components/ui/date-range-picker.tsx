@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { format, subMonths } from "date-fns"
+import { endOfDay, format, isSameDay, startOfDay, subMonths } from "date-fns"
 import { CalendarIcon } from "lucide-react"
 import type { DateRange } from "react-day-picker"
 
@@ -23,6 +23,11 @@ type DateRangePickerProps = {
   dateType?: 'future' | 'past' | 'all' 
 }
 
+const normalizeRange = (range: DateRange): DateRange => ({
+  from: range.from ? startOfDay(range.from) : undefined,
+  to: range.to ? endOfDay(range.to) : undefined,
+})
+
 export function DateRangePicker({
   value,
   onChange,
@@ -36,7 +41,7 @@ export function DateRangePicker({
   const handleSelect = (range: DateRange | undefined) => {
     // No existing complete range
     if (!value?.from || !value?.to) {
-      onChange?.(range)
+      onChange?.(range ? normalizeRange(range) : undefined)
 
       // Close only after selecting both dates
       if (range?.from && range?.to) {
@@ -49,14 +54,14 @@ export function DateRangePicker({
     // Existing range is complete.
     // User clicked a new date, so start a new range.
     const clickedDate =
-      range?.from?.getTime() === value.from.getTime()
+      range?.from && isSameDay(range.from, value.from)
         ? range?.to
         : range?.from
 
     if (!clickedDate) return
 
     onChange?.({
-      from: clickedDate,
+      from: startOfDay(clickedDate),
       to: undefined,
     })
 

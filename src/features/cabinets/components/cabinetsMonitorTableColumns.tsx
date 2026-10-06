@@ -250,9 +250,8 @@ export const cabinetsMonitorTableColumns = [
     },
     cell: ({ row }) => {
       const temp = {
-            current: row.original.deviceState?.temperature,
-            temperatureOutOfRangeSince: new Date() // no data available now, so static data
-          }
+        current: row.original.deviceState?.temperature
+      }
       const notInitialized = !row.original.deviceState
       return (
         <div className="flex">
@@ -284,7 +283,7 @@ export const cabinetsMonitorTableColumns = [
   }),
 
   // 7. Last Update Column
-  columnHelper.accessor("createdAt", { //we need to change this later to last update
+  columnHelper.accessor("deviceState.lastSeenAt", {
     id: "createdAt",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Last Update" />
@@ -293,6 +292,6 @@ export const cabinetsMonitorTableColumns = [
       headerClassName: "",
       cellClassName: "align-middle whitespace-nowrap",
     },
-    cell: ({ row }) => formatDateTime(row.original.createdAt), // we need to change this later to last update
+    cell: ({ row }) => formatDateTime(row.original?.deviceState?.lastSeenAt),
   }),
 ]

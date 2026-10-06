@@ -2,6 +2,8 @@
 const API_VERSION = "/api/v1"
 
 export const API_ROUTES = {
+    // base
+    BASE: `${API_VERSION}`,
     // AUTH ROUTES
     LOGIN: `${API_VERSION}/login`,
     VERIFY_OTP: `${API_VERSION}/verify-otp`,
@@ -15,7 +17,7 @@ export const API_ROUTES = {
     
     // CABINETS
     CABINETS: `${API_VERSION}/cabinets`,
-    SMART_CABINETS: `${API_VERSION}/cabinets/smart`,
+    SMART_CABINETS: `${API_VERSION}/cabinets/monitor`,
     ASSET_TYPES: `${API_VERSION}/asset-types`,
     ASSETS: `${API_VERSION}/assets`,
     COMPONENT_TYPES: `${API_VERSION}/component-types`,
@@ -40,4 +42,8 @@ export const API_ROUTES = {
     DEVICES_IMEI_LINK: `${API_VERSION}/devices/imei-link`,
     DEVICES_RESERVE: `${API_VERSION}/devices/reserve`,
     IMEI_CHECK: `${API_VERSION}/devices/serial-check`,
+
+    // activity
+    ACTIVITY_TYPES: `${API_VERSION}/activity-types`,
+    ACTIVITIES: `${API_VERSION}/activities`,
 }

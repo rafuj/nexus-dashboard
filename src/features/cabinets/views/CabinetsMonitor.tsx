@@ -67,9 +67,8 @@ export default function CabinetsMonitor() {
   const [search, setSearch] = useQueryState("search", { defaultValue:"" });
   const [city, setCity] = useQueryState("city", { defaultValue: CITY_FILTER_ALL });
   const [status, setStatus] = useQueryState("status", parseAsStringLiteral(filterStatuses).withDefault(STATUS_FILTER_ALL))
-  const [cabinetId, setCabinetId] = useQueryState("id", { defaultValue: "" })
 
-  console.log("setCabinetId",setCabinetId)
+  const [cabinetId] = useQueryState("id", { defaultValue: "" })
 
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -80,7 +79,8 @@ export default function CabinetsMonitor() {
   const debouncedSearch = useDebounce(search, 400)
   const {
     data,
-    isFetching
+    isFetching,
+    refetch
   } = useSmartCabinetsList({
     search: debouncedSearch,
     status,
@@ -128,7 +128,7 @@ export default function CabinetsMonitor() {
     }))
   }
   const refreshPage = () => {
-    // Later this will just invalidate queryKeys
+    refetch(),
     setSearch("")
     setCity(CITY_FILTER_ALL)
     setStatus(STATUS_FILTER_ALL)
@@ -195,8 +195,6 @@ export default function CabinetsMonitor() {
       const temperatureStatus = isInitialized
         ? getTemperatureStatus({
             current: item?.deviceState?.temperature,
-            // Matches the current monitor-table presentation until this timestamp is supplied by the API.
-            temperatureOutOfRangeSince: new Date(),
           })
         : "n/a"
 

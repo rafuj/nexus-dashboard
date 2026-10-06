@@ -7,8 +7,8 @@ export type CabinetsListQuery = {
   search?: string
   status?: string
   city?: string
-  page: number
-  limit: number
+  page?: number
+  limit?: number
   sorting?: SortingState
 }
 

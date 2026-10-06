@@ -1,9 +1,9 @@
 import type { DateRange } from "react-day-picker"
 
-export type ActivityStatus = "Resolved" | "Ongoing" | "Done";
+export type ActivityStatus = "Resolved" | "Ongoing" | "Activities";
 
 export type ActivityType =
-  | "Door opened"
+  | "Door open for >15 minutes"
   | "Connectivity lost"
   | "Asset removed"
   | "Temperature too high"
@@ -11,7 +11,20 @@ export type ActivityType =
   | "Ventilator error"
   | "Pads replaced"
   | "Data retrieved"
-  | "Battery replaced";
+  | "Battery replaced"
+  | "General Maintenance"
+  | "Check-up"
+  | "Battery Replaced"
+  | "Pads Replaced"
+  | "Data Retrieved"
+  // from apies
+  | "repaired"
+  | "damaged"
+  | "battery replaced"
+  | "other"
+  | "pads replaced"
+  | "checked"
+  | "stolen"
 
 export type ActivityUser = {
   name: string;
@@ -19,14 +32,15 @@ export type ActivityUser = {
 };
 
 export type CabinetActivityRow = {
-  id: string;
-  timestamp: string;      // "May 26, 13:38"
-  activity: ActivityType;
-  name: string;    // "CAB - 102"
-  location: string;       // "Amsterdam Zuid"
-  addedBy: "Cabinet" | ActivityUser;
-  status: ActivityStatus;
-  notes: string | null;   // e.g., "Door closed again" or null for "—"
+  id: string
+  activity: ActivityType
+  cabinetName: string
+  category: string
+  notes: string
+  time: string
+  group: string
+  temperature?: string
+  addedBy: string
 };
 
 
@@ -39,4 +53,6 @@ export type ActivityCabinetsListToolbarProps = {
   setActivityType: (value:string)=> void
   dateRange: DateRange,
   setDateRange: (value: DateRange) => void
+  onReset: () => void
+  onExport: () => void
 }

@@ -3,6 +3,7 @@ import { Input } from "@/shared/components/ui/input"
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -10,6 +11,7 @@ import {
 import { Icons } from "@/app/icons/icons"
 import { DateRangePicker } from "@/shared/components/ui/date-range-picker"
 import type { ActivityCabinetsListToolbarProps } from "../types/activityList"
+import { useActivityTypes } from "../hooks/useActivityTypes"
 
 const CABINET_GROUP = "all"
 const ACTIVITY_TYPE = "all"
@@ -22,8 +24,11 @@ export function CabinetsActivityListToolbar({
   activityType,
   setActivityType,
   dateRange, 
-  setDateRange
+  setDateRange,
+  onReset,
+  onExport
 }: ActivityCabinetsListToolbarProps) {
+  const {data: activityTypes} = useActivityTypes()
   return (
     <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-end">
       <div className="w-full sm:w-[220px] 2xl:w-[283px] space-y-2 xl:grow">
@@ -46,7 +51,7 @@ export function CabinetsActivityListToolbar({
       <Select value={cabinetGroup} onValueChange={setCabinetGroup}>
         <SelectTrigger className="w-full min-w-42 sm:w-[180px] text-sm md:!h-12.5 xl:grow">
           <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
-            <span className="font-normal text-foreground">Cabinet/Group:</span>
+            <span className="font-normal text-foreground">Group:</span>
             <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="All" /></span>
           </div>
         </SelectTrigger>
@@ -61,14 +66,28 @@ export function CabinetsActivityListToolbar({
         <SelectTrigger className="w-full min-w-42 sm:w-44 text-sm md:!h-12.5 xl:grow">
           <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
             <span className="font-normal text-foreground">Type:</span>
-            <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="All" /></span>
+            <span className="line-clamp-1 w-0 grow text-left capitalize"><SelectValue placeholder="All" /></span>
           </div>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value={ACTIVITY_TYPE}>All</SelectItem>
-          <SelectItem value="door-closed">Door Closed</SelectItem>
-          <SelectItem value="placed-back">Placed Back</SelectItem>
-          <SelectItem value="connectivity">Connectivity</SelectItem>
+          <SelectGroup>
+            <SelectItem className="pl-4 min-h-7 capitalize" value={ACTIVITY_TYPE}>All</SelectItem>
+            {Array.from(
+              new Map(
+                [...(activityTypes?.asset || []), ...(activityTypes?.cabinet || [])].map(
+                  (activity) => [activity.name, activity]
+                )
+              ).values()
+            ).map((activity) => (
+              <SelectItem
+                key={activity.name}
+                className="pl-4 min-h-7 capitalize"
+                value={activity.name}
+              >
+                {activity.name}
+              </SelectItem>
+            ))}
+          </SelectGroup>
         </SelectContent>
       </Select>
       {/* Status Filter */}
@@ -77,12 +96,12 @@ export function CabinetsActivityListToolbar({
           if(value) {
             setDateRange(value)
           }
-        }} />
+        }} dateType="past" />
       </div>
-      <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-white text-accent-foreground py-2 px-3 sm:py-3 rounded-[10px] text-sm gap-1.25 border border-border">
+      <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-white text-accent-foreground py-2 px-3 sm:py-3 rounded-[10px] text-sm gap-1.25 border border-border" onClick={onReset}>
         <RotateCcw size={16} /> <span>Reset Filter</span>
       </button>
-      <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25">
+      <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25" onClick={onExport}>
         <Icons.export /> <span>Export</span>
       </button>
     </div>

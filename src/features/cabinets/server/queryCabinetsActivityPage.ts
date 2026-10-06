@@ -1,16 +1,17 @@
 import type { SortingState } from "@tanstack/react-table"
-
-import { mockCabinetActivities } from "../mock/mockCabinetsActivity"
 import type { ActivityStatus, CabinetActivityRow } from "../types/activityList"
+import type { DateRange } from "react-day-picker"
 
 export type CabinetActivitiesQuery = {
+  data: CabinetActivityRow[]
   search: string
   pageIndex: number
   pageSize: number
   sorting: SortingState
-  status: ActivityStatus
-  activityType: string
-  cabinetGroup: string
+  tabValue: ActivityStatus
+  group: string
+  type: string
+  dateRange: DateRange
 }
 
 export type CabinetActivitiesPageResult = {
@@ -21,38 +22,32 @@ export type CabinetActivitiesPageResult = {
 function filterActivities(
   rows: readonly CabinetActivityRow[],
   search: string,
-  status: ActivityStatus,
+  group: string,
+  type: string,
+  dateRange: DateRange
 ): CabinetActivityRow[] {
   const q = search.trim().toLowerCase();
 
   return rows.filter((row) => {
-    // Filter by tab status
-    if (row.status !== status) {
-      return false;
+    if (group !== "all"  && row.group !== group) {
+      return false
+    }
+    if (type !== "all" && row.activity !== type) {
+      return false
+    }
+
+    if (dateRange.from && dateRange.to) {
+      const rowDate = new Date(row.time)
+      const fromDate = new Date(dateRange.from)
+      const toDate = new Date(dateRange.to)
+      if (rowDate < fromDate || rowDate > toDate) {
+        return false
+      }
     }
 
     if (q) {
-      const inCabinet = row.name.toLowerCase().includes(q);
-      const inLocation = row.location.toLowerCase().includes(q);
-      const inActivity = row.activity.toLowerCase().includes(q);
-
-      const addedByName =
-        typeof row.addedBy === "object"
-          ? row.addedBy.name.toLowerCase()
-          : row.addedBy.toLowerCase();
-
-      const inAddedBy = addedByName.includes(q);
-      const inNotes = row.notes
-        ? row.notes.toLowerCase().includes(q)
-        : false;
-
-      if (
-        !inCabinet &&
-        !inLocation &&
-        !inActivity &&
-        !inAddedBy &&
-        !inNotes
-      ) {
+      const inCabinet = row?.cabinetName?.toLowerCase()?.includes(q);
+      if (!inCabinet) {
         return false;
       }
     }
@@ -64,20 +59,13 @@ function filterActivities(
 function compareRows(a: CabinetActivityRow, b: CabinetActivityRow, columnId: string): number {
   switch (columnId) {
     case "time":
-      return a.timestamp.localeCompare(b.timestamp)
+      return a?.time?.localeCompare(b?.time)
     case "activity":
-      return a.activity.localeCompare(b.activity)
+      return a?.activity?.localeCompare(b?.activity)
     case "cabinet":
-      return a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
-    case "location":
-      return a.location.localeCompare(b.location, undefined, { sensitivity: "base" })
-    case "addedBy": {
-      const nameA = typeof a.addedBy === "object" ? a.addedBy.name : a.addedBy
-      const nameB = typeof b.addedBy === "object" ? b.addedBy.name : b.addedBy
-      return nameA.localeCompare(nameB, undefined, { sensitivity: "base" })
-    }
-    case "status":
-      return a.status.localeCompare(b.status)
+      return a?.cabinetName?.localeCompare(b?.cabinetName)
+    case "addedBy":
+      return a?.addedBy?.localeCompare(b?.addedBy)
     case "notes": {
       const notesA = a.notes ?? ""
       const notesB = b.notes ?? ""
@@ -93,9 +81,11 @@ function compareRows(a: CabinetActivityRow, b: CabinetActivityRow, columnId: str
  */
 export function queryCabinetsActivityPage(query: CabinetActivitiesQuery): CabinetActivitiesPageResult {
   const filtered = filterActivities(
-    mockCabinetActivities,
+    query.data,
     query.search,
-    query.status
+    query.group,
+    query.type,
+    query.dateRange
   )
 
   const sorted = [...filtered]
