@@ -96,7 +96,7 @@ export function CabinetsActivityListToolbar({
           if(value) {
             setDateRange(value)
           }
-        }} />
+        }} dateType="past" />
       </div>
       <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-white text-accent-foreground py-2 px-3 sm:py-3 rounded-[10px] text-sm gap-1.25 border border-border" onClick={onReset}>
         <RotateCcw size={16} /> <span>Reset Filter</span>
