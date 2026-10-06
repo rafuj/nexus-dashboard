@@ -10,7 +10,7 @@ import {
 } from "@tanstack/react-table";
 import { ChevronRight, PlusCircle, RotateCcw } from "lucide-react";
 import { DataTable, DataTablePagination } from "@/shared/components/data-table";
-import { cn } from "@/lib/utils";
+import { cn, formatMonDayTime } from "@/lib/utils";
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Link } from "react-router";
@@ -23,6 +23,8 @@ import { AddActivityModal } from "./AddActivityModal";
 import type { ActivityStatus } from "../types/activityList";
 import { mockCabinetIncidents } from "../mock/mockCabinetsActivity";
 import { useActivitiesList } from "../hooks/useActivitiesList";
+import { errorToast } from "@/lib/toast";
+import { exportExcel } from "@/lib/exportExcel";
 const PAGE_SIZE = 8;
 
 interface TabItem {
@@ -148,6 +150,56 @@ export default function CabinetsActivity() {
     },
   });
 
+
+
+const allData = useMemo(
+  () =>
+    queryCabinetsActivityPage({
+      data: tabValue === "Activities" ? (activities||[]) : mockCabinetIncidents,
+      search,
+      pageIndex: 0,
+      pageSize: (tabValue === "Activities" ? (activities||[]).length : mockCabinetIncidents.length) || 0,
+      sorting,
+      type: activityType,
+      group: cabinetGroup,
+      tabValue,
+      dateRange
+    }),
+  [
+    search,
+    pagination.pageIndex,
+    pagination.pageSize,
+    sorting,
+    cabinetGroup,
+    activityType,
+    tabValue,
+    activities,
+    dateRange
+  ],
+);
+
+const exportList = () => {
+  if (allData.rows.length === 0) {
+    errorToast("No data available to export")
+    return
+  }
+  const incidents = allData.rows.map((item) => ({
+    "Cabinet Name": item.cabinetName,
+    "Group": "",
+    "Incident": item.activity,
+    "Time": formatMonDayTime(item.time),
+  }))
+  const activities = allData.rows.map((item) => ({
+    "Cabinet Name": item.cabinetName,
+    "Group": "",
+    "Activity": item.activity,
+    "Time": formatMonDayTime(item.time),
+    "Added by": item.addedBy,
+    "Noted": item.notes,
+  }))
+  exportExcel(tabValue === "Activities" ? activities : incidents, `cabinet-${tabValue.toLowerCase()}-list`)
+}
+
   return (
     <>
       <Helmet>
@@ -254,6 +306,7 @@ export default function CabinetsActivity() {
                           resetPagination()
                         },
                         onReset: resetPage,
+                        onExport: exportList,
                       }
                     }
                   />
