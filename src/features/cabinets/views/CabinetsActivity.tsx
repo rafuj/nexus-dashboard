@@ -38,7 +38,7 @@ export default function CabinetsActivity() {
   const [cabinetGroup, setCabinetGroup] = useState<string>(CABINET_FILTER_ALL);
   const [activityType, setActivityType] = useState<string>(ACTIVITY_FILTER_ALL);
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [openActivity, setOpenActivity] = useState<boolean>(true)
+  const [openActivity, setOpenActivity] = useState<boolean>(false)
 
   const today = new Date();
   const [dateRange, setDateRange] = useState<DateRange>({
@@ -240,12 +240,12 @@ export default function CabinetsActivity() {
                 </div>
               </div>
             </div>
-            <AddActivityModal {
+            {openActivity && <AddActivityModal {
                 ...{
                   open: openActivity,
                   setOpen: setOpenActivity
                 }
-              } />
+              } /> }
           </section>
         </div>
       </main>

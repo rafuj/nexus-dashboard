@@ -56,7 +56,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
 
   const [selectedCabinet, setSelectedCabinet] = useState<Cabinet | null>(null);
   const [category, setCategory] = useState<string>('')
-  const [activityDate, setActivityDate] = useState<Date | undefined>(undefined)
+  const [activityDate, setActivityDate] = useState<Date | undefined>(new Date())
   const [notes, setNotes] = useState<string>('')
   const [nextCheckUpDate, setNextCheckUpDate] = useState<Date | undefined>(undefined)
 
@@ -165,6 +165,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
         lotNumber: "",
         serialNumber: "",
       });
+      setNextCheckUpDate(undefined)
     }
   }, [isAssetSuccess, assetData, selectedCabinet])
 
@@ -188,17 +189,41 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
   };
   const onCloseModal = () =>{ 
     setOpen(false)
-    setTimeout(()=>{
-      setActivity("")
-      setSelectedCabinet(null)
-    },200)
+    setActivity("")
+    setSelectedCabinet(null)
+    setActivityDate(undefined)
+    setCategory("")
+    setNotes("")
+    setImages({
+      picture1: "",
+      picture2: "",
+      picture3: "",
+    })
+    setBattery({
+      expiresAt: undefined,
+      lotNumber: "",
+      serialNumber: "",
+    })
+    setPadSets([
+      {
+        componentVariantId: "",
+        expiresAt: undefined,
+        lotNumber: "",
+      },
+      {
+        componentVariantId: "",
+        expiresAt: undefined,
+        lotNumber: "",
+      },
+    ])
+    setNextCheckUpDate(undefined)
   }
 
   const getAssetDetails = (typeId: string) => {
     switch (typeId) {
       case "1": { // Pads change (1 or 2 sets)
         const validSets = padSets
-          .filter((set) => set.componentVariantId) // Filter out empty/unselected sets
+          .filter((set) => set.componentVariantId && set.expiresAt) // Filter out empty/unselected sets
           .map((set) => ({
             componentVariantId: set.componentVariantId,
             expiresAt: set.expiresAt ? formatDateDDMMYYYY(set.expiresAt) : "",
@@ -235,7 +260,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
       const details = category === "asset" ? getAssetDetails(activity.split("-")[1]) : undefined;
       await createActivityMutation.mutateAsync({
         id: selectedCabinet?.id,
-        activityAt: (activityDate || new Date())?.toISOString(),
+        activityAt: activityDate ? activityDate.toISOString() : new Date()?.toISOString(),
         category,
         notes,
         typeId: activity.split("-")[1],
@@ -359,6 +384,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
                         <Label className="text-xs text-accent-foreground font-medium block mb-2">Activity date</Label>
                         <DatePicker className="!bg-white text-xs pl-5 pr-4"
                             dateType="past"
+                            showTime
                             value={activityDate}
                             onChange={(value)=>value ? setActivityDate(value): {}}
                           />
