@@ -6,6 +6,7 @@ import { createColumnHelper } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "@/shared/components/data-table"
 import type { CabinetActivityRow } from "../types/activityList"
 import { ActivityIcons } from "@/app/icons/icons"
+import { formatMonDayTime } from "@/lib/utils"
 
 const columnHelper = createColumnHelper<CabinetActivityRow>()
 
@@ -61,7 +62,7 @@ export const cabinetsActivityTableColumns = (tabValue: string) => [
             <ActivityIcon activity={activity} />
           </div>
           <div>
-          <div>{activity}</div>
+          <div className="capitalize">{activity}</div>
             {tabValue === "Ongoing" ?  <>
               {(activity === "Temperature too high" || activity === "Temperature too low") ? (
                 <span className="text-foreground text-[10px]">
@@ -92,7 +93,7 @@ export const cabinetsActivityTableColumns = (tabValue: string) => [
       headerClassName: "",
       cellClassName: "align-middle whitespace-nowrap",
     },
-    cell: ({ row }) => row.original.time,
+    cell: ({ row }) => formatMonDayTime(row.original.time),
   }),
 
   ...(tabValue === "Activities"
@@ -110,18 +111,23 @@ export const cabinetsActivityTableColumns = (tabValue: string) => [
           const entry = row.original?.addedBy
           return (
             <div className="flex items-center gap-2">
-              {entry?.avatarUrl ? (
+              {/* {entry?.avatarUrl ? (
                 <img
                   src={entry.avatarUrl}
                   alt={entry.name}
                   className="size-8 rounded-full object-cover"
                 />
               ) : (
+              )} */}
                 <div className="flex size-8 items-center justify-center rounded-full bg-slate-200 text-xs font-semibold">
-                  {entry?.name.charAt(0)}
+                  {entry
+                    ?.split(" ").slice(0, 2)
+                    .map((word) => word.charAt(0))
+                    .join("")
+                    .toUpperCase()}
                 </div>
-              )}
-              <span className="font-medium">{entry?.name}</span>
+              {/* <span className="font-medium">{entry?.name}</span> */}
+              <span className="font-medium">{entry}</span>
             </div>
           )
         },

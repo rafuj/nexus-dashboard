@@ -31,6 +31,10 @@ export function formatDateTime(isoOrLocal: string) {
   if(!isoOrLocal) return "N/A"
   return dayjs(isoOrLocal).format("DD MMM YYYY, HH:mm");
 }
+export function formatMonDayTime(isoOrLocal: string) {
+  if(!isoOrLocal) return "N/A"
+  return dayjs(isoOrLocal).format("MMM DD, HH:mm");
+}
 /** Formatting Date from ISO to a readable format */
 export function formatDateSlash(date?: ConfigType) {
   if (!date) return "";

@@ -21,9 +21,8 @@ import { queryCabinetsActivityPage } from "../server/queryCabinetsActivityPage";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
 import { AddActivityModal } from "./AddActivityModal";
 import type { ActivityStatus } from "../types/activityList";
-import { mockCabinetActivities, mockCabinetIncidents } from "../mock/mockCabinetsActivity";
-const CABINET_FILTER_ALL = "all";
-const ACTIVITY_FILTER_ALL = "all";
+import { mockCabinetIncidents } from "../mock/mockCabinetsActivity";
+import { useActivitiesList } from "../hooks/useActivitiesList";
 const PAGE_SIZE = 8;
 
 interface TabItem {
@@ -35,15 +34,14 @@ interface TabItem {
 
 export default function CabinetsActivity() {
   const [search, setSearch] = useState("");
-  const [cabinetGroup, setCabinetGroup] = useState<string>(CABINET_FILTER_ALL);
-  const [activityType, setActivityType] = useState<string>(ACTIVITY_FILTER_ALL);
+  const [cabinetGroup, setCabinetGroup] = useState<string>("all");
+  const [activityType, setActivityType] = useState<string>("all");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [openActivity, setOpenActivity] = useState<boolean>(false)
 
-  const today = new Date();
   const [dateRange, setDateRange] = useState<DateRange>({
-    from: today,
-    to: today
+    from: undefined,
+    to: undefined
   })
 
   const tablist : TabItem[] = [
@@ -70,17 +68,31 @@ export default function CabinetsActivity() {
     pageSize: PAGE_SIZE,
   });
 
+  const {data:activities, refetch} = useActivitiesList({
+    page: pagination.pageIndex,
+    limit: pagination.pageSize,
+    // sort_by: "created_at",
+    // sort_order: "desc",
+    // cabinet_ids: cabinetGroup,
+    type: activityType,
+    status: tabValue,
+    // from_date: dateRange.from,
+    // to_date: dateRange.to,
+    search,
+  })
+
   const pageResult = useMemo(
     () =>
       queryCabinetsActivityPage({
-        data: tabValue === "Activities" ? mockCabinetActivities : mockCabinetIncidents,
+        data: tabValue === "Activities" ? (activities||[]) : mockCabinetIncidents,
         search,
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
         sorting,
-        activityType,
-        cabinetGroup,
-        tabValue
+        type: activityType,
+        group: cabinetGroup,
+        tabValue,
+        dateRange
       }),
     [
       search,
@@ -89,20 +101,30 @@ export default function CabinetsActivity() {
       sorting,
       cabinetGroup,
       activityType,
-      tabValue
+      tabValue,
+      activities,
+      dateRange
     ],
   );
 
   const columns = useMemo(() => cabinetsActivityTableColumns(tabValue), [tabValue]);
 
-  const resetPage = () => {
+  const resetPagination = () => {
     setPagination((p) => ({
       ...p,
       pageIndex: 0,
     }));
+  }
+  const resetPage = () => {
+    resetPagination()
     setSearch("")
-    setCabinetGroup(CABINET_FILTER_ALL)
-    setActivityType(ACTIVITY_FILTER_ALL)
+    setCabinetGroup("all")
+    setActivityType("all")
+  }
+
+  const onRefresh = () => {
+    resetPage()
+    refetch()
   }
 
   // eslint-disable-next-line react-hooks/incompatible-library -- useReactTable
@@ -200,7 +222,7 @@ export default function CabinetsActivity() {
                   ))}
                   <li className="text-sm ml-auto self-center text-accent-foreground flex items-center gap-4 py-2">
                      <span>Last update: 13:58</span>
-                     <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 xl:px-7">
+                     <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 xl:px-7" onClick={onRefresh}>
                       <RotateCcw size={16} /> <span>Refresh</span>
                     </button>
                   </li>
@@ -211,17 +233,27 @@ export default function CabinetsActivity() {
                   <CabinetsActivityListToolbar
                     onSearchChange={(v) => {
                       setSearch(v);
+                      resetPagination()
                     }}
                     {
                       ...{
                         search,
                         activityType,
-                        setActivityType,
+                        setActivityType: (value)=>{
+                          setActivityType(value)
+                          resetPagination()
+                        },
                         cabinetGroup,
-                        setCabinetGroup,
+                        setCabinetGroup: (value) => {
+                          setCabinetGroup(value)
+                          resetPagination()
+                        },
                         dateRange,
-                        setDateRange,
-                        onReset: resetPage
+                        setDateRange: (value)=> {
+                          setDateRange(value)
+                          resetPagination()
+                        },
+                        onReset: resetPage,
                       }
                     }
                   />

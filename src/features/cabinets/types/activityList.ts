@@ -32,10 +32,7 @@ export type CabinetActivityRow = {
   time: string
   group: string
   temperature?: string
-  addedBy?: {
-    name: string
-    avatarUrl: string
-  }
+  addedBy: string
 };
 
 
