@@ -206,9 +206,6 @@ const ActivityIcon = ({ activity }: ActivityIconProps) => {
     case "damaged":
       return <ActivityIcons.padsReplaced className={baseClass} />
 
-    case "battery replaced":
-      return <ActivityIcons.batteryReplaced className={baseClass} />
-
     case "other":
       return <ActivityIcons.padsReplaced className={baseClass} />
 

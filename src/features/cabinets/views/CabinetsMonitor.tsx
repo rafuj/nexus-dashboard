@@ -67,9 +67,8 @@ export default function CabinetsMonitor() {
   const [search, setSearch] = useQueryState("search", { defaultValue:"" });
   const [city, setCity] = useQueryState("city", { defaultValue: CITY_FILTER_ALL });
   const [status, setStatus] = useQueryState("status", parseAsStringLiteral(filterStatuses).withDefault(STATUS_FILTER_ALL))
-  const [cabinetId, setCabinetId] = useQueryState("id", { defaultValue: "" })
 
-  console.log("setCabinetId",setCabinetId)
+  const [cabinetId] = useQueryState("id", { defaultValue: "" })
 
   const [sorting, setSorting] = useState<SortingState>([]);
 
