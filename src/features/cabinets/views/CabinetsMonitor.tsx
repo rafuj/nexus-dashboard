@@ -80,7 +80,8 @@ export default function CabinetsMonitor() {
   const debouncedSearch = useDebounce(search, 400)
   const {
     data,
-    isFetching
+    isFetching,
+    refetch
   } = useSmartCabinetsList({
     search: debouncedSearch,
     status,
@@ -128,7 +129,7 @@ export default function CabinetsMonitor() {
     }))
   }
   const refreshPage = () => {
-    // Later this will just invalidate queryKeys
+    refetch(),
     setSearch("")
     setCity(CITY_FILTER_ALL)
     setStatus(STATUS_FILTER_ALL)
