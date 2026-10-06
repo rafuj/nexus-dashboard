@@ -2,6 +2,8 @@
 const API_VERSION = "/api/v1"
 
 export const API_ROUTES = {
+    // base
+    BASE: `${API_VERSION}`,
     // AUTH ROUTES
     LOGIN: `${API_VERSION}/login`,
     VERIFY_OTP: `${API_VERSION}/verify-otp`,
@@ -43,5 +45,5 @@ export const API_ROUTES = {
 
     // activity
     ACTIVITY_TYPES: `${API_VERSION}/activity-types`,
-    ACTIVITIES: `${API_VERSION}/activities`
+    ACTIVITIES: `${API_VERSION}/activities`,
 }

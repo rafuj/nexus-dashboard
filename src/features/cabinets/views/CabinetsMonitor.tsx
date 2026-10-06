@@ -195,8 +195,6 @@ export default function CabinetsMonitor() {
       const temperatureStatus = isInitialized
         ? getTemperatureStatus({
             current: item?.deviceState?.temperature,
-            // Matches the current monitor-table presentation until this timestamp is supplied by the API.
-            temperatureOutOfRangeSince: new Date(),
           })
         : "n/a"
 

@@ -250,9 +250,8 @@ export const cabinetsMonitorTableColumns = [
     },
     cell: ({ row }) => {
       const temp = {
-            current: row.original.deviceState?.temperature,
-            temperatureOutOfRangeSince: new Date() // no data available now, so static data
-          }
+        current: row.original.deviceState?.temperature
+      }
       const notInitialized = !row.original.deviceState
       return (
         <div className="flex">

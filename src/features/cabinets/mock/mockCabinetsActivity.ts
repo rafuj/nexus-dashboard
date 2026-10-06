@@ -284,15 +284,6 @@ export const mockCabinetIncidents: CabinetActivityRow[] = [
     addedBy: "Wilson Stanton"
   },
   {
-    id: "act-0009",
-    time: "May 26, 11:25",
-    activity: "Asset removed",
-    cabinetName: "CAB - 035",
-    category: "Security",
-    notes: "Asset placed back",
-    group: "May 26"
-  },
-  {
     id: "act-0100",
     time: "May 26, 11:19",
     activity: "Pads replaced",
