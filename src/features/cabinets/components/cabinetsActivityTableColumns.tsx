@@ -148,15 +148,15 @@ export const cabinetsActivityTableColumns = (tabValue: string) => [
             return <span className="text-slate-300">—</span>
           }
 
-          if (notes === "View notes") {
-            return (
-              <button className="rounded bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-200">
-                View notes
-              </button>
-            )
-          }
+          // if (notes === "View notes") {
+          //   return (
+          //     <button className="rounded bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-200">
+          //       View notes
+          //     </button>
+          //   )
+          // }
 
-          return <span>{notes}</span>
+          return <div className="max-w-[170px] whitespace-pre-wrap break-words">{notes}</div>
         },
       }),
     ]
