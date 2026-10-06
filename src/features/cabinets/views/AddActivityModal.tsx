@@ -348,34 +348,35 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
                       </Combobox>
                     }
                   </div>
-                  <div>
-                    <Label className="text-xs text-accent-foreground font-medium block mb-2">Activity Type</Label>
-                    <Select value={activity} onValueChange={(value)=> {
-                      setActivity(value);
-                      if (value.startsWith("cabinet")) {
-                        setCategory("cabinet")
-                      }
-                      else {
-                        setCategory("asset")
-                      }
-                    }} disabled={!selectedCabinet}>
-                      <SelectTrigger className="w-full !h-12.5">
-                        <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full capitalize">
-                          <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select activity type" /></span>
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Cabinet</SelectLabel>
-                          {activityTypes?.cabinet?.map((activity) => (<SelectItem className="pl-4 min-h-7 capitalize" value={"cabinet-"+activity.id}>{activity.name}</SelectItem>))}
-                        </SelectGroup>
-                        <SelectGroup>
-                          <SelectLabel>Asset</SelectLabel>
-                          {activityTypes?.asset?.map((activity) => (<SelectItem className="pl-4 min-h-7 capitalize" value={"asset-"+activity.id}>{activity.name}</SelectItem>))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  
+                    <div>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-2">Activity Type</Label>
+                      <Select value={activity} onValueChange={(value)=> {
+                        setActivity(value);
+                        if (value.startsWith("cabinet")) {
+                          setCategory("cabinet")
+                        }
+                        else {
+                          setCategory("asset")
+                        }
+                      }} disabled={!selectedCabinet}>
+                        <SelectTrigger className="w-full !h-12.5 disabled:bg-white">
+                          <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full capitalize">
+                            <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select activity type" /></span>
+                          </div>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Cabinet</SelectLabel>
+                            {activityTypes?.cabinet?.map((activity) => (<SelectItem className="pl-4 min-h-7 capitalize" value={"cabinet-"+activity.id}>{activity.name}</SelectItem>))}
+                          </SelectGroup>
+                          <SelectGroup>
+                            <SelectLabel>Asset</SelectLabel>
+                            {activityTypes?.asset?.map((activity) => (<SelectItem className="pl-4 min-h-7 capitalize" value={"asset-"+activity.id}>{activity.name}</SelectItem>))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
                   {/* Add Asset Pictures */}
                   {activity && (
