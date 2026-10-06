@@ -54,4 +54,5 @@ export type ActivityCabinetsListToolbarProps = {
   dateRange: DateRange,
   setDateRange: (value: DateRange) => void
   onReset: () => void
+  onExport: () => void
 }
