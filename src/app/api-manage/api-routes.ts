@@ -40,4 +40,7 @@ export const API_ROUTES = {
     DEVICES_IMEI_LINK: `${API_VERSION}/devices/imei-link`,
     DEVICES_RESERVE: `${API_VERSION}/devices/reserve`,
     IMEI_CHECK: `${API_VERSION}/devices/serial-check`,
+
+    // activity
+    ACTIVITY_TYPES: `${API_VERSION}/activity-types`
 }
