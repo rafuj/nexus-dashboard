@@ -253,7 +253,7 @@ export default function CabinetsActivity() {
                 <span>Add Event</span>
               </button>
           </div>
-          <section aria-label="Cabinets Activity">
+          <section aria-label="Cabinets Tracking">
             <div
               className={cn(
                 "bg-white border rounded-[10px] border-border",
