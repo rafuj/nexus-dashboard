@@ -266,7 +266,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
         typeId: activity.split("-")[1],
         ...(details ? { details } : {}),
       })
-      successToast("Activity Created Successfully")
+      successToast("Event Created Successfully")
       onCloseModal()
       } catch (error) {
         errorToast(getApiErrorMessage(error)) 
@@ -279,7 +279,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
         <form>
           <DialogContent className="sm:max-w-[620px] bg-white max-h-[95dvh] overflow-y-auto py-0 !flex flex-col !gap-0" showCloseButton={false}>
             <DialogHeader className="flex flex-row items-center justify-between w-full sticky top-0 bg-white z-100 p-0 py-5 px-0">
-              <DialogTitle className="text-2xl font-semibold text-accent-foreground">Add Activity</DialogTitle>
+              <DialogTitle className="text-2xl font-semibold text-accent-foreground">Add Event</DialogTitle>
               <DialogClose asChild>
                 <button type="button" className="text-foreground">
                   <XCircle />
@@ -350,7 +350,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
                   </div>
                   
                     <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-2">Activity Type</Label>
+                      <Label className="text-xs text-accent-foreground font-medium block mb-2">Event Type</Label>
                       <Select value={activity} onValueChange={(value)=> {
                         setActivity(value);
                         if (value.startsWith("cabinet")) {
@@ -362,7 +362,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
                       }} disabled={!selectedCabinet}>
                         <SelectTrigger className="w-full !h-12.5 disabled:bg-white">
                           <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full capitalize">
-                            <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select activity type" /></span>
+                            <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select event type" /></span>
                           </div>
                         </SelectTrigger>
                         <SelectContent>
@@ -382,7 +382,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
                   {activity && (
                     <>
                       <div>
-                        <Label className="text-xs text-accent-foreground font-medium block mb-2">Activity date</Label>
+                        <Label className="text-xs text-accent-foreground font-medium block mb-2">Event date</Label>
                         <DatePicker className="!bg-white text-xs pl-5 pr-4"
                             dateType="past"
                             showTime
@@ -570,7 +570,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
                   })}>
                     <InfoIcon />
                     <div className="w-0 grow">
-                      {activity ? "Reminder: If Maintenance Mode is enabled, disable it in the cabinet’s settings after ending all manual activities for this cabinet." : "You can enable Maintenance Mode in the cabinet's settings. While Maintenance Mode is enabled, all cabinet notifications and on-device feedback are paused."}
+                      {activity ? "Reminder: If Maintenance Mode is enabled, disable it in the cabinet’s settings after ending all manual events for this cabinet." : "You can enable Maintenance Mode in the cabinet's settings. While Maintenance Mode is enabled, all cabinet notifications and on-device feedback are paused."}
                     </div>
                   </div>
                 </div>
@@ -581,7 +581,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
                 <DialogClose asChild>
                   <button type="reset" className="flex items-center justify-center bg-chip text-accent-foreground py-2 sm:py-3.5 px-5 rounded-full text-sm gap-1.25 sm:w-full sm:max-w-[140px] md:max-w-[180px]">Cancel</button>
                 </DialogClose>
-                <LoaderButton loading={createActivityMutation.isPending} type="submit" className="py-2 sm:py-3.5 px-5 rounded-full sm:w-full sm:max-w-[140px] md:max-w-[180px] h-auto" onClick={handleFormSubmit} disabled={!activity}>Add Activity</LoaderButton>
+                <LoaderButton loading={createActivityMutation.isPending} type="submit" className="py-2 sm:py-3.5 px-5 rounded-full sm:w-full sm:max-w-[140px] md:max-w-[180px] h-auto" onClick={handleFormSubmit} disabled={!activity}>Add Event</LoaderButton>
               </div>
             </DialogFooter>
           </DialogContent>

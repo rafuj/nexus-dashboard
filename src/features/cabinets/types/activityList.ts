@@ -1,6 +1,6 @@
 import type { DateRange } from "react-day-picker"
 
-export type ActivityStatus = "Resolved" | "Ongoing" | "Activities";
+export type ActivityStatus = "Resolved" | "Ongoing" | "Events";
 
 export type ActivityType =
   | "Door open for >15 minutes"

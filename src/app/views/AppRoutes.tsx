@@ -46,7 +46,7 @@ export default function AppRoutes() {
           <Route path="/cabinets" element={<Navigate to="/cabinets/list" replace />} />
           <Route path="/cabinets/list" element={<CabinetsListView />} />
           <Route path="/cabinets/add" element={<AddCabinets />} />
-          <Route path="/cabinets/activity" element={<CabinetsActivity />} />
+          <Route path="/cabinets/tracking" element={<CabinetsActivity />} />
           <Route path="/cabinets/monitor" element={<CabinetsMonitor />} />
           <Route path="/cabinets/map" element={<CabinetsMapView />} />
           <Route path="/cabinets/list/:id" element={<CabinetView />} />

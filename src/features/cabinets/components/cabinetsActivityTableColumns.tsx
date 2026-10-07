@@ -7,6 +7,7 @@ import { DataTableColumnHeader } from "@/shared/components/data-table"
 import type { CabinetActivityRow } from "../types/activityList"
 import { ActivityIcons } from "@/app/icons/icons"
 import { formatMonDayTime } from "@/lib/utils"
+import VentilationErrorIcon from "@/assets/icons/ventilation.svg?react"
 
 const columnHelper = createColumnHelper<CabinetActivityRow>()
 
@@ -48,7 +49,7 @@ export const cabinetsActivityTableColumns = (tabValue: string) => [
   columnHelper.accessor("activity", {
     id: "activity",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={tabValue === "Activities" ? "Activity" : "Incident"} />
+      <DataTableColumnHeader column={column} title={tabValue === "Events" ? "Event" : "Incident"} />
     ),
     meta: {
       headerClassName: "",
@@ -96,7 +97,7 @@ export const cabinetsActivityTableColumns = (tabValue: string) => [
     cell: ({ row }) => formatMonDayTime(row.original.time),
   }),
 
-  ...(tabValue === "Activities"
+  ...(tabValue === "Events"
   ? [
       columnHelper.accessor("addedBy", {
         id: "addedBy",
@@ -175,6 +176,8 @@ const ActivityIcon = ({ activity }: ActivityIconProps) => {
   switch (activity) {
     case "Door opened":
       return <ActivityIcons.openDoor className={baseClass} />
+    case "Door open for >15 minutes":
+      return <ActivityIcons.openDoor className={baseClass} />
     case "Connectivity lost":
       return <ActivityIcons.connectivityLost className={baseClass} />
 
@@ -186,7 +189,7 @@ const ActivityIcon = ({ activity }: ActivityIconProps) => {
       return <ActivityIcons.temperature className={baseClass} />
 
     case "Ventilator error":
-      return <ActivityIcons.ventilatorError className={baseClass} />
+      return <VentilationErrorIcon className="size-4 shrink-0" />
 
     case "Data retrieved":
       return <ActivityIcons.dataRetrived className={baseClass} />

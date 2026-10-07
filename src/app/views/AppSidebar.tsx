@@ -67,7 +67,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         },
         {
           title: "Tracking",
-          url: "/cabinets/activity",
+          url: "/cabinets/tracking",
           icon: <ActivityIcon />,
         },
       ]
