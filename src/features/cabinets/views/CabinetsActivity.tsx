@@ -204,10 +204,10 @@ export default function CabinetsActivity() {
     const activities = allData.rows.map((item) => ({
       "Cabinet Name": item.cabinetName,
       "Group": "",
-      "Activity": item.activity,
+      "Event": item.activity,
       "Time": formatMonDayTime(item.time),
       "Added by": item.addedBy,
-      "Noted": item.notes,
+      "Notes": item.notes,
     }))
     exportExcel(tabValue === "Events" ? activities : incidents, `cabinet-${tabValue.toLowerCase()}-list`)
   }
