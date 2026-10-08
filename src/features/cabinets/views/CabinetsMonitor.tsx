@@ -26,6 +26,7 @@ import { Skeleton } from "@/shared/components/ui/skeleton";
 import { errorToast } from "@/lib/toast";
 import { exportMonitorExcel, type MonitorExportTone } from "@/lib/exportExcel";
 import { getDoorStatus, getOverallStatus, getPresenceStatus, getTemperatureStatus } from "../lib/cabinetListDisplay";
+import { LoaderButton } from "@/app/components/loader-button";
 
 
 const CITY_FILTER_ALL = "all";
@@ -80,7 +81,8 @@ export default function CabinetsMonitor() {
   const {
     data,
     isFetching,
-    refetch
+    refetch,
+    isRefetching
   } = useSmartCabinetsList({
     search: debouncedSearch,
     status,
@@ -128,11 +130,11 @@ export default function CabinetsMonitor() {
     }))
   }
   const refreshPage = () => {
-    refetch(),
     setSearch("")
     setCity(CITY_FILTER_ALL)
     setStatus(STATUS_FILTER_ALL)
     resetPagination()
+    refetch()
   }
 
   // eslint-disable-next-line react-hooks/incompatible-library -- useReactTable
@@ -266,9 +268,9 @@ export default function CabinetsMonitor() {
               <p className="text-xs m-0">Overall status uses the highest severity. Paused cabinets are not monitored.</p>
             </div>
             <div className="flex flex-wrap gap-4">
-              <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 xl:px-7" onClick={refreshPage}>
-                <RotateCcw size={16} /> <span>Refresh</span>
-              </button>
+              <LoaderButton type="button" className="h-10 md:!h-12.5 rounded-full px-5" onClick={refreshPage} loading={isRefetching}>
+                <div className="flex items-center gap-1.25"><RotateCcw size={16} /> <span>Refresh</span></div>
+              </LoaderButton>
               <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 xl:px-7" onClick={()=> exportList()}>
                 <Icons.export /> <span>Export</span>
               </button>

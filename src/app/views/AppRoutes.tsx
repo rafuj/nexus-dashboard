@@ -47,10 +47,10 @@ export default function AppRoutes() {
           <Route path="/cabinets/list" element={<CabinetsListView />} />
           <Route path="/cabinets/add" element={<AddCabinets />} />
           <Route path="/cabinets/tracking" element={<CabinetsActivity />} />
-          <Route path="/cabinets/monitor" element={<CabinetsMonitor />} />
+          <Route path="/cabinets/status" element={<CabinetsMonitor />} />
           <Route path="/cabinets/map" element={<CabinetsMapView />} />
           <Route path="/cabinets/list/:id" element={<CabinetView />} />
-          <Route path="/cabinets/monitor/:id" element={<CabinetView />} />
+          <Route path="/cabinets/status/:id" element={<CabinetView />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/explore-upgrade" element={<ExploreUpgrades />} />
         </>

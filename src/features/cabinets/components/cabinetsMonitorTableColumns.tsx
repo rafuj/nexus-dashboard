@@ -69,7 +69,7 @@ export const cabinetsMonitorTableColumns = [
     },
     cell: ({ row }) => {
       return (
-        <Link className={cn("px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all", getOverallStatusBadgeClass(row.original))} to={`/cabinets/monitor/${row.original.id}`} >
+        <Link className={cn("px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all", getOverallStatusBadgeClass(row.original))} to={`/cabinets/status/${row.original.id}`} >
             {row.original.name}
         </Link>
       )

@@ -61,8 +61,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           icon: <MapIcon />,
         },
         {
-          title: "Monitor",
-          url: "/cabinets/monitor",
+          title: "Status",
+          url: "/cabinets/status",
           icon: <MonitorIcon />,
         },
         {
