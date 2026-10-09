@@ -73,13 +73,13 @@ export default function DashboardView() {
               <div className="grid gap-5 grid-cols-1 xl:grid-cols-[634fr_496fr]">
 
                 {/* Conneted Canbinets Card */}
-                <ConnectedCabinets />
+                <ConnectedCabinets data={data} />
 
                 {/* Overview Chart */}
                 <DashboardOverviewChart />
 
                 {/* Responders Card */}
-                <RespondersCard />
+                <RespondersCard data={data} />
 
                 {/* Certificates Card */}
                 <Certificates />

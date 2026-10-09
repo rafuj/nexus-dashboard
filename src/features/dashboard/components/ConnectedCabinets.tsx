@@ -1,10 +1,10 @@
 import { Icons } from '@/app/icons/icons';
 import connectedCabinetsBg from "@/assets/connected-cabinets-bg.png"
-import { HAS_CONNECTED_CABINETS, recentActivityData, systemHealthData } from "../mock/mockDashboardStats";
+import { recentActivityData, systemHealthData } from "../mock/mockDashboardStats";
 import { Link } from 'react-router';
 import type { ActivityDefination, SystemHelthDefination } from '../types/dashboardStats';
 
-export default function ConnectedCabinets() {
+export default function ConnectedCabinets({ data }: { data: any }) {
     // const renderRoleIcon = (type: string) => {
     //     switch (type) {
     //         case 'viewer':
@@ -20,16 +20,16 @@ export default function ConnectedCabinets() {
     return (
         <div className="p-5 relative border rounded-[15px] bg-white">
             <div className="mb-4">
-                <h2 className="text-sm mb-1.5 font-semibold">Connected Cabinets (240)</h2>
-                <p className="text-xs">System health and activity for connected cabinets only.</p>
+                <h2 className="text-sm mb-1.5 font-semibold">Connected Cabinets ({data?.smartCabinets || 0})</h2>
+                <p className="text-xs">System health and event for connected cabinets only.</p>
             </div>
-            {HAS_CONNECTED_CABINETS ?
+            {data?.smartCabinets ?
                 (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                         <div className="py-5 px-2.5 xl:pr-3.75 rounded-[10px] bg-background">
                             <div className="flex justify-between mb-3">
                                 <h6 className="text-sm font-semibold leading-[1] m-0">System Health</h6>
-                                <Link to="" className='text-foreground hover:text-primary text-xs'>View details</Link>
+                                <Link to="/cabinets/tracking" className='text-foreground hover:text-primary text-xs'>View details</Link>
                             </div>
                             <table className="w-full text-left border-collapse">
                                 <tbody>
@@ -61,8 +61,8 @@ export default function ConnectedCabinets() {
                         </div>
                         <div className="py-5 px-2.5 xl:pr-3.75 rounded-[10px] bg-background">
                             <div className="flex justify-between mb-3">
-                                <h6 className="text-sm font-semibold leading-[1] m-0">Recent Activity</h6>
-                                <Link to="" className='text-foreground hover:text-primary text-xs'>View details</Link>
+                                <h6 className="text-sm font-semibold leading-[1] m-0">Recent Event</h6>
+                                <Link to="/cabinets/tracking?tabs=Events" className='text-foreground hover:text-primary text-xs'>View details</Link>
                             </div>
                             <table className="w-full text-left border-collapse">
                                 <tbody>
