@@ -271,8 +271,8 @@ export const getDoorStatusTooltipClass = (
   }
 };
 
-const HIGH_TEMPERATURE_LIMIT = 25
-const LOW_TEMPERATURE_LIMIT = 20
+const HIGH_TEMPERATURE_LIMIT = 50
+const LOW_TEMPERATURE_LIMIT = -5
 
 export type TemperatureStatus = "ok" | "warning" | "urgent";
 export type TemperatureState = {
@@ -282,7 +282,7 @@ export type TemperatureState = {
 export const getTemperatureStatus = ({
   current,
 }: TemperatureState): TemperatureStatus => {
-  if (LOW_TEMPERATURE_LIMIT >= current && current >= HIGH_TEMPERATURE_LIMIT) return "ok";
+  if (LOW_TEMPERATURE_LIMIT < current && current < HIGH_TEMPERATURE_LIMIT) return "ok";
   return "urgent";
 };
 
