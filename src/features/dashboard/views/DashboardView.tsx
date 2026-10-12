@@ -15,7 +15,7 @@ import { useDashboard } from "../hooks/useDashboard";
 
 export default function DashboardView() {
   const { user } = useAuth()
-  const {data} = useDashboard()
+  const {data, isPending} = useDashboard()
   return (
     <>
       <Helmet>
@@ -73,13 +73,13 @@ export default function DashboardView() {
               <div className="grid gap-5 grid-cols-1 xl:grid-cols-[634fr_496fr]">
 
                 {/* Conneted Canbinets Card */}
-                <ConnectedCabinets data={data} />
+                {isPending ? <div className="p-10 card-neutral bg-white border rounded-[15px]"></div> : <ConnectedCabinets data={data} />}
 
                 {/* Overview Chart */}
                 <DashboardOverviewChart />
 
                 {/* Responders Card */}
-                <RespondersCard data={data} />
+                {isPending ? <div className="p-10 card-neutral bg-white border rounded-[15px]"></div> : <RespondersCard data={data} />}
 
                 {/* Certificates Card */}
                 <Certificates />
