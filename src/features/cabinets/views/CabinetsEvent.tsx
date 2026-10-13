@@ -26,6 +26,7 @@ import { useEventsList } from "../hooks/useEventsList";
 import { errorToast } from "@/lib/toast";
 import { exportExcel } from "@/lib/exportExcel";
 import { LoaderButton } from "@/app/components/loader-button";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 const PAGE_SIZE = 8;
 
 interface TabItem {
@@ -55,7 +56,7 @@ export default function CabinetsEvent() {
     pageSize: PAGE_SIZE,
   });
 
-  const {data:events, refetch, isRefetching} = useEventsList({
+  const {data:events, refetch, isFetching, isRefetching} = useEventsList({
     page: pagination.pageIndex,
     limit: pagination.pageSize,
     // sort_by: "created_at",
@@ -333,18 +334,36 @@ export default function CabinetsEvent() {
                     }
                   />
                 </div>
-                <DataTable
-                  key={tabValue}
-                  table={table}
-                  emptyMessage="No cabinets match your filters."
-                  />
-                <div className="border-border border-t px-4 py-3">
-                  <DataTablePagination
-                    key={tabValue}
-                    table={table}
-                    navLabel="Cabinets table pagination"
-                  />
-                </div>
+
+                {(isFetching && !events) ? ( // will update when incidents apies are ready
+                  <div className="pb-5">
+                    <div className="flex flex-col gap-4 p-5 bg-white border border-border rounded-md">
+                      <Skeleton className="h-12" />
+                      <Skeleton className="h-12" />
+                      <Skeleton className="h-12" />
+                      <Skeleton className="h-12" />
+                      <Skeleton className="h-12" />
+                      <Skeleton className="h-12" />
+                      <Skeleton className="h-12" />
+                      <Skeleton className="h-12" />
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <DataTable
+                      key={tabValue}
+                      table={table}
+                      emptyMessage="No cabinets match your filters."
+                      />
+                    <div className="border-border border-t px-4 py-3">
+                      <DataTablePagination
+                        key={tabValue}
+                        table={table}
+                        navLabel="Cabinets table pagination"
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             </div>
             {openActivity && <AddEventModal {
