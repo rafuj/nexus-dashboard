@@ -9,7 +9,7 @@ export type FilterStatus = "ok" | "warning" | "urgent" | "paused" | 'all'
 
 export type CabinetConnectionType = "connected" | "not_connected";
 
-export type AssetHealth = 'ok' | 'warning' | 'urgent' | 'paused';
+export type AssetHealth = 'ok' | 'warning' | 'urgent';
 export type AssetPresence = 'present' | 'missing';
 export type DoorStatus = 'closed' | 'open';
 
@@ -33,6 +33,8 @@ interface BaseCabinet {
   smart: boolean
   status: string
   tenantId?: string
+  assetHealth: AssetHealth
+  
   deviceState: {
     assetPresent: boolean
     assetStateChangedAt: string

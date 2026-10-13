@@ -1,8 +1,10 @@
 import { Icons } from '@/app/icons/icons';
 import connectedCabinetsBg from "@/assets/connected-cabinets-bg.png"
-import { recentActivityData, systemHealthData } from "../mock/mockDashboardStats";
+import { systemHealthData } from "../mock/mockDashboardStats";
 import { Link } from 'react-router';
-import type { ActivityDefination, SystemHelthDefination } from '../types/dashboardStats';
+import type { SystemHelthDefination } from '../types/dashboardStats';
+import { useEventsList } from '@/features/cabinets/hooks/useEventsList';
+import type { CabinetEventRow } from '@/features/cabinets/types/eventList';
 
 export default function ConnectedCabinets({ data }: { data: any }) {
     // const renderRoleIcon = (type: string) => {
@@ -17,11 +19,14 @@ export default function ConnectedCabinets({ data }: { data: any }) {
     //             return null;
     //     }
     // };
+
+    const { data:events } = useEventsList({})
+
     return (
         <div className="p-5 relative border rounded-[15px] bg-white">
             <div className="mb-4">
                 <h2 className="text-sm mb-1.5 font-semibold">Connected Cabinets ({data?.smartCabinets || 0})</h2>
-                <p className="text-xs">System health and event for connected cabinets only.</p>
+                <p className="text-xs">System health and recent incidents for connected cabinets only.</p>
             </div>
             {data?.smartCabinets ?
                 (
@@ -39,7 +44,7 @@ export default function ConnectedCabinets({ data }: { data: any }) {
                                         <tr key={activity.id} className="group text-xs">
                                             <td className="py-2.5 group-last:pb-0">
                                                 <div className="flex items-center gap-1.25">
-                                                    {Icon ? <Icon /> : null}
+                                                    {Icon ? <Icon className='flex-shrink-0' /> : null}
                                                     <span>{activity.activity}</span>
                                                 </div>
                                             </td>
@@ -48,9 +53,14 @@ export default function ConnectedCabinets({ data }: { data: any }) {
                                                     <span>Yes:</span> <span className="font-semibold text-success">{activity.yes}</span>
                                                 </div>
                                             </td>
+                                            <td className="py-2.5 group-last:pb-0 px-2 xl:px-3">
+                                                <div className="flex gap-1">
+                                                    <span>No:</span> <span className="font-semibold text-error">{activity.no}</span>
+                                                </div>
+                                            </td>
                                             <td className="py-2.5 group-last:pb-0">
                                                 <div className="flex justify-end gap-1">
-                                                    <span>No:</span> <span className="font-semibold text-error">{activity.no}</span>
+                                                    <span>Unknown:</span> <span className="font-semibold">10</span>
                                                 </div>
                                             </td>
                                         </tr>
@@ -61,31 +71,34 @@ export default function ConnectedCabinets({ data }: { data: any }) {
                         </div>
                         <div className="py-5 px-2.5 xl:pr-3.75 rounded-[10px] bg-background">
                             <div className="flex justify-between mb-3">
-                                <h6 className="text-sm font-semibold leading-[1] m-0">Recent Event</h6>
-                                <Link to="/cabinets/tracking?tabs=Events" className='text-foreground hover:text-primary text-xs'>View details</Link>
+                                <h6 className="text-sm font-semibold leading-[1] m-0">Recent Incidents</h6>
+                                <Link to="/cabinets/tracking" className='text-foreground hover:text-primary text-xs'>View all Incident</Link>
                             </div>
                             <table className="w-full text-left border-collapse">
                                 <tbody>
-                                    {recentActivityData.map((activity: ActivityDefination) => {
-                                        const Icon = activity.icon;
+                                    {events?.map((event: CabinetEventRow) => {
                                         return (
-                                        <tr key={activity.id} className="group text-xs">
+                                        <tr key={event.id} className="group text-xs">
                                             <td className="pb-4 group-last:pb-0">
                                                 <div className="flex items-center gap-2 text-accent-foreground">
                                                     <span className='h-1 w-1 rounded-full bg-primary'></span>
-                                                    <span>{activity.time}</span>
+                                                    <span>{new Date(event?.time).toLocaleTimeString([], {
+                                                        hour: "2-digit",
+                                                        minute: "2-digit",
+                                                    })}</span>
                                                 </div>
                                             </td>
                                             <td className="pb-4 group-last:pb-0 px-2 xl:px-3">
-                                                {Icon ? <Icon /> : null}
+                                                {/* {Icon ? <Icon /> : null} */}
+                                                <Icons.alertResolved />
                                             </td>
                                             <td className="pb-4 group-last:pb-0">
-                                                <h6 className="font-normal m-0 leading-[1.3]">{activity.action}</h6>
-                                                <span className="block leading-[1.3]">{activity.location}</span>
+                                                <h6 className="font-normal m-0 leading-[1.3] capitalize">{event.event}</h6>
+                                                <span className="block leading-[1.3]">{event.cabinetName}</span>
                                             </td>
                                         </tr>
                                     )
-                                    })}
+                                    }).slice(0,4)}
                                 </tbody>
                             </table>
                         </div>

@@ -100,9 +100,8 @@ export const cabinetsMonitorTableColumns = [
       cellClassName: "align-middle relative group",
     },
     cell: ({ row }) => {
-      const health = !row.original.deviceState ? "n/a" : "ok"
-      const healthText = !row.original.deviceState ? "N/A" : "OK"
-      const notInitialized = !row.original.deviceState
+      const health = row.original.assetHealth
+      // const notInitialized = !row.original.deviceState
 
       return (
         <div className="inline-flex items-center gap-1.5 relative">
@@ -114,13 +113,14 @@ export const cabinetsMonitorTableColumns = [
                     getHealthBadgeClass(health)
                   )}
                 >
-                  {healthText}
+                  {health}
                 </span>
             </TooltipTrigger>
-            {!notInitialized && (
+            {/* {!notInitialized && ( */}
               <TooltipContent side="right" className={cn(getHealthBadgeTooltipColor(health))}>
               {getHealthTooltip(health)}
-            </TooltipContent>)}
+            </TooltipContent>
+            {/* )} */}
           </Tooltip>
         </div>
       )

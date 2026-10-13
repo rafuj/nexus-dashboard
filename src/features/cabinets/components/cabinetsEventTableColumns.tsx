@@ -8,6 +8,7 @@ import type { CabinetEventRow } from "../types/eventList"
 import { ActivityIcons } from "@/app/icons/icons"
 import { formatMonDayTime } from "@/lib/utils"
 import VentilationErrorIcon from "@/assets/icons/ventilation.svg?react"
+import { Link } from "react-router"
 
 const columnHelper = createColumnHelper<CabinetEventRow>()
 
@@ -23,7 +24,7 @@ export const cabinetsEventTableColumns = (tabValue: string) => [
       headerClassName: "",
       cellClassName: "align-middle tabular-nums",
     },
-    cell: ({ row }) => row.original.cabinetName,
+    cell: ({ row }) => row.original.cabinetId ? <Link to={`/cabinets/status/${row.original.cabinetId}`}>{row.original.cabinetName}</Link> : row.original.cabinetName ,
   }),
 
   columnHelper.accessor("group", {
