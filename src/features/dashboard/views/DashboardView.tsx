@@ -64,7 +64,7 @@ export default function DashboardView() {
                 </div>
               </div>
               {mockDashboardStats(data).map((stat) => (
-                <DashboardStatCard key={stat.id} stat={stat} />
+                <DashboardStatCard key={stat.id} stat={stat} loading={isPending} />
               ))}
             </section>
 
@@ -72,17 +72,24 @@ export default function DashboardView() {
             <section className="space-y-5" aria-labelledby="activity-heading">
               <div className="grid gap-5 grid-cols-1 xl:grid-cols-[634fr_496fr]">
 
-                {/* Conneted Canbinets Card */}
-                {isPending ? <div className="p-10 card-neutral bg-white border rounded-[15px]"></div> : <ConnectedCabinets data={data} />}
+                {isPending ? <>
+                  <div className="p-10 card-neutral bg-white border rounded-[15px] h-[340px]"></div>
+                  <div className="p-10 card-neutral bg-white border rounded-[15px] h-[340px]"></div>
+                  <div className="p-10 card-neutral bg-white border rounded-[15px] h-[340px]"></div>
+                  <div className="p-10 card-neutral bg-white border rounded-[15px] h-[340px]"></div>
+                </> : <>
+                  {/* Conneted Canbinets Card */}
+                  <ConnectedCabinets data={data} />
 
-                {/* Overview Chart */}
-                <DashboardOverviewChart />
+                  {/* Overview Chart */}
+                  <DashboardOverviewChart maintenance={data?.maintenance} />
 
-                {/* Responders Card */}
-                {isPending ? <div className="p-10 card-neutral bg-white border rounded-[15px]"></div> : <RespondersCard data={data} />}
+                  {/* Responders Card */}
+                  <RespondersCard data={data} />
 
-                {/* Certificates Card */}
-                <Certificates />
+                  {/* Certificates Card */}
+                  <Certificates />
+                </>}
 
               </div>
             </section>
