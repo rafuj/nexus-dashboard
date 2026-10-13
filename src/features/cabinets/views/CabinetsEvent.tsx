@@ -14,9 +14,9 @@ import { cn, formatMonDayTime } from "@/lib/utils";
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Link } from "react-router";
-import { CabinetsActivityListToolbar } from "../components/CabinetsActivityListToolbar";
+import { CabinetsEventListToolbar } from "../components/CabinetsEventListToolbar";
 import type { DateRange } from "react-day-picker";
-import { cabinetsActivityTableColumns } from "../components/cabinetsActivityTableColumns";
+import { cabinetsEventTableColumns } from "../components/cabinetsEventTableColumns";
 import { queryCabinetsEvents } from "../server/queryCabinetsEvents";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
 import { AddEventModal } from "./AddEventModal";
@@ -112,7 +112,7 @@ export default function CabinetsEvent() {
     ],
   );
 
-  const columns = useMemo(() => cabinetsActivityTableColumns(tabValue), [tabValue]);
+  const columns = useMemo(() => cabinetsEventTableColumns(tabValue), [tabValue]);
 
   const resetPagination = () => {
     setPagination((p) => ({
@@ -304,7 +304,7 @@ export default function CabinetsEvent() {
               </div>
               <div className="px-5">
                 <div className="pb-5">
-                  <CabinetsActivityListToolbar
+                  <CabinetsEventListToolbar
                     onSearchChange={(v) => {
                       setSearch(v);
                       resetPagination()

@@ -11,7 +11,7 @@ import VentilationErrorIcon from "@/assets/icons/ventilation.svg?react"
 
 const columnHelper = createColumnHelper<CabinetEventRow>()
 
-export const cabinetsActivityTableColumns = (tabValue: string) => [
+export const cabinetsEventTableColumns = (tabValue: string) => [
 
   // 1. Cabinet Name
   columnHelper.accessor("cabinetName", {
@@ -47,7 +47,7 @@ export const cabinetsActivityTableColumns = (tabValue: string) => [
 
   // 2. Activity Column (Includes Dynamic Activity Description & Placeholder Icons)
   columnHelper.accessor("event", {
-    id: "activity",
+    id: "event",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title={tabValue === "Events" ? "Event" : "Incident"} />
     ),

@@ -16,7 +16,7 @@ import { useEventTypes } from "../hooks/useEventTypes"
 const CABINET_GROUP = "all"
 const EVENT_TYPE = "all"
 
-export function CabinetsActivityListToolbar({
+export function CabinetsEventListToolbar({
   search,
   onSearchChange,
   cabinetGroup,
