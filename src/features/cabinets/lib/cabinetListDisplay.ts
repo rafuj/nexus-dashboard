@@ -314,17 +314,7 @@ export const getTemperatureTooltip = (data: TemperatureState) => {
   if (status === "ok") {
     return "No attention needed";
   }
-
-  // if (status === "warning") {
-  //   return data.current >= HIGH_TEMPERATURE_LIMIT
-  //     ? "Temperature too high for >1 hour"
-  //     : "Temperature too low for >1 hour";
-  // }
-
-  // return data.current >= HIGH_TEMPERATURE_LIMIT
-  //   ? "Temperature too high for >2 hours"
-  //   : "Temperature too low for >2 hours";
-  return data.current >= HIGH_TEMPERATURE_LIMIT
+  return data.current > HIGH_TEMPERATURE_LIMIT
     ? "Temperature too high"
     : "Temperature too low";
 };

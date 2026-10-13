@@ -1,15 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { createActivity } from "../api/activity.api"
+import { createEvent } from "../api/event.api"
 
-export const useCreateActivity = () => {
+export const useCreateEvent = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: createActivity,
+    mutationFn: createEvent,
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["activities"],
+        queryKey: ["events"],
       })
     },
   })

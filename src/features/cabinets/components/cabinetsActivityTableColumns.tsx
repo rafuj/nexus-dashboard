@@ -4,12 +4,12 @@
  */
 import { createColumnHelper } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "@/shared/components/data-table"
-import type { CabinetActivityRow } from "../types/activityList"
+import type { CabinetEventRow } from "../types/eventList"
 import { ActivityIcons } from "@/app/icons/icons"
 import { formatMonDayTime } from "@/lib/utils"
 import VentilationErrorIcon from "@/assets/icons/ventilation.svg?react"
 
-const columnHelper = createColumnHelper<CabinetActivityRow>()
+const columnHelper = createColumnHelper<CabinetEventRow>()
 
 export const cabinetsActivityTableColumns = (tabValue: string) => [
 
@@ -46,7 +46,7 @@ export const cabinetsActivityTableColumns = (tabValue: string) => [
   }),
 
   // 2. Activity Column (Includes Dynamic Activity Description & Placeholder Icons)
-  columnHelper.accessor("activity", {
+  columnHelper.accessor("event", {
     id: "activity",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title={tabValue === "Events" ? "Event" : "Incident"} />
@@ -56,7 +56,7 @@ export const cabinetsActivityTableColumns = (tabValue: string) => [
       cellClassName: "align-middle",
     },
     cell: ({ row }) => {
-      const activity = row.original.activity
+      const activity = row.original.event
       return (
         <div className="flex items-center gap-3">
           <div className={tabValue === "Ongoing" ? "text-error" : "text-success2"}>

@@ -1,8 +1,8 @@
 import type { DateRange } from "react-day-picker"
 
-export type ActivityStatus = "Resolved" | "Ongoing" | "Events";
+export type EventStatus = "Resolved" | "Ongoing" | "Events";
 
-export type ActivityType =
+export type EventType =
   | "Door open for >15 minutes"
   | "Connectivity lost"
   | "Asset removed"
@@ -31,9 +31,9 @@ export type ActivityUser = {
   avatarUrl?: string; // For rendering user profiles in the "Added by" column
 };
 
-export type CabinetActivityRow = {
+export type CabinetEventRow = {
   id: string
-  activity: ActivityType
+  event: EventType
   cabinetName: string
   category: string
   notes: string
@@ -44,13 +44,13 @@ export type CabinetActivityRow = {
 };
 
 
-export type ActivityCabinetsListToolbarProps = {
+export type EventCabinetsListToolbarProps = {
   search: string
   onSearchChange: (value: string) => void
   cabinetGroup:string
   setCabinetGroup: (value:string)=> void
-  activityType:string
-  setActivityType: (value:string)=> void
+  eventType:string
+  setEventType: (value:string)=> void
   dateRange: DateRange,
   setDateRange: (value: DateRange) => void
   onReset: () => void

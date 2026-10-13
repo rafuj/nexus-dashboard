@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import {
   getCoreRowModel,
@@ -17,12 +17,12 @@ import { Link } from "react-router";
 import { CabinetsActivityListToolbar } from "../components/CabinetsActivityListToolbar";
 import type { DateRange } from "react-day-picker";
 import { cabinetsActivityTableColumns } from "../components/cabinetsActivityTableColumns";
-import { queryCabinetsActivityPage } from "../server/queryCabinetsActivityPage";
+import { queryCabinetsEvents } from "../server/queryCabinetsEvents";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
-import { AddActivityModal } from "./AddActivityModal";
-import type { ActivityStatus } from "../types/activityList";
+import { AddEventModal } from "./AddEventModal";
+import type { EventStatus } from "../types/eventList";
 import { mockCabinetIncidents } from "../mock/mockCabinetsActivity";
-import { useActivitiesList } from "../hooks/useActivitiesList";
+import { useEventsList } from "../hooks/useEventsList";
 import { errorToast } from "@/lib/toast";
 import { exportExcel } from "@/lib/exportExcel";
 import { LoaderButton } from "@/app/components/loader-button";
@@ -30,17 +30,18 @@ const PAGE_SIZE = 8;
 
 interface TabItem {
   label: string;
-  value: ActivityStatus;
+  value: EventStatus;
   count: number;
 }
 
 
-export default function CabinetsActivity() {
+export default function CabinetsEvent() {
   const [search, setSearch] = useState("");
   const [cabinetGroup, setCabinetGroup] = useState<string>("all");
-  const [activityType, setActivityType] = useState<string>("all");
+  const [eventType, setEventType] = useState<string>("all");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [openActivity, setOpenActivity] = useState<boolean>(false)
+  const [isRefreshLoading, setIsRefreshLoading] = useState<boolean>(false)
 
   const [dateRange, setDateRange] = useState<DateRange>({
     from: undefined,
@@ -54,13 +55,13 @@ export default function CabinetsActivity() {
     pageSize: PAGE_SIZE,
   });
 
-  const {data:activities, refetch, isRefetching} = useActivitiesList({
+  const {data:events, refetch, isRefetching} = useEventsList({
     page: pagination.pageIndex,
     limit: pagination.pageSize,
     // sort_by: "created_at",
     // sort_order: "desc",
     // cabinet_ids: cabinetGroup,
-    type: activityType,
+    type: eventType,
     // status: tabValue,
     // from_date: dateRange.from,
     // to_date: dateRange.to,
@@ -81,19 +82,19 @@ export default function CabinetsActivity() {
     {
       label:"Events", 
       value:"Events",
-      count: activities?.length || 0
+      count: events?.length || 0
     }
   ]
 
   const pageResult = useMemo(
     () =>
-      queryCabinetsActivityPage({
-        data: tabValue === "Events" ? (activities||[]) : mockCabinetIncidents,
+      queryCabinetsEvents({
+        data: tabValue === "Events" ? (events||[]) : mockCabinetIncidents,
         search,
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
         sorting,
-        type: activityType,
+        type: eventType,
         group: cabinetGroup,
         tabValue,
         dateRange
@@ -104,9 +105,9 @@ export default function CabinetsActivity() {
       pagination.pageSize,
       sorting,
       cabinetGroup,
-      activityType,
+      eventType,
       tabValue,
-      activities,
+      events,
       dateRange
     ],
   );
@@ -123,14 +124,21 @@ export default function CabinetsActivity() {
     resetPagination()
     setSearch("")
     setCabinetGroup("all")
-    setActivityType("all")
+    setEventType("all")
     setDateRange({
       from: undefined,
       to: undefined
     })
   }
 
+  useEffect(()=> {
+    if(!isRefetching) {
+      setIsRefreshLoading(false)
+    }
+  },[isRefetching])
+
   const onRefresh = () => {
+    setIsRefreshLoading(true)
     resetPage()
     refetch()
     setNow(new Date())
@@ -166,13 +174,13 @@ export default function CabinetsActivity() {
 
   const allData = useMemo(
     () =>
-      queryCabinetsActivityPage({
-        data: tabValue === "Events" ? (activities||[]) : mockCabinetIncidents,
+      queryCabinetsEvents({
+        data: tabValue === "Events" ? (events||[]) : mockCabinetIncidents,
         search,
         pageIndex: 0,
-        pageSize: (tabValue === "Events" ? (activities||[]).length : mockCabinetIncidents.length) || 0,
+        pageSize: (tabValue === "Events" ? (events||[]).length : mockCabinetIncidents.length) || 0,
         sorting,
-        type: activityType,
+        type: eventType,
         group: cabinetGroup,
         tabValue,
         dateRange
@@ -183,9 +191,9 @@ export default function CabinetsActivity() {
       pagination.pageSize,
       sorting,
       cabinetGroup,
-      activityType,
+      eventType,
       tabValue,
-      activities,
+      events,
       dateRange
     ],
   );
@@ -198,13 +206,13 @@ export default function CabinetsActivity() {
     const incidents = allData.rows.map((item) => ({
       "Cabinet Name": item.cabinetName,
       "Group": "",
-      "Incident": item.activity,
+      "Incident": item.event,
       "Time": formatMonDayTime(item.time),
     }))
     const activities = allData.rows.map((item) => ({
       "Cabinet Name": item.cabinetName,
       "Group": "",
-      "Event": item.activity,
+      "Event": item.event,
       "Time": formatMonDayTime(item.time),
       "Added by": item.addedBy,
       "Notes": item.notes,
@@ -286,7 +294,7 @@ export default function CabinetsActivity() {
                   ))}
                   <li className="text-sm ml-auto self-center text-accent-foreground flex items-center gap-4 py-2">
                      <span>Last update: {formattedTime}</span>
-                     <LoaderButton type="button" className="h-10 md:!h-12.5 py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm xl:px-7 text-white" onClick={onRefresh} loading={isRefetching}>
+                     <LoaderButton type="button" className="h-10 md:!h-12.5 py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm xl:px-7 text-white" onClick={onRefresh} loading={isRefreshLoading}>
                       <div className="flex items-center justify-center gap-1.25">
                         <RotateCcw size={16} /> <span>Refresh</span>
                       </div>
@@ -304,9 +312,9 @@ export default function CabinetsActivity() {
                     {
                       ...{
                         search,
-                        activityType,
-                        setActivityType: (value)=>{
-                          setActivityType(value)
+                        eventType,
+                        setEventType: (value)=>{
+                          setEventType(value)
                           resetPagination()
                         },
                         cabinetGroup,
@@ -339,7 +347,7 @@ export default function CabinetsActivity() {
                 </div>
               </div>
             </div>
-            {openActivity && <AddActivityModal {
+            {openActivity && <AddEventModal {
                 ...{
                   open: openActivity,
                   setOpen: setOpenActivity

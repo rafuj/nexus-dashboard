@@ -1,9 +1,9 @@
 "use client"
 import { EndActivityModal } from "../views/EndActivityModal"
-import type { CabinetActivityRow } from "../types/activityList"
+import type { CabinetEventRow } from "../types/eventList"
 import { useState } from "react"
 
-export function EndActivityAction({ row }: { row: CabinetActivityRow }) {
+export function EndActivityAction({ row }: { row: CabinetEventRow }) {
   
   const [openEndActivity, setOpenEndActivity] = useState<boolean>(false)
   console.log("row", row)

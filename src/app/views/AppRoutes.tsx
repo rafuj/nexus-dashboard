@@ -9,7 +9,6 @@ import CabinetView from "@/features/cabinets/views/CabinetView";
 import CabinetsListView from "@/features/cabinets/views/CabinetsListView";
 import DashboardView from "@/features/dashboard/views/DashboardView";
 import AddCabinets from "@/features/cabinets/views/AddCabinets";
-import CabinetsActivity from "@/features/cabinets/views/CabinetsActivity";
 import CabinetsMonitor from "@/features/cabinets/views/CabinetsMonitor";
 import CabinetsMapView from "@/features/cabinets/views/CabinetsMapView";
 import ForgotPassword from "@/features/auth/views/ForgotPassword";
@@ -24,6 +23,7 @@ import SignUp from "@/features/auth/views/SignUp";
 import UPDGeneration from "@/features/factory/views/UPDGeneration";
 import NotFound from "@/features/error-page/NotFound";
 import NEXGeneration from "@/features/factory/views/NEXGeneration";
+import CabinetsEvent from "@/features/cabinets/views/CabinetsEvent";
 
 const helmetContext = {};
 
@@ -46,7 +46,7 @@ export default function AppRoutes() {
           <Route path="/cabinets" element={<Navigate to="/cabinets/list" replace />} />
           <Route path="/cabinets/list" element={<CabinetsListView />} />
           <Route path="/cabinets/add" element={<AddCabinets />} />
-          <Route path="/cabinets/tracking" element={<CabinetsActivity />} />
+          <Route path="/cabinets/tracking" element={<CabinetsEvent />} />
           <Route path="/cabinets/status" element={<CabinetsMonitor />} />
           <Route path="/cabinets/map" element={<CabinetsMapView />} />
           <Route path="/cabinets/list/:id" element={<CabinetView />} />
