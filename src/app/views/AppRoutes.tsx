@@ -9,7 +9,7 @@ import CabinetView from "@/features/cabinets/views/CabinetView";
 import CabinetsListView from "@/features/cabinets/views/CabinetsListView";
 import DashboardView from "@/features/dashboard/views/DashboardView";
 import AddCabinets from "@/features/cabinets/views/AddCabinets";
-import CabinetsMonitor from "@/features/cabinets/views/CabinetsMonitor";
+import CabinetsStatusView from "@/features/cabinets/views/CabinetsStatusView";
 import CabinetsMapView from "@/features/cabinets/views/CabinetsMapView";
 import ForgotPassword from "@/features/auth/views/ForgotPassword";
 import ResetPassword from "@/features/auth/views/ResetPassword";
@@ -47,7 +47,7 @@ export default function AppRoutes() {
           <Route path="/cabinets/list" element={<CabinetsListView />} />
           <Route path="/cabinets/add" element={<AddCabinets />} />
           <Route path="/cabinets/tracking" element={<CabinetsEvent />} />
-          <Route path="/cabinets/status" element={<CabinetsMonitor />} />
+          <Route path="/cabinets/status" element={<CabinetsStatusView />} />
           <Route path="/cabinets/map" element={<CabinetsMapView />} />
           <Route path="/cabinets/list/:id" element={<CabinetView />} />
           <Route path="/cabinets/status/:id" element={<CabinetView />} />

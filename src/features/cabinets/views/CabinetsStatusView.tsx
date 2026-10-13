@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import {
   getCoreRowModel,
@@ -64,10 +64,11 @@ const formatMonitorStatus = (status: string) => {
   return status.charAt(0).toUpperCase() + status.slice(1)
 }
 
-export default function CabinetsMonitor() {
+export default function CabinetsStatusView() {
   const [search, setSearch] = useQueryState("search", { defaultValue:"" });
   const [city, setCity] = useQueryState("city", { defaultValue: CITY_FILTER_ALL });
   const [status, setStatus] = useQueryState("status", parseAsStringLiteral(filterStatuses).withDefault(STATUS_FILTER_ALL))
+  const [isRefreshLoading, setIsRefreshLoading] = useState<boolean>(false)
 
   const [cabinetId] = useQueryState("id", { defaultValue: "" })
 
@@ -82,7 +83,8 @@ export default function CabinetsMonitor() {
     data,
     isFetching,
     refetch,
-    isRefetching
+    isRefetching,
+    isSuccess
   } = useSmartCabinetsList({
     search: debouncedSearch,
     status,
@@ -129,12 +131,16 @@ export default function CabinetsMonitor() {
       pageIndex: 0,
     }))
   }
+  useEffect(()=> {
+    if(!isRefetching) {
+      setIsRefreshLoading(false)
+    }
+  },[isRefetching])
+
   const refreshPage = () => {
-    setSearch("")
-    setCity(CITY_FILTER_ALL)
-    setStatus(STATUS_FILTER_ALL)
-    resetPagination()
-    refetch()
+    setIsRefreshLoading(true)
+    resetPage()
+    setTimeout(()=>refetch(), 0)
   }
 
   // eslint-disable-next-line react-hooks/incompatible-library -- useReactTable
@@ -268,7 +274,7 @@ export default function CabinetsMonitor() {
               <p className="text-xs m-0">Overall status uses the highest severity. Paused cabinets are not monitored.</p>
             </div>
             <div className="flex flex-wrap gap-4">
-              <LoaderButton type="button" className="h-10 md:!h-12.5 rounded-full px-5" onClick={refreshPage} loading={isRefetching}>
+              <LoaderButton type="button" className="h-10 md:!h-12.5 rounded-full px-5" onClick={refreshPage} loading={isRefreshLoading}>
                 <div className="flex items-center gap-1.25"><RotateCcw size={16} /> <span>Refresh</span></div>
               </LoaderButton>
               <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 xl:px-7" onClick={()=> exportList()}>

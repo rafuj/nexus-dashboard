@@ -135,14 +135,14 @@ export default function CabinetsEvent() {
   useEffect(()=> {
     if(!isRefetching) {
       setIsRefreshLoading(false)
+      setNow(new Date())
     }
   },[isRefetching])
 
   const onRefresh = () => {
     setIsRefreshLoading(true)
     resetPage()
-    refetch()
-    setNow(new Date())
+    setTimeout(()=>refetch(), 0)
   }
 
   // eslint-disable-next-line react-hooks/incompatible-library -- useReactTable
