@@ -61,6 +61,7 @@ export type CabinetsListToolbarProps = {
   onRefresh: () => void
   isFetching?: boolean
   onExport: () => void
+  isRefreshLoading?: boolean
 }
 
 export const cabinetConfig = {

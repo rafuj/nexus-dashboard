@@ -140,8 +140,8 @@ export default function CabinetsEvent() {
   },[isRefetching])
 
   const onRefresh = () => {
-    setIsRefreshLoading(true)
     resetPage()
+    setIsRefreshLoading(true)
     setTimeout(()=>refetch(), 0)
   }
 

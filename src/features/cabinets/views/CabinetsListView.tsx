@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import {
   getCoreRowModel,
@@ -46,6 +46,7 @@ export default function CabinetsListView() {
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsStringLiteral(filterStatuses).withDefault(STATUS_FILTER_ALL))
   const [city, setCity] = useQueryState("city", { defaultValue: CITY_FILTER_ALL });
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [isRefreshLoading, setIsRefreshLoading] = useState<boolean>(false)
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: PAGE_SIZE,
@@ -56,6 +57,7 @@ export default function CabinetsListView() {
     data,
     isFetching,
     refetch,
+    isRefetching
   } = useCabinetsList({
     search: debouncedSearch,
     status: statusFilter,
@@ -133,9 +135,16 @@ export default function CabinetsListView() {
     },
   })
 
+  useEffect(()=> {
+    if(!isRefetching) {
+      setIsRefreshLoading(false)
+    }
+  },[isRefetching])
+    
   const onRefresh = () => {
-    refetch()
     resetPage()
+    setIsRefreshLoading(true)
+    setTimeout(()=>refetch(), 0)
   }
 
   const allData = useMemo(
@@ -236,6 +245,7 @@ export default function CabinetsListView() {
                 onRefresh={onRefresh}
                 isFetching={isFetching}
                 onExport={exportList}
+                isRefreshLoading={isRefreshLoading}
               />
             </div>
             {(isFetching && !data) ? (

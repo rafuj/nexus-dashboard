@@ -138,8 +138,8 @@ export default function CabinetsStatusView() {
   },[isRefetching])
 
   const refreshPage = () => {
-    setIsRefreshLoading(true)
     resetPage()
+    setIsRefreshLoading(true)
     setTimeout(()=>refetch(), 0)
   }
 
