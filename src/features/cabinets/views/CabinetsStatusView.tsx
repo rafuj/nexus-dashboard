@@ -83,8 +83,7 @@ export default function CabinetsStatusView() {
     data,
     isFetching,
     refetch,
-    isRefetching,
-    isSuccess
+    isRefetching
   } = useSmartCabinetsList({
     search: debouncedSearch,
     status,

@@ -41,7 +41,7 @@ export type CabinetEventRow = {
   group: string
   temperature?: string
   addedBy: string
-  cabinetId: string
+  cabinetId?: string
 }
 
 

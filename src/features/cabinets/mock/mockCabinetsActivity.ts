@@ -9,7 +9,7 @@ export const mockCabinetIncidents: CabinetEventRow[] = [
     category: "Hardware",
     notes: "Door closed again",
     group: "",
-    addedBy: "Wilson Stanton"
+    addedBy: "Wilson Stanton",
   },
   {
     id: "act-002",

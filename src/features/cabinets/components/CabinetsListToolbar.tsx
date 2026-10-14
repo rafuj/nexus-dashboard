@@ -24,7 +24,6 @@ export function CabinetsListToolbar({
   onCityChange,
   resetPage,
   onRefresh,
-  isFetching,
   onExport,
   isRefreshLoading
 }: CabinetsListToolbarProps) {

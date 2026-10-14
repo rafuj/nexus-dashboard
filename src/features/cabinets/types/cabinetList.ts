@@ -33,7 +33,7 @@ interface BaseCabinet {
   smart: boolean
   status: string
   tenantId?: string
-  assetHealth: AssetHealth
+  assetHealth?: AssetHealth
   
   deviceState: {
     assetPresent: boolean
