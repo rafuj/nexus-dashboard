@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 import type { SystemHelthDefination } from '../types/dashboardStats';
 import { useEventsList } from '@/features/cabinets/hooks/useEventsList';
 import type { CabinetEventRow } from '@/features/cabinets/types/eventList';
+import { formatMonDayTime } from '@/lib/utils';
 
 export default function ConnectedCabinets({ data }: { data: any }) {
     // const renderRoleIcon = (type: string) => {
@@ -76,16 +77,17 @@ export default function ConnectedCabinets({ data }: { data: any }) {
                             </div>
                             <table className="w-full text-left border-collapse">
                                 <tbody>
-                                    {events?.map((event: CabinetEventRow) => {
+                                    {events?.map((event: CabinetEventRow, i) => {
                                         return (
-                                        <tr key={event.id} className="group text-xs">
+                                        <tr key={i} className="group text-xs">
                                             <td className="pb-4 group-last:pb-0">
                                                 <div className="flex items-center gap-2 text-accent-foreground">
                                                     <span className='h-1 w-1 rounded-full bg-primary'></span>
-                                                    <span>{new Date(event?.time).toLocaleTimeString([], {
+                                                    {/* <span>{new Date(event?.time).toLocaleTimeString([], {
                                                         hour: "2-digit",
                                                         minute: "2-digit",
-                                                    })}</span>
+                                                    })}</span> */}
+                                                    <span>{formatMonDayTime(event.time)}</span>
                                                 </div>
                                             </td>
                                             <td className="pb-4 group-last:pb-0 px-2 xl:px-3">

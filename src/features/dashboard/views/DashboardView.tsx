@@ -62,9 +62,9 @@ export default function DashboardView() {
                   <h3 className="text-2xl font-semibold mt-6 mb-2">
                     {isPending ? <div className="h-8 flex items-center"><Skeleton className="w-20 h-5 rounded" /></div> : <>{data?.fleetReadiness}% <span className="text-sm font-normal text-accent-foreground text-primary">ready</span></>}
                   </h3>
-                  <p className="text-sm">
+                  <div className="text-sm">
                     {isPending ? <Skeleton className="w-10 h-4 rounded" /> : `${data?.totalCabinets - (data?.suspendedCabinets||0)} cabinets monitored`}
-                  </p>
+                  </div>
                 </div>
               </div>
               {mockDashboardStats(data).map((stat) => (
