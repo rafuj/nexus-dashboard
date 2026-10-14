@@ -3,6 +3,20 @@ import { API_ROUTES } from "@/app/api-manage/api-routes";
 import { useEffect, useState } from "react";
 
 type DeviceState = Record<string, unknown>;
+interface DeviceStateI {
+  assetHealth: string,
+  assetPresent: boolean,
+  assetStateChangedAt: Date,
+  createdAt: Date,
+  deviceInstallationId: string,
+  doorOpen: boolean,
+  doorStateChangedAt: Date,
+  lastSeenAt: Date,
+  rssi: number,
+  ser: boolean,
+  serStateChangedAt: Date,
+  temperature: number
+}
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null && !Array.isArray(value);
@@ -15,14 +29,12 @@ const getDeviceState = (payload: unknown): DeviceState | null => {
 };
 
 export function useDeviceStreamState(cabinetId?: string) {
-  const [deviceState, setDeviceState] = useState<DeviceState | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
+  const [deviceState, setDeviceState] = useState<DeviceStateI | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!cabinetId) {
       setDeviceState(null);
-      setIsConnected(false);
       setError(null);
       return;
     }
@@ -44,14 +56,13 @@ export function useDeviceStreamState(cabinetId?: string) {
 
     const handleEvent = (event: MessageEvent<string>) => {
       try {
-        const parsed = JSON.parse(event.data) as unknown;
+        const parsed : DeviceStateI = JSON.parse(event.data);
         const nextDeviceState = getDeviceState(parsed);
 
         if (!nextDeviceState) {
           throw new Error("SSE payload does not contain a device state object");
         }
-
-        setDeviceState(nextDeviceState);
+        setDeviceState(parsed);
         setError(null);
         log("Device state received", { cabinetId, eventType: event.type });
       } catch (parseError) {
@@ -78,7 +89,6 @@ export function useDeviceStreamState(cabinetId?: string) {
 
       source.onopen = () => {
         reconnectAttempt = 0;
-        setIsConnected(true);
         setError(null);
         log("Connected", { cabinetId });
       };
@@ -88,8 +98,6 @@ export function useDeviceStreamState(cabinetId?: string) {
 
       source.onerror = () => {
         if (disposed || source !== eventSource) return;
-
-        setIsConnected(false);
 
         if (source.readyState === EventSource.CLOSED) {
           if (reconnectTimer) return;
@@ -117,5 +125,5 @@ export function useDeviceStreamState(cabinetId?: string) {
     };
   }, [cabinetId]);
 
-  return { deviceState, isConnected, error };
+  return { deviceState, error };
 }

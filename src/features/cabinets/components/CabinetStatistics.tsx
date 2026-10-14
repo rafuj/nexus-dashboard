@@ -4,7 +4,7 @@ import AssetPresenceIcon from "@/assets/icons/asset-presence.svg?react";
 import AssetHealthIcon from "@/assets/icons/asset-health.svg?react";
 import TemperatureIcon from "@/assets/icons/temperature.svg?react";
 import ConnectivityIcon from "@/assets/icons/connectivity.svg?react";
-
+import dayjs from "dayjs";
 import { cn } from "@/lib/utils";
 import {
   getTemperatureChip
@@ -38,19 +38,20 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
   const {id} = useParams()
 
   const {data, isSuccess} = useDeviceState(id ?? '')
-  const {deviceState, isConnected} = useDeviceStreamState(deviceSerialNumber ? id : "")
+  const {deviceState} = useDeviceStreamState(deviceSerialNumber ? id : "")
 
   const notInitialized = !data
 
   useEffect(()=>{
     if(deviceState) {
+      const lastSeen = dayjs(deviceState?.lastSeenAt)
       setState({
         doorOpenedAt: String(deviceState?.doorStateChangedAt),
         assetTakenAt: deviceState?.assetStateChangedAt ? String(deviceState?.assetStateChangedAt) : "",
         assetPresent: !!deviceState?.assetPresent,
         assetHealth: String(deviceState?.assetHealth),
         temperature: Number(deviceState?.temperature) || 0,
-        isConnected: isConnected,
+        isConnected: lastSeen.isValid() && dayjs().diff(lastSeen, "hours", true) < 12,
         doorOpen: !!deviceState?.doorOpen,
       })
     } else if(isSuccess) {
@@ -60,11 +61,11 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
         assetPresent: !!data?.assetPresent,
         assetHealth: data?.assetHealth,
         temperature: Number(data?.temperature) || 0,
-        isConnected: isConnected,
+        isConnected: Boolean(dayjs().diff(dayjs(data?.lastSeenAt), "hours", true) < 12),
         doorOpen: !!data?.doorOpen,
       })
     }
-  }, [deviceState, isConnected, isSuccess])
+  }, [deviceState, isSuccess])
 
   const cards = [
     {
@@ -143,18 +144,18 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
     {
       title: "Connectivity",
       Icon: ConnectivityIcon,
-      badgeClass: data
+      badgeClass: state.isConnected
           ? "bg-card-success text-success"
           : "bg-card-error text-error",
       value: <div
             className={cn(
               "px-3 py-1 rounded-[4px] text-xs w-full text-center inline-block transition-all",
-              data
+              state.isConnected
                 ? "bg-card-success text-success"
                 : "bg-card-error text-error"
             )}
           >
-            {data
+            {state.isConnected
               ? "Connected"
               : "Not Connected"}
           </div>
