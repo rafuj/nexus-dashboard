@@ -16,6 +16,7 @@ import { useDeviceStreamState } from "../hooks/useDeviceStreamState";
 import { useEffect, useState } from "react";
 interface DeviceState {
   doorOpenedAt: string | ""
+  doorOpen: boolean
   assetTakenAt: string | ""
   assetPresent: boolean
   assetHealth: string | ""
@@ -26,6 +27,7 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
 
   const [state, setState] = useState<DeviceState>({
   doorOpenedAt: "",
+  doorOpen: false,
   assetTakenAt: "",
   assetPresent: false,
   assetHealth: "",
@@ -43,21 +45,23 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
   useEffect(()=>{
     if(deviceState) {
       setState({
-        doorOpenedAt: deviceState?.doorOpen ? String(deviceState?.doorStateChangedAt) : "",
+        doorOpenedAt: String(deviceState?.doorStateChangedAt),
         assetTakenAt: deviceState?.assetStateChangedAt ? String(deviceState?.assetStateChangedAt) : "",
         assetPresent: !!deviceState?.assetPresent,
         assetHealth: String(deviceState?.assetHealth),
         temperature: Number(deviceState?.temperature) || 0,
         isConnected: isConnected,
+        doorOpen: !!deviceState?.doorOpen,
       })
     } else if(isSuccess) {
       setState({
-        doorOpenedAt: data?.doorOpen ? String(data?.doorStateChangedAt) : "",
+        doorOpenedAt: String(data?.doorStateChangedAt),
         assetTakenAt: data?.assetStateChangedAt ? String(data?.assetStateChangedAt) : "",
         assetPresent: !!data?.assetPresent,
         assetHealth: data?.assetHealth,
         temperature: Number(data?.temperature) || 0,
         isConnected: isConnected,
+        doorOpen: !!data?.doorOpen,
       })
     }
   }, [deviceState, isConnected, isSuccess])
@@ -66,20 +70,20 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
     {
       title: "Door",
       Icon: DoorIcon,
-      badgeClass: getDoorBadgeClass(state.doorOpenedAt),
+      badgeClass: getDoorBadgeClass(state?.doorOpen, state.doorOpenedAt),
       value: <Tooltip>
             <TooltipTrigger className="w-full">
               <span
                 className={cn(
                   "px-3 py-1 rounded-[4px] text-xs w-full text-center block transition-all capitalize",
-                  getDoorBadgeClass(state.doorOpenedAt)
+                  getDoorBadgeClass(state?.doorOpen, state.doorOpenedAt)
                 )}
               >
-                    {getDoorStatus(state.doorOpenedAt)}
+                    {getDoorStatus(state?.doorOpen, state.doorOpenedAt)}
               </span>
             </TooltipTrigger>
-              <TooltipContent side="right" className={cn(getDoorStatusTooltipClass(state.doorOpenedAt))}>
-                {getDoorStatusTooltip(state.doorOpenedAt)}
+              <TooltipContent side="right" className={cn(getDoorStatusTooltipClass(state?.doorOpen, state.doorOpenedAt))}>
+                {getDoorStatusTooltip(state?.doorOpen, state.doorOpenedAt)}
               </TooltipContent>
           </Tooltip>
     },

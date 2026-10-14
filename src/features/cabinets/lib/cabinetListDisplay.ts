@@ -144,10 +144,10 @@ export const getPresenceStatus = (
 ): AssetPresenceStatus => {
   if (assetPresent) return "present";
 
-  const hoursTaken = dayjs().diff(dayjs(takenAt), "hour", true);
+  const minutesTaken = dayjs().diff(dayjs(takenAt), "minutes", true);
 
-  if (hoursTaken < 1) return "taken";
-  if (hoursTaken < 6) return "warning";
+  if (minutesTaken < 1) return "taken";
+  if (minutesTaken < 10) return "warning";
   return "urgent";
 };
 
@@ -177,13 +177,13 @@ export const getPresenceTooltip = (
       return "No attention needed";
 
     case "taken":
-      return "Asset taken <1 hour";
+      return "Asset taken <1 minute";
 
     case "warning":
-      return "Asset taken for >1 hour";
+      return "Asset taken for <10 minutes";
 
     case "urgent":
-      return "Asset taken for >6 hours";
+      return "Asset taken for >10 minutes";
   }
 };
 
@@ -208,19 +208,20 @@ export const getPresenceTooltipClass = (
 // DoorStatus
 type DoorStatus = "closed" | "open" | "warning" | "urgent";
 export const getDoorStatus = (
+  status: boolean,
   openedAt?: string | Date | null
 ): DoorStatus => {
-  if (!openedAt) return "closed";
+  if (!status) return "closed";
 
   const minutesOpen = dayjs().diff(dayjs(openedAt), "minute");
 
-  if (minutesOpen < 30) return "open";
-  if (minutesOpen < 60) return "warning";
+  if (minutesOpen < 1) return "open";
+  if (minutesOpen < 10) return "warning";
   return "urgent";
 };
 
-export const getDoorBadgeClass = (openedAt?: string | Date | null) => {
-  const status = getDoorStatus(openedAt);
+export const getDoorBadgeClass = (openStatus: boolean, openedAt?: string | Date | null) => {
+  const status = getDoorStatus(openStatus, openedAt);
 
   switch (status) {
     case "closed":
@@ -235,28 +236,29 @@ export const getDoorBadgeClass = (openedAt?: string | Date | null) => {
   }
 };
 
-export const getDoorStatusTooltip = (openedAt?: string | Date | null) => {
-  const status = getDoorStatus(openedAt);
+export const getDoorStatusTooltip = (openStatus: boolean, openedAt?: string | Date | null) => {
+  const status = getDoorStatus(openStatus, openedAt);
 
   switch (status) {
     case "closed":
       return "No attention needed";
 
     case "open":
-      return "Door open <30 min";
+      return "Door open <1 minutes";
 
     case "warning":
-      return "Door open for >30 min";
+      return "Door open for <10 minutes";
 
     case "urgent":
-      return "Door open for >1 hour";
+      return "Door open for >10 minutes";
   }
 };
 
 export const getDoorStatusTooltipClass = (
+  openStatus: boolean,
   openedAt?: string | Date | null
 ) => {
-  const status = getDoorStatus(openedAt);
+  const status = getDoorStatus(openStatus, openedAt);
 
   switch (status) {
     case "closed":
@@ -324,15 +326,18 @@ export const getTemperatureTooltip = (data: TemperatureState) => {
 export const getOverallStatus = (cabinet: SmartCabinet) => {
   const assetTakenAt = cabinet.deviceState?.assetStateChangedAt;
   const assetPresent = Boolean(cabinet.deviceState?.assetPresent);
-  const doorStatus = getDoorStatus(cabinet.deviceState?.doorStateChangedAt);
+  const doorStatus = getDoorStatus(cabinet.deviceState?.doorOpen, cabinet.deviceState?.doorStateChangedAt);
   const temperature = Number(cabinet.deviceState?.temperature);
 
+  if (cabinet.assetHealth === "urgent") {
+    return "urgent"
+  }
   if (!cabinet.deviceState) {
     return "n/a"
   }
   
-  if (cabinet?.status === "paused") {
-    return "paused"
+  if (cabinet?.status === "suspended") { // this logic is dummy and not yet done in backend
+    return "suspended"
   }
 
   if (
@@ -359,20 +364,20 @@ export const getOverallStatus = (cabinet: SmartCabinet) => {
 export const getOverallStatusBadgeClass = (cabinet: SmartCabinet) => {
   const assetTakenAt = cabinet?.deviceState?.assetStateChangedAt;
   const assetPresent = cabinet?.deviceState?.assetPresent;
-  const doorStatus = getDoorStatus(cabinet?.deviceState?.doorStateChangedAt);
+  const doorStatus = getDoorStatus(cabinet?.deviceState?.doorOpen, cabinet?.deviceState?.doorStateChangedAt);
   const temperature = cabinet?.deviceState?.temperature;
 
-  if (!cabinet?.deviceState) {
-    return getHealthBadgeClass("n/a")
+  if (cabinet.assetHealth === "urgent") {
+    return getHealthBadgeClass("urgent")
   }
   
-  if (cabinet?.status === "paused") {
-    return getHealthBadgeClass("paused")
+  if (!cabinet?.deviceState) {
+    return getHealthBadgeClass("n/a")
   }
 
   if (
     getPresenceStatus(assetPresent, assetTakenAt) === "urgent" ||
-    (doorStatus === 'urgent') ||
+    doorStatus === 'urgent' ||
     getTemperatureStatus({
       current: temperature
     }) === "urgent"
@@ -397,7 +402,7 @@ export const getOverallStatusBadgeClass = (cabinet: SmartCabinet) => {
 export const getOverallStatusCardClass = (cabinet: SmartCabinet) => {
   const assetTakenAt = cabinet.deviceState?.assetStateChangedAt;
   const assetPresent = cabinet.deviceState?.assetPresent;
-  const doorStatus = getDoorStatus(cabinet.deviceState?.doorStateChangedAt);
+  const doorStatus = getDoorStatus(cabinet.deviceState?.doorOpen, cabinet.deviceState?.doorStateChangedAt);
   const temperature = cabinet.deviceState?.temperature;
 
   if (!cabinet.deviceState) {
@@ -423,6 +428,7 @@ export const getOverallStatusCardClass = (cabinet: SmartCabinet) => {
       current: temperature
     }) === "warning" ||
     getPresenceStatus(assetPresent, assetTakenAt) === "warning" ||
+    getPresenceStatus(assetPresent, assetTakenAt) === "taken" ||
     doorStatus === "warning" ||
     doorStatus === "open" ||
     getPresenceStatus(assetPresent, assetTakenAt) === "taken"

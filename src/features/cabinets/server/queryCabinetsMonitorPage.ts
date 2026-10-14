@@ -1,6 +1,7 @@
 import type { SortingState } from "@tanstack/react-table"
 import type { FilterStatus } from "../types/cabinetMonitor"
 import type { SmartCabinet } from "../types/cabinetList"
+import { getOverallStatus } from "../lib/cabinetListDisplay"
 
 export type CabinetsQuery = {
   search: string
@@ -36,7 +37,8 @@ export function filterCabinets(
     const matchesStatus =
       !selectedStatus ||
       selectedStatus === "all" ||
-      row.status?.toLowerCase() === selectedStatus;
+      // row.status?.toLowerCase() === selectedStatus;
+      getOverallStatus(row) === selectedStatus;
 
     // Cabinet ID filter
     const matchesId =
