@@ -1,38 +1,38 @@
 import type { SortingState } from "@tanstack/react-table"
-import type { ActivityStatus, CabinetActivityRow } from "../types/activityList"
+import type { EventStatus, CabinetEventRow } from "../types/eventList"
 import type { DateRange } from "react-day-picker"
 
-export type CabinetActivitiesQuery = {
-  data: CabinetActivityRow[]
+export type CabinetEventsQuery = {
+  data: CabinetEventRow[]
   search: string
   pageIndex: number
   pageSize: number
   sorting: SortingState
-  tabValue: ActivityStatus
+  tabValue: EventStatus
   group: string
   type: string
   dateRange: DateRange
 }
 
 export type CabinetActivitiesPageResult = {
-  rows: CabinetActivityRow[]
+  rows: CabinetEventRow[]
   totalCount: number
 }
 
 function filterActivities(
-  rows: readonly CabinetActivityRow[],
+  rows: readonly CabinetEventRow[],
   search: string,
   group: string,
   type: string,
   dateRange: DateRange
-): CabinetActivityRow[] {
+): CabinetEventRow[] {
   const q = search.trim().toLowerCase();
 
   return rows.filter((row) => {
     if (group !== "all"  && row.group !== group) {
       return false
     }
-    if (type !== "all" && row.activity !== type) {
+    if (type !== "all" && row.event !== type) {
       return false
     }
 
@@ -56,12 +56,12 @@ function filterActivities(
   });
 }
 
-function compareRows(a: CabinetActivityRow, b: CabinetActivityRow, columnId: string): number {
+function compareRows(a: CabinetEventRow, b: CabinetEventRow, columnId: string): number {
   switch (columnId) {
     case "time":
       return a?.time?.localeCompare(b?.time)
     case "activity":
-      return a?.activity?.localeCompare(b?.activity)
+      return a?.event?.localeCompare(b?.event)
     case "cabinet":
       return a?.cabinetName?.localeCompare(b?.cabinetName)
     case "addedBy":
@@ -79,7 +79,7 @@ function compareRows(a: CabinetActivityRow, b: CabinetActivityRow, columnId: str
 /**
  * Mock server-side list query handlers: filter → sort → paginate over activity feed.
  */
-export function queryCabinetsActivityPage(query: CabinetActivitiesQuery): CabinetActivitiesPageResult {
+export function queryCabinetsEvents(query: CabinetEventsQuery): CabinetActivitiesPageResult {
   const filtered = filterActivities(
     query.data,
     query.search,

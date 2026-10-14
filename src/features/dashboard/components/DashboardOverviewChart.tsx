@@ -9,16 +9,24 @@ import {
 import { MaintenanceDetailsModal } from "./MaintenanceDetailsModal";
 import { useState } from "react";
 
-const data = [
-    { name: "Overdue", value: 4, color: "#D50000" },
-    { name: "Due in 30 days", value: 12, color: "#E66100" },
-    { name: "Due in 90 days", value: 31, color: "#F2CC00" },
-    { name: "Up to date", value: 201, color: "#388E3C" },
+interface MaintenanceI {
+    dueIn30Days: number
+    dueIn90Days: number
+    overdue: number
+    total: number
+    upToDate: number
+}
+const data = (maintenance:MaintenanceI) => [
+    { name: "Overdue", value: maintenance?.overdue, color: "#D50000" },
+    { name: "Due in 30 days", value: maintenance?.dueIn30Days, color: "#E66100" },
+    { name: "Due in 90 days", value: maintenance?.dueIn90Days, color: "#F2CC00" },
+    { name: "Up to date", value: maintenance?.upToDate, color: "#388E3C" },
 ];
 
-const total = data.reduce((sum, item) => sum + item.value, 0);
-
-export default function DashboardOverviewChart() {
+interface Props {
+  maintenance: MaintenanceI
+}
+export default function DashboardOverviewChart({ maintenance }: Props) {
 
     const [open, setOpen] = useState<boolean>(false)
 
@@ -29,7 +37,7 @@ export default function DashboardOverviewChart() {
                 <div className="flex items-center gap-4">
                     {/* Legend */}
                     <div className="space-y-5">
-                        {data.map((item) => (
+                        {data(maintenance).map((item) => (
                             <div
                                 key={item.name}
                                 className="flex items-center justify-between gap-4 sm:gap-8 text-xs"
@@ -54,7 +62,7 @@ export default function DashboardOverviewChart() {
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
-                                    data={data}
+                                    data={data(maintenance)}
                                     dataKey="value"
                                     innerRadius="68%"
                                     outerRadius="100%"
@@ -62,7 +70,7 @@ export default function DashboardOverviewChart() {
                                     stroke="#fff"
                                     strokeWidth={3}
                                 >
-                                    {data.map((entry) => (
+                                    {data(maintenance).map((entry) => (
                                         <Cell
                                             key={entry.name}
                                             fill={entry.color}
@@ -75,7 +83,7 @@ export default function DashboardOverviewChart() {
                         {/* Center Content */}
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
                             <h2 className="text-2xl xl:text-[32px] font-bold leading-none">
-                                {total}
+                                {maintenance?.total || 0}
                             </h2>
                             <p className="text-sm xl:text-base text-accent-foreground mt-2 m-0">
                                 Total

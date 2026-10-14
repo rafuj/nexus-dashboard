@@ -18,8 +18,7 @@ interface DeviceState {
   doorOpenedAt: string | ""
   assetTakenAt: string | ""
   assetPresent: boolean
-  ser: boolean
-  serStateChangedAt: string | ""
+  assetHealth: string | ""
   temperature: number | 0
   isConnected: boolean
 }
@@ -29,8 +28,7 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
   doorOpenedAt: "",
   assetTakenAt: "",
   assetPresent: false,
-  ser: false,
-  serStateChangedAt: "",
+  assetHealth: "",
   temperature: 0,
   isConnected: false,
 })
@@ -48,8 +46,7 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
         doorOpenedAt: deviceState?.doorOpen ? String(deviceState?.doorStateChangedAt) : "",
         assetTakenAt: deviceState?.assetStateChangedAt ? String(deviceState?.assetStateChangedAt) : "",
         assetPresent: !!deviceState?.assetPresent,
-        ser: !!deviceState?.ser,
-        serStateChangedAt: deviceState?.serStateChangedAt ? String(deviceState?.serStateChangedAt) : "",
+        assetHealth: String(deviceState?.assetHealth),
         temperature: Number(deviceState?.temperature) || 0,
         isConnected: isConnected,
       })
@@ -58,8 +55,7 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
         doorOpenedAt: data?.doorOpen ? String(data?.doorStateChangedAt) : "",
         assetTakenAt: data?.assetStateChangedAt ? String(data?.assetStateChangedAt) : "",
         assetPresent: !!data?.assetPresent,
-        ser: !!data?.ser,
-        serStateChangedAt: data?.serStateChangedAt ? String(data?.serStateChangedAt) : "",
+        assetHealth: data?.assetHealth,
         temperature: Number(data?.temperature) || 0,
         isConnected: isConnected,
       })
@@ -110,20 +106,20 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
     { // static state
       title: "Asset Health",
       Icon: AssetHealthIcon,
-      badgeClass: getHealthBadgeClass(state.ser ? "urgent" : "ok"),
+      badgeClass: getHealthBadgeClass(state.assetHealth),
       value: <Tooltip>
               <TooltipTrigger className="w-full">
                 <span
                     className={cn(
                       "px-3 py-1 rounded-[4px] text-xs w-full text-center inline-block transition-all uppercase",
-                      getHealthBadgeClass(state.ser ? "urgent" : "ok")
+                      getHealthBadgeClass(state.assetHealth)
                     )}
                   >
-                    {state.ser ? "urgent" : "ok"}
+                    {state.assetHealth}
                   </span>
               </TooltipTrigger>
-              <TooltipContent side="right" className={cn(getHealthBadgeTooltipColor(state.ser ? "urgent" : "ok"))}>
-                {getHealthTooltip(state.ser ? "urgent" : "ok")}
+              <TooltipContent side="right" className={cn(getHealthBadgeTooltipColor(state.assetHealth))}>
+                {getHealthTooltip(state.assetHealth)}
               </TooltipContent>
             </Tooltip>
     },

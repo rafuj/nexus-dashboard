@@ -10,25 +10,25 @@ import {
 } from "@/shared/components/ui/select"
 import { Icons } from "@/app/icons/icons"
 import { DateRangePicker } from "@/shared/components/ui/date-range-picker"
-import type { ActivityCabinetsListToolbarProps } from "../types/activityList"
-import { useActivityTypes } from "../hooks/useActivityTypes"
+import type { EventCabinetsListToolbarProps } from "../types/eventList"
+import { useEventTypes } from "../hooks/useEventTypes"
 
 const CABINET_GROUP = "all"
-const ACTIVITY_TYPE = "all"
+const EVENT_TYPE = "all"
 
-export function CabinetsActivityListToolbar({
+export function CabinetsEventListToolbar({
   search,
   onSearchChange,
   cabinetGroup,
   setCabinetGroup,
-  activityType,
-  setActivityType,
+  eventType,
+  setEventType,
   dateRange, 
   setDateRange,
   onReset,
   onExport
-}: ActivityCabinetsListToolbarProps) {
-  const {data: activityTypes} = useActivityTypes()
+}: EventCabinetsListToolbarProps) {
+  const {data: eventTypes} = useEventTypes()
   return (
     <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-end">
       <div className="w-full sm:w-[220px] 2xl:w-[283px] space-y-2 xl:grow">
@@ -62,7 +62,7 @@ export function CabinetsActivityListToolbar({
         </SelectContent>
       </Select>
       {/* Street */}
-      <Select value={activityType} onValueChange={setActivityType}>
+      <Select value={eventType} onValueChange={setEventType}>
         <SelectTrigger className="w-full min-w-42 sm:w-44 text-sm md:!h-12.5 xl:grow">
           <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full">
             <span className="font-normal text-foreground">Type:</span>
@@ -71,20 +71,20 @@ export function CabinetsActivityListToolbar({
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem className="pl-4 min-h-7 capitalize" value={ACTIVITY_TYPE}>All</SelectItem>
+            <SelectItem className="pl-4 min-h-7 capitalize" value={EVENT_TYPE}>All</SelectItem>
             {Array.from(
               new Map(
-                [...(activityTypes?.asset || []), ...(activityTypes?.cabinet || [])].map(
-                  (activity) => [activity.name, activity]
+                [...(eventTypes?.asset || []), ...(eventTypes?.cabinet || [])].map(
+                  (event) => [event.name, event]
                 )
               ).values()
-            ).map((activity) => (
+            ).map((event) => (
               <SelectItem
-                key={activity.name}
+                key={event.name}
                 className="pl-4 min-h-7 capitalize"
-                value={activity.name}
+                value={event.name}
               >
-                {activity.name}
+                {event.name}
               </SelectItem>
             ))}
           </SelectGroup>

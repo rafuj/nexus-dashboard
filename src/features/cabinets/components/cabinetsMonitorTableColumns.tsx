@@ -69,7 +69,7 @@ export const cabinetsMonitorTableColumns = [
     },
     cell: ({ row }) => {
       return (
-        <Link className={cn("px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all", getOverallStatusBadgeClass(row.original))} to={`/cabinets/monitor/${row.original.id}`} >
+        <Link className={cn("px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all", getOverallStatusBadgeClass(row.original))} to={`/cabinets/status/${row.original.id}`} >
             {row.original.name}
         </Link>
       )
@@ -100,9 +100,8 @@ export const cabinetsMonitorTableColumns = [
       cellClassName: "align-middle relative group",
     },
     cell: ({ row }) => {
-      const health = !row.original.deviceState ? "n/a" : "ok"
-      const healthText = !row.original.deviceState ? "N/A" : "OK"
-      const notInitialized = !row.original.deviceState
+      const health = row.original.assetHealth
+      // const notInitialized = !row.original.deviceState
 
       return (
         <div className="inline-flex items-center gap-1.5 relative">
@@ -114,13 +113,14 @@ export const cabinetsMonitorTableColumns = [
                     getHealthBadgeClass(health)
                   )}
                 >
-                  {healthText}
+                  {health}
                 </span>
             </TooltipTrigger>
-            {!notInitialized && (
+            {/* {!notInitialized && ( */}
               <TooltipContent side="right" className={cn(getHealthBadgeTooltipColor(health))}>
               {getHealthTooltip(health)}
-            </TooltipContent>)}
+            </TooltipContent>
+            {/* )} */}
           </Tooltip>
         </div>
       )

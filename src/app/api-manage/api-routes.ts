@@ -44,6 +44,6 @@ export const API_ROUTES = {
     IMEI_CHECK: `${API_VERSION}/devices/serial-check`,
 
     // activity
-    ACTIVITY_TYPES: `${API_VERSION}/activity-types`,
-    ACTIVITIES: `${API_VERSION}/activities`,
+    EVENT_TYPES: `${API_VERSION}/event-types`,
+    EVENTS: `${API_VERSION}/events`,
 }

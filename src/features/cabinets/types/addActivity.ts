@@ -1,1 +1,0 @@
-export  type ActivityStatus = 'ongoing' | 'done'

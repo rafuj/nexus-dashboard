@@ -2,9 +2,9 @@ import { Link } from "react-router";
 import { User } from 'lucide-react';
 import { Icons } from '@/app/icons/icons';
 import respondersBg from "@/assets/responders-bg.png"
-import { HAS_CONNECTED_CABINETS, responders } from "../mock/mockDashboardStats";
+import { responders } from "../mock/mockDashboardStats";
 
-export default function RespondersCard() {
+export default function RespondersCard({ data }: { data: any }) {
     const renderRoleIcon = (type: string) => {
         switch (type) {
             case 'viewer':
@@ -19,7 +19,7 @@ export default function RespondersCard() {
     };
     return (
         <div className="p-5 relative border rounded-[15px] bg-white flex flex-col">
-            {HAS_CONNECTED_CABINETS ?
+            {data?.smartCabinets ?
                 (
                     <>
                         <div className="flex flex-wrap justify-between items-center gap-2 mb-4">

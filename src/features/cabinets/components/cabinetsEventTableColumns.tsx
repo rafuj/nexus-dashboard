@@ -4,13 +4,15 @@
  */
 import { createColumnHelper } from "@tanstack/react-table"
 import { DataTableColumnHeader } from "@/shared/components/data-table"
-import type { CabinetActivityRow } from "../types/activityList"
+import type { CabinetEventRow } from "../types/eventList"
 import { ActivityIcons } from "@/app/icons/icons"
 import { formatMonDayTime } from "@/lib/utils"
+import VentilationErrorIcon from "@/assets/icons/ventilation.svg?react"
+import { Link } from "react-router"
 
-const columnHelper = createColumnHelper<CabinetActivityRow>()
+const columnHelper = createColumnHelper<CabinetEventRow>()
 
-export const cabinetsActivityTableColumns = (tabValue: string) => [
+export const cabinetsEventTableColumns = (tabValue: string) => [
 
   // 1. Cabinet Name
   columnHelper.accessor("cabinetName", {
@@ -22,7 +24,7 @@ export const cabinetsActivityTableColumns = (tabValue: string) => [
       headerClassName: "",
       cellClassName: "align-middle tabular-nums",
     },
-    cell: ({ row }) => row.original.cabinetName,
+    cell: ({ row }) => row.original.cabinetId ? <Link to={`/cabinets/status/${row.original.cabinetId}`}>{row.original.cabinetName}</Link> : row.original.cabinetName ,
   }),
 
   columnHelper.accessor("group", {
@@ -45,17 +47,17 @@ export const cabinetsActivityTableColumns = (tabValue: string) => [
   }),
 
   // 2. Activity Column (Includes Dynamic Activity Description & Placeholder Icons)
-  columnHelper.accessor("activity", {
-    id: "activity",
+  columnHelper.accessor("event", {
+    id: "event",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title={tabValue === "Activities" ? "Activity" : "Incident"} />
+      <DataTableColumnHeader column={column} title={tabValue === "Events" ? "Event" : "Incident"} />
     ),
     meta: {
       headerClassName: "",
       cellClassName: "align-middle",
     },
     cell: ({ row }) => {
-      const activity = row.original.activity
+      const activity = row.original.event
       return (
         <div className="flex items-center gap-3">
           <div className={tabValue === "Ongoing" ? "text-error" : "text-success2"}>
@@ -96,7 +98,7 @@ export const cabinetsActivityTableColumns = (tabValue: string) => [
     cell: ({ row }) => formatMonDayTime(row.original.time),
   }),
 
-  ...(tabValue === "Activities"
+  ...(tabValue === "Events"
   ? [
       columnHelper.accessor("addedBy", {
         id: "addedBy",
@@ -175,6 +177,8 @@ const ActivityIcon = ({ activity }: ActivityIconProps) => {
   switch (activity) {
     case "Door opened":
       return <ActivityIcons.openDoor className={baseClass} />
+    case "Door open for >15 minutes":
+      return <ActivityIcons.openDoor className={baseClass} />
     case "Connectivity lost":
       return <ActivityIcons.connectivityLost className={baseClass} />
 
@@ -186,7 +190,7 @@ const ActivityIcon = ({ activity }: ActivityIconProps) => {
       return <ActivityIcons.temperature className={baseClass} />
 
     case "Ventilator error":
-      return <ActivityIcons.ventilatorError className={baseClass} />
+      return <VentilationErrorIcon className="size-4 shrink-0" />
 
     case "Data retrieved":
       return <ActivityIcons.dataRetrived className={baseClass} />

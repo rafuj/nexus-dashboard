@@ -10,6 +10,7 @@ import {
 import type { CabinetsListToolbarProps } from "../types/cabinetList"
 import { Icons } from "@/app/icons/icons"
 import { useCabinetCities } from "../hooks/useCabinetCities"
+import { LoaderButton } from "@/app/components/loader-button"
 
 const STATUS_FILTER_ALL = "all"
 const CITY_FILTER_ALL = "all"
@@ -23,8 +24,8 @@ export function CabinetsListToolbar({
   onCityChange,
   resetPage,
   onRefresh,
-  isFetching,
-  onExport
+  onExport,
+  isRefreshLoading
 }: CabinetsListToolbarProps) {
 
 const {data:cities} = useCabinetCities()
@@ -83,9 +84,11 @@ const {data:cities} = useCabinetCities()
       <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-white text-accent-foreground py-2 px-3 sm:py-3 rounded-[10px] text-sm gap-1.25 border border-border" onClick={resetPage}>
         <RotateCcw size={16} /> <span>Reset Filter</span>
       </button>
-      <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25" onClick={onRefresh} disabled={isFetching}>
-        <RotateCcw size={16} /> <span>Refresh</span>
-      </button>
+      <LoaderButton type="button" className="h-10 md:!h-12.5 bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm" onClick={onRefresh} loading={isRefreshLoading}>
+        <div className="flex items-center justify-center gap-1.25">
+          <RotateCcw size={16} /> <span>Refresh</span>
+        </div>
+      </LoaderButton>
       <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25" onClick={()=>onExport()}>
         <Icons.export /> <span>Export</span>
       </button>

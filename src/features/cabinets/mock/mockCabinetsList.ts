@@ -124,6 +124,7 @@ export const mockCabinetsList: Cabinet[] = [
     description: "",
     smart: true,
     tenantId: "",
+    assetHealth: "ok",
     deviceState: {
       assetPresent: true,
       assetStateChangedAt: "2026-09-02T17:55:04.746572Z",

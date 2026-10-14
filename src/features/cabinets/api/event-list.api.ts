@@ -1,9 +1,9 @@
 import type { SortingState } from "@tanstack/react-table"
 import { api } from "@/app/api-manage/api"
 import { API_ROUTES } from "@/app/api-manage/api-routes"
-import type { CabinetActivityRow } from "../types/activityList"
+import type { CabinetEventRow } from "../types/eventList"
 
-export type CabinetsActivityListQuery = {
+export type CabinetsEventsListQuery = {
   search?: string
   status?: string
   type?: string
@@ -15,16 +15,16 @@ export type CabinetsActivityListQuery = {
 }
 
 export type CabinetsActivityListResponse = {
-  rows: CabinetActivityRow[]
+  rows: CabinetEventRow[]
   totalCount: number
 }
 
 export const staleTime = 20 * 1000 /* 20s */
 
-export const getActivitiesList = async (
-  params: CabinetsActivityListQuery
-): Promise<CabinetActivityRow[]> => {
-  const { data } = await api.get(API_ROUTES.ACTIVITIES, {
+export const getEventsList = async (
+  params: CabinetsEventsListQuery
+): Promise<CabinetEventRow[]> => {
+  const { data } = await api.get(API_ROUTES.EVENTS, {
     params,
   })
 

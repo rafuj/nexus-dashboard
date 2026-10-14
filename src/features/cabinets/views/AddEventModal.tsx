@@ -24,9 +24,9 @@ import { useCabinetsList } from "../hooks/useCabinetsList";
 import { useDebounce } from "@/app/hooks/use-debounce";
 import { useAssetView } from "../hooks/useAssetView";
 import { errorToast, successToast } from "@/lib/toast";
-import { useActivityTypes } from "../hooks/useActivityTypes";
+import { useEventTypes } from "../hooks/useEventTypes";
 import { LoaderButton } from "@/app/components/loader-button";
-import { useCreateActivity } from "../hooks/useCreateActivity";
+import { useCreateEvent } from "../hooks/useCreateEvent";
 import { getApiErrorMessage } from "@/app/api-manage/api";
 
 interface ModalProps {
@@ -43,9 +43,9 @@ export type BatterySet = {
   serialNumber:string,
   lotNumber:string
 }
-export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
+export const AddEventModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
   
-  const [activity, setActivity] = useState<string>('')
+  const [event, setEvent] = useState<string>('')
   const [search, setSearch] = useState("");
 
   const [images, setImages] = useState({
@@ -56,7 +56,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
 
   const [selectedCabinet, setSelectedCabinet] = useState<Cabinet | null>(null);
   const [category, setCategory] = useState<string>('')
-  const [activityDate, setActivityDate] = useState<Date | undefined>(new Date())
+  const [eventDate, setEventDate] = useState<Date | undefined>(new Date())
   const [notes, setNotes] = useState<string>('')
   const [nextCheckUpDate, setNextCheckUpDate] = useState<Date | undefined>(undefined)
 
@@ -88,7 +88,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
     );
   };
 
-  const {data: activityTypes} = useActivityTypes()
+  const {data: eventTypes} = useEventTypes()
 
   const debouncedSearch = useDebounce(search, 400)
   const {
@@ -189,9 +189,9 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
   };
   const onCloseModal = () =>{ 
     setOpen(false)
-    setActivity("")
+    setEvent("")
     setSelectedCabinet(null)
-    setActivityDate(undefined)
+    setEventDate(undefined)
     setCategory("")
     setNotes("")
     setImages({
@@ -253,20 +253,20 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
     }
   };
 
-  const createActivityMutation = useCreateActivity()
+  const createEventMutation = useCreateEvent()
 
   const handleFormSubmit = async () => {
     try {
-      const details = category === "asset" ? getAssetDetails(activity.split("-")[1]) : undefined;
-      await createActivityMutation.mutateAsync({
+      const details = category === "asset" ? getAssetDetails(event.split("-")[1]) : undefined;
+      await createEventMutation.mutateAsync({
         id: selectedCabinet?.id,
-        activityAt: activityDate ? activityDate.toISOString() : new Date()?.toISOString(),
+        eventAt: eventDate ? eventDate.toISOString() : new Date()?.toISOString(),
         category,
         notes,
-        typeId: activity.split("-")[1],
+        typeId: event.split("-")[1],
         ...(details ? { details } : {}),
       })
-      successToast("Activity Created Successfully")
+      successToast("Event Created Successfully")
       onCloseModal()
       } catch (error) {
         errorToast(getApiErrorMessage(error)) 
@@ -279,7 +279,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
         <form>
           <DialogContent className="sm:max-w-[620px] bg-white max-h-[95dvh] overflow-y-auto py-0 !flex flex-col !gap-0" showCloseButton={false}>
             <DialogHeader className="flex flex-row items-center justify-between w-full sticky top-0 bg-white z-100 p-0 py-5 px-0">
-              <DialogTitle className="text-2xl font-semibold text-accent-foreground">Add Activity</DialogTitle>
+              <DialogTitle className="text-2xl font-semibold text-accent-foreground">Add Event</DialogTitle>
               <DialogClose asChild>
                 <button type="button" className="text-foreground">
                   <XCircle />
@@ -303,7 +303,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
                           </div>
                           <button type="button" className="text-[#A72822] font-medium text-xs select-none" onClick={()=> {
                             setSelectedCabinet(null);
-                            setActivity("")
+                            setEvent("")
                           }}>Change</button>
                         </div>
                       </> : 
@@ -350,9 +350,9 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
                   </div>
                   
                     <div>
-                      <Label className="text-xs text-accent-foreground font-medium block mb-2">Activity Type</Label>
-                      <Select value={activity} onValueChange={(value)=> {
-                        setActivity(value);
+                      <Label className="text-xs text-accent-foreground font-medium block mb-2">Event Type</Label>
+                      <Select value={event} onValueChange={(value)=> {
+                        setEvent(value);
                         if (value.startsWith("cabinet")) {
                           setCategory("cabinet")
                         }
@@ -362,35 +362,35 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
                       }} disabled={!selectedCabinet}>
                         <SelectTrigger className="w-full !h-12.5 disabled:bg-white">
                           <div className="flex items-center gap-1 font-semibold text-accent-foreground w-full capitalize">
-                            <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select activity type" /></span>
+                            <span className="line-clamp-1 w-0 grow text-left"><SelectValue placeholder="Select event type" /></span>
                           </div>
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
                             <SelectLabel>Cabinet</SelectLabel>
-                            {activityTypes?.cabinet?.map((activity) => (<SelectItem className="pl-4 min-h-7 capitalize" value={"cabinet-"+activity.id}>{activity.name}</SelectItem>))}
+                            {eventTypes?.cabinet?.map((event) => (<SelectItem className="pl-4 min-h-7 capitalize" value={"cabinet-"+event.id}>{event.name}</SelectItem>))}
                           </SelectGroup>
                           <SelectGroup>
                             <SelectLabel>Asset</SelectLabel>
-                            {activityTypes?.asset?.map((activity) => (<SelectItem className="pl-4 min-h-7 capitalize" value={"asset-"+activity.id}>{activity.name}</SelectItem>))}
+                            {eventTypes?.asset?.map((event) => (<SelectItem className="pl-4 min-h-7 capitalize" value={"asset-"+event.id}>{event.name}</SelectItem>))}
                           </SelectGroup>
                         </SelectContent>
                       </Select>
                     </div>
 
                   {/* Add Asset Pictures */}
-                  {activity && (
+                  {event && (
                     <>
                       <div>
-                        <Label className="text-xs text-accent-foreground font-medium block mb-2">Activity date</Label>
+                        <Label className="text-xs text-accent-foreground font-medium block mb-2">Event date</Label>
                         <DatePicker className="!bg-white text-xs pl-5 pr-4"
                             dateType="past"
                             showTime
-                            value={activityDate}
-                            onChange={(value)=>value ? setActivityDate(value): {}}
+                            value={eventDate}
+                            onChange={(value)=>value ? setEventDate(value): {}}
                           />
                       </div>
-                      {activity === "asset-3" && (
+                      {event === "asset-3" && (
                         <div>
                           <Label className="text-xs text-accent-foreground font-medium block mb-2">Next check-up date</Label>
                           <DatePicker className="!bg-white text-xs pl-5 pr-4"
@@ -400,7 +400,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
                             />
                         </div>
                       )}
-                      {activity === "asset-2" && (
+                      {event === "asset-2" && (
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                           {/* Expiration Date */}
                           <div>
@@ -453,7 +453,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
                           </div>
                       </div>
                       )}
-                      {activity === "asset-1" && (
+                      {event === "asset-1" && (
                         <div className="grid grid-cols-1 gap-4">
                           {padSets.map((padSet, index) => {
                             const isFirstSet = index === 0;
@@ -565,12 +565,12 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
                   {/* Situation Pictures */}
 
                   <div className={cn(" border py-4.5 px-4 text-xs flex items-center gap-5 rounded-[10px] text-foreground", {
-                    "card-warning bg-[#E57366]/10 border-[#E57366]/40" : activity,
-                    "card-neutral bg-[#F7FAFE] border-[#D1DBED]" : !activity
+                    "card-warning bg-[#E57366]/10 border-[#E57366]/40" : event,
+                    "card-neutral bg-[#F7FAFE] border-[#D1DBED]" : !event
                   })}>
                     <InfoIcon />
                     <div className="w-0 grow">
-                      {activity ? "Reminder: If Maintenance Mode is enabled, disable it in the cabinet’s settings after ending all manual activities for this cabinet." : "You can enable Maintenance Mode in the cabinet's settings. While Maintenance Mode is enabled, all cabinet notifications and on-device feedback are paused."}
+                      {event ? "Reminder: If Maintenance Mode is enabled, disable it in the cabinet’s settings after ending all manual events for this cabinet." : "You can enable Maintenance Mode in the cabinet's settings. While Maintenance Mode is enabled, all cabinet notifications and on-device feedback are paused."}
                     </div>
                   </div>
                 </div>
@@ -581,7 +581,7 @@ export const AddActivityModal: React.FC<ModalProps>  = ({ open, setOpen }) => {
                 <DialogClose asChild>
                   <button type="reset" className="flex items-center justify-center bg-chip text-accent-foreground py-2 sm:py-3.5 px-5 rounded-full text-sm gap-1.25 sm:w-full sm:max-w-[140px] md:max-w-[180px]">Cancel</button>
                 </DialogClose>
-                <LoaderButton loading={createActivityMutation.isPending} type="submit" className="py-2 sm:py-3.5 px-5 rounded-full sm:w-full sm:max-w-[140px] md:max-w-[180px] h-auto" onClick={handleFormSubmit} disabled={!activity}>Add Activity</LoaderButton>
+                <LoaderButton loading={createEventMutation.isPending} type="submit" className="py-2 sm:py-3.5 px-5 rounded-full sm:w-full sm:max-w-[140px] md:max-w-[180px] h-auto" onClick={handleFormSubmit} disabled={!event}>Add Event</LoaderButton>
               </div>
             </DialogFooter>
           </DialogContent>

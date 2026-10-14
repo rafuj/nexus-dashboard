@@ -6,7 +6,7 @@ import { cn, formatDateTime, formatISODate } from "@/lib/utils";
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Link } from "react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cabinetConfig, type CabinetStatus, type FilterStatus } from "../types/cabinetList";
 import CabinetMapCard from "../components/CabinetMapCard";
 import MapPin from "@/assets/icons/map-pin.svg?react"
@@ -34,6 +34,7 @@ export default function CabinetsMapView() {
   const [search, setSearch] = useQueryState("search", { defaultValue:"" });
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsStringLiteral(filterStatuses).withDefault(STATUS_FILTER_ALL))
   const [city, setCity] = useQueryState("city", { defaultValue: CITY_FILTER_ALL });
+  const [isRefreshLoading, setIsRefreshLoading] = useState<boolean>(false)
 
   const [openCabinetId, setOpenCabinetId] = useState<string | null>(null);
 
@@ -42,6 +43,7 @@ export default function CabinetsMapView() {
     data,
     isFetching,
     refetch,
+    isRefetching
   } = useCabinetsList({
     search: debouncedSearch,
     status: statusFilter,
@@ -62,10 +64,16 @@ export default function CabinetsMapView() {
     setStatusFilter(STATUS_FILTER_ALL)
     setCity(CITY_FILTER_ALL)
   }
-
+  useEffect(()=> {
+    if(!isRefetching) {
+      setIsRefreshLoading(false)
+    }
+  },[isRefetching])
+  
   const onRefresh = () => {
-    refetch()
     resetPage()
+    setIsRefreshLoading(true)
+    setTimeout(()=>refetch(), 0)
   }
 
   const exportList = () => {
@@ -139,6 +147,7 @@ export default function CabinetsMapView() {
                 resetPage={resetPage}
                 onRefresh={onRefresh}
                 onExport={exportList}
+                isRefreshLoading={isRefreshLoading}
               />
           </div>
           <section className={cn("lg:h-0 grow gap-2.5 grid grid-cols-1",{"lg:grid-cols-[830fr_310fr]": openSidebar})} aria-label="Cabinets">

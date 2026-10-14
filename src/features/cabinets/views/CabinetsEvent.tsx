@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import {
   getCoreRowModel,
@@ -14,52 +14,56 @@ import { cn, formatMonDayTime } from "@/lib/utils";
 import { CollapsedSidebarTrigger } from "@/app/layouts/PageLayout";
 import DateAndTimeChip from "@/app/components/time-date-chip";
 import { Link } from "react-router";
-import { CabinetsActivityListToolbar } from "../components/CabinetsActivityListToolbar";
+import { CabinetsEventListToolbar } from "../components/CabinetsEventListToolbar";
 import type { DateRange } from "react-day-picker";
-import { cabinetsActivityTableColumns } from "../components/cabinetsActivityTableColumns";
-import { queryCabinetsActivityPage } from "../server/queryCabinetsActivityPage";
+import { cabinetsEventTableColumns } from "../components/cabinetsEventTableColumns";
+import { queryCabinetsEvents } from "../server/queryCabinetsEvents";
 import { parseAsStringLiteral, useQueryState } from "nuqs";
-import { AddActivityModal } from "./AddActivityModal";
-import type { ActivityStatus } from "../types/activityList";
+import { AddEventModal } from "./AddEventModal";
+import type { EventStatus } from "../types/eventList";
 import { mockCabinetIncidents } from "../mock/mockCabinetsActivity";
-import { useActivitiesList } from "../hooks/useActivitiesList";
+import { useEventsList } from "../hooks/useEventsList";
 import { errorToast } from "@/lib/toast";
 import { exportExcel } from "@/lib/exportExcel";
+import { LoaderButton } from "@/app/components/loader-button";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 const PAGE_SIZE = 8;
 
 interface TabItem {
   label: string;
-  value: ActivityStatus;
+  value: EventStatus;
   count: number;
 }
 
 
-export default function CabinetsActivity() {
+export default function CabinetsEvent() {
   const [search, setSearch] = useState("");
   const [cabinetGroup, setCabinetGroup] = useState<string>("all");
-  const [activityType, setActivityType] = useState<string>("all");
+  const [eventType, setEventType] = useState<string>("all");
   const [sorting, setSorting] = useState<SortingState>([]);
   const [openActivity, setOpenActivity] = useState<boolean>(false)
+  const [isRefreshLoading, setIsRefreshLoading] = useState<boolean>(false)
 
   const [dateRange, setDateRange] = useState<DateRange>({
     from: undefined,
     to: undefined
   })
-  const [tabValue, setTabValue] = useQueryState("tabs",   parseAsStringLiteral(["Resolved", "Ongoing", "Activities"]).withDefault("Ongoing"))
+  const [now, setNow] = useState(new Date())
+  const [tabValue, setTabValue] = useQueryState("tabs",   parseAsStringLiteral(["Resolved", "Ongoing", "Events"]).withDefault("Ongoing"))
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: PAGE_SIZE,
   });
 
-  const {data:activities, refetch} = useActivitiesList({
+  const {data:events, refetch, isFetching, isRefetching} = useEventsList({
     page: pagination.pageIndex,
     limit: pagination.pageSize,
     // sort_by: "created_at",
     // sort_order: "desc",
     // cabinet_ids: cabinetGroup,
-    type: activityType,
-    status: tabValue,
+    type: eventType,
+    // status: tabValue,
     // from_date: dateRange.from,
     // to_date: dateRange.to,
     search,
@@ -77,21 +81,21 @@ export default function CabinetsActivity() {
       count: 10
     },
     {
-      label:"Activities", 
-      value:"Activities",
-      count: activities?.length || 0
+      label:"Events", 
+      value:"Events",
+      count: events?.length || 0
     }
   ]
 
   const pageResult = useMemo(
     () =>
-      queryCabinetsActivityPage({
-        data: tabValue === "Activities" ? (activities||[]) : mockCabinetIncidents,
+      queryCabinetsEvents({
+        data: tabValue === "Events" ? (events||[]) : mockCabinetIncidents,
         search,
         pageIndex: pagination.pageIndex,
         pageSize: pagination.pageSize,
         sorting,
-        type: activityType,
+        type: eventType,
         group: cabinetGroup,
         tabValue,
         dateRange
@@ -102,14 +106,14 @@ export default function CabinetsActivity() {
       pagination.pageSize,
       sorting,
       cabinetGroup,
-      activityType,
+      eventType,
       tabValue,
-      activities,
+      events,
       dateRange
     ],
   );
 
-  const columns = useMemo(() => cabinetsActivityTableColumns(tabValue), [tabValue]);
+  const columns = useMemo(() => cabinetsEventTableColumns(tabValue), [tabValue]);
 
   const resetPagination = () => {
     setPagination((p) => ({
@@ -121,12 +125,24 @@ export default function CabinetsActivity() {
     resetPagination()
     setSearch("")
     setCabinetGroup("all")
-    setActivityType("all")
+    setEventType("all")
+    setDateRange({
+      from: undefined,
+      to: undefined
+    })
   }
+
+  useEffect(()=> {
+    if(!isRefetching) {
+      setIsRefreshLoading(false)
+      setNow(new Date())
+    }
+  },[isRefetching])
 
   const onRefresh = () => {
     resetPage()
-    refetch()
+    setIsRefreshLoading(true)
+    setTimeout(()=>refetch(), 0)
   }
 
   // eslint-disable-next-line react-hooks/incompatible-library -- useReactTable
@@ -151,54 +167,59 @@ export default function CabinetsActivity() {
   });
 
 
+  const formattedTime = now.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false, // change to true for AM/PM format
+  })
 
-const allData = useMemo(
-  () =>
-    queryCabinetsActivityPage({
-      data: tabValue === "Activities" ? (activities||[]) : mockCabinetIncidents,
+  const allData = useMemo(
+    () =>
+      queryCabinetsEvents({
+        data: tabValue === "Events" ? (events||[]) : mockCabinetIncidents,
+        search,
+        pageIndex: 0,
+        pageSize: (tabValue === "Events" ? (events||[]).length : mockCabinetIncidents.length) || 0,
+        sorting,
+        type: eventType,
+        group: cabinetGroup,
+        tabValue,
+        dateRange
+      }),
+    [
       search,
-      pageIndex: 0,
-      pageSize: (tabValue === "Activities" ? (activities||[]).length : mockCabinetIncidents.length) || 0,
+      pagination.pageIndex,
+      pagination.pageSize,
       sorting,
-      type: activityType,
-      group: cabinetGroup,
+      cabinetGroup,
+      eventType,
       tabValue,
+      events,
       dateRange
-    }),
-  [
-    search,
-    pagination.pageIndex,
-    pagination.pageSize,
-    sorting,
-    cabinetGroup,
-    activityType,
-    tabValue,
-    activities,
-    dateRange
-  ],
-);
+    ],
+  );
 
-const exportList = () => {
-  if (allData.rows.length === 0) {
-    errorToast("No data available to export")
-    return
+  const exportList = () => {
+    if (allData.rows.length === 0) {
+      errorToast("No data available to export")
+      return
+    }
+    const incidents = allData.rows.map((item) => ({
+      "Cabinet Name": item.cabinetName,
+      "Group": "",
+      "Incident": item.event,
+      "Time": formatMonDayTime(item.time),
+    }))
+    const activities = allData.rows.map((item) => ({
+      "Cabinet Name": item.cabinetName,
+      "Group": "",
+      "Event": item.event,
+      "Time": formatMonDayTime(item.time),
+      "Added by": item.addedBy,
+      "Notes": item.notes,
+    }))
+    exportExcel(tabValue === "Events" ? activities : incidents, `cabinet-${tabValue.toLowerCase()}-list`)
   }
-  const incidents = allData.rows.map((item) => ({
-    "Cabinet Name": item.cabinetName,
-    "Group": "",
-    "Incident": item.activity,
-    "Time": formatMonDayTime(item.time),
-  }))
-  const activities = allData.rows.map((item) => ({
-    "Cabinet Name": item.cabinetName,
-    "Group": "",
-    "Activity": item.activity,
-    "Time": formatMonDayTime(item.time),
-    "Added by": item.addedBy,
-    "Noted": item.notes,
-  }))
-  exportExcel(tabValue === "Activities" ? activities : incidents, `cabinet-${tabValue.toLowerCase()}-list`)
-}
 
   return (
     <>
@@ -216,7 +237,7 @@ const exportList = () => {
                 <ul className="text-xs lg:text-sm flex flex-wrap items-center">
                   <li>Cabinets</li>
                   <li className="mx-2"><ChevronRight size={20} /></li>
-                  <li className="text-accent-foreground">Activity</li>
+                  <li className="text-accent-foreground">Tracking</li>
                 </ul>
               </div>
               <div className="flex items-center max-sm:flex-wrap gap-2.5">
@@ -234,14 +255,14 @@ const exportList = () => {
         <div className="p-5">
           <div className="flex flex-wrap md:flex-nowrap gap-5 items-center justify-between mb-5">
             <h2 className="text-xl md:text-2xl font-semibold">
-              Cabinet activity & incident tracking
+              Cabinet incidents & events tracking
             </h2>
               <button className="flex items-center bg-chip text-accent-foreground py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25" type="button" onClick={()=> setOpenActivity(true)}>
                 <PlusCircle size={18} />
-                <span>Add Activity</span>
+                <span>Add Event</span>
               </button>
           </div>
-          <section aria-label="Cabinets Activity">
+          <section aria-label="Cabinets Tracking">
             <div
               className={cn(
                 "bg-white border rounded-[10px] border-border",
@@ -273,16 +294,18 @@ const exportList = () => {
                     </li>
                   ))}
                   <li className="text-sm ml-auto self-center text-accent-foreground flex items-center gap-4 py-2">
-                     <span>Last update: 13:58</span>
-                     <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-primary text-white py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm gap-1.25 xl:px-7" onClick={onRefresh}>
-                      <RotateCcw size={16} /> <span>Refresh</span>
-                    </button>
+                     <span>Last update: {formattedTime}</span>
+                     <LoaderButton type="button" className="h-10 md:!h-12.5 py-2 px-3 sm:py-3 sm:px-5 rounded-full text-sm xl:px-7 text-white" onClick={onRefresh} loading={isRefreshLoading}>
+                      <div className="flex items-center justify-center gap-1.25">
+                        <RotateCcw size={16} /> <span>Refresh</span>
+                      </div>
+                    </LoaderButton>
                   </li>
                 </ul>
               </div>
               <div className="px-5">
                 <div className="pb-5">
-                  <CabinetsActivityListToolbar
+                  <CabinetsEventListToolbar
                     onSearchChange={(v) => {
                       setSearch(v);
                       resetPagination()
@@ -290,9 +313,9 @@ const exportList = () => {
                     {
                       ...{
                         search,
-                        activityType,
-                        setActivityType: (value)=>{
-                          setActivityType(value)
+                        eventType,
+                        setEventType: (value)=>{
+                          setEventType(value)
                           resetPagination()
                         },
                         cabinetGroup,
@@ -311,21 +334,39 @@ const exportList = () => {
                     }
                   />
                 </div>
-                <DataTable
-                  key={tabValue}
-                  table={table}
-                  emptyMessage="No cabinets match your filters."
-                  />
-                <div className="border-border border-t px-4 py-3">
-                  <DataTablePagination
-                    key={tabValue}
-                    table={table}
-                    navLabel="Cabinets table pagination"
-                  />
-                </div>
+
+                {(isFetching && !events) ? ( // will update when incidents apies are ready
+                  <div className="pb-5">
+                    <div className="flex flex-col gap-4 p-5 bg-white border border-border rounded-md">
+                      <Skeleton className="h-12" />
+                      <Skeleton className="h-12" />
+                      <Skeleton className="h-12" />
+                      <Skeleton className="h-12" />
+                      <Skeleton className="h-12" />
+                      <Skeleton className="h-12" />
+                      <Skeleton className="h-12" />
+                      <Skeleton className="h-12" />
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <DataTable
+                      key={tabValue}
+                      table={table}
+                      emptyMessage="No cabinets match your filters."
+                      />
+                    <div className="border-border border-t px-4 py-3">
+                      <DataTablePagination
+                        key={tabValue}
+                        table={table}
+                        navLabel="Cabinets table pagination"
+                      />
+                    </div>
+                  </>
+                )}
               </div>
             </div>
-            {openActivity && <AddActivityModal {
+            {openActivity && <AddEventModal {
                 ...{
                   open: openActivity,
                   setOpen: setOpenActivity
