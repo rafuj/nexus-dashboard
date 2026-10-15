@@ -328,8 +328,10 @@ export const getOverallStatus = (cabinet: SmartCabinet) => {
   const assetPresent = Boolean(cabinet.deviceState?.assetPresent);
   const doorStatus = getDoorStatus(cabinet.deviceState?.doorOpen, cabinet.deviceState?.doorStateChangedAt);
   const temperature = Number(cabinet.deviceState?.temperature);
+  const lastSeen = dayjs(cabinet.deviceState?.lastSeenAt)
+  const isConnected = !!cabinet.deviceState?.lastSeenAt && lastSeen.isValid() && dayjs().diff(lastSeen, "hours", true) < 12
 
-  if (cabinet.assetHealth === "urgent") {
+  if (cabinet.assetHealth === "urgent" || !isConnected) {
     return "urgent"
   }
   if (cabinet.assetHealth === "ok" && !cabinet.deviceState) {
@@ -362,8 +364,10 @@ export const getOverallStatusBadgeClass = (cabinet: SmartCabinet) => {
   const assetPresent = cabinet?.deviceState?.assetPresent;
   const doorStatus = getDoorStatus(cabinet?.deviceState?.doorOpen, cabinet?.deviceState?.doorStateChangedAt);
   const temperature = cabinet?.deviceState?.temperature;
+  const lastSeen = dayjs(cabinet.deviceState?.lastSeenAt)
+  const isConnected = !!cabinet.deviceState?.lastSeenAt && lastSeen.isValid() && dayjs().diff(lastSeen, "hours", true) < 12
 
-  if (cabinet.assetHealth === "urgent") {
+  if (cabinet.assetHealth === "urgent" || !isConnected) {
     return getHealthBadgeClass("urgent")
   }
 
@@ -404,6 +408,12 @@ export const getOverallStatusCardClass = (cabinet: SmartCabinet) => {
   const assetPresent = cabinet.deviceState?.assetPresent;
   const doorStatus = getDoorStatus(cabinet.deviceState?.doorOpen, cabinet.deviceState?.doorStateChangedAt);
   const temperature = cabinet.deviceState?.temperature;
+  const lastSeen = dayjs(cabinet.deviceState?.lastSeenAt)
+  const isConnected = !!cabinet.deviceState?.lastSeenAt && lastSeen.isValid() && dayjs().diff(lastSeen, "hours", true) < 12
+
+  if (cabinet.assetHealth === "urgent" || !isConnected) {
+    return getHealthBadgeClass("urgent")
+  }
 
   if (!cabinet.deviceState) {
     return getHealthBadgeClass("n/a")

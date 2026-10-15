@@ -51,7 +51,7 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
         assetPresent: !!deviceState?.assetPresent,
         assetHealth: String(deviceState?.assetHealth),
         temperature: Number(deviceState?.temperature) || 0,
-        isConnected: lastSeen.isValid() && dayjs().diff(lastSeen, "hours", true) < 12,
+        isConnected: !!deviceState?.lastSeenAt && lastSeen.isValid() && dayjs().diff(lastSeen, "hours", true) < 12,
         doorOpen: !!deviceState?.doorOpen,
       })
     } else if(isSuccess) {
@@ -61,7 +61,7 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
         assetPresent: !!data?.assetPresent,
         assetHealth: data?.assetHealth,
         temperature: Number(data?.temperature) || 0,
-        isConnected: Boolean(dayjs().diff(dayjs(data?.lastSeenAt), "hours", true) < 12),
+        isConnected: !!data?.lastSeenAt && Boolean(dayjs().diff(dayjs(data?.lastSeenAt), "hours", true) < 12),
         doorOpen: !!data?.doorOpen,
       })
     }
