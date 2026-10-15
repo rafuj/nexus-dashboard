@@ -1,5 +1,5 @@
 
-export type Status = 'urgent' | 'ok' | 'warning' | 'paused';
+export type Status = 'urgent' | 'ok' | 'warning' | 'suspended';
 export type FilterStatus = Status | 'all';
 
 export type CabinetMonitorToolbarProps = {

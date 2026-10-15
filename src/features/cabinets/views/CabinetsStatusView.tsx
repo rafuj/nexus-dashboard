@@ -33,7 +33,7 @@ const CITY_FILTER_ALL = "all";
 const STATUS_FILTER_ALL = "all";
 const PAGE_SIZE = 12;
 const filterStatuses = [
-  "paused",
+  "suspended",
   "ok",
   "warning",
   "urgent",

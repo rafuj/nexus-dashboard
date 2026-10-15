@@ -332,14 +332,10 @@ export const getOverallStatus = (cabinet: SmartCabinet) => {
   if (cabinet.assetHealth === "urgent") {
     return "urgent"
   }
-  if (!cabinet.deviceState) {
-    return "n/a"
+  if (cabinet.assetHealth === "ok" && !cabinet.deviceState) {
+    return "ok"
   }
   
-  if (cabinet?.status === "suspended") { // this logic is dummy and not yet done in backend
-    return "suspended"
-  }
-
   if (
     getPresenceStatus(assetPresent, assetTakenAt) === "urgent" ||
     doorStatus === "urgent" ||
@@ -369,6 +365,10 @@ export const getOverallStatusBadgeClass = (cabinet: SmartCabinet) => {
 
   if (cabinet.assetHealth === "urgent") {
     return getHealthBadgeClass("urgent")
+  }
+
+  if (cabinet.assetHealth === "ok" && !cabinet.deviceState) {
+    return getHealthBadgeClass("ok")
   }
   
   if (!cabinet?.deviceState) {
