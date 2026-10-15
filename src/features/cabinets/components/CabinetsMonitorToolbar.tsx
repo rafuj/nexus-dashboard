@@ -74,7 +74,7 @@ export function CabinetsMonitorToolbar({
               <SelectItem value="urgent">Urgent</SelectItem>
               <SelectItem value="warning">Warning</SelectItem>
               <SelectItem value="ok">OK</SelectItem>
-              <SelectItem value="paused">Paused</SelectItem>
+              <SelectItem value="suspended">Suspended</SelectItem>
             </SelectContent>
           </Select>
           <button type="button" className="h-10 md:!h-12.5 flex items-center justify-center bg-white text-accent-foreground py-2 px-3 sm:py-3 rounded-[10px] text-sm gap-1.25 border border-border" onClick={resetPage}>

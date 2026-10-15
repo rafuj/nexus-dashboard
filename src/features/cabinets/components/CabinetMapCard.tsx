@@ -58,14 +58,15 @@ export default function CabinetMapCard({ cabinets, openCabinetId, setOpenCabinet
                     <div className="flex items-center justify-between gap-3 xl:gap-x-6">
                         <div className="flex gap-1.75 items-center">
                             <Icons.map className="text-foreground" />
-                            Paused
+                            Unknown
                         </div>
                         <span className="font-semibold">
-                            {cabinets.filter((c) => getOverallStatus(c) === "paused").length}
+                            {/* {cabinets.filter((c) => getOverallStatus(c) === "n/a").length} */}
+                            0
                         </span>
                     </div>
                 </div>
-                <div className="border-t flex justify-between font-semibold pt-3 mt-3">
+                <div className="border-t flex justify-between font-semibo`ld pt-3 mt-3">
                     <span>Total Cabinets</span>
                     <span>{cabinets.length || 0}</span>
                 </div>

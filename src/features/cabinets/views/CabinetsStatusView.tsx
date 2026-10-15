@@ -197,7 +197,7 @@ export default function CabinetsStatusView() {
         ? getPresenceStatus(item?.deviceState?.assetPresent, item?.deviceState?.assetStateChangedAt)
         : "n/a"
       const doorStatus = isInitialized
-        ? getDoorStatus(item?.deviceState?.doorOpen ? item?.deviceState?.doorStateChangedAt : undefined)
+        ? getDoorStatus(item?.deviceState?.doorOpen, item?.deviceState?.doorStateChangedAt)
         : "n/a"
       const temperatureStatus = isInitialized
         ? getTemperatureStatus({

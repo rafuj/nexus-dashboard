@@ -4,7 +4,7 @@ import AssetPresenceIcon from "@/assets/icons/asset-presence.svg?react";
 import AssetHealthIcon from "@/assets/icons/asset-health.svg?react";
 import TemperatureIcon from "@/assets/icons/temperature.svg?react";
 import ConnectivityIcon from "@/assets/icons/connectivity.svg?react";
-
+import dayjs from "dayjs";
 import { cn } from "@/lib/utils";
 import {
   getTemperatureChip
@@ -16,6 +16,7 @@ import { useDeviceStreamState } from "../hooks/useDeviceStreamState";
 import { useEffect, useState } from "react";
 interface DeviceState {
   doorOpenedAt: string | ""
+  doorOpen: boolean
   assetTakenAt: string | ""
   assetPresent: boolean
   assetHealth: string | ""
@@ -26,6 +27,7 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
 
   const [state, setState] = useState<DeviceState>({
   doorOpenedAt: "",
+  doorOpen: false,
   assetTakenAt: "",
   assetPresent: false,
   assetHealth: "",
@@ -36,50 +38,53 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
   const {id} = useParams()
 
   const {data, isSuccess} = useDeviceState(id ?? '')
-  const {deviceState, isConnected} = useDeviceStreamState(deviceSerialNumber ? id : "")
+  const {deviceState} = useDeviceStreamState(deviceSerialNumber ? id : "")
 
   const notInitialized = !data
 
   useEffect(()=>{
     if(deviceState) {
+      const lastSeen = dayjs(deviceState?.lastSeenAt)
       setState({
-        doorOpenedAt: deviceState?.doorOpen ? String(deviceState?.doorStateChangedAt) : "",
+        doorOpenedAt: String(deviceState?.doorStateChangedAt),
         assetTakenAt: deviceState?.assetStateChangedAt ? String(deviceState?.assetStateChangedAt) : "",
         assetPresent: !!deviceState?.assetPresent,
         assetHealth: String(deviceState?.assetHealth),
         temperature: Number(deviceState?.temperature) || 0,
-        isConnected: isConnected,
+        isConnected: lastSeen.isValid() && dayjs().diff(lastSeen, "hours", true) < 12,
+        doorOpen: !!deviceState?.doorOpen,
       })
     } else if(isSuccess) {
       setState({
-        doorOpenedAt: data?.doorOpen ? String(data?.doorStateChangedAt) : "",
+        doorOpenedAt: String(data?.doorStateChangedAt),
         assetTakenAt: data?.assetStateChangedAt ? String(data?.assetStateChangedAt) : "",
         assetPresent: !!data?.assetPresent,
         assetHealth: data?.assetHealth,
         temperature: Number(data?.temperature) || 0,
-        isConnected: isConnected,
+        isConnected: Boolean(dayjs().diff(dayjs(data?.lastSeenAt), "hours", true) < 12),
+        doorOpen: !!data?.doorOpen,
       })
     }
-  }, [deviceState, isConnected, isSuccess])
+  }, [deviceState, isSuccess])
 
   const cards = [
     {
       title: "Door",
       Icon: DoorIcon,
-      badgeClass: getDoorBadgeClass(state.doorOpenedAt),
+      badgeClass: getDoorBadgeClass(state?.doorOpen, state.doorOpenedAt),
       value: <Tooltip>
             <TooltipTrigger className="w-full">
               <span
                 className={cn(
                   "px-3 py-1 rounded-[4px] text-xs w-full text-center block transition-all capitalize",
-                  getDoorBadgeClass(state.doorOpenedAt)
+                  getDoorBadgeClass(state?.doorOpen, state.doorOpenedAt)
                 )}
               >
-                    {getDoorStatus(state.doorOpenedAt)}
+                    {getDoorStatus(state?.doorOpen, state.doorOpenedAt)}
               </span>
             </TooltipTrigger>
-              <TooltipContent side="right" className={cn(getDoorStatusTooltipClass(state.doorOpenedAt))}>
-                {getDoorStatusTooltip(state.doorOpenedAt)}
+              <TooltipContent side="right" className={cn(getDoorStatusTooltipClass(state?.doorOpen, state.doorOpenedAt))}>
+                {getDoorStatusTooltip(state?.doorOpen, state.doorOpenedAt)}
               </TooltipContent>
           </Tooltip>
     },
@@ -139,18 +144,18 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
     {
       title: "Connectivity",
       Icon: ConnectivityIcon,
-      badgeClass: data
+      badgeClass: state.isConnected
           ? "bg-card-success text-success"
           : "bg-card-error text-error",
       value: <div
             className={cn(
               "px-3 py-1 rounded-[4px] text-xs w-full text-center inline-block transition-all",
-              data
+              state.isConnected
                 ? "bg-card-success text-success"
                 : "bg-card-error text-error"
             )}
           >
-            {data
+            {state.isConnected
               ? "Connected"
               : "Not Connected"}
           </div>

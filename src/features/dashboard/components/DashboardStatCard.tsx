@@ -18,12 +18,12 @@ export function DashboardStatCard({ stat,loading = false }: DashboardStatCardPro
       <h3 className="text-2xl font-semibold mt-4 mb-1">
         {loading ? <div className="h-8 flex items-center"><Skeleton className="w-20 bg-white h-5 rounded" /></div> : stat.value}
       </h3>
-      <p className="text-xs 2xl:text-sm pr-4 relative">
+      <div className="text-xs 2xl:text-sm pr-4 relative">
         {loading ? <div className="h-5 flex items-center"><Skeleton className="w-12 bg-white h-4 rounded" /></div>: stat.title}
         {!loading&&<span className="absolute top-1/2 right-0 -translate-y-1/2 text-accent-foreground">
           <ChevronRight />
         </span>}
-      </p>
+      </div>
     </Link>
   )
 }

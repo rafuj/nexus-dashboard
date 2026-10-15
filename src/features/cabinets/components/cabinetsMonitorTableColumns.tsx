@@ -189,6 +189,7 @@ export const cabinetsMonitorTableColumns = [
     },
     cell: ({ row }) => {
       const doorOpenedAt = row.original.deviceState?.doorStateChangedAt
+      const doorStatus = row.original.deviceState?.doorOpen
       const notInitialized = !row.original.deviceState
       return (
 
@@ -205,31 +206,31 @@ export const cabinetsMonitorTableColumns = [
                     N/A
                   </span>
                 ) : (
-                  row.original.deviceState?.doorOpen ? (
+                  doorStatus ? (
                     <span
                       className={cn(
                         "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all capitalize",
-                        getDoorBadgeClass(doorOpenedAt)
+                        getDoorBadgeClass(doorStatus, doorOpenedAt)
                       )}
                     >
-                      {getDoorStatus(doorOpenedAt)}
+                      {getDoorStatus(doorStatus, doorOpenedAt)}
                     </span>
                     ) : (
                       <span
                         className={cn(
                           "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all capitalize",
-                          getDoorBadgeClass()
+                          getDoorBadgeClass(doorStatus, doorOpenedAt)
                         )}
                       >
-                        {getDoorStatus()}
+                        {getDoorStatus(doorStatus, doorOpenedAt)}
                       </span>
                   )
                 )
               }
             </TooltipTrigger>
             {!notInitialized && (
-              <TooltipContent side="right" className={cn(getDoorStatusTooltipClass(doorOpenedAt))}>
-                {getDoorStatusTooltip(doorOpenedAt)}
+              <TooltipContent side="right" className={cn(getDoorStatusTooltipClass(doorStatus, doorOpenedAt))}>
+                {getDoorStatusTooltip(doorStatus, doorOpenedAt)}
               </TooltipContent>
             )}
           </Tooltip>
