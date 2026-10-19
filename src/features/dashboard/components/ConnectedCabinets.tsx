@@ -1,4 +1,3 @@
-import { Icons } from '@/app/icons/icons';
 import connectedCabinetsBg from "@/assets/connected-cabinets-bg.png"
 import { systemHealthData } from "../mock/mockDashboardStats";
 import { Link } from 'react-router';
@@ -6,22 +5,27 @@ import type { SystemHelthDefination } from '../types/dashboardStats';
 import { useEventsList } from '@/features/cabinets/hooks/useEventsList';
 import type { CabinetEventRow } from '@/features/cabinets/types/eventList';
 import { formatMonDayTime } from '@/lib/utils';
+import { ActivityIcons, Icons } from "@/app/icons/icons";
 
 export default function ConnectedCabinets({ data }: { data: any }) {
-    // const renderRoleIcon = (type: string) => {
-    //     switch (type) {
-    //         case 'viewer':
-    //             return <Icons.eye />;
-    //         case 'editor':
-    //             return <Icons.edit />;
-    //         case 'admin':
-    //             return <Icons.sheild />;
-    //         default:
-    //             return null;
-    //     }
-    // };
 
     const { data:events } = useEventsList({})
+
+    const switchIcon = (value: string) => {
+        switch (value) {
+            case 'repaired':
+            case 'damaged':
+            case 'checked':
+            case 'pads replaced':
+                return <ActivityIcons.padsReplaced />
+            case 'stolen':
+                return <ActivityIcons.openDoor />
+            case 'battery replaced':
+                return <ActivityIcons.batteryReplaced />
+            default:
+                return <ActivityIcons.padsReplaced />
+        }
+    }
 
     return (
         <div className="p-5 relative border rounded-[15px] bg-white">
@@ -72,8 +76,8 @@ export default function ConnectedCabinets({ data }: { data: any }) {
                         </div>
                         <div className="py-5 px-2.5 xl:pr-3.75 rounded-[10px] bg-background">
                             <div className="flex justify-between mb-3">
-                                <h6 className="text-sm font-semibold leading-[1] m-0">Recent Incidents</h6>
-                                <Link to="/cabinets/tracking" className='text-foreground hover:text-primary text-xs'>View all Incident</Link>
+                                <h6 className="text-sm font-semibold leading-[1] m-0">Recent Events</h6>
+                                <Link to="/cabinets/tracking" className='text-foreground hover:text-primary text-xs'>View all</Link>
                             </div>
                             <table className="w-full text-left border-collapse">
                                 <tbody>
@@ -90,17 +94,16 @@ export default function ConnectedCabinets({ data }: { data: any }) {
                                                     <span>{formatMonDayTime(event.time)}</span>
                                                 </div>
                                             </td>
-                                            <td className="pb-4 group-last:pb-0 px-2 xl:px-3">
-                                                {/* {Icon ? <Icon /> : null} */}
-                                                <Icons.alertResolved />
+                                            <td className="pb-4 group-last:pb-0 [&_svg]:size-4 px-3 xl:px-4">
+                                                {switchIcon(event.event)}
                                             </td>
                                             <td className="pb-4 group-last:pb-0">
                                                 <h6 className="font-normal m-0 leading-[1.3] capitalize">{event.event}</h6>
-                                                <span className="block leading-[1.3]">{event.cabinetName}</span>
+                                                <span className="block leading-[1.3] text-[10px]">{event.cabinetName}</span>
                                             </td>
                                         </tr>
                                     )
-                                    }).slice(0,4)}
+                                    }).slice(0,5)}
                                 </tbody>
                             </table>
                         </div>
