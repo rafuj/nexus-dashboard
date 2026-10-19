@@ -118,7 +118,7 @@ export default function CabinetMapCard({ cabinets, openCabinetId, setOpenCabinet
                                 
                                     {/* Top Header Label */}
                                     <h3 className="text-sm pb-2 font-semibold">
-                                        <Link to={`/cabinets/monitor?id=${cabinet.id}`} className='underline'>
+                                        <Link to={`/cabinets/status?id=${cabinet.id}`} className='underline'>
                                             {cabinet.name}
                                         </Link>
                                     </h3>

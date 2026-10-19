@@ -70,7 +70,7 @@ export default function CabinetsStatusView() {
   const [status, setStatus] = useQueryState("status", parseAsStringLiteral(filterStatuses).withDefault(STATUS_FILTER_ALL))
   const [isRefreshLoading, setIsRefreshLoading] = useState<boolean>(false)
 
-  const [cabinetId] = useQueryState("id", { defaultValue: "" })
+  const [cabinetId, setCabinetId] = useQueryState("id", { defaultValue: "" })
 
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -123,6 +123,7 @@ export default function CabinetsStatusView() {
     setCity(CITY_FILTER_ALL)
     setStatus(STATUS_FILTER_ALL)
     resetPagination()
+    setCabinetId("")
   }
   const resetPagination = () => {
     setPagination((p) => ({
