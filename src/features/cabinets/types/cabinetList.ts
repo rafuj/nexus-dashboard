@@ -9,7 +9,7 @@ export type FilterStatus = "ok" | "warning" | "urgent" | "paused" | 'all'
 
 export type CabinetConnectionType = "connected" | "not_connected";
 
-export type AssetHealth = 'ok' | 'warning' | 'urgent';
+export type AssetHealth = 'ok' | 'warning' | 'urgent'
 export type AssetPresence = 'present' | 'missing';
 export type DoorStatus = 'closed' | 'open';
 

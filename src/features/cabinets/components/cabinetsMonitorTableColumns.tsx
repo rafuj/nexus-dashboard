@@ -102,7 +102,7 @@ export const cabinetsMonitorTableColumns = [
     },
     cell: ({ row }) => {
       const health = row.original.assetHealth
-      // const notInitialized = !row.original.deviceState
+      const notInitialized = row.original?.assetHealth === null
 
       return (
         <div className="inline-flex items-center gap-1.5 relative">
@@ -117,11 +117,11 @@ export const cabinetsMonitorTableColumns = [
                   {health}
                 </span>
             </TooltipTrigger>
-            {/* {!notInitialized && ( */}
+            {!notInitialized && (
               <TooltipContent side="right" className={cn(getHealthBadgeTooltipColor(health))}>
-              {getHealthTooltip(health)}
-            </TooltipContent>
-            {/* )} */}
+                {getHealthTooltip(health)}
+              </TooltipContent>
+            )}
           </Tooltip>
         </div>
       )
@@ -141,7 +141,7 @@ export const cabinetsMonitorTableColumns = [
     cell: ({ row }) => {
       const assetTakenAt = row.original.deviceState?.assetStateChangedAt
       const assetPresent = row.original.deviceState?.assetPresent
-      const notInitialized = !row.original.deviceState
+      const notInitialized = row.original.deviceState === undefined || row.original.deviceState === null || row.original.deviceState?.assetPresent === null
       return (
         <div className="inline-flex items-center gap-1.5 relative">
           <Tooltip>
@@ -191,7 +191,7 @@ export const cabinetsMonitorTableColumns = [
     cell: ({ row }) => {
       const doorOpenedAt = row.original.deviceState?.doorStateChangedAt
       const doorStatus = row.original.deviceState?.doorOpen
-      const notInitialized = !row.original.deviceState
+      const notInitialized = row.original.deviceState === undefined || row.original.deviceState === null || row.original.deviceState?.doorOpen === null
       return (
 
         <div className="inline-flex items-center gap-1.5 relative">
@@ -254,7 +254,7 @@ export const cabinetsMonitorTableColumns = [
       const temp = {
         current: row.original.deviceState?.temperature
       }
-      const notInitialized = !row.original.deviceState
+      const notInitialized = row.original.deviceState === undefined || row.original.deviceState === null || row.original.deviceState?.temperature === null
       return (
         <div className="flex">
           <Tooltip>
@@ -300,16 +300,17 @@ export const cabinetsMonitorTableColumns = [
         !!lastSeenAt &&
         dayjs(lastSeenAt).isValid() &&
         dayjs().diff(dayjs(lastSeenAt), "hours", true) < 12;
+      const notInitialized = row.original.deviceState === undefined || row.original.deviceState === null || row.original?.deviceState?.lastSeenAt === null
       return (
-      <span
-        className={cn(
-          "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all capitalize",
-          getHealthBadgeClass(isConnected ? "ok" : "urgent")
-        )}
-      >
-        {isConnected ? "Connected" : "Not Connected"}
-      </span>
-    )
+        <span
+          className={cn(
+            "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all capitalize",
+            getHealthBadgeClass(notInitialized ? "n/a" : isConnected ? "ok" : "urgent")
+          )}
+        >
+          {notInitialized ? "N/A" : isConnected ? "Connected" : "Not Connected"}
+        </span>
+      )
     }
   }),
   // 8. Last Update Column

@@ -217,7 +217,7 @@ export default function CabinetsStatusView() {
           "Last Update": formatDateTime(item.createdAt),
         },
         tones: {
-          "Cabinet Name": getMonitorExportTone(getOverallStatus(item)),
+          "Cabinet Name": getMonitorExportTone(getOverallStatus(item)||""),
           "Asset Health": isInitialized ? "success" : "neutral",
           "Asset Presence": getMonitorExportTone(assetPresence),
           "Door Status": getMonitorExportTone(doorStatus),
@@ -293,9 +293,15 @@ export default function CabinetsStatusView() {
                   ...{
                     search,
                     city,
-                    setCity,
+                    setCity: (v) => {
+                      setCity(v)
+                      resetPagination();
+                    },
                     status,
-                    setStatus,
+                    setStatus: (v) => {
+                      setStatus(v)
+                      resetPagination();
+                    },
                     resetPage,
                   }
                 }
