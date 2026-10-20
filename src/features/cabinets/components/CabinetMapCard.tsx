@@ -5,6 +5,7 @@ import { cn, formatDateTime } from '@/lib/utils';
 import { Link } from 'react-router';
 import type { Cabinet, SmartCabinet } from '../types/cabinetList';
 import { getOverallStatus, getOverallStatusBadgeClass } from '../lib/cabinetListDisplay';
+import { useDashboard } from '@/features/dashboard/hooks/useDashboard';
 
 // Map status to Hex codes specifically for Google's native <Pin /> element
 const pinHexConfig = {
@@ -22,6 +23,7 @@ interface CabinetMapProps {
 }
 export default function CabinetMapCard({ cabinets, openCabinetId, setOpenCabinetId }: CabinetMapProps) {
 
+    const { data } = useDashboard()
 
     return (
         <div className="relative">
@@ -34,7 +36,7 @@ export default function CabinetMapCard({ cabinets, openCabinetId, setOpenCabinet
                             OK
                         </div>
                         <span className="font-semibold">
-                            {cabinets.filter((c) => getOverallStatus(c) === "ok").length}
+                            {data?.okCabinets}
                         </span>
                     </div>
                     <div className="flex items-center justify-between gap-3 xl:gap-x-6">
@@ -43,7 +45,7 @@ export default function CabinetMapCard({ cabinets, openCabinetId, setOpenCabinet
                             Warning
                         </div>
                         <span className="font-semibold">
-                            {cabinets.filter((c) => getOverallStatus(c) === "warning").length}
+                            {data?.warningCabinets}
                         </span>
                     </div>
                     <div className="flex items-center justify-between gap-3 xl:gap-x-6">
@@ -52,16 +54,16 @@ export default function CabinetMapCard({ cabinets, openCabinetId, setOpenCabinet
                             Urgent
                         </div>
                         <span className="font-semibold">
-                            {cabinets.filter((c) => getOverallStatus(c) === "urgent").length}
+                            {data?.urgentCabinets}
                         </span>
                     </div>
                     <div className="flex items-center justify-between gap-3 xl:gap-x-6">
                         <div className="flex gap-1.75 items-center">
                             <Icons.map className="text-foreground" />
-                            Unknown
+                            Suspended
                         </div>
                         <span className="font-semibold">
-                            {/* {cabinets.filter((c) => getOverallStatus(c) === "n/a").length} */}
+                            {/* {data?.pausedCabinets} */}
                             0
                         </span>
                     </div>
