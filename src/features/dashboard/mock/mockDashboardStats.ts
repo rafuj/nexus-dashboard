@@ -1,4 +1,4 @@
-import type { ActivityDefination, DashboardStatDefinition, RecentActivityDefinition, SystemHelthDefination, SystemLogsDefinition } from "../types/dashboardStats"
+import type { DashboardStatDefinition, RecentActivityDefinition, SystemHelthDefination, SystemLogsDefinition } from "../types/dashboardStats"
 import { Icons } from "@/app/icons/icons";
 
 export const mockDashboardStats = (data:any): DashboardStatDefinition[] => [
@@ -106,17 +106,13 @@ export const responders = [
 ];
 
 // System Helth Data
-export const systemHealthData: SystemHelthDefination[]  = [
-  { id:"1", activity: "Connectivity", yes: "230", no: "10", icon: Icons.connectivity },
-  { id:"2", activity: "Asset Present", yes: "200", no: "40", icon: Icons.asset },
-  { id:"3", activity: "Door Closed", yes: "238", no: "2", icon: Icons.doorClosed },
-  { id:"4", activity: "Temp. OK", yes: "231", no: "9", icon: Icons.temp},
-  { id:"5", activity: "Maintenance up to date", yes: "218", no: "22", icon: Icons.maintenance }
-];
-// Recent Activity Data
-export const recentActivityData: ActivityDefination[]  = [
-  { id:"1", time: "13:42", action: "Cabinet opened", location: "Delft Station", icon: Icons.openCabinet },
-  { id:"2", time: "13:39", action: "Alert resolved", location: "Amsterdam Zuid", icon: Icons.alertResolved },
-  { id:"3", time: "13:21", action: "AED removed", location: "Rotterdam Office Park", icon: Icons.aedRemoved },
-  { id:"4", time: "12:08", action: "Connectivity restored", location: "Utrecht Office (Lobby)", icon: Icons.connectivityRestored }
-];
+export const systemHealthData = (data:any): SystemHelthDefination[] => {
+
+  return [
+    { id:"2", activity: "Asset Missing", icon: Icons.asset, count: data?.systemHealth?.assetMissing || 0 },
+    { id:"3", activity: "Doors Open", icon: Icons.doorClosed, count: data?.systemHealth?.doorsOpen || 0 },
+    { id:"4", activity: "Temperatures Issues", icon: Icons.temp, count: data?.systemHealth?.temperatureIssues || 0 },
+    { id:"5", activity: "Maintenance needed ", icon: Icons.maintenance, count: data?.maintenance?.overdue || 0 },
+    { id:"1", activity: "Offline", icon: Icons.connectivity, count: data?.systemHealth?.offline || 0 },
+  ]
+}

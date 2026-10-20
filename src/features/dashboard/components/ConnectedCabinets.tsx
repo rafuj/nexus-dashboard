@@ -4,12 +4,14 @@ import { Link } from 'react-router';
 import type { SystemHelthDefination } from '../types/dashboardStats';
 import { useEventsList } from '@/features/cabinets/hooks/useEventsList';
 import type { CabinetEventRow } from '@/features/cabinets/types/eventList';
-import { formatMonDayTime } from '@/lib/utils';
+import { cn, formatMonDayTime } from '@/lib/utils';
 import { ActivityIcons, Icons } from "@/app/icons/icons";
+import { ChevronRight } from "lucide-react";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export default function ConnectedCabinets({ data }: { data: any }) {
 
-    const { data:events } = useEventsList({})
+    const { data:events, isFetching, isRefetching } = useEventsList({})
 
     const switchIcon = (value: string) => {
         switch (value) {
@@ -36,55 +38,43 @@ export default function ConnectedCabinets({ data }: { data: any }) {
             {data?.smartCabinets ?
                 (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                        <div className="py-5 px-2.5 xl:pr-3.75 rounded-[10px] bg-background">
+                        <div className="pt-5 pb-1 px-3.5 rounded-[10px] bg-background">
                             <div className="flex justify-between mb-3">
                                 <h6 className="text-sm font-semibold leading-[1] m-0">System Health</h6>
                                 <Link to="/cabinets/tracking" className='text-foreground hover:text-primary text-xs'>View details</Link>
                             </div>
-                            <table className="w-full text-left border-collapse">
-                                <tbody>
-                                    {systemHealthData.map((activity: SystemHelthDefination) => {
-                                        const Icon = activity.icon;
-                                        return (
-                                        <tr key={activity.id} className="group text-xs">
-                                            <td className="py-2.5 group-last:pb-0">
-                                                <div className="flex items-center gap-1.25">
-                                                    {Icon ? <Icon className='flex-shrink-0' /> : null}
-                                                    <span>{activity.activity}</span>
-                                                </div>
-                                            </td>
-                                            <td className="py-2.5 group-last:pb-0 px-2 xl:px-3">
-                                                <div className="flex gap-1">
-                                                    <span>Yes:</span> <span className="font-semibold text-success">{activity.yes}</span>
-                                                </div>
-                                            </td>
-                                            <td className="py-2.5 group-last:pb-0 px-2 xl:px-3">
-                                                <div className="flex gap-1">
-                                                    <span>No:</span> <span className="font-semibold text-error">{activity.no}</span>
-                                                </div>
-                                            </td>
-                                            <td className="py-2.5 group-last:pb-0">
-                                                <div className="flex justify-end gap-1">
-                                                    <span>Unknown:</span> <span className="font-semibold">10</span>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    )
-                                    })}
-                                </tbody>
-                            </table>
+                            <div>
+                                {systemHealthData(data).map((activity: SystemHelthDefination) => {
+                                    const Icon = activity.icon;
+                                    return (
+                                    <div key={activity.id} className="group text-xs border-b border-[#E9E9E9] last:border-b-0">
+                                        <Link to="/cabinets/tracking" className="block py-2.5 pr-2.5">
+                                            <div className="flex items-center gap-1.25">
+                                                {Icon ? <span className={cn("flex-shrink-0 size-6 flex items-center justify-center bg-card-error text-error rounded", {
+                                                    "bg-card-success text-success": activity.count === 0
+                                                })}>
+                                                    <Icon className="size-3.5" />
+                                                </span> : null}
+                                                <span className="w-0 grow text-accent-foreground"> <span className="font-semibold">{activity.count}</span> {activity.activity}</span>
+                                                <ChevronRight size={18} />
+                                            </div>
+                                        </Link>
+                                    </div>
+                                )
+                                })}
+                            </div>
                         </div>
-                        <div className="py-5 px-2.5 xl:pr-3.75 rounded-[10px] bg-background">
+                        <div className="pt-5 pb-1 px-3.5 rounded-[10px] bg-background">
                             <div className="flex justify-between mb-3">
                                 <h6 className="text-sm font-semibold leading-[1] m-0">Recent Events</h6>
-                                <Link to="/cabinets/tracking" className='text-foreground hover:text-primary text-xs'>View all</Link>
+                                <Link to="/cabinets/tracking?tabs=Events" className='text-foreground hover:text-primary text-xs'>View all</Link>
                             </div>
                             <table className="w-full text-left border-collapse">
                                 <tbody>
                                     {events?.map((event: CabinetEventRow, i) => {
                                         return (
                                         <tr key={i} className="group text-xs">
-                                            <td className="pb-4 group-last:pb-0">
+                                            <td className="py-2">
                                                 <div className="flex items-center gap-2 text-accent-foreground">
                                                     <span className='h-1 w-1 rounded-full bg-primary'></span>
                                                     {/* <span>{new Date(event?.time).toLocaleTimeString([], {
@@ -94,16 +84,25 @@ export default function ConnectedCabinets({ data }: { data: any }) {
                                                     <span>{formatMonDayTime(event.time)}</span>
                                                 </div>
                                             </td>
-                                            <td className="pb-4 group-last:pb-0 [&_svg]:size-4 px-3 xl:px-4">
+                                            <td className="py-2 [&_svg]:size-4 px-3 xl:px-4">
                                                 {switchIcon(event.event)}
                                             </td>
-                                            <td className="pb-4 group-last:pb-0">
+                                            <td className="py-2">
                                                 <h6 className="font-normal m-0 leading-[1.3] capitalize">{event.event}</h6>
                                                 <span className="block leading-[1.3] text-[10px]">{event.cabinetName}</span>
                                             </td>
                                         </tr>
                                     )
                                     }).slice(0,5)}
+                                    {isFetching && !isRefetching && 
+                                        <div className="grid grid-cols-1 gap-2">
+                                            <Skeleton className="w-full bg-white h-9 rounded" />
+                                            <Skeleton className="w-full bg-white h-9 rounded" />
+                                            <Skeleton className="w-full bg-white h-9 rounded" />
+                                            <Skeleton className="w-full bg-white h-9 rounded" />
+                                            <Skeleton className="w-full bg-white h-9 rounded" />
+                                        </div>
+                                    }
                                 </tbody>
                             </table>
                         </div>
