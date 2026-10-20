@@ -18,6 +18,7 @@ import { useCabinetsList } from "../hooks/useCabinetsList";
 import { filterCabinets } from "../server/queryCabinetsListPage";
 import { errorToast } from "@/lib/toast";
 import { exportExcel } from "@/lib/exportExcel";
+// import { useSmartCabinetsList } from "../hooks/useSmartCabinetsList";
 
 const STATUS_FILTER_ALL = "all";
 const CITY_FILTER_ALL = "all";
@@ -39,6 +40,18 @@ export default function CabinetsMapView() {
   const [openCabinetId, setOpenCabinetId] = useState<string | null>(null);
 
   const debouncedSearch = useDebounce(search, 400)
+  // const {
+  //   data,
+  //   isFetching,
+  //   refetch,
+  //   isRefetching
+  // } = useSmartCabinetsList({
+  //   search: debouncedSearch,
+  //   status: statusFilter,
+  //   city,
+  //   page: 1,
+  //   limit: 9999999
+  // })
   const {
     data,
     isFetching,
