@@ -631,7 +631,7 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
               {cabinetId && (
                 <>
                   <MaintenanceMode />
-                  {data?.deviceSerialNumber && <CabinetStatistics deviceSerialNumber={data?.deviceSerialNumber} />}
+                  <CabinetStatistics deviceSerialNumber={data?.deviceSerialNumber} />
                 </>
               )}
               {/* Cabinet Details */}
@@ -780,7 +780,16 @@ export default function ManageCabinet({className}: ManageCabinetProps) {
                       selectedCity={values.city}
                       disabled={!values.country || fieldsReadOnly}
                       onSelectCity={(cityName) => {
-                        handleDebouncedChange("city", cityName, values);
+                        setValues(
+                          {
+                            ...values,
+                            city: cityName,
+                            latitude: null,
+                            longitude: null,
+                            addressLine1: "",
+                          },
+                          false
+                        );
                       }}
                     />
 

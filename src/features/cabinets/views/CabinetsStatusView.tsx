@@ -33,7 +33,7 @@ const CITY_FILTER_ALL = "all";
 const STATUS_FILTER_ALL = "all";
 const PAGE_SIZE = 12;
 const filterStatuses = [
-  "paused",
+  "suspended",
   "ok",
   "warning",
   "urgent",
@@ -70,7 +70,7 @@ export default function CabinetsStatusView() {
   const [status, setStatus] = useQueryState("status", parseAsStringLiteral(filterStatuses).withDefault(STATUS_FILTER_ALL))
   const [isRefreshLoading, setIsRefreshLoading] = useState<boolean>(false)
 
-  const [cabinetId] = useQueryState("id", { defaultValue: "" })
+  const [cabinetId, setCabinetId] = useQueryState("id", { defaultValue: "" })
 
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -123,6 +123,7 @@ export default function CabinetsStatusView() {
     setCity(CITY_FILTER_ALL)
     setStatus(STATUS_FILTER_ALL)
     resetPagination()
+    setCabinetId("")
   }
   const resetPagination = () => {
     setPagination((p) => ({
@@ -216,7 +217,7 @@ export default function CabinetsStatusView() {
           "Last Update": formatDateTime(item.createdAt),
         },
         tones: {
-          "Cabinet Name": getMonitorExportTone(getOverallStatus(item)),
+          "Cabinet Name": getMonitorExportTone(getOverallStatus(item)||""),
           "Asset Health": isInitialized ? "success" : "neutral",
           "Asset Presence": getMonitorExportTone(assetPresence),
           "Door Status": getMonitorExportTone(doorStatus),
@@ -292,9 +293,15 @@ export default function CabinetsStatusView() {
                   ...{
                     search,
                     city,
-                    setCity,
+                    setCity: (v) => {
+                      setCity(v)
+                      resetPagination();
+                    },
                     status,
-                    setStatus,
+                    setStatus: (v) => {
+                      setStatus(v)
+                      resetPagination();
+                    },
                     resetPage,
                   }
                 }

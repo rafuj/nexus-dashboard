@@ -18,6 +18,7 @@ import { useCabinetsList } from "../hooks/useCabinetsList";
 import { filterCabinets } from "../server/queryCabinetsListPage";
 import { errorToast } from "@/lib/toast";
 import { exportExcel } from "@/lib/exportExcel";
+// import { useSmartCabinetsList } from "../hooks/useSmartCabinetsList";
 
 const STATUS_FILTER_ALL = "all";
 const CITY_FILTER_ALL = "all";
@@ -39,6 +40,18 @@ export default function CabinetsMapView() {
   const [openCabinetId, setOpenCabinetId] = useState<string | null>(null);
 
   const debouncedSearch = useDebounce(search, 400)
+  // const {
+  //   data,
+  //   isFetching,
+  //   refetch,
+  //   isRefetching
+  // } = useSmartCabinetsList({
+  //   search: debouncedSearch,
+  //   status: statusFilter,
+  //   city,
+  //   page: 1,
+  //   limit: 9999999
+  // })
   const {
     data,
     isFetching,
@@ -187,7 +200,7 @@ export default function CabinetsMapView() {
                               <div className="h-6 w-6 shrink-0 flex items-center justify-center">
                                 <MapPin className={cn("text-primary size-5", config.pin)} />
                               </div>
-                              <Link to={`/cabinets/monitor?id=${cabinet.id}`}>
+                              <Link to={`/cabinets/status?id=${cabinet.id}`}>
                                   <h3 className="text-sm font-semibold line-clamp-1 underline">
                                     {cabinet.name}
                                   </h3>

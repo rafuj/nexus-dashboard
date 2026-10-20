@@ -22,6 +22,11 @@ interface DeviceState {
   assetHealth: string | ""
   temperature: number | 0
   isConnected: boolean
+  doorNa: boolean
+  assetNa: boolean
+  tempNa: boolean
+  connectivityNa: boolean
+  assetHealthNa: boolean
 }
 export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: string}) => {  
 
@@ -33,14 +38,18 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
   assetHealth: "",
   temperature: 0,
   isConnected: false,
+  
+  doorNa: true,
+  assetNa: true,
+  tempNa: true,
+  connectivityNa: true,
+  assetHealthNa: true,
 })
 
   const {id} = useParams()
 
   const {data, isSuccess} = useDeviceState(id ?? '')
   const {deviceState} = useDeviceStreamState(deviceSerialNumber ? id : "")
-
-  const notInitialized = !data
 
   useEffect(()=>{
     if(deviceState) {
@@ -51,8 +60,15 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
         assetPresent: !!deviceState?.assetPresent,
         assetHealth: String(deviceState?.assetHealth),
         temperature: Number(deviceState?.temperature) || 0,
-        isConnected: lastSeen.isValid() && dayjs().diff(lastSeen, "hours", true) < 12,
+        isConnected: !!deviceState?.lastSeenAt && lastSeen.isValid() && dayjs().diff(lastSeen, "hours", true) < 12,
         doorOpen: !!deviceState?.doorOpen,
+
+        // N/A State
+        doorNa: deviceState?.doorOpen === null,
+        assetNa: deviceState?.assetPresent === null,
+        tempNa: deviceState?.temperature === null,
+        connectivityNa: deviceState?.lastSeenAt === null,
+        assetHealthNa: deviceState?.assetHealth === null,
       })
     } else if(isSuccess) {
       setState({
@@ -61,8 +77,15 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
         assetPresent: !!data?.assetPresent,
         assetHealth: data?.assetHealth,
         temperature: Number(data?.temperature) || 0,
-        isConnected: Boolean(dayjs().diff(dayjs(data?.lastSeenAt), "hours", true) < 12),
+        isConnected: !!data?.lastSeenAt && Boolean(dayjs().diff(dayjs(data?.lastSeenAt), "hours", true) < 12),
         doorOpen: !!data?.doorOpen,
+
+        // N/A State
+        doorNa: data?.doorOpen === null,
+        assetNa: data?.assetPresent === null,
+        tempNa: data?.temperature === null,
+        connectivityNa: data?.lastSeenAt === null,
+        assetHealthNa: data?.assetHealth === null,
       })
     }
   }, [deviceState, isSuccess])
@@ -72,6 +95,7 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
       title: "Door",
       Icon: DoorIcon,
       badgeClass: getDoorBadgeClass(state?.doorOpen, state.doorOpenedAt),
+      notInitialized: state.doorNa,
       value: <Tooltip>
             <TooltipTrigger className="w-full">
               <span
@@ -92,6 +116,7 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
       title: "Asset Presence",
       Icon: AssetPresenceIcon,
       badgeClass: getPresenceBadgeClass(state.assetPresent, state.assetTakenAt),
+      notInitialized: state.assetNa,
       value: <Tooltip>
               <TooltipTrigger className="w-full">
                 <span
@@ -112,6 +137,7 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
       title: "Asset Health",
       Icon: AssetHealthIcon,
       badgeClass: getHealthBadgeClass(state.assetHealth),
+      notInitialized: state.assetHealthNa,
       value: <Tooltip>
               <TooltipTrigger className="w-full">
                 <span
@@ -132,6 +158,7 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
       title: "Temperature",
       Icon: TemperatureIcon,
       badgeClass: getTemperatureBadgeClass({current: data?.temperature}), // static data
+      notInitialized: state.tempNa,
       value: <Tooltip>
               <TooltipTrigger className="w-full">
                 {getTemperatureChip({current: data?.temperature}, "w-full")}
@@ -147,6 +174,7 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
       badgeClass: state.isConnected
           ? "bg-card-success text-success"
           : "bg-card-error text-error",
+      notInitialized: state.connectivityNa,
       value: <div
             className={cn(
               "px-3 py-1 rounded-[4px] text-xs w-full text-center inline-block transition-all",
@@ -164,7 +192,7 @@ export const CabinetStatistics = ({deviceSerialNumber}: {deviceSerialNumber: str
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-2 mb-3">
-      {cards.map(({ title, Icon, badgeClass, value }) => (
+      {cards.map(({ title, Icon, badgeClass, value, notInitialized }) => (
         <div
           key={title}
           className="border p-3 bg-white rounded-[10px] text-center flex flex-col gap-2 items-center justify-center"

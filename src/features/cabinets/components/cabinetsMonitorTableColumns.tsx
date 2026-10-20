@@ -9,6 +9,7 @@ import { Link } from "react-router"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/shared/components/ui/tooltip"
 import type { SmartCabinet } from "../types/cabinetList"
 import { getDoorBadgeClass, getDoorStatus, getDoorStatusTooltip, getDoorStatusTooltipClass, getHealthBadgeClass, getHealthBadgeTooltipColor, getHealthTooltip, getOverallStatusBadgeClass, getPresenceBadgeClass, getPresenceStatus, getPresenceTooltip, getPresenceTooltipClass, getTemperatureBadgeClass, getTemperatureStatus, getTemperatureTooltip, getTemperatureTooltipClass, type TemperatureState } from "../lib/cabinetListDisplay"
+import dayjs from "dayjs"
 
 const columnHelper = createColumnHelper<SmartCabinet>()
 
@@ -101,7 +102,7 @@ export const cabinetsMonitorTableColumns = [
     },
     cell: ({ row }) => {
       const health = row.original.assetHealth
-      // const notInitialized = !row.original.deviceState
+      const notInitialized = row.original?.assetHealth === null
 
       return (
         <div className="inline-flex items-center gap-1.5 relative">
@@ -116,11 +117,11 @@ export const cabinetsMonitorTableColumns = [
                   {health}
                 </span>
             </TooltipTrigger>
-            {/* {!notInitialized && ( */}
+            {!notInitialized && (
               <TooltipContent side="right" className={cn(getHealthBadgeTooltipColor(health))}>
-              {getHealthTooltip(health)}
-            </TooltipContent>
-            {/* )} */}
+                {getHealthTooltip(health)}
+              </TooltipContent>
+            )}
           </Tooltip>
         </div>
       )
@@ -140,7 +141,7 @@ export const cabinetsMonitorTableColumns = [
     cell: ({ row }) => {
       const assetTakenAt = row.original.deviceState?.assetStateChangedAt
       const assetPresent = row.original.deviceState?.assetPresent
-      const notInitialized = !row.original.deviceState
+      const notInitialized = row.original.deviceState === undefined || row.original.deviceState === null || row.original.deviceState?.assetPresent === null
       return (
         <div className="inline-flex items-center gap-1.5 relative">
           <Tooltip>
@@ -190,7 +191,7 @@ export const cabinetsMonitorTableColumns = [
     cell: ({ row }) => {
       const doorOpenedAt = row.original.deviceState?.doorStateChangedAt
       const doorStatus = row.original.deviceState?.doorOpen
-      const notInitialized = !row.original.deviceState
+      const notInitialized = row.original.deviceState === undefined || row.original.deviceState === null || row.original.deviceState?.doorOpen === null
       return (
 
         <div className="inline-flex items-center gap-1.5 relative">
@@ -253,7 +254,7 @@ export const cabinetsMonitorTableColumns = [
       const temp = {
         current: row.original.deviceState?.temperature
       }
-      const notInitialized = !row.original.deviceState
+      const notInitialized = row.original.deviceState === undefined || row.original.deviceState === null || row.original.deviceState?.temperature === null
       return (
         <div className="flex">
           <Tooltip>
@@ -283,9 +284,38 @@ export const cabinetsMonitorTableColumns = [
     },
   }),
 
-  // 7. Last Update Column
+  // 7. Connectivity Column
   columnHelper.accessor("deviceState.lastSeenAt", {
-    id: "createdAt",
+    id: "connectivity",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Connectivity" />
+    ),
+    meta: {
+      headerClassName: "",
+      cellClassName: "align-middle whitespace-nowrap",
+    },
+    cell: ({ row }) => {
+      const lastSeenAt = row.original?.deviceState?.lastSeenAt;
+      const isConnected =
+        !!lastSeenAt &&
+        dayjs(lastSeenAt).isValid() &&
+        dayjs().diff(dayjs(lastSeenAt), "hours", true) < 12;
+      const notInitialized = row.original.deviceState === undefined || row.original.deviceState === null || row.original?.deviceState?.lastSeenAt === null
+      return (
+        <span
+          className={cn(
+            "px-3 py-1 rounded-[4px] text-xs min-w-[70px] xl:min-w-[84px] text-center inline-block transition-all capitalize",
+            getHealthBadgeClass(notInitialized ? "n/a" : isConnected ? "ok" : "urgent")
+          )}
+        >
+          {notInitialized ? "N/A" : isConnected ? "Connected" : "Not Connected"}
+        </span>
+      )
+    }
+  }),
+  // 8. Last Update Column
+  columnHelper.accessor("deviceState.lastSeenAt", {
+    id: "lastSeenAt",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Last Update" />
     ),

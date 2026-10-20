@@ -136,12 +136,16 @@ type AssetPresenceStatus =
   | "present"
   | "taken"
   | "warning"
-  | "urgent";
+  | "urgent"
+  | "n/a";
 
 export const getPresenceStatus = (
   assetPresent: boolean,
   takenAt?: string | Date | null
 ): AssetPresenceStatus => {
+
+  if (assetPresent === null) return "n/a";
+
   if (assetPresent) return "present";
 
   const minutesTaken = dayjs().diff(dayjs(takenAt), "minutes", true);
@@ -165,6 +169,9 @@ export const getPresenceBadgeClass = (
 
     case "urgent":
       return "bg-card-error text-error";
+      
+    case "n/a":
+      return "bg-card-neutral text-accent-foreground";
   }
 };
 
@@ -206,11 +213,12 @@ export const getPresenceTooltipClass = (
 
 
 // DoorStatus
-type DoorStatus = "closed" | "open" | "warning" | "urgent";
+type DoorStatus = "closed" | "open" | "warning" | "urgent" | "n/a";
 export const getDoorStatus = (
   status: boolean,
   openedAt?: string | Date | null
 ): DoorStatus => {
+  if (status === null) return "n/a";
   if (!status) return "closed";
 
   const minutesOpen = dayjs().diff(dayjs(openedAt), "minute");
@@ -231,6 +239,8 @@ export const getDoorBadgeClass = (openStatus: boolean, openedAt?: string | Date 
     case "warning":
       return "bg-card-warning text-warning";
 
+    case "n/a":
+      return "bg-card-neutral text-accent-foreground";
     case "urgent":
       return "bg-card-error text-error";
   }
@@ -328,113 +338,86 @@ export const getOverallStatus = (cabinet: SmartCabinet) => {
   const assetPresent = Boolean(cabinet.deviceState?.assetPresent);
   const doorStatus = getDoorStatus(cabinet.deviceState?.doorOpen, cabinet.deviceState?.doorStateChangedAt);
   const temperature = Number(cabinet.deviceState?.temperature);
+  const lastSeen = dayjs(cabinet.deviceState?.lastSeenAt)
+  const isConnected = cabinet.deviceState?.lastSeenAt === null ? "n/a" : lastSeen.isValid() && dayjs().diff(lastSeen, "hours", true) < 12
 
-  if (cabinet.assetHealth === "urgent") {
-    return "urgent"
-  }
-  if (!cabinet.deviceState) {
-    return "n/a"
-  }
+  if(!cabinet.deviceState) {
+    if (cabinet.assetHealth === "urgent") {
+      return "urgent"
+    }
+    if (cabinet.assetHealth === "ok") {
+      return "ok"
+    }
+    if (cabinet.assetHealth === "warning") {
+      return "warning"
+    }
+  } else {
+    if (
+      getPresenceStatus(assetPresent, assetTakenAt) === "urgent" ||
+      doorStatus === "urgent" || cabinet.assetHealth === "urgent" ||
+      getTemperatureStatus({
+        current: temperature
+      }) === "urgent" || isConnected === false
+    ) {
+      return "urgent"
+    }
   
-  if (cabinet?.status === "suspended") { // this logic is dummy and not yet done in backend
-    return "suspended"
+    if (
+      getPresenceStatus(assetPresent, assetTakenAt) === "warning" ||
+      doorStatus === "warning" ||
+      doorStatus === "open" ||
+      cabinet.assetHealth === "warning" ||
+      getPresenceStatus(assetPresent, assetTakenAt) === "taken"
+    ) {
+      return "warning"
+    }
+  
+    return "ok"
   }
-
-  if (
-    getPresenceStatus(assetPresent, assetTakenAt) === "urgent" ||
-    doorStatus === "urgent" ||
-    getTemperatureStatus({
-      current: temperature
-    }) === "urgent"
-  ) {
-    return "urgent"
-  }
-
-  if (
-    getPresenceStatus(assetPresent, assetTakenAt) === "warning" ||
-    doorStatus === "warning" ||
-    doorStatus === "open" ||
-    getPresenceStatus(assetPresent, assetTakenAt) === "taken"
-  ) {
-    return "warning"
-  }
-
-  return "ok"
 };
 export const getOverallStatusBadgeClass = (cabinet: SmartCabinet) => {
   const assetTakenAt = cabinet?.deviceState?.assetStateChangedAt;
   const assetPresent = cabinet?.deviceState?.assetPresent;
   const doorStatus = getDoorStatus(cabinet?.deviceState?.doorOpen, cabinet?.deviceState?.doorStateChangedAt);
   const temperature = cabinet?.deviceState?.temperature;
+  const lastSeen = dayjs(cabinet.deviceState?.lastSeenAt)
+  const isConnected = cabinet.deviceState?.lastSeenAt === null ? "n/a" : lastSeen.isValid() && dayjs().diff(lastSeen, "hours", true) < 12
 
-  if (cabinet.assetHealth === "urgent") {
-    return getHealthBadgeClass("urgent")
-  }
-  
-  if (!cabinet?.deviceState) {
+  if(!cabinet.deviceState) {
+    if (cabinet.assetHealth === "urgent") {
+      return getHealthBadgeClass("urgent")
+    }
+
+    if (cabinet.assetHealth === "ok") {
+      return getHealthBadgeClass("ok")
+    }
+    if (cabinet.assetHealth === "warning") {
+      return getHealthBadgeClass("warning")
+    }
     return getHealthBadgeClass("n/a")
-  }
+  } else {
+    if (
+      getPresenceStatus(assetPresent, assetTakenAt) === "urgent" ||
+      doorStatus === 'urgent' || cabinet.assetHealth === "urgent" ||
+      getTemperatureStatus({
+        current: temperature
+      }) === "urgent" || isConnected === false
+    ) {
+      return getHealthBadgeClass("urgent")
+    }
 
-  if (
-    getPresenceStatus(assetPresent, assetTakenAt) === "urgent" ||
-    doorStatus === 'urgent' ||
-    getTemperatureStatus({
-      current: temperature
-    }) === "urgent"
-  ) {
-    return getHealthBadgeClass("urgent")
-  }
+    if (
+      getTemperatureStatus({
+        current: temperature
+      }) === "warning" ||
+      getPresenceStatus(assetPresent, assetTakenAt) === "warning" ||
+      doorStatus === "warning" ||
+      doorStatus === "open" || cabinet.assetHealth === "warning" ||
+      getPresenceStatus(assetPresent, assetTakenAt) === "taken"
+    ) {
+      return getHealthBadgeClass("warning")
+    }
 
-  if (
-    getTemperatureStatus({
-      current: temperature
-    }) === "warning" ||
-    getPresenceStatus(assetPresent, assetTakenAt) === "warning" ||
-    doorStatus === "warning" ||
-    doorStatus === "open" ||
-    getPresenceStatus(assetPresent, assetTakenAt) === "taken"
-  ) {
-    return getHealthBadgeClass("warning")
+    return getHealthBadgeClass("ok")
   }
-
-  return getHealthBadgeClass("ok")
-};
-export const getOverallStatusCardClass = (cabinet: SmartCabinet) => {
-  const assetTakenAt = cabinet.deviceState?.assetStateChangedAt;
-  const assetPresent = cabinet.deviceState?.assetPresent;
-  const doorStatus = getDoorStatus(cabinet.deviceState?.doorOpen, cabinet.deviceState?.doorStateChangedAt);
-  const temperature = cabinet.deviceState?.temperature;
-
-  if (!cabinet.deviceState) {
-    return getHealthBadgeClass("n/a")
-  }
-  
-  if (cabinet?.status === "paused") {
-    return getHealthBadgeClass("paused")
-  }
-
-  if (
-    getPresenceStatus(assetPresent, assetTakenAt) === "urgent" ||
-    doorStatus === 'urgent' ||
-    getTemperatureStatus({
-      current: temperature
-    }) === "urgent"
-  ) {
-    return getHealthBadgeClass("urgent")
-  }
-
-  if (
-    getTemperatureStatus({
-      current: temperature
-    }) === "warning" ||
-    getPresenceStatus(assetPresent, assetTakenAt) === "warning" ||
-    getPresenceStatus(assetPresent, assetTakenAt) === "taken" ||
-    doorStatus === "warning" ||
-    doorStatus === "open" ||
-    getPresenceStatus(assetPresent, assetTakenAt) === "taken"
-  ) {
-    return getHealthBadgeClass("warning")
-  }
-
-  return getHealthBadgeClass("ok")
 };

@@ -9,6 +9,14 @@ import { ActivityIcons } from "@/app/icons/icons"
 import { formatMonDayTime } from "@/lib/utils"
 import VentilationErrorIcon from "@/assets/icons/ventilation.svg?react"
 import { Link } from "react-router"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/shared/components/ui/dialog"
 
 const columnHelper = createColumnHelper<CabinetEventRow>()
 
@@ -143,27 +151,37 @@ export const cabinetsEventTableColumns = (tabValue: string) => [
           headerClassName: "",
           cellClassName: "align-middle",
         },
-        cell: ({ row }) => {
-          const notes = row.original.notes
-
-          if (!notes) {
-            return <span className="text-slate-300">—</span>
-          }
-
-          // if (notes === "View notes") {
-          //   return (
-          //     <button className="rounded bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-200">
-          //       View notes
-          //     </button>
-          //   )
-          // }
-
-          return <div className="max-w-[170px] whitespace-pre-wrap break-words">{notes}</div>
-        },
+        cell: ({ row }) => <NotesCell notes={row.original.notes}/>,
       }),
     ]
   : [])
 ]
+
+function NotesCell({ notes }: { notes?: string | null}) {
+  if (!notes) {
+    return <span className="text-slate-300">—</span>
+  }
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <button className="rounded bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-200">
+          View notes
+        </button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[540px] bg-white">
+        <DialogHeader>
+          <DialogTitle>Notes</DialogTitle>
+          <DialogDescription className="whitespace-pre-wrap break-words">
+            <div className="py-5">
+              {notes}
+            </div>
+          </DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
+  )
+}
 
 interface ActivityIconProps {
   activity: string
